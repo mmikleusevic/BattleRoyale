@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 823281235384890414}
   - component: {fileID: 6445493764182436079}
   - component: {fileID: 2601158362191545878}
-  - component: {fileID: 8699203177227422043}
+  - component: {fileID: 6967290989502981269}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1417101744, guid: e1f56abb216cc604b9561ce2d4ca4bc7, type: 3}
+  m_Sprite: {fileID: -629499757, guid: 05e3487bdbacc3c48bcba83636aab4ef, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
   m_EffectDistance: {x: 5, y: 5}
   m_UseGraphicAlpha: 1
---- !u!114 &8699203177227422043
+--- !u!114 &6967290989502981269
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
-  m_EffectDistance: {x: 5, y: 5}
+  m_EffectColor: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
+  m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
 --- !u!1 &7691759784327390194
 GameObject:

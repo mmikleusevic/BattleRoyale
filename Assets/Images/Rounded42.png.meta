@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e1f56abb216cc604b9561ce2d4ca4bc7
+guid: 05e3487bdbacc3c48bcba83636aab4ef
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,7 +119,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: circle_0
+      name: Rounded42_0
       rect:
         serializedVersion: 2
         x: 0
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a8984d1a5b4fc9146b1576f89659ea2d
-      internalID: 1417101744
+      spriteID: 89c19fef55e371d4189361cebfd7fe82
+      internalID: -629499757
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 891d6c90d42b200488de316711be65c9
+    spriteID: dbb965cda006ec54b93b7911f932daa2
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      circle_0: 1417101744
+      Rounded42_0: -629499757
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
