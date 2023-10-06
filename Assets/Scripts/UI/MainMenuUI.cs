@@ -10,6 +10,8 @@ public class MainMenuUI : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
+
         playButton.onClick.AddListener(() =>
         {
             
@@ -29,6 +31,5 @@ public class MainMenuUI : MonoBehaviour
         {
             Application.Quit();
         });
-
     }
 }
