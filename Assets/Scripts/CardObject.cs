@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class CardObject : MonoBehaviour
+public class CardObject : NetworkBehaviour
 {
     [SerializeField] private CardSO CardSO;
 }

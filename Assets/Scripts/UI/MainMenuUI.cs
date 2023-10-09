@@ -24,7 +24,7 @@ public class MainMenuUI : MonoBehaviour
 
         CardsButton.onClick.AddListener(() =>
         {
-
+            CardsUI.Instance.Show();
         });
 
         QuitButton.onClick.AddListener(() =>
