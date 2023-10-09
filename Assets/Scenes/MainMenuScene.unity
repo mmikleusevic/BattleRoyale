@@ -278,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c8e826357171a54cb0efec492cfbe23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  closeButton: {fileID: 1678155527}
+  CloseButton: {fileID: 1678155527}
 --- !u!1 &401698177
 GameObject:
   m_ObjectHideFlags: 0
@@ -1374,10 +1374,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6b7564bdac1ae040841c86b95973009, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playButton: {fileID: 1062971438}
-  rulesButton: {fileID: 1835489399}
-  cardsButton: {fileID: 787501207}
-  quitButton: {fileID: 1252318749}
+  PlayButton: {fileID: 1062971438}
+  RulesButton: {fileID: 1835489399}
+  CardsButton: {fileID: 787501207}
+  QuitButton: {fileID: 1252318749}
 --- !u!224 &1252318748 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4099264714930777846, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,

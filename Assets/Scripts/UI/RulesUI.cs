@@ -5,13 +5,13 @@ public class RulesUI : MonoBehaviour
 {
     public static RulesUI Instance { get; private set; }
 
-    [SerializeField] private Button closeButton;
+    [SerializeField] private Button CloseButton;
 
     private void Awake()
     {
         Instance = this;
 
-        closeButton.onClick.AddListener(() =>
+        CloseButton.onClick.AddListener(() =>
         {
             Hide();
         });
