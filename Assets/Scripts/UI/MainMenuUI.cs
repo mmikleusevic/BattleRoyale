@@ -14,7 +14,7 @@ public class MainMenuUI : MonoBehaviour
 
         playButton.onClick.AddListener(() =>
         {
-            
+
         });
 
         rulesButton.onClick.AddListener(() =>
@@ -24,7 +24,7 @@ public class MainMenuUI : MonoBehaviour
 
         cardsButton.onClick.AddListener(() =>
         {
-            
+
         });
 
         quitButton.onClick.AddListener(() =>

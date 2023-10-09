@@ -9,7 +9,7 @@ namespace Crystal
     ///      This will allow the background image to stretch to the full extents of the screen behind the notch, which looks nicer.
     ///  (3) For other cases that use a mixture of full horizontal and vertical background stripes, use the Conform X & Y controls on separate elements as needed.
     /// </summary>
-    
+
     [ExecuteAlways]
     public class SafeArea : MonoBehaviour
     {
@@ -99,34 +99,34 @@ namespace Crystal
         #endregion
 
         RectTransform Panel;
-        Rect LastSafeArea = new Rect (0, 0, 0, 0);
-        Vector2Int LastScreenSize = new Vector2Int (0, 0);
+        Rect LastSafeArea = new Rect(0, 0, 0, 0);
+        Vector2Int LastScreenSize = new Vector2Int(0, 0);
         ScreenOrientation LastOrientation = ScreenOrientation.AutoRotation;
         [SerializeField] bool ConformX = true;  // Conform to screen safe area on X-axis (default true, disable to ignore)
         [SerializeField] bool ConformY = true;  // Conform to screen safe area on Y-axis (default true, disable to ignore)
         [SerializeField] bool Logging = false;  // Conform to screen safe area on Y-axis (default true, disable to ignore)
 
-        void Awake ()
+        void Awake()
         {
-            Panel = GetComponent<RectTransform> ();
+            Panel = GetComponent<RectTransform>();
 
             if (Panel == null)
             {
-                Debug.LogError ("Cannot apply safe area - no RectTransform found on " + name);
-                Destroy (gameObject);
+                Debug.LogError("Cannot apply safe area - no RectTransform found on " + name);
+                Destroy(gameObject);
             }
 
-            Refresh ();
+            Refresh();
         }
 
-        void Update ()
+        void Update()
         {
-            Refresh ();
+            Refresh();
         }
 
-        void Refresh ()
+        void Refresh()
         {
-            Rect safeArea = GetSafeArea ();
+            Rect safeArea = GetSafeArea();
 
             if (safeArea != LastSafeArea
                 || Screen.width != LastScreenSize.x
@@ -139,17 +139,17 @@ namespace Crystal
                 LastScreenSize.y = Screen.height;
                 LastOrientation = Screen.orientation;
 
-                ApplySafeArea (safeArea);
+                ApplySafeArea(safeArea);
             }
         }
 
-        Rect GetSafeArea ()
+        Rect GetSafeArea()
         {
             Rect safeArea = Screen.safeArea;
 
             if (Application.isEditor && Sim != SimDevice.None)
             {
-                Rect nsa = new Rect (0, 0, Screen.width, Screen.height);
+                Rect nsa = new Rect(0, 0, Screen.width, Screen.height);
 
                 switch (Sim)
                 {
@@ -181,13 +181,13 @@ namespace Crystal
                         break;
                 }
 
-                safeArea = new Rect (Screen.width * nsa.x, Screen.height * nsa.y, Screen.width * nsa.width, Screen.height * nsa.height);
+                safeArea = new Rect(Screen.width * nsa.x, Screen.height * nsa.y, Screen.width * nsa.width, Screen.height * nsa.height);
             }
 
             return safeArea;
         }
 
-        void ApplySafeArea (Rect r)
+        void ApplySafeArea(Rect r)
         {
             LastSafeArea = r;
 
@@ -227,7 +227,7 @@ namespace Crystal
 
             if (Logging)
             {
-                Debug.LogFormat ("New safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
+                Debug.LogFormat("New safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
                 name, r.x, r.y, r.width, r.height, Screen.width, Screen.height);
             }
         }
