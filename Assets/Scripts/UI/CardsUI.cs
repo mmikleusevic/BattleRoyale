@@ -12,15 +12,12 @@ public class CardsUI : MonoBehaviour
     [SerializeField] private TMP_Dropdown CardTypeDropdown;
     [SerializeField] private Transform CardContainer;
     [SerializeField] private Transform CardTemplate;
-    [SerializeField] private List<Vector2> spawnCardPositionList; 
 
     private List<CardSO> CardsToShow;
     private CardFilter CardFilter;
 
     private void Awake()
     {
-        Hide();
-
         Instance = this;
 
         CloseButton.onClick.AddListener(() =>
@@ -37,11 +34,12 @@ public class CardsUI : MonoBehaviour
         });
 
         CardsToShow = CardListSO;
+        UpdateVisual();
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        UpdateVisual();
+        Hide();
     }
 
     public void Show()
@@ -69,11 +67,17 @@ public class CardsUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (CardSO cardSO in CardListSO)
+        SetObject();
+    }
+
+    private void SetObject()
+    {
+        for (int i = 0; i < CardsToShow.Count; i++)
         {
             Transform cardTransform = Instantiate(CardTemplate, CardContainer);
+
             cardTransform.gameObject.SetActive(true);
-            cardTransform.GetComponent<Image>().sprite = cardSO.Sprite;
+            cardTransform.GetComponent<Image>().sprite = CardsToShow[i].Sprite;
         }
     }
 }
