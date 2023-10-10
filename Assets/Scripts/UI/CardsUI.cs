@@ -8,6 +8,8 @@ public class CardsUI : MonoBehaviour
     public static CardsUI Instance { get; private set; }
 
     [SerializeField] private Button CloseButton;
+    [SerializeField] private Button PageLeftButton;
+    [SerializeField] private Button PageRightButton;
     [SerializeField] private List<CardSO> CardListSO;
     [SerializeField] private TMP_Dropdown CardTypeDropdown;
     [SerializeField] private Transform CardContainer;
@@ -15,6 +17,8 @@ public class CardsUI : MonoBehaviour
 
     private List<CardSO> CardsToShow;
     private CardFilter CardFilter;
+
+    //TODO onValueChanged CardsToShow GetCardsForUI();
 
     private void Awake()
     {
@@ -25,16 +29,27 @@ public class CardsUI : MonoBehaviour
             Hide();
         });
 
+        PageLeftButton.onClick.AddListener(() =>
+        {
+            SetPage(true);
+        });
+
+        PageRightButton.onClick.AddListener(() =>
+        {
+            SetPage(false);
+        });
+
         CardFilter = new CardFilter();
 
         CardTypeDropdown.onValueChanged.AddListener((int val) =>
         {
             CardFilter.CardType = (CardType)val;
+            CardFilter.Page = 0;
             GetCardsForUI();
         });
 
-        CardsToShow = CardListSO;
-        UpdateVisual();
+        CardsToShow = new List<CardSO>();
+        GetCardsForUI();
     }
 
     private void Start()
@@ -78,6 +93,23 @@ public class CardsUI : MonoBehaviour
 
             cardTransform.gameObject.SetActive(true);
             cardTransform.GetComponent<Image>().sprite = CardsToShow[i].Sprite;
+        }
+    }
+
+    private void SetPage(bool isLeft)
+    {
+        if(CardFilter.Page >= 0 || CardFilter.Page <= CardFilter.MaxPage)
+        {
+            if (isLeft && CardFilter.Page > 0)
+            {
+                CardFilter.Page--;
+            }
+            else if (!isLeft && CardFilter.Page < CardFilter.MaxPage)
+            {
+                CardFilter.Page++;
+            }
+
+            GetCardsForUI();
         }
     }
 }
