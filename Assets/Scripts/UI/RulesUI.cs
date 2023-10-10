@@ -9,17 +9,14 @@ public class RulesUI : MonoBehaviour
 
     private void Awake()
     {
+        Hide();
+
         Instance = this;
 
         CloseButton.onClick.AddListener(() =>
         {
             Hide();
         });
-    }
-
-    private void Start()
-    {
-        Hide();
     }
 
     public void Show()
