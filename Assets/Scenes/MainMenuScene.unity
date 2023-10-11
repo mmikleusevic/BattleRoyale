@@ -2513,6 +2513,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1418659777}
   - component: {fileID: 1418659778}
+  - component: {fileID: 1418659779}
   m_Layer: 5
   m_Name: CardContainer
   m_TagString: Untagged
@@ -2538,7 +2539,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -172.96094, y: 0}
-  m_SizeDelta: {x: -945.93, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1418659778
 MonoBehaviour:
@@ -2560,10 +2561,24 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 314, y: 441}
+  m_CellSize: {x: 618, y: 882}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 4
+--- !u!114 &1418659779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1418659776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1 &1588512875
 GameObject:
   m_ObjectHideFlags: 0
@@ -2575,6 +2590,7 @@ GameObject:
   - component: {fileID: 1588512876}
   - component: {fileID: 1588512878}
   - component: {fileID: 1588512879}
+  - component: {fileID: 1588512880}
   m_Layer: 5
   m_Name: CardTemplate
   m_TagString: Untagged
@@ -2622,6 +2638,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f8802abaea26d74dad0c53f13a3aab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1588512880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1588512875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 294
+  m_MinHeight: 421
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: 618
+  m_FlexibleHeight: 882
+  m_LayoutPriority: 1
 --- !u!1 &1589898759
 GameObject:
   m_ObjectHideFlags: 0
@@ -3073,6 +3109,7 @@ GameObject:
   - component: {fileID: 1789093863}
   - component: {fileID: 1789093865}
   - component: {fileID: 1789093864}
+  - component: {fileID: 1789093866}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -3137,6 +3174,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1789093862}
   m_CullTransparentMesh: 1
+--- !u!114 &1789093866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789093862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 274
+  m_MinHeight: 401
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: 598
+  m_FlexibleHeight: 862
+  m_LayoutPriority: 1
 --- !u!1001 &1835489395
 PrefabInstance:
   m_ObjectHideFlags: 0
