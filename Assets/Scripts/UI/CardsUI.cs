@@ -103,10 +103,10 @@ public class CardsUI : MonoBehaviour
         {
             CardFilter.Page--;
 
+            GetCardsForUI();
+
             if (CardFilter.Page == 0) PageLeftButton.gameObject.SetActive(false);
             if (CardFilter.Page < CardFilter.MaxPage) PageRightButton.gameObject.SetActive(true);
-
-            GetCardsForUI();
         }
     }
 
@@ -116,10 +116,11 @@ public class CardsUI : MonoBehaviour
         {
             CardFilter.Page++;
 
+            GetCardsForUI();
+
             if (CardFilter.Page == CardFilter.MaxPage) PageRightButton.gameObject.SetActive(false);
             if (CardFilter.Page > 0) PageLeftButton.gameObject.SetActive(true);
 
-            GetCardsForUI();
         }
     }
 
@@ -129,6 +130,8 @@ public class CardsUI : MonoBehaviour
         CardFilter.Page = 0;
         PageLeftButton.gameObject.SetActive(false);
 
+        GetCardsForUI();
+
         if (CardFilter.MaxPage > 0)
         {
             PageRightButton.gameObject.SetActive(true);
@@ -137,7 +140,5 @@ public class CardsUI : MonoBehaviour
         {
             PageRightButton.gameObject.SetActive(false);
         }
-
-        GetCardsForUI();
     }
 }
