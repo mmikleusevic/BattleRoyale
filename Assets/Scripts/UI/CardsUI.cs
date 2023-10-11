@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,8 +19,6 @@ public class CardsUI : MonoBehaviour
     private List<CardSO> CardsToShow;
     private CardFilter CardFilter;
 
-    //TODO onValueChanged CardsToShow GetCardsForUI();
-
     private void Awake()
     {
         Instance = this;
@@ -31,25 +30,22 @@ public class CardsUI : MonoBehaviour
 
         PageLeftButton.onClick.AddListener(() =>
         {
-            SetPage(true);
+            PageLeft();
         });
 
         PageRightButton.onClick.AddListener(() =>
         {
-            SetPage(false);
+            PageRight();
         });
 
         CardFilter = new CardFilter();
 
         CardTypeDropdown.onValueChanged.AddListener((int val) =>
         {
-            CardFilter.CardType = (CardType)val;
-            CardFilter.Page = 0;
-            GetCardsForUI();
+            OnCardTypeChanged((CardType)val);
         });
 
         CardsToShow = new List<CardSO>();
-        GetCardsForUI();
     }
 
     private void Start()
@@ -60,6 +56,7 @@ public class CardsUI : MonoBehaviour
     public void Show()
     {
         gameObject.SetActive(true);
+        GetCardsForUI();
     }
 
     private void Hide()
@@ -70,6 +67,8 @@ public class CardsUI : MonoBehaviour
     public void GetCardsForUI()
     {
         CardsToShow = CardFilter.GetFilteredCards(CardListSO);
+
+        if (Enumerable.SequenceEqual(CardsToShow, CardListSO)) return;
 
         UpdateVisual();
     }
@@ -92,24 +91,53 @@ public class CardsUI : MonoBehaviour
             Transform cardTransform = Instantiate(CardTemplate, CardContainer);
 
             cardTransform.gameObject.SetActive(true);
-            cardTransform.GetComponent<Image>().sprite = CardsToShow[i].Sprite;
+
+            Sprite sprite = CardsToShow[i].Sprite;
+            cardTransform.GetComponentInChildren<Image>().sprite = sprite;
         }
     }
 
-    private void SetPage(bool isLeft)
+    private void PageLeft()
     {
-        if(CardFilter.Page >= 0 || CardFilter.Page <= CardFilter.MaxPage)
+        if (CardFilter.Page > 0)
         {
-            if (isLeft && CardFilter.Page > 0)
-            {
-                CardFilter.Page--;
-            }
-            else if (!isLeft && CardFilter.Page < CardFilter.MaxPage)
-            {
-                CardFilter.Page++;
-            }
+            CardFilter.Page--;
+
+            if (CardFilter.Page == 0) PageLeftButton.gameObject.SetActive(false);
+            if (CardFilter.Page < CardFilter.MaxPage) PageRightButton.gameObject.SetActive(true);
 
             GetCardsForUI();
         }
+    }
+
+    private void PageRight()
+    {
+        if (CardFilter.Page < CardFilter.MaxPage)
+        {
+            CardFilter.Page++;
+
+            if (CardFilter.Page == CardFilter.MaxPage) PageRightButton.gameObject.SetActive(false);
+            if (CardFilter.Page > 0) PageLeftButton.gameObject.SetActive(true);
+
+            GetCardsForUI();
+        }
+    }
+
+    private void OnCardTypeChanged(CardType cardType)
+    {
+        CardFilter.CardType = cardType;
+        CardFilter.Page = 0;
+        PageLeftButton.gameObject.SetActive(false);
+
+        if (CardFilter.MaxPage > 0)
+        {
+            PageRightButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            PageRightButton.gameObject.SetActive(false);
+        }
+
+        GetCardsForUI();
     }
 }

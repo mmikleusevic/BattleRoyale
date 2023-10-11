@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 100da32de6b44574aa121678d3107d08, type: 3}
+  m_Name: BlackDeath
+  m_EditorClassIdentifier: 
+  Prefab: {fileID: 0}
+  Sprite: {fileID: -542514958, guid: 62dbcc07b9d013f47ad02d3032289a3f, type: 3}
+  Name: BlackDeath
+  Cost: 7
+  CardType: 3

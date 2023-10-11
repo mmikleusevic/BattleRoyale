@@ -8,9 +8,7 @@ namespace Crystal
     ///  (2) If the panel uses a full screen background image, then create an immediate child and put the component on that instead, with all other elements childed below it.
     ///      This will allow the background image to stretch to the full extents of the screen behind the notch, which looks nicer.
     ///  (3) For other cases that use a mixture of full horizontal and vertical background stripes, use the Conform X & Y controls on separate elements as needed.
-    /// </summary>
 
-    [ExecuteAlways]
     public class SafeArea : MonoBehaviour
     {
         #region Simulations

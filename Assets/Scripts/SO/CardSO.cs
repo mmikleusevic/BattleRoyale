@@ -14,5 +14,6 @@ public enum CardType
 {
     All,
     Magic,
-    Curse
+    Curse,
+    Disease
 }

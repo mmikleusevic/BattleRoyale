@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Shield
   m_EditorClassIdentifier: 
   Prefab: {fileID: 0}
-  Sprite: {fileID: 1510083089, guid: 73f21fbcc6b74394085cebd3d3029853, type: 3}
+  Sprite: {fileID: 1438312754, guid: 0412ac5ed0b84a74ebeeb1a573a4324d, type: 3}
   Name: Shield
-  Cost: 7
-  CardType: 2
+  Cost: 14
+  CardType: 0

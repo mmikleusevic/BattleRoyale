@@ -11,16 +11,13 @@ public class CardFilter
 
     public List<CardSO> GetFilteredCards(List<CardSO> cardListSO)
     {
-        List<CardSO> newCardSOList = new List<CardSO>();  
+        List<CardSO> newCardSOList;
 
         if (CardType == CardType.All)
         {
             MaxPage = cardListSO.Count / (PageSize + 1);
 
-            newCardSOList = cardListSO.Skip(Page * 8)
-                      .Take(PageSize)
-                      .OrderBy(list => list.Cost)
-                      .ToList();
+            newCardSOList = TakeAndOrderCards(cardListSO);
         }
         else
         {
@@ -28,13 +25,18 @@ public class CardFilter
 
             MaxPage = filteredCards.Count() / (PageSize + 1);
 
-            newCardSOList = filteredCards
-                     .Skip(Page * 8)
-                     .Take(PageSize)
-                     .OrderBy(list => list.Cost)
-                     .ToList();
+            newCardSOList = TakeAndOrderCards(filteredCards);
         }
 
         return newCardSOList;
+    }
+
+    public List<CardSO> TakeAndOrderCards(IEnumerable<CardSO> cardListSO)
+    {
+        return cardListSO
+            .Skip(Page * 8)
+            .Take(PageSize)
+            .OrderBy(list => list.Cost)
+            .ToList();
     }
 }

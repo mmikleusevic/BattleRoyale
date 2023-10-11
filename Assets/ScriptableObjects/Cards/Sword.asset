@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sword
   m_EditorClassIdentifier: 
   Prefab: {fileID: 0}
-  Sprite: {fileID: -629499757, guid: 05e3487bdbacc3c48bcba83636aab4ef, type: 3}
+  Sprite: {fileID: -1759773155, guid: 89dbc1ce84d41e34b8c8cb881d83b872, type: 3}
   Name: Sword
-  Cost: 8
-  CardType: 1
+  Cost: 14
+  CardType: 0
