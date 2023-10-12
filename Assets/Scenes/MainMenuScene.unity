@@ -1733,7 +1733,7 @@ MonoBehaviour:
   CloseButton: {fileID: 632627575}
   PageLeftButton: {fileID: 173014200}
   PageRightButton: {fileID: 636358718}
-  CardListSO:
+  CardList:
   - {fileID: 11400000, guid: eae6493f87ffc864ebbca2ef645b4ff7, type: 2}
   - {fileID: 11400000, guid: 2561317f2b72ead4d9a8a857ded342fe, type: 2}
   - {fileID: 11400000, guid: e069b05804c19f249810dd60fe9cf716, type: 2}

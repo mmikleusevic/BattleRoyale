@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 100da32de6b44574aa121678d3107d08, type: 3}
+  m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: Shield
   m_EditorClassIdentifier: 
   Prefab: {fileID: 0}
   Sprite: {fileID: 1438312754, guid: 0412ac5ed0b84a74ebeeb1a573a4324d, type: 3}
   Name: Shield
+  Description: 
   Cost: 14
   CardType: 0

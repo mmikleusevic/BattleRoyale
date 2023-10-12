@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,13 +10,16 @@ public class CardsUI : MonoBehaviour
     [SerializeField] private Button CloseButton;
     [SerializeField] private Button PageLeftButton;
     [SerializeField] private Button PageRightButton;
-    [SerializeField] private List<CardSO> CardListSO;
+    [SerializeField] private List<Card> CardList;
     [SerializeField] private TMP_Dropdown CardTypeDropdown;
     [SerializeField] private Transform CardContainer;
     [SerializeField] private Transform CardTemplate;
 
-    private List<CardSO> CardsToShow;
-    private CardFilter CardFilter;
+    private PagedList<Card> PagedCardList;
+
+    private int PageSize = 8;
+    private int FirstPage = 1;
+    private int Page = 1;
 
     private void Awake()
     {
@@ -38,14 +40,10 @@ public class CardsUI : MonoBehaviour
             PageRight();
         });
 
-        CardFilter = new CardFilter();
-
         CardTypeDropdown.onValueChanged.AddListener((int val) =>
         {
             OnCardTypeChanged((CardType)val);
         });
-
-        CardsToShow = new List<CardSO>();
     }
 
     private void Start()
@@ -56,7 +54,7 @@ public class CardsUI : MonoBehaviour
     public void Show()
     {
         gameObject.SetActive(true);
-        GetCardsForUI();
+        OnCardTypeChanged(CardType.All);
     }
 
     private void Hide()
@@ -66,73 +64,75 @@ public class CardsUI : MonoBehaviour
 
     public void GetCardsForUI()
     {
-        CardsToShow = CardFilter.GetFilteredCards(CardListSO);
-
-        if (Enumerable.SequenceEqual(CardsToShow, CardListSO)) return;
+        GetPagedCardList();
 
         UpdateVisual();
     }
 
     private void UpdateVisual()
     {
-        foreach (Transform child in CardContainer)
-        {
-            if (child == CardTemplate) continue;
-            Destroy(child.gameObject);
-        }
+        RemoveOldUICardElements();
 
         SetObject();
     }
 
+    private void RemoveOldUICardElements()
+    {
+        foreach (Transform child in CardContainer)
+        {
+            if (child == CardTemplate) continue;
+            child.GetComponent<TweeningCardUI>().Destroy();
+        }
+    }
+
     private void SetObject()
     {
-        for (int i = 0; i < CardsToShow.Count; i++)
+        foreach (Card card in PagedCardList.Items)
         {
             Transform cardTransform = Instantiate(CardTemplate, CardContainer);
 
             cardTransform.gameObject.SetActive(true);
 
-            Sprite sprite = CardsToShow[i].Sprite;
+            Sprite sprite = card.Sprite;
             cardTransform.GetComponentInChildren<Image>().sprite = sprite;
         }
     }
 
     private void PageLeft()
     {
-        if (CardFilter.Page > 0)
+        if (PagedCardList.HasPreviousPage)
         {
-            CardFilter.Page--;
+            Page--;
 
             GetCardsForUI();
 
-            if (CardFilter.Page == 0) PageLeftButton.gameObject.SetActive(false);
-            if (CardFilter.Page < CardFilter.MaxPage) PageRightButton.gameObject.SetActive(true);
+            if (!PagedCardList.HasPreviousPage) PageLeftButton.gameObject.SetActive(false);
+            if (PagedCardList.HasNextPage) PageRightButton.gameObject.SetActive(true);
         }
     }
 
     private void PageRight()
     {
-        if (CardFilter.Page < CardFilter.MaxPage)
+        if (PagedCardList.HasNextPage)
         {
-            CardFilter.Page++;
+            Page++;
 
             GetCardsForUI();
 
-            if (CardFilter.Page == CardFilter.MaxPage) PageRightButton.gameObject.SetActive(false);
-            if (CardFilter.Page > 0) PageLeftButton.gameObject.SetActive(true);
-
+            if (!PagedCardList.HasNextPage) PageRightButton.gameObject.SetActive(false);
+            if (PagedCardList.HasPreviousPage) PageLeftButton.gameObject.SetActive(true);
         }
     }
 
     private void OnCardTypeChanged(CardType cardType)
     {
         CardFilter.CardType = cardType;
-        CardFilter.Page = 0;
+        Page = FirstPage;
         PageLeftButton.gameObject.SetActive(false);
 
         GetCardsForUI();
 
-        if (CardFilter.MaxPage > 0)
+        if (PagedCardList.HasNextPage)
         {
             PageRightButton.gameObject.SetActive(true);
         }
@@ -140,5 +140,10 @@ public class CardsUI : MonoBehaviour
         {
             PageRightButton.gameObject.SetActive(false);
         }
+    }
+
+    private void GetPagedCardList()
+    {
+        PagedCardList = CardFilter.GetFilteredCards(CardList, Page, PageSize);
     }
 }

@@ -3,5 +3,5 @@ using UnityEngine;
 
 public class CardObject : NetworkBehaviour
 {
-    [SerializeField] private CardSO CardSO;
+    [SerializeField] private Card CardSO;
 }
