@@ -19,7 +19,7 @@ public class PagedList<T>
     public bool HasNextPage => Page * PageSize < TotalCount;
     public bool HasPreviousPage => Page > 1;
 
-    public static PagedList<T> CreateAsync(IEnumerable<T> query, int page, int pageSize)
+    public static PagedList<T> Create(IEnumerable<T> query, int page, int pageSize)
     {
         var totalCount = query.Count();
 

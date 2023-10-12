@@ -8,11 +8,11 @@ public class CardFilter
     {
         if (CardType == CardType.All)
         {
-            return PagedList<Card>.CreateAsync(cardList, page, pageSize);
+            return PagedList<Card>.Create(cardList, page, pageSize);
         }
 
         cardList = cardList.Where(list => list.CardType == CardType);
 
-        return PagedList<Card>.CreateAsync(cardList, page, pageSize);
+        return PagedList<Card>.Create(cardList, page, pageSize);
     }
 }
