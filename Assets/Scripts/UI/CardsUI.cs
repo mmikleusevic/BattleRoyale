@@ -12,7 +12,7 @@ public class CardsUI : MonoBehaviour
     [SerializeField] private Button PageRightButton;
     [SerializeField] private List<Card> CardList;
     [SerializeField] private TMP_Dropdown CardTypeDropdown;
-    [SerializeField] private Transform CardContainer;
+    [SerializeField] private Transform CardTemplateContainer;
     [SerializeField] private Transform CardTemplate;
 
     private PagedList<Card> PagedCardList;
@@ -78,10 +78,10 @@ public class CardsUI : MonoBehaviour
 
     private void RemoveOldUICardElements()
     {
-        foreach (Transform child in CardContainer)
+        foreach (Transform child in CardTemplateContainer)
         {
             if (child == CardTemplate) continue;
-            child.GetComponent<TweeningCardUI>().Destroy();
+            child.GetComponent<SingleCardUI>().Destroy();
         }
     }
 
@@ -89,12 +89,13 @@ public class CardsUI : MonoBehaviour
     {
         foreach (Card card in PagedCardList.Items)
         {
-            Transform cardTransform = Instantiate(CardTemplate, CardContainer);
+            Transform cardTransform = Instantiate(CardTemplate, CardTemplateContainer);
 
             cardTransform.gameObject.SetActive(true);
 
             Sprite sprite = card.Sprite;
-            cardTransform.GetComponentInChildren<Image>().sprite = sprite;
+
+            cardTransform.GetComponent<SingleCardUI>().SetSprite(cardTransform, sprite);
         }
     }
 
