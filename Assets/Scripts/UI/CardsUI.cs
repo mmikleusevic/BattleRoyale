@@ -14,6 +14,9 @@ public class CardsUI : MonoBehaviour
     [SerializeField] private TMP_Dropdown CardTypeDropdown;
     [SerializeField] private Transform CardTemplateContainer;
     [SerializeField] private Transform CardTemplate;
+    [SerializeField] private Image ZoomedSingleCardBackground;
+    [SerializeField] private Transform ZoomedSingleCardContainer;
+    [SerializeField] private Transform ZoomedSingleCardTemplate;
 
     private PagedList<Card> PagedCardList;
 
@@ -44,6 +47,8 @@ public class CardsUI : MonoBehaviour
         {
             OnCardTypeChanged((CardType)val);
         });
+
+        ZoomedSingleCardBackground.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -146,5 +151,20 @@ public class CardsUI : MonoBehaviour
     private void GetPagedCardList()
     {
         PagedCardList = CardFilter.GetFilteredCards(CardList, Page, PageSize);
+    }
+
+    public Image GetZoomedSingleCardBackgroundImage()
+    {
+        return ZoomedSingleCardBackground;
+    }
+
+    public Transform GetZoomedSingleCardContainer()
+    {
+        return ZoomedSingleCardContainer;
+    }
+
+    public Transform GetZoomedSingleCardContainerTemplate()
+    {
+        return ZoomedSingleCardTemplate;
     }
 }

@@ -4,13 +4,19 @@ using UnityEngine.UI;
 
 public class SingleCardUI : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] private Image ZoomedSingleCardBackground;
-    [SerializeField] private Transform ZoomedSingleCardContainer;
-    [SerializeField] private Transform ZoomedSingleCardTemplate;
-
-    public Sprite Sprite { get; private set; }
+    private static Image ZoomedSingleCardBackground;
+    private static Transform ZoomedSingleCardContainer;
+    private static Transform ZoomedSingleCardTemplate;
 
     private static bool Zoomed = false;
+    public Sprite Sprite { get; private set; }
+
+    private void Awake()
+    {
+        if (!ZoomedSingleCardBackground) ZoomedSingleCardBackground = CardsUI.Instance.GetZoomedSingleCardBackgroundImage();
+        if (!ZoomedSingleCardContainer) ZoomedSingleCardContainer = CardsUI.Instance.GetZoomedSingleCardContainer();
+        if (!ZoomedSingleCardTemplate) ZoomedSingleCardTemplate = CardsUI.Instance.GetZoomedSingleCardContainerTemplate();
+    }
 
     private void OnEnable()
     {
