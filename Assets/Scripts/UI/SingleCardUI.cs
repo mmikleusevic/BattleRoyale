@@ -1,22 +1,14 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SingleCardUI : MonoBehaviour, IPointerClickHandler
 {
-    private static Image ZoomedSingleCardBackground;
-    private static Transform ZoomedSingleCardContainer;
-    private static Transform ZoomedSingleCardTemplate;
+    public static event EventHandler OnCardImageClick;
 
     private static bool Zoomed = false;
     public Sprite Sprite { get; private set; }
-
-    private void Awake()
-    {
-        if (!ZoomedSingleCardBackground) ZoomedSingleCardBackground = CardsUI.Instance.GetZoomedSingleCardBackgroundImage();
-        if (!ZoomedSingleCardContainer) ZoomedSingleCardContainer = CardsUI.Instance.GetZoomedSingleCardContainer();
-        if (!ZoomedSingleCardTemplate) ZoomedSingleCardTemplate = CardsUI.Instance.GetZoomedSingleCardContainerTemplate();
-    }
 
     private void OnEnable()
     {
@@ -33,11 +25,16 @@ public class SingleCardUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        OnCardImageClick?.Invoke(this, EventArgs.Empty);       
+    }
+
+    public void ToggleZoom(Image zoomedSingleCardBackground, Transform zoomedSingleCardTemplate, Transform zoomedSingleCardContainer)
+    {
         if (!Zoomed)
         {
-            ZoomedSingleCardBackground.gameObject.SetActive(true);
+            zoomedSingleCardBackground.gameObject.SetActive(true);
 
-            Transform cardTransform = Instantiate(ZoomedSingleCardTemplate, ZoomedSingleCardContainer);
+            Transform cardTransform = Instantiate(zoomedSingleCardTemplate, zoomedSingleCardContainer);
 
             cardTransform.gameObject.SetActive(true);
 
@@ -45,13 +42,13 @@ public class SingleCardUI : MonoBehaviour, IPointerClickHandler
         }
         else
         {
-            foreach (Transform child in ZoomedSingleCardContainer)
+            foreach (Transform child in zoomedSingleCardContainer)
             {
-                if (child == ZoomedSingleCardTemplate) continue;
+                if (child == zoomedSingleCardTemplate) continue;
                 Destroy();
             }
 
-            ZoomedSingleCardBackground.gameObject.SetActive(false);
+            zoomedSingleCardBackground.gameObject.SetActive(false);
         }
 
         Zoomed = !Zoomed;
@@ -59,10 +56,14 @@ public class SingleCardUI : MonoBehaviour, IPointerClickHandler
 
     public void SetSprite(Transform cardTransform, Sprite sprite)
     {
-        cardTransform.GetComponentInChildren<Image>().sprite = sprite;
+        if (!Sprite)
+        {
+            cardTransform.GetComponentInChildren<Image>().sprite = sprite;
+            Sprite = sprite;
 
-        if (Sprite) return;
+            return;
+        }
 
-        Sprite = sprite;
+        cardTransform.GetComponentInChildren<Image>().sprite = Sprite;
     }
 }

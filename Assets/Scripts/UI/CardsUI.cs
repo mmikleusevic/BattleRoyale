@@ -48,6 +48,8 @@ public class CardsUI : MonoBehaviour
             OnCardTypeChanged((CardType)val);
         });
 
+        SingleCardUI.OnCardImageClick += SingleCardUI_OnCardImageClick;
+
         ZoomedSingleCardBackground.gameObject.SetActive(false);
     }
 
@@ -65,6 +67,12 @@ public class CardsUI : MonoBehaviour
     private void Hide()
     {
         gameObject.SetActive(false);
+    }
+
+    private void SingleCardUI_OnCardImageClick(object sender, System.EventArgs e)
+    {
+        SingleCardUI singleCardUI = sender as SingleCardUI;
+        singleCardUI.ToggleZoom(ZoomedSingleCardBackground, ZoomedSingleCardTemplate, ZoomedSingleCardContainer);
     }
 
     public void GetCardsForUI()
@@ -151,20 +159,5 @@ public class CardsUI : MonoBehaviour
     private void GetPagedCardList()
     {
         PagedCardList = CardFilter.GetFilteredCards(CardList, Page, PageSize);
-    }
-
-    public Image GetZoomedSingleCardBackgroundImage()
-    {
-        return ZoomedSingleCardBackground;
-    }
-
-    public Transform GetZoomedSingleCardContainer()
-    {
-        return ZoomedSingleCardContainer;
-    }
-
-    public Transform GetZoomedSingleCardContainerTemplate()
-    {
-        return ZoomedSingleCardTemplate;
     }
 }
