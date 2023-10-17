@@ -12,7 +12,7 @@ public class MainMenuUI : MonoBehaviour
     {
         PlayButton.onClick.AddListener(() =>
         {
-
+            LevelManager.Instance.LoadScene(LevelManager.Scene.LobbyScene);
         });
 
         RulesButton.onClick.AddListener(() =>

@@ -25,7 +25,7 @@ public class SingleCardUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        OnCardImageClick?.Invoke(this, EventArgs.Empty);       
+        OnCardImageClick?.Invoke(this, EventArgs.Empty);
     }
 
     public void ToggleZoom(Image zoomedSingleCardBackground, Transform zoomedSingleCardTemplate, Transform zoomedSingleCardContainer)
