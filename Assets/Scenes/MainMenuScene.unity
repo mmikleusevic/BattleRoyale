@@ -596,6 +596,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelManager
       objectReference: {fileID: 0}
+    - target: {fileID: 2849341366031904665, guid: 1c32847b3cb667d4a9664774e4851b76,
+        type: 3}
+      propertyPath: m_Value
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3291368560986593743, guid: 1c32847b3cb667d4a9664774e4851b76,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -644,6 +649,11 @@ PrefabInstance:
     - target: {fileID: 3291368560986593743, guid: 1c32847b3cb667d4a9664774e4851b76,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8309074783944891604, guid: 1c32847b3cb667d4a9664774e4851b76,
+        type: 3}
+      propertyPath: m_text
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
