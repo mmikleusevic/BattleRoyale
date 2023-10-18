@@ -48,14 +48,22 @@ public class CardsUI : MonoBehaviour
             OnCardTypeChanged((CardType)val);
         });
 
-        SingleCardUI.OnCardImageClick += SingleCardUI_OnCardImageClick;
-
         ZoomedSingleCardBackground.gameObject.SetActive(false);
     }
 
     private void Start()
     {
         Hide();
+    }
+
+    private void OnEnable()
+    {
+        SingleCardUI.OnCardImageClick += SingleCardUI_OnCardImageClick;
+    }
+
+    private void OnDisable()
+    {
+        SingleCardUI.OnCardImageClick -= SingleCardUI_OnCardImageClick;
     }
 
     public void Show()

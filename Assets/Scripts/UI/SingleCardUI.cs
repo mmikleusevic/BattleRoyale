@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SingleCardUI : MonoBehaviour, IPointerClickHandler
+public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 {
     public static event EventHandler OnCardImageClick;
 
@@ -23,7 +23,7 @@ public class SingleCardUI : MonoBehaviour, IPointerClickHandler
         LeanTween.scale(GetComponent<RectTransform>(), Vector3.zero, 0.3f).setDestroyOnComplete(true);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
         OnCardImageClick?.Invoke(this, EventArgs.Empty);
     }
