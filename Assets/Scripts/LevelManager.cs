@@ -59,11 +59,11 @@ public class LevelManager : MonoBehaviour
     {
         LoadingScreen.SetActive(false);
     }
+}
 
-    public enum Scene
-    {
-        MainMenuScene,
-        LobbyScene,
-        GameScene
-    }
+public enum Scene
+{
+    MainMenuScene,
+    LobbyScene,
+    GameScene
 }
