@@ -7,48 +7,48 @@ public class CardsUI : MonoBehaviour
 {
     public static CardsUI Instance { get; private set; }
 
-    [SerializeField] private Button CloseButton;
-    [SerializeField] private Button PageLeftButton;
-    [SerializeField] private Button PageRightButton;
-    [SerializeField] private List<Card> CardList;
-    [SerializeField] private TMP_Dropdown CardTypeDropdown;
-    [SerializeField] private Transform CardTemplateContainer;
-    [SerializeField] private Transform CardTemplate;
-    [SerializeField] private Image ZoomedSingleCardBackground;
-    [SerializeField] private Transform ZoomedSingleCardContainer;
-    [SerializeField] private Transform ZoomedSingleCardTemplate;
+    [SerializeField] private Button closeButton;
+    [SerializeField] private Button pageLeftButton;
+    [SerializeField] private Button pageRightButton;
+    [SerializeField] private List<Card> cardList;
+    [SerializeField] private TMP_Dropdown cardTypeDropdown;
+    [SerializeField] private Transform cardTemplateContainer;
+    [SerializeField] private Transform cardTemplate;
+    [SerializeField] private Image zoomedSingleCardBackground;
+    [SerializeField] private Transform zoomedSingleCardContainer;
+    [SerializeField] private Transform zoomedSingleCardTemplate;
 
-    private PagedList<Card> PagedCardList;
+    private PagedList<Card> pagedCardList;
 
-    private int PageSize = 8;
-    private int FirstPage = 1;
-    private int Page = 1;
+    private int pageSize = 8;
+    private int firstPage = 1;
+    private int page = 1;
 
     private void Awake()
     {
         Instance = this;
 
-        CloseButton.onClick.AddListener(() =>
+        closeButton.onClick.AddListener(() =>
         {
             Hide();
         });
 
-        PageLeftButton.onClick.AddListener(() =>
+        pageLeftButton.onClick.AddListener(() =>
         {
             PageLeft();
         });
 
-        PageRightButton.onClick.AddListener(() =>
+        pageRightButton.onClick.AddListener(() =>
         {
             PageRight();
         });
 
-        CardTypeDropdown.onValueChanged.AddListener((int val) =>
+        cardTypeDropdown.onValueChanged.AddListener((int val) =>
         {
             OnCardTypeChanged((CardType)val);
         });
 
-        ZoomedSingleCardBackground.gameObject.SetActive(false);
+        zoomedSingleCardBackground.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -80,7 +80,7 @@ public class CardsUI : MonoBehaviour
     private void SingleCardUI_OnCardImageClick(object sender, System.EventArgs e)
     {
         SingleCardUI singleCardUI = sender as SingleCardUI;
-        singleCardUI.ToggleZoom(ZoomedSingleCardBackground, ZoomedSingleCardTemplate, ZoomedSingleCardContainer);
+        singleCardUI.ToggleZoom(zoomedSingleCardBackground, zoomedSingleCardTemplate, zoomedSingleCardContainer);
     }
 
     public void GetCardsForUI()
@@ -99,22 +99,22 @@ public class CardsUI : MonoBehaviour
 
     private void RemoveOldUICardElements()
     {
-        foreach (Transform child in CardTemplateContainer)
+        foreach (Transform child in cardTemplateContainer)
         {
-            if (child == CardTemplate) continue;
+            if (child == cardTemplate) continue;
             child.GetComponent<SingleCardUI>().Destroy();
         }
     }
 
     private void SetObject()
     {
-        foreach (Card card in PagedCardList.Items)
+        foreach (Card card in pagedCardList.items)
         {
-            Transform cardTransform = Instantiate(CardTemplate, CardTemplateContainer);
+            Transform cardTransform = Instantiate(cardTemplate, cardTemplateContainer);
 
             cardTransform.gameObject.SetActive(true);
 
-            Sprite sprite = card.Sprite;
+            Sprite sprite = card.sprite;
 
             cardTransform.GetComponent<SingleCardUI>().SetSprite(cardTransform, sprite);
         }
@@ -122,50 +122,50 @@ public class CardsUI : MonoBehaviour
 
     private void PageLeft()
     {
-        if (PagedCardList.HasPreviousPage)
+        if (pagedCardList.hasPreviousPage)
         {
-            Page--;
+            page--;
 
             GetCardsForUI();
 
-            if (!PagedCardList.HasPreviousPage) PageLeftButton.gameObject.SetActive(false);
-            if (PagedCardList.HasNextPage) PageRightButton.gameObject.SetActive(true);
+            if (!pagedCardList.hasPreviousPage) pageLeftButton.gameObject.SetActive(false);
+            if (pagedCardList.hasNextPage) pageRightButton.gameObject.SetActive(true);
         }
     }
 
     private void PageRight()
     {
-        if (PagedCardList.HasNextPage)
+        if (pagedCardList.hasNextPage)
         {
-            Page++;
+            page++;
 
             GetCardsForUI();
 
-            if (!PagedCardList.HasNextPage) PageRightButton.gameObject.SetActive(false);
-            if (PagedCardList.HasPreviousPage) PageLeftButton.gameObject.SetActive(true);
+            if (!pagedCardList.hasNextPage) pageRightButton.gameObject.SetActive(false);
+            if (pagedCardList.hasPreviousPage) pageLeftButton.gameObject.SetActive(true);
         }
     }
 
     private void OnCardTypeChanged(CardType cardType)
     {
-        CardFilter.CardType = cardType;
-        Page = FirstPage;
-        PageLeftButton.gameObject.SetActive(false);
+        CardFilter.cardType = cardType;
+        page = firstPage;
+        pageLeftButton.gameObject.SetActive(false);
 
         GetCardsForUI();
 
-        if (PagedCardList.HasNextPage)
+        if (pagedCardList.hasNextPage)
         {
-            PageRightButton.gameObject.SetActive(true);
+            pageRightButton.gameObject.SetActive(true);
         }
         else
         {
-            PageRightButton.gameObject.SetActive(false);
+            pageRightButton.gameObject.SetActive(false);
         }
     }
 
     private void GetPagedCardList()
     {
-        PagedCardList = CardFilter.GetFilteredCards(CardList, Page, PageSize);
+        pagedCardList = CardFilter.GetFilteredCards(cardList, page, pageSize);
     }
 }

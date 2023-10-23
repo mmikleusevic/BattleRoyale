@@ -7,8 +7,8 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 {
     public static event EventHandler OnCardImageClick;
 
-    private static bool Zoomed = false;
-    public Sprite Sprite { get; private set; }
+    private static bool zoomed = false;
+    public Sprite sprite { get; private set; }
 
     private void OnEnable()
     {
@@ -30,7 +30,7 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 
     public void ToggleZoom(Image zoomedSingleCardBackground, Transform zoomedSingleCardTemplate, Transform zoomedSingleCardContainer)
     {
-        if (!Zoomed)
+        if (!zoomed)
         {
             zoomedSingleCardBackground.gameObject.SetActive(true);
 
@@ -38,7 +38,7 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 
             cardTransform.gameObject.SetActive(true);
 
-            SetSprite(cardTransform, Sprite);
+            SetSprite(cardTransform, sprite);
         }
         else
         {
@@ -51,19 +51,19 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
             zoomedSingleCardBackground.gameObject.SetActive(false);
         }
 
-        Zoomed = !Zoomed;
+        zoomed = !zoomed;
     }
 
     public void SetSprite(Transform cardTransform, Sprite sprite)
     {
-        if (!Sprite)
+        if (!this.sprite)
         {
             cardTransform.GetComponentInChildren<Image>().sprite = sprite;
-            Sprite = sprite;
+            this.sprite = sprite;
 
             return;
         }
 
-        cardTransform.GetComponentInChildren<Image>().sprite = Sprite;
+        cardTransform.GetComponentInChildren<Image>().sprite = this.sprite;
     }
 }

@@ -5,19 +5,19 @@ public class PagedList<T>
 {
     private PagedList(List<T> items, int page, int pageSize, int totalCount)
     {
-        Items = items;
-        Page = page;
-        PageSize = pageSize;
-        TotalCount = totalCount;
+        this.items = items;
+        this.page = page;
+        this.pageSize = pageSize;
+        this.totalCount = totalCount;
     }
 
-    public List<T> Items { get; }
-    public int Page { get; }
-    private int PageSize { get; }
-    public int TotalCount { get; }
+    public List<T> items { get; }
+    public int page { get; }
+    private int pageSize { get; }
+    public int totalCount { get; }
 
-    public bool HasNextPage => Page * PageSize < TotalCount;
-    public bool HasPreviousPage => Page > 1;
+    public bool hasNextPage => page * pageSize < totalCount;
+    public bool hasPreviousPage => page > 1;
 
     public static PagedList<T> Create(IEnumerable<T> query, int page, int pageSize)
     {

@@ -2,11 +2,11 @@ using UnityEngine;
 
 public abstract class State
 {
-    protected BattleSystem BattleSystem;
+    protected BattleSystem battleSystem;
 
     public State(BattleSystem battleSystem)
     {
-        BattleSystem = battleSystem;
+        this.battleSystem = battleSystem;
     }
 
     public virtual Awaitable WaitingForPlayers()

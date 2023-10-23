@@ -10,7 +10,7 @@ public partial class Begin : State
     {
         Debug.Log("Player turn started");
 
-        BattleSystem.SetState(new PlayerTurn(BattleSystem));
+        battleSystem.SetState(new PlayerTurn(battleSystem));
 
         await Awaitable.WaitForSecondsAsync(2f);
     }

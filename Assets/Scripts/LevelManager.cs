@@ -7,9 +7,9 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
 
-    [SerializeField] private GameObject LoadingScreen;
-    [SerializeField] private Slider Slider;
-    [SerializeField] private TextMeshProUGUI ProgressText;
+    [SerializeField] private GameObject loadingScreen;
+    [SerializeField] private Slider slider;
+    [SerializeField] private TextMeshProUGUI progressText;
 
     private void Awake()
     {
@@ -41,8 +41,8 @@ public class LevelManager : MonoBehaviour
         {
             float progress = Mathf.Clamp01(asyncOperation.progress / 0.9f);
 
-            Slider.value = progress;
-            ProgressText.text = progress * 100f + "%";
+            slider.value = progress;
+            progressText.text = progress * 100f + "%";
 
             await Awaitable.NextFrameAsync();
         }
@@ -52,12 +52,12 @@ public class LevelManager : MonoBehaviour
 
     private void Show()
     {
-        LoadingScreen.SetActive(true);
+        loadingScreen.SetActive(true);
     }
 
     private void Hide()
     {
-        LoadingScreen.SetActive(false);
+        loadingScreen.SetActive(false);
     }
 }
 

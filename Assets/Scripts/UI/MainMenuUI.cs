@@ -3,29 +3,29 @@ using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
 {
-    [SerializeField] private Button PlayButton;
-    [SerializeField] private Button RulesButton;
-    [SerializeField] private Button CardsButton;
-    [SerializeField] private Button QuitButton;
+    [SerializeField] private Button playButton;
+    [SerializeField] private Button rulesButton;
+    [SerializeField] private Button cardsButton;
+    [SerializeField] private Button quitButton;
 
     private void Awake()
     {
-        PlayButton.onClick.AddListener(() =>
+        playButton.onClick.AddListener(() =>
         {
-            LevelManager.Instance.LoadScene(Scene.GameScene);
+            LevelManager.Instance.LoadScene(Scene.LobbyScene);
         });
 
-        RulesButton.onClick.AddListener(() =>
+        rulesButton.onClick.AddListener(() =>
         {
             RulesUI.Instance.Show();
         });
 
-        CardsButton.onClick.AddListener(() =>
+        cardsButton.onClick.AddListener(() =>
         {
             CardsUI.Instance.Show();
         });
 
-        QuitButton.onClick.AddListener(() =>
+        quitButton.onClick.AddListener(() =>
         {
             Application.Quit();
         });

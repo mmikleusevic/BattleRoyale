@@ -3,11 +3,11 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class Card : ScriptableObject
 {
-    public Transform Prefab;
-    public Sprite Sprite;
-    public string Name;
-    public int Cost;
-    public CardType CardType;
+    public Transform prefab;
+    public Sprite sprite;
+    public string name;
+    public int cost;
+    public CardType cardType;
 }
 
 public enum CardType

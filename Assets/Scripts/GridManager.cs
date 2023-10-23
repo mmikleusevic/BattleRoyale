@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private int Width;
-    [SerializeField] private int Height;
-    [SerializeField] private Tile Tile;
-    [SerializeField] private Transform GridContainer;
-    [SerializeField] private Transform Camera;
-    [SerializeField] private List<Vector2> TilesToInitialize;
-    [SerializeField] private Vector2 CardDimensions;
+    [SerializeField] private int width;
+    [SerializeField] private int height;
+    [SerializeField] private Tile tile;
+    [SerializeField] private Transform gridContainer;
+    [SerializeField] private new Transform camera;
+    [SerializeField] private List<Vector2> tilesToInitialize;
+    [SerializeField] private Vector2 cardDimensions;
 
     private Dictionary<Vector2, Tile> Tiles;
 
@@ -22,9 +22,9 @@ public class GridManager : MonoBehaviour
     {
         Tiles = new Dictionary<Vector2, Tile>();
 
-        foreach (Vector2 position in TilesToInitialize)
+        foreach (Vector2 position in tilesToInitialize)
         {
-            Tile spawnedTile = Instantiate(Tile, new Vector3(position.x * CardDimensions.x, position.y * CardDimensions.y), Quaternion.identity, GridContainer);
+            Tile spawnedTile = Instantiate(tile, new Vector3(position.x * cardDimensions.x, position.y * cardDimensions.y), Quaternion.identity, gridContainer);
             spawnedTile.name = $"Tile {position.x}-{position.y}";
 
             bool isOffset = (position.x + position.y) % 2 == 1;
@@ -33,17 +33,17 @@ public class GridManager : MonoBehaviour
             Tiles[position] = spawnedTile;
         }
 
-        float halfWidth = Width * CardDimensions.x / 2f;
-        float halfHeight = Height * CardDimensions.y / 2f;
+        float halfWidth = width * cardDimensions.x / 2f;
+        float halfHeight = height * cardDimensions.y / 2f;
 
-        float offsetX = CardDimensions.x / 2f;
-        float offsetY = CardDimensions.y / 2f;
+        float offsetX = cardDimensions.x / 2f;
+        float offsetY = cardDimensions.y / 2f;
 
         float cameraX = halfWidth - offsetX;
         float cameraY = halfHeight - offsetY;
 
-        Camera.transform.position = new Vector3(cameraX, cameraY, -14);
-        Camera.transform.rotation = Quaternion.Euler(0, 0, 90);
+        camera.transform.position = new Vector3(cameraX, cameraY, -14);
+        camera.transform.rotation = Quaternion.Euler(0, 0, 90);
     }
 
     public Tile GetTileAtPosition(Vector2 position)

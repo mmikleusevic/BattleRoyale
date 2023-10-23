@@ -28,8 +28,8 @@ public partial class Begin
             Debug.Log("Check if dead");
             Debug.Log("Check if drinking");
 
-            BattleSystem.SetState(new Won(BattleSystem));
-            BattleSystem.SetState(new Lost(BattleSystem));
+            battleSystem.SetState(new Won(battleSystem));
+            battleSystem.SetState(new Lost(battleSystem));
 
             await Awaitable.NextFrameAsync();
         }
@@ -42,8 +42,8 @@ public partial class Begin
             Debug.Log("Choose card randomly");
             Debug.Log("Equip if all slots not filled");
 
-            BattleSystem.SetState(new Won(BattleSystem));
-            BattleSystem.SetState(new Lost(BattleSystem));
+            battleSystem.SetState(new Won(battleSystem));
+            battleSystem.SetState(new Lost(battleSystem));
 
             await Awaitable.NextFrameAsync();
         }
@@ -53,7 +53,7 @@ public partial class Begin
             Debug.Log("End turn");
             Debug.Log("Switch to other player");
 
-            BattleSystem.SetState(new EnemyTurn(BattleSystem));
+            battleSystem.SetState(new EnemyTurn(battleSystem));
 
             await Awaitable.WaitForSecondsAsync(1f);
         }

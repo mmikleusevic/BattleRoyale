@@ -4,7 +4,7 @@ public class BattleSystem : StateMachine
 {
     public async void OnWaitingForPlayers()
     {
-        await State.WaitingForPlayers();
+        await state.WaitingForPlayers();
     }
 
     public async void OnCountdownToStart()
@@ -16,21 +16,21 @@ public class BattleSystem : StateMachine
 
     public async void OnStartButton()
     {
-        await State.Start();
+        await state.Start();
     }
 
     public async void OnAttackCardButton()
     {
-        await State.AttackCard();
+        await state.AttackCard();
     }
 
     public async void OnAttackPlayerButton()
     {
-        await State.AttackPlayer();
+        await state.AttackPlayer();
     }
 
     public async void OnEndTurnButton()
     {
-        await State.End();
+        await state.End();
     }
 }

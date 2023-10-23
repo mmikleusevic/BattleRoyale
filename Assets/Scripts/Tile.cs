@@ -3,14 +3,14 @@ using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] private Color BaseColor;
-    [SerializeField] private Color OffsetColor;
-    [SerializeField] private SpriteRenderer Renderer;
-    [SerializeField] private GameObject Highlight;
+    [SerializeField] private Color baseColor;
+    [SerializeField] private Color offsetColor;
+    [SerializeField] private SpriteRenderer renderer;
+    [SerializeField] private GameObject highlight;
 
     public void ColorTile(bool isOffset)
     {
-        Renderer.color = isOffset ? OffsetColor : BaseColor;
+        renderer.color = isOffset ? offsetColor : baseColor;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -25,11 +25,11 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void Show()
     {
-        Highlight.SetActive(true);
+        highlight.SetActive(true);
     }
 
     private void Hide()
     {
-        Highlight.SetActive(false);
+        highlight.SetActive(false);
     }
 }

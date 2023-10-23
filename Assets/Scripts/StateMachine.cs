@@ -2,12 +2,12 @@ using UnityEngine;
 
 public abstract class StateMachine : MonoBehaviour
 {
-    protected State State;
+    protected State state;
 
     public async void SetState(State state)
     {
-        State = state;
+        this.state = state;
 
-        await State.Start();
+        await this.state.Start();
     }
 }
