@@ -278,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c8e826357171a54cb0efec492cfbe23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CloseButton: {fileID: 1678155527}
+  closeButton: {fileID: 1678155527}
 --- !u!1 &59704134
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,7 +465,7 @@ GameObject:
   - component: {fileID: 173014200}
   - component: {fileID: 173014202}
   m_Layer: 5
-  m_Name: PageLeft
+  m_Name: PageLeftButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -651,6 +651,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6331420339046757488, guid: 1c32847b3cb667d4a9664774e4851b76,
+        type: 3}
+      propertyPath: slider
+      value: 
+      objectReference: {fileID: 1128081747}
+    - target: {fileID: 6331420339046757488, guid: 1c32847b3cb667d4a9664774e4851b76,
+        type: 3}
+      propertyPath: progressText
+      value: 
+      objectReference: {fileID: 787941567}
+    - target: {fileID: 6331420339046757488, guid: 1c32847b3cb667d4a9664774e4851b76,
+        type: 3}
+      propertyPath: loadingScreen
+      value: 
+      objectReference: {fileID: 1582288391}
     - target: {fileID: 8309074783944891604, guid: 1c32847b3cb667d4a9664774e4851b76,
         type: 3}
       propertyPath: m_text
@@ -1480,7 +1495,7 @@ GameObject:
   - component: {fileID: 636358718}
   - component: {fileID: 636358717}
   m_Layer: 5
-  m_Name: PageRight
+  m_Name: PageRightButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1877,6 +1892,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &787941567 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 41016045582733393, guid: 1c32847b3cb667d4a9664774e4851b76,
+    type: 3}
+  m_PrefabInstance: {fileID: 306689364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &790271725
 GameObject:
   m_ObjectHideFlags: 0
@@ -1932,10 +1959,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641d3d27bcf3cfc4ca28883fc2c8f11f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CloseButton: {fileID: 632627575}
-  PageLeftButton: {fileID: 173014200}
-  PageRightButton: {fileID: 636358718}
-  CardList:
+  closeButton: {fileID: 632627575}
+  pageLeftButton: {fileID: 173014200}
+  pageRightButton: {fileID: 636358718}
+  cardList:
   - {fileID: 11400000, guid: eae6493f87ffc864ebbca2ef645b4ff7, type: 2}
   - {fileID: 11400000, guid: 2561317f2b72ead4d9a8a857ded342fe, type: 2}
   - {fileID: 11400000, guid: e069b05804c19f249810dd60fe9cf716, type: 2}
@@ -1949,12 +1976,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 51ec6869e37963043a32877de007344d, type: 2}
   - {fileID: 11400000, guid: ec38e113312d1f948b9dfd33df784665, type: 2}
   - {fileID: 11400000, guid: 319e80feaf0d70e478718d6e6e975347, type: 2}
-  CardTypeDropdown: {fileID: 59704138}
-  CardTemplateContainer: {fileID: 1418659777}
-  CardTemplate: {fileID: 1588512876}
-  ZoomedSingleCardBackground: {fileID: 929585434}
-  ZoomedSingleCardContainer: {fileID: 2118611680}
-  ZoomedSingleCardTemplate: {fileID: 941295831}
+  cardTypeDropdown: {fileID: 59704138}
+  cardTemplateContainer: {fileID: 1418659777}
+  cardTemplate: {fileID: 1588512876}
+  zoomedSingleCardBackground: {fileID: 929585434}
+  zoomedSingleCardContainer: {fileID: 2118611680}
+  zoomedSingleCardTemplate: {fileID: 941295831}
 --- !u!1 &897457936
 GameObject:
   m_ObjectHideFlags: 0
@@ -2614,6 +2641,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1128081747 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2849341366031904665, guid: 1c32847b3cb667d4a9664774e4851b76,
+    type: 3}
+  m_PrefabInstance: {fileID: 306689364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1152690827
 GameObject:
   m_ObjectHideFlags: 0
@@ -2667,10 +2706,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6b7564bdac1ae040841c86b95973009, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayButton: {fileID: 1062971438}
-  RulesButton: {fileID: 1835489399}
-  CardsButton: {fileID: 787501207}
-  QuitButton: {fileID: 1252318749}
+  playButton: {fileID: 1062971438}
+  rulesButton: {fileID: 1835489399}
+  cardsButton: {fileID: 787501207}
+  quitButton: {fileID: 1252318749}
 --- !u!224 &1252318748 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4099264714930777846, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,
@@ -2908,6 +2947,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!1 &1582288391 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8213312699171086164, guid: 1c32847b3cb667d4a9664774e4851b76,
+    type: 3}
+  m_PrefabInstance: {fileID: 306689364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1588512875
 GameObject:
   m_ObjectHideFlags: 0
@@ -4022,7 +4067,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 1
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

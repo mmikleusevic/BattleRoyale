@@ -12,7 +12,7 @@ public class LobbyListSingleUI : MonoBehaviour
     {
         GetComponent<Button>().onClick.AddListener(() =>
         {
-            
+            GameLobby.Instance.JoinWithId(lobby.Id);
         });
     }
 

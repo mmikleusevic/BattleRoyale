@@ -5,7 +5,7 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private Color baseColor;
     [SerializeField] private Color offsetColor;
-    [SerializeField] private SpriteRenderer renderer;
+    [SerializeField] private new SpriteRenderer renderer;
     [SerializeField] private GameObject highlight;
 
     public void ColorTile(bool isOffset)

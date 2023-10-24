@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: BrewmastersCurse
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 0}
-  Sprite: {fileID: -1765834860, guid: 65b3ee32e65fddf41bbfbe7d3bc8d1c1, type: 3}
-  Name: BrewmastersCurse
-  Description: 
-  Cost: 7
-  CardType: 2
+  prefab: {fileID: 0}
+  sprite: {fileID: -1765834860, guid: 65b3ee32e65fddf41bbfbe7d3bc8d1c1, type: 3}
+  name: Brewmasters Curse
+  cost: 7
+  cardType: 2

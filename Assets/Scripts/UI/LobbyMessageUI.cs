@@ -13,6 +13,30 @@ public class LobbyMessageUI : MonoBehaviour
         closeButton.onClick.AddListener(Hide);
     }
 
+    private void Start()
+    {
+        Hide();
+    }
+
+    private void OnEnable()
+    {
+        GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
+        GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
+        GameLobby.Instance.OnCreateLobbyFailed += GameLobby_OnCreateLobbyFailed;
+        GameLobby.Instance.OnJoinStarted += GameLobby_OnJoinStarted;
+        GameLobby.Instance.OnJoinFailed += GameLobby_OnJoinFailed;
+        GameLobby.Instance.OnQuickJoinFailed += GameLobby_OnQuickJoinFailed;
+    }
+
+    private void OnDisable()
+    {
+        GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
+        GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
+        GameLobby.Instance.OnCreateLobbyFailed -= GameLobby_OnCreateLobbyFailed;
+        GameLobby.Instance.OnJoinStarted -= GameLobby_OnJoinStarted;
+        GameLobby.Instance.OnJoinFailed -= GameLobby_OnJoinFailed;
+        GameLobby.Instance.OnQuickJoinFailed -= GameLobby_OnQuickJoinFailed;
+    }
 
     private void GameLobby_OnQuickJoinFailed(object sender, System.EventArgs e)
     {

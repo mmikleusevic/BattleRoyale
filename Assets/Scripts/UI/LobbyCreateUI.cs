@@ -13,21 +13,31 @@ public class LobbyCreateUI : MonoBehaviour
     {
         createPublicButton.onClick.AddListener(() =>
         {
-
+            GameLobby.Instance.CreateLobby(lobbyNameInputField.text, false);
         });
 
         createPrivateButton.onClick.AddListener(() =>
         {
-
+            GameLobby.Instance.CreateLobby(lobbyNameInputField.text, true);
         });
 
-        createPrivateButton.onClick.AddListener(() =>
+        closeButton.onClick.AddListener(() =>
         {
             Hide();
         });
     }
 
-    private void Start()
+    private void OnEnable()
+    {
+        GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
+    }
+
+    private void OnDisable()
+    {
+        GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
+    }
+
+    private void GameLobby_OnCreateLobbyStarted(object sender, System.EventArgs e)
     {
         Hide();
     }
@@ -39,7 +49,7 @@ public class LobbyCreateUI : MonoBehaviour
         createPublicButton.Select();
     }
 
-    private void Hide()
+    public void Hide()
     {
         gameObject.SetActive(false);
     }

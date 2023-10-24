@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: DetectHidden
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 0}
-  Sprite: {fileID: 997932886, guid: 31601da9e091b384d839315b14871d91, type: 3}
-  Name: DetectHidden
-  Description: 
-  Cost: 11
-  CardType: 0
+  prefab: {fileID: 0}
+  sprite: {fileID: 997932886, guid: 31601da9e091b384d839315b14871d91, type: 3}
+  name: Detect Hidden
+  cost: 11
+  cardType: 0

@@ -8,12 +8,24 @@ public class ConnectingUI : MonoBehaviour
         Hide();
     }
 
-    private void KitchenGameMultiplayer_OnFailedToJoinGame(object sender, EventArgs e)
+    private void OnEnable()
+    {
+        GameMultiplayer.Instance.OnTryingToJoinGame += GameMultiplayer_OnTryingToJoinGame;
+        GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
+    }
+
+    private void OnDisable()
+    {
+        GameMultiplayer.Instance.OnTryingToJoinGame -= GameMultiplayer_OnTryingToJoinGame;
+        GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
+    }
+
+    private void GameMultiplayer_OnFailedToJoinGame(object sender, EventArgs e)
     {
         Hide();
     }
 
-    private void KitchenGameMultiplayer_OnTryingToJoinGame(object sender, System.EventArgs e)
+    private void GameMultiplayer_OnTryingToJoinGame(object sender, System.EventArgs e)
     {
         Show();
     }

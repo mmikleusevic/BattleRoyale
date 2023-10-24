@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: WalkingDead
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 0}
-  Sprite: {fileID: -674064299, guid: a32d56af8cbf2db4cbddc98412fb73c7, type: 3}
-  Name: WalkingDead
-  Description: 
-  Cost: 12
-  CardType: 2
+  prefab: {fileID: 0}
+  sprite: {fileID: -674064299, guid: a32d56af8cbf2db4cbddc98412fb73c7, type: 3}
+  name: Walking Dead
+  cost: 12
+  cardType: 2

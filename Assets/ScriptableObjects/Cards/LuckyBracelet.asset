@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: LuckyBracelet
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 0}
-  Sprite: {fileID: 1485020197, guid: b12297af32a75414c83e9741004c6f29, type: 3}
-  Name: LuckyBracelet
-  Description: 
-  Cost: 11
-  CardType: 0
+  prefab: {fileID: 0}
+  sprite: {fileID: 1485020197, guid: b12297af32a75414c83e9741004c6f29, type: 3}
+  name: Lucky Bracelet
+  cost: 11
+  cardType: 0
