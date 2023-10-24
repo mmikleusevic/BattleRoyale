@@ -5,16 +5,13 @@ public class ConnectingUI : MonoBehaviour
 {
     private void Start()
     {
+        GameMultiplayer.Instance.OnTryingToJoinGame += GameMultiplayer_OnTryingToJoinGame;
+        GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
+
         Hide();
     }
 
-    private void OnEnable()
-    {
-        GameMultiplayer.Instance.OnTryingToJoinGame += GameMultiplayer_OnTryingToJoinGame;
-        GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
-    }
-
-    private void OnDisable()
+    private void OnDestroy()
     {
         GameMultiplayer.Instance.OnTryingToJoinGame -= GameMultiplayer_OnTryingToJoinGame;
         GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
@@ -34,6 +31,7 @@ public class ConnectingUI : MonoBehaviour
     {
         gameObject.SetActive(true);
     }
+
     private void Hide()
     {
         gameObject.SetActive(false);

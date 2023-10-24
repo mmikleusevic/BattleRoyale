@@ -168,6 +168,12 @@ public class GameLobby : MonoBehaviour
 
     public async void CreateLobby(string lobbyName, bool isPrivate)
     {
+        if (string.IsNullOrEmpty(lobbyName))
+        {
+            OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
         OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
         try
         {
@@ -227,6 +233,8 @@ public class GameLobby : MonoBehaviour
 
     public async void JoinWithId(string lobbyId)
     {
+        if (string.IsNullOrEmpty(lobbyId)) return;
+
         OnJoinStarted?.Invoke(this, EventArgs.Empty);
         try
         {
@@ -251,7 +259,10 @@ public class GameLobby : MonoBehaviour
 
     public async void JoinWithCode(string lobbyCode)
     {
+        if (string.IsNullOrEmpty(lobbyCode)) return;
+
         OnJoinStarted?.Invoke(this, EventArgs.Empty);
+
         try
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);

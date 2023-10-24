@@ -568,38 +568,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb25cf643a68dc54e9ab3bb957d0b74f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Width: 7
-  Height: 7
-  Tile: {fileID: 3278704857826184474, guid: cca0fb962e504804fab1f5c55724c09e, type: 3}
-  GridContainer: {fileID: 981953758}
+  width: 0
+  height: 0
+  tile: {fileID: 3278704857826184474, guid: cca0fb962e504804fab1f5c55724c09e, type: 3}
+  gridContainer: {fileID: 981953758}
   Camera: {fileID: 475110476}
-  TilesToInitialize:
-  - {x: 3, y: 0}
-  - {x: 2, y: 1}
-  - {x: 3, y: 1}
-  - {x: 4, y: 1}
-  - {x: 1, y: 2}
-  - {x: 2, y: 2}
-  - {x: 3, y: 2}
-  - {x: 4, y: 2}
-  - {x: 5, y: 2}
-  - {x: 0, y: 3}
-  - {x: 1, y: 3}
-  - {x: 2, y: 3}
-  - {x: 3, y: 3}
-  - {x: 4, y: 3}
-  - {x: 5, y: 3}
-  - {x: 6, y: 3}
-  - {x: 1, y: 4}
-  - {x: 2, y: 4}
-  - {x: 3, y: 4}
-  - {x: 4, y: 4}
-  - {x: 5, y: 4}
-  - {x: 2, y: 5}
-  - {x: 3, y: 5}
-  - {x: 4, y: 5}
-  - {x: 3, y: 6}
-  CardDimensions: {x: 2.13, y: 3}
+  tilesToInitialize:
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  cardDimensions: {x: 2.13, y: 3}
 --- !u!4 &1788039437
 Transform:
   m_ObjectHideFlags: 0

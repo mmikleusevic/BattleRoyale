@@ -5,12 +5,12 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private Color baseColor;
     [SerializeField] private Color offsetColor;
-    [SerializeField] private new SpriteRenderer renderer;
+    [SerializeField] private SpriteRenderer Renderer;
     [SerializeField] private GameObject highlight;
 
     public void ColorTile(bool isOffset)
     {
-        renderer.color = isOffset ? offsetColor : baseColor;
+        Renderer.color = isOffset ? offsetColor : baseColor;
     }
 
     public void OnPointerDown(PointerEventData eventData)

@@ -54,6 +54,8 @@ public class GameMultiplayer : NetworkBehaviour
 
     public void StartHost()
     {
+        //TODO pogledaj sta sa connecting UI screenom
+
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Server_OnClientDisconnectCallback;

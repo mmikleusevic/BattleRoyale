@@ -7,7 +7,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private Tile tile;
     [SerializeField] private Transform gridContainer;
-    [SerializeField] private new Transform camera;
+    [SerializeField] private Transform Camera;
     [SerializeField] private List<Vector2> tilesToInitialize;
     [SerializeField] private Vector2 cardDimensions;
 
@@ -42,8 +42,8 @@ public class GridManager : MonoBehaviour
         float cameraX = halfWidth - offsetX;
         float cameraY = halfHeight - offsetY;
 
-        camera.transform.position = new Vector3(cameraX, cameraY, -14);
-        camera.transform.rotation = Quaternion.Euler(0, 0, 90);
+        Camera.transform.position = new Vector3(cameraX, cameraY, -14);
+        Camera.transform.rotation = Quaternion.Euler(0, 0, 90);
     }
 
     public Tile GetTileAtPosition(Vector2 position)
