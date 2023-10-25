@@ -27,12 +27,14 @@ public class LobbyCreateUI : MonoBehaviour
         });
     }
 
-    private void OnEnable()
+    private void Start()
     {
+        Hide();
+
         GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
     }
@@ -46,7 +48,8 @@ public class LobbyCreateUI : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        createPublicButton.Select();
+        lobbyNameInputField.Select();
+        lobbyNameInputField.ActivateInputField();
     }
 
     public void Hide()

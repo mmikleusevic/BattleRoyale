@@ -210,6 +210,7 @@ public class GameLobby : MonoBehaviour
     public async void QuickJoin()
     {
         OnJoinStarted?.Invoke(this, EventArgs.Empty);
+
         try
         {
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
@@ -236,6 +237,7 @@ public class GameLobby : MonoBehaviour
         if (string.IsNullOrEmpty(lobbyId)) return;
 
         OnJoinStarted?.Invoke(this, EventArgs.Empty);
+
         try
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);

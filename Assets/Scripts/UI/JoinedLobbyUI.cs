@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
@@ -6,9 +7,11 @@ using UnityEngine.UI;
 
 public class JoinedLobbyUI : MonoBehaviour
 {
+    public static event EventHandler OnJoined;
+
     [SerializeField] private int playerIndex;
     [SerializeField] private Button readyToggleButton;
-    [SerializeField] private Button backToLobbiesButton;
+    [SerializeField] private Button mainMenuButton;
     [SerializeField] private Button kickButton;
     [SerializeField] private TextMeshProUGUI readyToggleButtonText;
     [SerializeField] private TextMeshProUGUI playerNameText;
@@ -27,9 +30,9 @@ public class JoinedLobbyUI : MonoBehaviour
             CharacterReady.Instance.SetPlayerReady();
         });
 
-        backToLobbiesButton.onClick.AddListener(() =>
+        mainMenuButton.onClick.AddListener(() =>
         {
-            LeaveLobby();
+            BackToMainMenu();
         });
 
         kickButton.onClick.AddListener(() =>
@@ -38,26 +41,35 @@ public class JoinedLobbyUI : MonoBehaviour
         });
     }
 
-    private void OnEnable()
+    private void Start()
     {
+        Hide();
+
         GameMultiplayer.Instance.OnPlayerDataNetworkListChanged += GameMultiplayer_OnPlayerDataNetworkListChanged;
         CharacterReady.Instance.OnReadyChanged += CharacterReady_OnReadyChanged;
-
-        Lobby lobby = GameLobby.Instance.GetLobby();
-        lobbyNameText.text = "Lobby Name: " + lobby.Name;
-        lobbyCodeText.text = "Lobby Code: " + lobby.LobbyCode;
-
-        readyToggleButton.gameObject.SetActive(NetworkManager.Singleton.IsClient);
-
-        kickButton.gameObject.SetActive(NetworkManager.Singleton.IsServer && playerIndex != 0);
-
-        UpdatePlayer();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         GameMultiplayer.Instance.OnPlayerDataNetworkListChanged -= GameMultiplayer_OnPlayerDataNetworkListChanged;
         CharacterReady.Instance.OnReadyChanged -= CharacterReady_OnReadyChanged;
+    }
+
+    private void OnEnable()
+    {
+        Lobby lobby = GameLobby.Instance.GetLobby();
+
+        if(lobby != null)
+        {
+            lobbyNameText.text = "Lobby Name: " + lobby.Name;
+            lobbyCodeText.text = "Lobby Code: " + lobby.LobbyCode;
+
+            readyToggleButton.gameObject.SetActive(NetworkManager.Singleton.IsClient);
+
+            kickButton.gameObject.SetActive(NetworkManager.Singleton.IsServer && playerIndex != 0);
+
+            UpdatePlayer();
+        }
     }
 
     public void Show()
@@ -105,7 +117,8 @@ public class JoinedLobbyUI : MonoBehaviour
     {
         if (GameMultiplayer.Instance.IsPlayerIndexConnected(playerIndex))
         {
-            Show();
+            //TODO ???
+            //Show();
 
             PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
 
@@ -117,14 +130,23 @@ public class JoinedLobbyUI : MonoBehaviour
         }
         else
         {
+            //TODO ???
             Hide();
         }
     }
 
-    private void LeaveLobby()
+    private void BackToMainMenu()
     {
-        GameLobby.Instance.LeaveLobby();
+        if(GameMultiplayer.Instance.IsHost)
+        {
+            GameLobby.Instance.DeleteLobby();
+        }
+        else
+        {
+            GameLobby.Instance.LeaveLobby();
+        }
+
         NetworkManager.Singleton.Shutdown();
-        Hide();
+        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 }

@@ -80,11 +80,29 @@ public class LobbyUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        ToggleButtonsBasedOnListCount(lobbyList.Count);
+
         foreach (Lobby lobby in lobbyList)
         {
             Transform lobbyTransform = Instantiate(lobbyTemplate, lobbyContainer);
             lobbyTransform.gameObject.SetActive(true);
             lobbyTransform.GetComponent<LobbyListSingleUI>().SetLobby(lobby);
+        }
+    }
+
+    private void ToggleButtonsBasedOnListCount(int count)
+    {
+        if (count > 0)
+        {
+            joinCodeInputField.interactable = true;
+            quickJoinButton.interactable = true;
+            joinCodeButton.interactable = true;
+        }
+        else
+        {
+            joinCodeInputField.interactable = false;
+            quickJoinButton.interactable = false;
+            joinCodeButton.interactable = false;
         }
     }
 }

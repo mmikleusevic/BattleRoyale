@@ -16,10 +16,7 @@ public class LobbyMessageUI : MonoBehaviour
     private void Start()
     {
         Hide();
-    }
 
-    private void OnEnable()
-    {
         GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
         GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyFailed += GameLobby_OnCreateLobbyFailed;
@@ -28,7 +25,7 @@ public class LobbyMessageUI : MonoBehaviour
         GameLobby.Instance.OnQuickJoinFailed += GameLobby_OnQuickJoinFailed;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
         GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;

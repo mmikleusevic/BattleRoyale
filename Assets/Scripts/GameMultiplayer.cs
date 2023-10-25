@@ -12,15 +12,13 @@ public class GameMultiplayer : NetworkBehaviour
     private const string PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER = "PlayerNameMultiplayer";
     public static GameMultiplayer Instance { get; private set; }
 
-    public static bool playMultiplayer;
-
-    public event EventHandler OnTryingToJoinGame;
     public event EventHandler OnFailedToJoinGame;
     public event EventHandler OnPlayerDataNetworkListChanged;
 
     [SerializeField] private List<Color> playerColorList;
 
     private NetworkList<PlayerData> playerDataNetworkList;
+
     private string playerName;
 
     private void Awake()
@@ -54,8 +52,6 @@ public class GameMultiplayer : NetworkBehaviour
 
     public void StartHost()
     {
-        //TODO pogledaj sta sa connecting UI screenom
-
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Server_OnClientDisconnectCallback;
@@ -107,8 +103,6 @@ public class GameMultiplayer : NetworkBehaviour
 
     public void StartClient()
     {
-        OnTryingToJoinGame?.Invoke(this, EventArgs.Empty);
-
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Client_OnClientDisconnectCallback;
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_Server_OnClientConnectedCallback;
         NetworkManager.Singleton.StartClient();
