@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -14,7 +15,6 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Button joinCodeButton;
     [SerializeField] private TMP_InputField joinCodeInputField;
     [SerializeField] private TMP_InputField playerNameInputField;
-    [SerializeField] private LobbyCreateUI lobbyCreateUI;
     [SerializeField] private Transform lobbyContainer;
     [SerializeField] private Transform lobbyTemplate;
 
@@ -29,7 +29,7 @@ public class LobbyUI : MonoBehaviour
 
         createLobbyButton.onClick.AddListener(() =>
         {
-            lobbyCreateUI.Show();
+            LobbyCreateUI.Instance.Show();
         });
 
         quickJoinButton.onClick.AddListener(() =>
@@ -48,9 +48,9 @@ public class LobbyUI : MonoBehaviour
     private void Start()
     {
         playerNameInputField.text = GameMultiplayer.Instance.GetPlayerName();
-        playerNameInputField.onValueChanged.AddListener((string newText) =>
+        playerNameInputField.onValueChanged.AddListener((string playerName) =>
         {
-            GameMultiplayer.Instance.SetPlayerName(newText);
+            GameMultiplayer.Instance.SetPlayerName(playerName);
         });
 
         UpdateLobbyList(new List<Lobby>());
@@ -80,7 +80,7 @@ public class LobbyUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        ToggleButtonsBasedOnListCount(lobbyList.Count);
+        ToggleJoinButtons(lobbyList.Count);
 
         foreach (Lobby lobby in lobbyList)
         {
@@ -90,17 +90,23 @@ public class LobbyUI : MonoBehaviour
         }
     }
 
-    private void ToggleButtonsBasedOnListCount(int count)
+    private void ToggleJoinButtons(int count)
     {
         if (count > 0)
         {
-            joinCodeInputField.interactable = true;
             quickJoinButton.interactable = true;
-            joinCodeButton.interactable = true;
+
+            if (joinCodeInputField.text.Length > 0)
+            {
+                joinCodeButton.interactable = true;
+            }
+            else
+            {
+                joinCodeButton.interactable = false;
+            }
         }
         else
         {
-            joinCodeInputField.interactable = false;
             quickJoinButton.interactable = false;
             joinCodeButton.interactable = false;
         }

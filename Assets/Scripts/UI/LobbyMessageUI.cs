@@ -18,6 +18,7 @@ public class LobbyMessageUI : MonoBehaviour
         Hide();
 
         GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
+        GameMultiplayer.Instance.OnTryingToJoinGame += GameMultiplayer_OnTryingToJoinGame;
         GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyFailed += GameLobby_OnCreateLobbyFailed;
         GameLobby.Instance.OnJoinStarted += GameLobby_OnJoinStarted;
@@ -28,6 +29,7 @@ public class LobbyMessageUI : MonoBehaviour
     private void OnDestroy()
     {
         GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
+        GameMultiplayer.Instance.OnTryingToJoinGame -= GameMultiplayer_OnTryingToJoinGame;
         GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyFailed -= GameLobby_OnCreateLobbyFailed;
         GameLobby.Instance.OnJoinStarted -= GameLobby_OnJoinStarted;
@@ -38,6 +40,11 @@ public class LobbyMessageUI : MonoBehaviour
     private void GameLobby_OnQuickJoinFailed(object sender, System.EventArgs e)
     {
         ShowMessage("Could not find a lobby to quick join!");
+    }
+
+    private void GameMultiplayer_OnTryingToJoinGame(object sender, System.EventArgs e)
+    {
+        ShowMessage("Attempting to join lobby!");
     }
 
     private void GameLobby_OnJoinFailed(object sender, System.EventArgs e)

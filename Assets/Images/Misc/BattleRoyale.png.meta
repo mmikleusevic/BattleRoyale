@@ -1,12 +1,12 @@
 fileFormatVersion: 2
-guid: ffe5b73fa31ff3741b6fa56a14b25f5e
+guid: e2a56922d5a062149aa50b5fc94145b5
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 12
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -119,12 +119,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Background_0
+      name: BattleRoyale_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2400
+        width: 1920
         height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7327af2eb75841a4d809464f8eb7f473
-      internalID: -214966351
+      spriteID: 060330653a610aa4db7807b9425c1da6
+      internalID: -1411666762
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: e699f477078559e4ba07789ee2777dbf
+    spriteID: d471ff44eeda60643a6b050e76cb8ace
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Background_0: -214966351
+      BattleRoyale_0: -1411666762
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

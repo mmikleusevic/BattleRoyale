@@ -25,8 +25,6 @@ public class GameLobby : MonoBehaviour
     public event EventHandler OnJoinFailed;
     public event EventHandler<OnLobbyListChangdEventArgs> OnLobbyListChanged;
 
-    [SerializeField] private JoinedLobbyUI joinedLobbyUI;
-
     public class OnLobbyListChangdEventArgs : EventArgs
     {
         public List<Lobby> lobbyList;
@@ -198,7 +196,7 @@ public class GameLobby : MonoBehaviour
 
             GameMultiplayer.Instance.StartHost();
 
-            joinedLobbyUI.Show();
+            LevelManager.Instance.LoadNetwork(Scene.CharacterScene);
         }
         catch (LobbyServiceException ex)
         {
@@ -222,8 +220,6 @@ public class GameLobby : MonoBehaviour
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
             GameMultiplayer.Instance.StartClient();
-
-            joinedLobbyUI.Show();
         }
         catch (LobbyServiceException ex)
         {
@@ -249,8 +245,6 @@ public class GameLobby : MonoBehaviour
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
             GameMultiplayer.Instance.StartClient();
-
-            joinedLobbyUI.Show();
         }
         catch (LobbyServiceException ex)
         {
@@ -276,8 +270,6 @@ public class GameLobby : MonoBehaviour
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
             GameMultiplayer.Instance.StartClient();
-
-            joinedLobbyUI.Show();
         }
         catch (LobbyServiceException ex)
         {
@@ -293,8 +285,8 @@ public class GameLobby : MonoBehaviour
             try
             {
                 await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
-                joinedLobby = null;
 
+                joinedLobby = null;
             }
             catch (LobbyServiceException ex)
             {

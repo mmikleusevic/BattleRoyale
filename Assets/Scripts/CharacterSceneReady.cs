@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 
-public class CharacterReady : NetworkBehaviour
+public class CharacterSceneReady : NetworkBehaviour
 {
-    public static CharacterReady Instance { get; private set; }
+    public static CharacterSceneReady Instance { get; private set; }
 
     public event EventHandler OnReadyChanged;
     private Dictionary<ulong, bool> playerReadyDictonary;

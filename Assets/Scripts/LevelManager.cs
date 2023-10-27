@@ -11,6 +11,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private GameObject loadingScreen;
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI progressText;
+    [SerializeField] private Canvas canvas;
 
     private void Awake()
     {
@@ -36,6 +37,8 @@ public class LevelManager : MonoBehaviour
     {
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(targetScene.ToString());
 
+        canvas.sortingOrder = 1;
+
         Show();
 
         while (!asyncOperation.isDone)
@@ -49,6 +52,8 @@ public class LevelManager : MonoBehaviour
         }
 
         Hide();
+
+        canvas.sortingOrder = 0;
     }
 
     public void LoadNetwork(Scene targetScene)
@@ -71,5 +76,6 @@ public enum Scene
 {
     MainMenuScene,
     LobbyScene,
+    CharacterScene,
     GameScene
 }

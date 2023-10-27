@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class LobbyCreateUI : MonoBehaviour
 {
+    public static LobbyCreateUI Instance { get; private set; }
+
     [SerializeField] private Button closeButton;
     [SerializeField] private Button createPublicButton;
     [SerializeField] private Button createPrivateButton;
@@ -11,6 +13,8 @@ public class LobbyCreateUI : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+
         createPublicButton.onClick.AddListener(() =>
         {
             GameLobby.Instance.CreateLobby(lobbyNameInputField.text, false);

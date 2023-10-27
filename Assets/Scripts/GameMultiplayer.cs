@@ -12,6 +12,7 @@ public class GameMultiplayer : NetworkBehaviour
     private const string PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER = "PlayerNameMultiplayer";
     public static GameMultiplayer Instance { get; private set; }
 
+    public event EventHandler OnTryingToJoinGame;
     public event EventHandler OnFailedToJoinGame;
     public event EventHandler OnPlayerDataNetworkListChanged;
 
@@ -30,19 +31,16 @@ public class GameMultiplayer : NetworkBehaviour
         playerName = PlayerPrefs.GetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, "PlayerName" + UnityEngine.Random.Range(100, 1000));
 
         playerDataNetworkList = new NetworkList<PlayerData>();
+    }
+
+    private void Start()
+    {
         playerDataNetworkList.OnListChanged += PlayerDataNetworkList_OnListChanged;
     }
 
-    public string GetPlayerName()
+    private void OnDisable()
     {
-        return playerName;
-    }
-
-    public void SetPlayerName(string playerName)
-    {
-        this.playerName = playerName;
-
-        PlayerPrefs.SetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, playerName);
+        playerDataNetworkList.OnListChanged -= PlayerDataNetworkList_OnListChanged;
     }
 
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
@@ -56,6 +54,34 @@ public class GameMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Server_OnClientDisconnectCallback;
         NetworkManager.Singleton.StartHost();
+    }
+
+    public void StopHost()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
+            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Server_OnClientDisconnectCallback;
+            NetworkManager.Singleton.Shutdown();
+        }
+    }
+
+    public void StartClient()
+    {
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Client_OnClientDisconnectCallback;
+        NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_Server_OnClientConnectedCallback;
+        NetworkManager.Singleton.StartClient();
+    }
+
+    public void StopClient()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Client_OnClientDisconnectCallback;
+            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_Server_OnClientConnectedCallback;
+            NetworkManager.Singleton.Shutdown();
+        }
     }
 
     private void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
@@ -84,7 +110,7 @@ public class GameMultiplayer : NetworkBehaviour
 
     private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest connectionApprovalRequest, NetworkManager.ConnectionApprovalResponse connectionApprovalResponse)
     {
-        if (SceneManager.GetActiveScene().name != Scene.LobbyScene.ToString())
+        if (SceneManager.GetActiveScene().name != Scene.CharacterScene.ToString())
         {
             connectionApprovalResponse.Approved = false;
             connectionApprovalResponse.Reason = "Game had already started!";
@@ -99,13 +125,6 @@ public class GameMultiplayer : NetworkBehaviour
         }
 
         connectionApprovalResponse.Approved = true;
-    }
-
-    public void StartClient()
-    {
-        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Client_OnClientDisconnectCallback;
-        NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_Server_OnClientConnectedCallback;
-        NetworkManager.Singleton.StartClient();
     }
 
     private void NetworkManager_Server_OnClientConnectedCallback(ulong clientId)
@@ -229,6 +248,18 @@ public class GameMultiplayer : NetworkBehaviour
             }
         }
         return -1;
+    }
+
+    public string GetPlayerName()
+    {
+        return playerName;
+    }
+
+    public void SetPlayerName(string playerName)
+    {
+        this.playerName = playerName;
+
+        PlayerPrefs.SetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, playerName);
     }
 
     public void KickPlayer(ulong clientId)
