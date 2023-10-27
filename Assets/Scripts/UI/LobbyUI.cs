@@ -53,6 +53,11 @@ public class LobbyUI : MonoBehaviour
             GameMultiplayer.Instance.SetPlayerName(playerName);
         });
 
+        joinCodeInputField.onValueChanged.AddListener((string lobbyCode) =>
+        {
+            joinCodeInputField.text = lobbyCode.ToUpper();
+        });
+
         UpdateLobbyList(new List<Lobby>());
     }
 
