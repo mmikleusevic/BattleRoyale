@@ -1015,7 +1015,7 @@ PrefabInstance:
     - target: {fileID: 9033495539790061403, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,
         type: 3}
       propertyPath: m_VerticalAlignment
-      value: 4096
+      value: 512
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
