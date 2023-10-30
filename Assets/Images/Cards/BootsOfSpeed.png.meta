@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 62dbcc07b9d013f47ad02d3032289a3f
+guid: 92588f38822c72f43b81317eeeb6d0a2
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Black Death_0
+      name: BootsOfSpeed_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 314
-        height: 441
+        x: 34
+        y: 32
+        width: 702
+        height: 983
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ddaf88b3f4bff024c89330d78b06c979
-      internalID: -542514958
+      spriteID: ab4c454f254cd9140a7020cc96515130
+      internalID: -275899543
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: b7f456b82ba6e9746ba3864ad43195a4
+    spriteID: 6b0bb7cb21d7e894786b8fbc5f3f72e8
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Black Death_0: -542514958
+      BootsOfSpeed_0: -275899543
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

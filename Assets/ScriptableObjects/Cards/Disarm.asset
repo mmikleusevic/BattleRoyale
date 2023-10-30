@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Disarm
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
-  sprite: {fileID: -866220627, guid: ec4481dec109ab64f8c044036963ef49, type: 3}
+  sprite: {fileID: 1835825298, guid: ec4481dec109ab64f8c044036963ef49, type: 3}
   name: Disarm
   cost: 11
-  cardType: 0
+  cardType: 3

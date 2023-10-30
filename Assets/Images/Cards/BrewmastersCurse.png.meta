@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b12297af32a75414c83e9741004c6f29
+guid: 47aff31ba00d99547b4b063163da1987
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Lucky Bracelet_0
+      name: BrewmastersCurse_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 355
-        height: 500
+        x: 34
+        y: 32
+        width: 702
+        height: 985
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 871f4ba3cc5699246a0fd731fdde19b0
-      internalID: 1485020197
+      spriteID: 0c0fa6c87e8399a439def92416291371
+      internalID: -925873751
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: a878c89282f74104695aaf629379c4b7
+    spriteID: 6a02c04e0f994314d9c5d26cafb3def2
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Lucky Bracelet_0: 1485020197
+      BrewmastersCurse_0: -925873751
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

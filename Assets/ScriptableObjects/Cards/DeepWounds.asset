@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DeepWounds
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
-  sprite: {fileID: -1609159864, guid: 1f27a5d641de8e14daaa0d08fd90f08b, type: 3}
+  sprite: {fileID: -201838596, guid: b4e1ed28b3a407649932f50f99aedbb8, type: 3}
   name: Deep Wounds
   cost: 8
   cardType: 2

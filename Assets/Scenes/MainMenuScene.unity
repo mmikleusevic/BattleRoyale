@@ -1918,6 +1918,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 51ec6869e37963043a32877de007344d, type: 2}
   - {fileID: 11400000, guid: ec38e113312d1f948b9dfd33df784665, type: 2}
   - {fileID: 11400000, guid: 319e80feaf0d70e478718d6e6e975347, type: 2}
+  - {fileID: 11400000, guid: 8d62eff3006fe6046950dccf41d98142, type: 2}
+  - {fileID: 11400000, guid: 708213fd637810a42845091be222e08d, type: 2}
   cardTypeDropdown: {fileID: 59704138}
   cardTemplateContainer: {fileID: 1418659777}
   cardTemplate: {fileID: 1588512876}

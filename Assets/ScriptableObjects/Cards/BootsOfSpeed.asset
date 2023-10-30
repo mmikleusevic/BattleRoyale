@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BootsOfSpeed
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
-  sprite: {fileID: 577248678, guid: 3478b514978391949bd5bca45121cc34, type: 3}
+  sprite: {fileID: -275899543, guid: 92588f38822c72f43b81317eeeb6d0a2, type: 3}
   name: Boots Of Speed
   cost: 11
-  cardType: 0
+  cardType: 3

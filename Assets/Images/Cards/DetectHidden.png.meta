@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3478b514978391949bd5bca45121cc34
+guid: 7b9d51967fdc2104c929aa5c6a1df96c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Boots Of Speed_0
+      name: DetectHidden_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 351
-        height: 503
+        x: 33
+        y: 33
+        width: 702
+        height: 983
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 34720344a0af7b44590537aaacb25149
-      internalID: 577248678
+      spriteID: 115fade86cc6a444493e86b4ac2c73dd
+      internalID: 1812668421
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: b48f711ae2498624c99c82676885c147
+    spriteID: 5760b83dd69cf3e46892ca479c6daab8
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Boots Of Speed_0: 577248678
+      DetectHidden_0: 1812668421
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

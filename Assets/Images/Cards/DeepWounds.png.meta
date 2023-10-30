@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 579bdeee5fcf20d4c8389c9a0b9f0edd
+guid: b4e1ed28b3a407649932f50f99aedbb8
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sacred Relic_0
+      name: DeepWounds_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 358
-        height: 501
+        x: 33
+        y: 33
+        width: 705
+        height: 983
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8cf453cdd032f2644a2a29149816168e
-      internalID: 114960136
+      spriteID: b0e7fb1e502d63b46b03803785f3d00b
+      internalID: -201838596
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: e737816dfb6207043a831d23260aeb57
+    spriteID: 6b06f67f4d5c28c48865447d69ec116b
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Sacred Relic_0: 114960136
+      DeepWounds_0: -201838596
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

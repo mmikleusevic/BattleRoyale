@@ -122,10 +122,10 @@ TextureImporter:
       name: Shield_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 311
-        height: 436
+        x: 34
+        y: 32
+        width: 702
+        height: 985
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0dfd4539de9b8234396314960f82527e
-      internalID: 1438312754
+      spriteID: 9c0f53daccf215241b95dbdfa308f32b
+      internalID: -1185443522
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 802333f24d8ab1a45b1a6fe9cd22b7aa
+    spriteID: 80c6fc483e7e8c54db64007c91e03e5e
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Shield_0: 1438312754
+      Shield_0: -1185443522
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2a906df6781ad9d42b8116e1a0f2ac7b
+guid: 7555c081adab8cf46b8b00ea19c73201
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Disorientation_0
+      name: SacredRelic_0
       rect:
         serializedVersion: 2
-        x: 38
-        y: 29
-        width: 700
-        height: 988
+        x: 34
+        y: 30
+        width: 705
+        height: 987
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b9226d7dcdd0ed9439632b4acf31f0ee
-      internalID: -46902056
+      spriteID: 5364ef7834d2fa047ba624153518c379
+      internalID: 1576409482
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 37900d1a47d903745bcfd00ea99b10a9
+    spriteID: 7891b0cc461fb97498ff9530eca49901
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Disorientation_0: -46902056
+      SacredRelic_0: 1576409482
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

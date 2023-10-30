@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 65b3ee32e65fddf41bbfbe7d3bc8d1c1
+guid: c47512d0b1178a645a62ea3b7509fec7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Brewmasters Curse_0
+      name: WalkingDead_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 317
-        height: 444
+        x: 32
+        y: 29
+        width: 703
+        height: 986
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a9a9886c9482c174fb796b964f148e9b
-      internalID: -1765834860
+      spriteID: 7c9f0f350e979c249889c72fee4a8208
+      internalID: 1396950352
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 4e7f0719e572bf748852f7e2dc8b421d
+    spriteID: 84814ddf06512d9468091336b5fe471e
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Brewmasters Curse_0: -1765834860
+      WalkingDead_0: 1396950352
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 31601da9e091b384d839315b14871d91
+guid: aabda1cb43d967b47b77ef5138eb3738
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Detect Hidden_0
+      name: NecklaceOfFaith_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 305
-        height: 442
+        x: 33
+        y: 29
+        width: 705
+        height: 988
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed50c0d525dcc2a4b91a90d25cf60f1a
-      internalID: 997932886
+      spriteID: 28770980ca2d1384d80cd229f05fef39
+      internalID: -1017067240
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 91df739548d493745929ab79a3cf522b
+    spriteID: 560744edcd26d4d429d4a28d7e6da8ff
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Detect Hidden_0: 997932886
+      NecklaceOfFaith_0: -1017067240
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

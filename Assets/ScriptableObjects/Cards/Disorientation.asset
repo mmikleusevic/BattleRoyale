@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Disorientation
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
-  sprite: {fileID: -1294680594, guid: 2a906df6781ad9d42b8116e1a0f2ac7b, type: 3}
+  sprite: {fileID: -46902056, guid: 2a906df6781ad9d42b8116e1a0f2ac7b, type: 3}
   name: Disorientation
   cost: 8
   cardType: 2

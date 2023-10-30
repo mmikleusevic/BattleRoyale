@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1f27a5d641de8e14daaa0d08fd90f08b
+guid: e82ae0dd742b6e1449487c28fa872c2a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Deep Wounds_0
+      name: LuckyBracelet_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 353
-        height: 498
+        x: 33
+        y: 33
+        width: 705
+        height: 983
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63217a64d1e7bdc46a464bbc52ad7947
-      internalID: -1609159864
+      spriteID: cf98d8a82b6e8ee4b9731a76d1a5a748
+      internalID: 2034322756
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 7d4ee2e7a43528944ac3f9005727f1dc
+    spriteID: 116af5218d676084db26ef0564e87e66
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Deep Wounds_0: -1609159864
+      LuckyBracelet_0: 2034322756
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

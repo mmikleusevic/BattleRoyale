@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a32d56af8cbf2db4cbddc98412fb73c7
+guid: b39d1c8ab4ba0d0428261ce9a159232f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Walking Dead_0
+      name: BlackDeath_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 353
-        height: 497
+        x: 33
+        y: 30
+        width: 702
+        height: 985
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f86b480ff13f73d4da66f2b385f17caa
-      internalID: -674064299
+      spriteID: 048fe9982c5aef24f9ea5319568507bd
+      internalID: -407475036
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 895159e727de5cb4d9a56acdeea88806
+    spriteID: b9be116d3a0d6204a9d74311969f01c0
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Walking Dead_0: -674064299
+      BlackDeath_0: -407475036
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NecklaceOfFaith
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
-  sprite: {fileID: -30525612, guid: e8c2e1da6ae91c14d93ef324b32c1593, type: 3}
+  sprite: {fileID: -1017067240, guid: aabda1cb43d967b47b77ef5138eb3738, type: 3}
   name: Necklace Of Faith
   cost: 12
   cardType: 0

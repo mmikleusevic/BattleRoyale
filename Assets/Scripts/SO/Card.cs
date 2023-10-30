@@ -15,5 +15,5 @@ public enum CardType
     All,
     Magic,
     Curse,
-    Disease
+    Spell
 }

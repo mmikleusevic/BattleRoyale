@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e8c2e1da6ae91c14d93ef324b32c1593
+guid: 2ec476ce178d9d34fabc8835fe2923e3
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -119,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Necklace of faith_0
+      name: Tempest_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 313
-        height: 438
+        x: 32
+        y: 32
+        width: 704
+        height: 984
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 488b6ccee458fa34a9ebeb67c5346ed3
-      internalID: -30525612
+      spriteID: 91480c18ef5932d4491ce47cff0c3b83
+      internalID: -1969504368
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 8104fe3e1ad12af4f88248cf5dc98031
+    spriteID: 0b233a43d85fc2d4180977c9ccbe785c
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Necklace of faith_0: -30525612
+      Tempest_0: -1969504368
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

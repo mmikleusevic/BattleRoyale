@@ -122,10 +122,10 @@ TextureImporter:
       name: Disarm_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 358
-        height: 501
+        x: 37
+        y: 34
+        width: 701
+        height: 981
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: de724c761cf42c148b853a1cd750ea90
-      internalID: -866220627
+      spriteID: 8039a8f45eb339644a88886dbbe76f48
+      internalID: 1835825298
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 661b1a10f1a43eb4aa9b302e3e6c2878
+    spriteID: a8025df5123eb93449c744a1b8863a76
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Disarm_0: -866220627
+      Disarm_0: 1835825298
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

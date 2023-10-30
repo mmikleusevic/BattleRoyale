@@ -122,10 +122,10 @@ TextureImporter:
       name: Sword_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 318
-        height: 445
+        x: 34
+        y: 32
+        width: 702
+        height: 983
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: da26c3c1941ad194ba58755323196f4d
-      internalID: -1759773155
+      spriteID: 88f6070c5e11a794997dd89755a5fadf
+      internalID: 1578064293
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: eb75c78dfc5497d4981d0d9448db3f42
+    spriteID: c72e6bca5d22dbd4c88491034d27a05a
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Sword_0: -1759773155
+      Sword_0: 1578064293
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
