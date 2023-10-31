@@ -10,7 +10,7 @@ public class CardsUI : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button pageLeftButton;
     [SerializeField] private Button pageRightButton;
-    [SerializeField] private List<Card> cardList;
+    [SerializeField] private List<CardSO> cardList;
     [SerializeField] private TMP_Dropdown cardTypeDropdown;
     [SerializeField] private Transform cardTemplateContainer;
     [SerializeField] private Transform cardTemplate;
@@ -18,7 +18,7 @@ public class CardsUI : MonoBehaviour
     [SerializeField] private Transform zoomedSingleCardContainer;
     [SerializeField] private Transform zoomedSingleCardTemplate;
 
-    private PagedList<Card> pagedCardList;
+    private PagedList<CardSO> pagedCardList;
 
     private int pageSize = 8;
     private int firstPage = 1;
@@ -108,7 +108,7 @@ public class CardsUI : MonoBehaviour
 
     private void SetObject()
     {
-        foreach (Card card in pagedCardList.items)
+        foreach (CardSO card in pagedCardList.items)
         {
             Transform cardTransform = Instantiate(cardTemplate, cardTemplateContainer);
 

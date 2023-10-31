@@ -1,9 +1,8 @@
 using UnityEngine;
 
 [CreateAssetMenu()]
-public class Card : ScriptableObject
+public class CardSO : ScriptableObject
 {
-    public Transform prefab;
     public Sprite sprite;
     public new string name;
     public int cost;

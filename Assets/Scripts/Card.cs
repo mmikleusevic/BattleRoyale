@@ -1,16 +1,14 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Tile : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class Card : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] private Color baseColor;
-    [SerializeField] private Color offsetColor;
-    [SerializeField] private SpriteRenderer Renderer;
+    [SerializeField] private Material frontMaterial;
     [SerializeField] private GameObject highlight;
 
-    public void ColorTile(bool isOffset)
+    public void AssignMaterial(Material newMaterial)
     {
-        Renderer.color = isOffset ? offsetColor : baseColor;
+        frontMaterial = newMaterial;
     }
 
     public void OnPointerDown(PointerEventData eventData)
