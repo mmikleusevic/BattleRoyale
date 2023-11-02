@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: BlackDeath
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
-  sprite: {fileID: -407475036, guid: b39d1c8ab4ba0d0428261ce9a159232f, type: 3}
+  cardSprite: {fileID: -407475036, guid: b39d1c8ab4ba0d0428261ce9a159232f, type: 3}
   name: Black Death
+  costSprite: {fileID: 540922620, guid: b65a01f1c9b047c4ab6014ea02cba59c, type: 3}
   cost: 7
   cardType: 2

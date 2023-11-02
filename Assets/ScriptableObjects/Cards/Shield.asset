@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: Shield
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
-  sprite: {fileID: -1185443522, guid: 0412ac5ed0b84a74ebeeb1a573a4324d, type: 3}
+  cardSprite: {fileID: -1185443522, guid: 0412ac5ed0b84a74ebeeb1a573a4324d, type: 3}
   name: Shield
+  costSprite: {fileID: 1661800892, guid: 59be85eb230ee8749ba8c0d2f67a65ba, type: 3}
   cost: 14
   cardType: 0

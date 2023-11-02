@@ -6,9 +6,9 @@ public class Card : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     [SerializeField] private Material frontMaterial;
     [SerializeField] private GameObject highlight;
 
-    public void AssignMaterial(Material newMaterial)
+    public void SetupCard(CardSO cardSO)
     {
-        frontMaterial = newMaterial;
+        GetComponent<Renderer>().material.SetTexture("Cost"+cardSO.cost, cardSO.costSprite.texture);
     }
 
     public void OnPointerDown(PointerEventData eventData)

@@ -114,7 +114,7 @@ public class CardsUI : MonoBehaviour
 
             cardTransform.gameObject.SetActive(true);
 
-            Sprite sprite = card.sprite;
+            Sprite sprite = card.cardSprite;
 
             cardTransform.GetComponent<SingleCardUI>().SetSprite(cardTransform, sprite);
         }
