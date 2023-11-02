@@ -12,8 +12,8 @@ public class GridManager : MonoBehaviour
     [SerializeField] private Card cardTemplate;
     [SerializeField] private List<CardSO> cardSOs;
 
-    private float currentSpacing = 0.2f;
-    private float defaultSpacing = 0.2f;
+    private float spacing = 0.2f;
+    private int maxNumberOfEachCard = 2;
     private Dictionary<int,int> randomCardNumberCountChecker;
     private List<int> randomNumberList;
     private Vector2 cardDimensions;
@@ -49,7 +49,7 @@ public class GridManager : MonoBehaviour
                 randomCardNumberCountChecker.Add(randomNumber, 1);
                 randomNumberList.Add(randomNumber);
             }
-            else if (randomCardNumberCountChecker[randomNumber] < 2)
+            else if (randomCardNumberCountChecker[randomNumber] < maxNumberOfEachCard)
             {
                 randomCardNumberCountChecker[randomNumber]++;
                 randomNumberList.Add(randomNumber);
@@ -80,24 +80,22 @@ public class GridManager : MonoBehaviour
 
         foreach (Vector2 position in tilesToInitialize)
         {
-            Card spawnedCard = Instantiate(cardTemplate, new Vector3((position.x * cardDimensions.x) + position.x * currentSpacing, (position.y * cardDimensions.y) + position.y * currentSpacing), Quaternion.identity, gridContainer);
+            Card spawnedCard = Instantiate(cardTemplate, new Vector3((position.x * cardDimensions.x) + position.x * spacing, (position.y * cardDimensions.y) + position.y * spacing), Quaternion.identity, gridContainer);
             //spawnedCard.transform.rotation = Quaternion.Euler(0, 0, 0);
             //spawnedCard.AssignMaterial(cardSOs[index].sprite);
             spawnedCard.name = $"Card {position.x}-{position.y}";
 
             cards[position] = spawnedCard;
-
-            currentSpacing = defaultSpacing;
         }
     }
 
     public void PositionCamera()
     {
-        float halfWidth = ((width * cardDimensions.x) + width * defaultSpacing) / 2f;
-        float halfHeight = ((height * cardDimensions.y) + height * defaultSpacing) / 2f;
+        float halfWidth = ((width * cardDimensions.x) + width * spacing) / 2f;
+        float halfHeight = ((height * cardDimensions.y) + height * spacing) / 2f;
 
-        float offsetX = (cardDimensions.x + defaultSpacing) / 2f;
-        float offsetY = (cardDimensions.y + defaultSpacing) / 2f;
+        float offsetX = (cardDimensions.x + spacing) / 2f;
+        float offsetY = (cardDimensions.y + spacing) / 2f;
 
         float cameraX = halfWidth - offsetX;
         float cameraY = halfHeight - offsetY;
