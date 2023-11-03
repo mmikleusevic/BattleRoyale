@@ -1,19 +1,48 @@
-using Unity.VisualScripting;
+using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private GameObject highlight;
 
+    private bool isActive = false;
+    private float rotationPerSecond = 180f;
+
     public void OnPointerDown(PointerEventData eventData)
     {
-        Show();
+        if (!isActive)
+        {
+            StartCoroutine(RotateCard());
+
+            isActive = true;
+        }
+
+        //TODO temp only
+        //Show();
+    }
+
+    private IEnumerator RotateCard()
+    {
+        float amountRotated = 0f;
+
+        while (amountRotated < 180f)
+        {
+            float frameRotation = rotationPerSecond * Time.deltaTime;
+
+            transform.Rotate(frameRotation, 0, 0);
+
+            amountRotated += frameRotation;
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Hide();
+        //TODO temp only
+        //Hide();
     }
 
     private void Show()

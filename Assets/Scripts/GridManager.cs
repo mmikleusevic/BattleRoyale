@@ -6,7 +6,7 @@ public class GridManager : MonoBehaviour
 {
     [SerializeField] private int width;
     [SerializeField] private int height;
-    [SerializeField] private Transform gridContainer;
+    [SerializeField] private Transform cardContainer;
     [SerializeField] private Transform Camera;
     [SerializeField] private List<Vector2> tilesToInitialize;
     [SerializeField] private Card cardTemplate;
@@ -14,7 +14,7 @@ public class GridManager : MonoBehaviour
 
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
-    private Dictionary<int,int> randomCardNumberCountChecker;
+    private Dictionary<int, int> randomCardNumberCountChecker;
     private List<int> randomNumberList;
     private Vector2 cardDimensions;
 
@@ -68,13 +68,18 @@ public class GridManager : MonoBehaviour
     {
         spawnedCards = new Dictionary<Vector2, Card>();
 
-        for(int i = 0; i < tilesToInitialize.Count; i++)
+        for (int i = 0; i < tilesToInitialize.Count; i++)
         {
-            Vector2 position = tilesToInitialize[i];
+            Vector2 tileCoordinates = tilesToInitialize[i];
             CardSO cardSO = cardSOs[randomNumberList[i]];
 
-            Card spawnedCard = Instantiate(cardSO.prefab, new Vector3((position.x * cardDimensions.x) + position.x * spacing, (position.y * cardDimensions.y) + position.y * spacing), Quaternion.identity, gridContainer);
-            spawnedCard.name = $"Card {position.x}-{position.y}";
+            Vector2 position = new Vector3((tileCoordinates.x * cardDimensions.x) + tileCoordinates.x * spacing, (tileCoordinates.y * cardDimensions.y) + tileCoordinates.y * spacing);
+
+            Transform cardContainer = Instantiate(this.cardContainer, position, Quaternion.identity, transform);
+            cardContainer.name = $"CardContainer{i}";
+
+            Card spawnedCard = Instantiate(cardSO.prefab, cardContainer.position, Quaternion.identity, cardContainer);
+            spawnedCard.name = cardSO.name;
 
             spawnedCards[position] = spawnedCard;
         }
