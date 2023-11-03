@@ -143,16 +143,61 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7981376702728908108, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: cbce3a94b129efb40b10ea790db9bc32, type: 2}
     - target: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
         type: 3}
       propertyPath: m_Name
       value: GameCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208779110457344946, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208779110457344946, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208779110457344946, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208779110457344946, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 1842053514645822295, guid: 258eb5ae21b57ea4aba85945ec8d7856,
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 33dfa70567465074fa38636f3cec4dca, type: 2}
+    - target: {fileID: 7028834261113109673, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7028834261113109673, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7028834261113109673, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7028834261113109673, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -192,8 +237,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 865f13d16057a8c4a85e7ac6ec0b6c92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frontMaterial: {fileID: 4347904246298917306, guid: 258eb5ae21b57ea4aba85945ec8d7856,
-    type: 3}
   highlight: {fileID: 481082788053648842}
 --- !u!65 &249220833855394490
 BoxCollider:

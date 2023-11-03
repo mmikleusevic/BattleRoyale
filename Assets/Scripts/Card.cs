@@ -1,15 +1,10 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Card : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] private Material frontMaterial;
     [SerializeField] private GameObject highlight;
-
-    public void SetupCard(CardSO cardSO)
-    {
-        GetComponent<Renderer>().material.SetTexture("Cost"+cardSO.cost, cardSO.costSprite.texture);
-    }
 
     public void OnPointerDown(PointerEventData eventData)
     {

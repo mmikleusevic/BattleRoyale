@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: Tempest
   m_EditorClassIdentifier: 
+  prefab: {fileID: 8869696617406509453, guid: 060c51babc414cb44bf3d6b0e9a666ab, type: 3}
   cardSprite: {fileID: -1969504368, guid: 2ec476ce178d9d34fabc8835fe2923e3, type: 3}
   name: Tempest
-  costSprite: {fileID: -332799510, guid: ad39a58d5a507e74f9dfcfe1f67557cc, type: 3}
   cost: 10
   cardType: 1

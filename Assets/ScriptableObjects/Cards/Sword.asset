@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: Sword
   m_EditorClassIdentifier: 
+  prefab: {fileID: 860841415836743422, guid: e577002bd65059c4dab71f3973b66ed1, type: 3}
   cardSprite: {fileID: 1578064293, guid: 89dbc1ce84d41e34b8c8cb881d83b872, type: 3}
   name: Sword
-  costSprite: {fileID: 1661800892, guid: 59be85eb230ee8749ba8c0d2f67a65ba, type: 3}
   cost: 14
   cardType: 0

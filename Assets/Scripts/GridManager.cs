@@ -18,7 +18,7 @@ public class GridManager : MonoBehaviour
     private List<int> randomNumberList;
     private Vector2 cardDimensions;
 
-    private Dictionary<Vector2, Card> cards;
+    private Dictionary<Vector2, Card> spawnedCards;
 
     private void Start()
     {
@@ -55,16 +55,6 @@ public class GridManager : MonoBehaviour
                 randomNumberList.Add(randomNumber);
             }
         }
-
-        foreach (var a in randomNumberList)
-        {
-            Debug.Log(a);
-        }
-
-        foreach (var a in randomCardNumberCountChecker)
-        {
-            Debug.Log(a.Key + "-" + a.Value);
-        }
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -76,16 +66,17 @@ public class GridManager : MonoBehaviour
     [ClientRpc]
     private void GenerateGridClientRpc()
     {
-        cards = new Dictionary<Vector2, Card>();
+        spawnedCards = new Dictionary<Vector2, Card>();
 
-        foreach (Vector2 position in tilesToInitialize)
+        for(int i = 0; i < tilesToInitialize.Count; i++)
         {
-            Card spawnedCard = Instantiate(cardTemplate, new Vector3((position.x * cardDimensions.x) + position.x * spacing, (position.y * cardDimensions.y) + position.y * spacing), Quaternion.identity, gridContainer);
-            //spawnedCard.transform.rotation = Quaternion.Euler(0, 0, 0);
-            //spawnedCard.AssignMaterial(cardSOs[index].sprite);
+            Vector2 position = tilesToInitialize[i];
+            CardSO cardSO = cardSOs[randomNumberList[i]];
+
+            Card spawnedCard = Instantiate(cardSO.prefab, new Vector3((position.x * cardDimensions.x) + position.x * spacing, (position.y * cardDimensions.y) + position.y * spacing), Quaternion.identity, gridContainer);
             spawnedCard.name = $"Card {position.x}-{position.y}";
 
-            cards[position] = spawnedCard;
+            spawnedCards[position] = spawnedCard;
         }
     }
 
@@ -106,9 +97,9 @@ public class GridManager : MonoBehaviour
 
     public Card GetTileAtPosition(Vector2 position)
     {
-        if (cards.ContainsKey(position))
+        if (spawnedCards.ContainsKey(position))
         {
-            return cards[position];
+            return spawnedCards[position];
         }
 
         return null;
