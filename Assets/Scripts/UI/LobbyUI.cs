@@ -41,12 +41,6 @@ public class LobbyUI : MonoBehaviour
             GameLobby.Instance.JoinWithCode(joinCodeInputField.text);
         });
 
-        lobbyTemplate.gameObject.SetActive(false);
-    }
-
-    private void Start()
-    {
-        playerNameInputField.text = GameMultiplayer.Instance.GetPlayerName();
         playerNameInputField.onValueChanged.AddListener((string playerName) =>
         {
             GameMultiplayer.Instance.SetPlayerName(playerName);
@@ -55,7 +49,24 @@ public class LobbyUI : MonoBehaviour
         joinCodeInputField.onValueChanged.AddListener((string lobbyCode) =>
         {
             joinCodeInputField.text = lobbyCode.ToUpper();
+
+            if (string.IsNullOrEmpty(joinCodeInputField.text))
+            {
+                joinCodeButton.interactable = false;
+            }
+            else
+            {
+                joinCodeButton.interactable = true;
+            }
         });
+
+        lobbyTemplate.gameObject.SetActive(false);
+    }
+
+    private void Start()
+    {
+        playerNameInputField.text = GameMultiplayer.Instance.GetPlayerName();
+        joinCodeButton.interactable = false;
 
         UpdateLobbyList(new List<Lobby>());
     }
@@ -99,20 +110,10 @@ public class LobbyUI : MonoBehaviour
         if (count > 0)
         {
             quickJoinButton.interactable = true;
-
-            if (joinCodeInputField.text.Length > 0)
-            {
-                joinCodeButton.interactable = true;
-            }
-            else
-            {
-                joinCodeButton.interactable = false;
-            }
         }
         else
         {
             quickJoinButton.interactable = false;
-            joinCodeButton.interactable = false;
         }
     }
 }

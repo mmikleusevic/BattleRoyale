@@ -14,6 +14,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         if (!isActive)
         {
+            //TODO Replace with animation
             StartCoroutine(RotateCard());
 
             isActive = true;
@@ -27,7 +28,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         float amountRotated = 0f;
 
-        while (amountRotated < 180f)
+        while (amountRotated < rotationPerSecond)
         {
             float frameRotation = rotationPerSecond * Time.deltaTime;
 

@@ -26,6 +26,7 @@ public class CardsUI : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log(cardList.Count);
         Instance = this;
 
         closeButton.onClick.AddListener(() =>

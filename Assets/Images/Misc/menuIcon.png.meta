@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c6ca75ddfb26ef043b61baf50b40373f
+guid: c950df53ceef9d1499adbe6528d300c6
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -71,7 +71,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 4
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -119,22 +119,22 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BattleRoyale128x128_0
+      name: menuIcon_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 128
+        width: 300
+        height: 300
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d7d1fc863f1074e40a201ec18ac36686
-      internalID: 1982144306
+      spriteID: 632ac9d0bd2e1ce43bac6c6308fc0325
+      internalID: -749649046
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 58a68ddfa7f4911499066855968761e1
+    spriteID: c2daef85d8179a34b87886b421cf4057
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BattleRoyale128x128_0: 1982144306
+      menuIcon_0: -749649046
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
