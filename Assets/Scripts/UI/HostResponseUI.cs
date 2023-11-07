@@ -21,6 +21,14 @@ public class HostResponseUI : MonoBehaviour
         Hide();
     }
 
+    private void OnDestroy()
+    {
+        if (NetworkManager.Singleton)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+        }
+    }
+
     private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
     {
         if (clientId == NetworkManager.ServerClientId)
@@ -43,10 +51,5 @@ public class HostResponseUI : MonoBehaviour
     {
         NetworkManager.Singleton.Shutdown();
         LevelManager.Instance.LoadScene(Scene.MainMenuScene);
-    }
-
-    private void OnDestroy()
-    {
-        NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
     }
 }

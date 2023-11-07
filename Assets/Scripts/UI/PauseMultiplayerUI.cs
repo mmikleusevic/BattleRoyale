@@ -1,12 +1,15 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PauseButtonUI : MonoBehaviour
+public class PauseMultiplayerUI : MonoBehaviour
 {
-    public static PauseButtonUI Instance { get; private set; }
+    public static PauseMultiplayerUI Instance { get; private set; }
 
     [SerializeField] private Button pauseButton;
+    [SerializeField] private Image background;
+    [SerializeField] private TextMeshProUGUI pauseText;
 
     private void Awake()
     {
@@ -22,25 +25,32 @@ public class PauseButtonUI : MonoBehaviour
     {
         GameManager.Instance.OnMultiplayerGamePaused += GameManager_OnMultiplayerGamePaused;
         GameManager.Instance.OnMultiplayerGameUnpaused += GameManager_OnMultiplayerGameUnpaused;
+
+        pauseText.gameObject.SetActive(false);
+        background.gameObject.SetActive(false);
     }
 
     private void GameManager_OnMultiplayerGameUnpaused(object sender, EventArgs e)
     {
-        Show();
+        Hide();
     }
 
     private void GameManager_OnMultiplayerGamePaused(object sender, EventArgs e)
     {
-        Hide();
+        Show();
     }
 
     private void Show()
     {
-        pauseButton.gameObject.SetActive(true);
+        pauseButton.gameObject.SetActive(false);
+        pauseText.gameObject.SetActive(true);
+        background.gameObject.SetActive(true);
     }
 
     private void Hide()
     {
-        pauseButton.gameObject.SetActive(false);
+        pauseButton.gameObject.SetActive(true);
+        pauseText.gameObject.SetActive(false);
+        background.gameObject.SetActive(false);
     }
 }

@@ -4204,6 +4204,7 @@ MonoBehaviour:
   readyButton: {fileID: 1944306771}
   lobbyNameText: {fileID: 1780888962}
   lobbyCodeText: {fileID: 1627869481}
+  readyButtonText: {fileID: 1944306772}
 --- !u!1 &1627869479
 GameObject:
   m_ObjectHideFlags: 0
@@ -5173,6 +5174,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1944306772 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9033495539790061403, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1944306769}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2106870461

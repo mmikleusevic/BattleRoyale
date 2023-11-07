@@ -7,6 +7,7 @@ public class CharacterSceneReady : NetworkBehaviour
     public static CharacterSceneReady Instance { get; private set; }
 
     public event EventHandler OnReadyChanged;
+
     private Dictionary<ulong, bool> playerReadyDictonary;
 
     private void Awake()
@@ -16,17 +17,15 @@ public class CharacterSceneReady : NetworkBehaviour
         playerReadyDictonary = new Dictionary<ulong, bool>();
     }
 
-    public void SetPlayerReady()
+    public void TogglePlayerReady()
     {
-        SetPlayerReadyServerRpc();
+        TogglePlayerReadyServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
+    private void TogglePlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        SetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
-
-        playerReadyDictonary[serverRpcParams.Receive.SenderClientId] = true;
+        TogglePlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
 
         bool allClientsReady = true;
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
@@ -46,11 +45,18 @@ public class CharacterSceneReady : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SetPlayerReadyClientRpc(ulong clientId)
+    private void TogglePlayerReadyClientRpc(ulong clientId)
     {
-        playerReadyDictonary[clientId] = true;
+        if (playerReadyDictonary.ContainsKey(clientId))
+        {
+            playerReadyDictonary[clientId] = !playerReadyDictonary[clientId];
+        }
+        else
+        {
+            playerReadyDictonary[clientId] = true;
+        }
 
-        OnReadyChanged?.Invoke(this, EventArgs.Empty);
+        OnReadyChanged.Invoke(this, EventArgs.Empty);
     }
 
     public bool IsPlayerReady(ulong clientId)

@@ -9,6 +9,9 @@ public class CharacterSceneUI : MonoBehaviour
     [SerializeField] private Button readyButton;
     [SerializeField] private TextMeshProUGUI lobbyNameText;
     [SerializeField] private TextMeshProUGUI lobbyCodeText;
+    [SerializeField] private TextMeshProUGUI readyButtonText;
+
+    private bool isReady = false;
 
     private void Awake()
     {
@@ -19,20 +22,13 @@ public class CharacterSceneUI : MonoBehaviour
 
         readyButton.onClick.AddListener(() =>
         {
-            CharacterSceneReady.Instance.SetPlayerReady();
+            UpdateReadyButton();
         });
     }
 
     private void Start()
     {
         UpdateLobbyData();
-    }
-
-    private void UpdateLobbyData()
-    {
-        Lobby lobby = GameLobby.Instance.GetLobby();
-        lobbyNameText.text = "Lobby Name: " + lobby.Name;
-        lobbyCodeText.text = "Lobby Code: " + lobby.LobbyCode;
     }
 
     private void BackToMainMenu()
@@ -49,5 +45,28 @@ public class CharacterSceneUI : MonoBehaviour
         }
 
         LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+    }
+
+    private void UpdateLobbyData()
+    {
+        Lobby lobby = GameLobby.Instance.GetLobby();
+        lobbyNameText.text = "Lobby Name: " + lobby.Name;
+        lobbyCodeText.text = "Lobby Code: " + lobby.LobbyCode;
+    }
+
+    private void UpdateReadyButton()
+    {
+        CharacterSceneReady.Instance.TogglePlayerReady();
+
+        isReady = !isReady;
+
+        if (isReady)
+        {
+            readyButtonText.text = "NOT READY";
+        }
+        else
+        {
+            readyButtonText.text = "READY";
+        }
     }
 }

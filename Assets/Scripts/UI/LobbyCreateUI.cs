@@ -51,9 +51,6 @@ public class LobbyCreateUI : MonoBehaviour
     public void Show()
     {
         gameObject.SetActive(true);
-
-        lobbyNameInputField.Select();
-        lobbyNameInputField.ActivateInputField();
     }
 
     public void Hide()

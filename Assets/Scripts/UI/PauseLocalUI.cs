@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PauseUI : MonoBehaviour
+public class PauseLocalUI : MonoBehaviour
 {
-    public static PauseUI Instance { get; private set; }
+    public static PauseLocalUI Instance { get; private set; }
 
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button mainMenuButton;
@@ -21,6 +21,7 @@ public class PauseUI : MonoBehaviour
         mainMenuButton.onClick.AddListener(() =>
         {
             LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+            Time.timeScale = 1f;
         });
     }
 
