@@ -20,7 +20,7 @@ public class PauseLocalUI : MonoBehaviour
 
         mainMenuButton.onClick.AddListener(() =>
         {
-            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+            GameMultiplayer.Instance.BackToMainMenu();
             Time.timeScale = 1f;
         });
     }

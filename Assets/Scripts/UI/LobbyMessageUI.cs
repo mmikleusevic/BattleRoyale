@@ -18,6 +18,9 @@ public class LobbyMessageUI : MonoBehaviour
         Hide();
 
         GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
+        GameLobby.Instance.OnReconnectStarted += GameLobby_OnReconnectStarted;
+        GameLobby.Instance.OnReconnectFailed += GameLobby_OnReconnectFailed;
+        GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyFailed += GameLobby_OnCreateLobbyFailed;
         GameLobby.Instance.OnJoinStarted += GameLobby_OnJoinStarted;
@@ -25,9 +28,21 @@ public class LobbyMessageUI : MonoBehaviour
         GameLobby.Instance.OnQuickJoinFailed += GameLobby_OnQuickJoinFailed;
     }
 
+    private void GameLobby_OnReconnectFailed(object sender, System.EventArgs e)
+    {
+        ShowMessage("Attempting to reconnect...");
+    }
+
+    private void GameLobby_OnReconnectStarted(object sender, System.EventArgs e)
+    {
+        ShowMessage("Reconnect failed!");
+    }
+
     private void OnDestroy()
     {
         GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
+        GameLobby.Instance.OnReconnectStarted -= GameLobby_OnReconnectStarted;
+        GameLobby.Instance.OnReconnectFailed -= GameLobby_OnReconnectFailed;
         GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyFailed -= GameLobby_OnCreateLobbyFailed;
         GameLobby.Instance.OnJoinStarted -= GameLobby_OnJoinStarted;

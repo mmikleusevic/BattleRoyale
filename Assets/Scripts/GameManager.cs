@@ -30,6 +30,11 @@ public class GameManager : NetworkBehaviour
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
     }
 
+    public override void OnNetworkDespawn()
+    {
+        isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
+    }
+
     private void IsGamePaused_OnValueChanged(bool previousValue, bool newValue)
     {
         if (isGamePaused.Value)

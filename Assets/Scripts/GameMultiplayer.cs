@@ -37,7 +37,7 @@ public class GameMultiplayer : NetworkBehaviour
         playerDataNetworkList.OnListChanged += PlayerDataNetworkList_OnListChanged;
     }
 
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
         playerDataNetworkList.OnListChanged -= PlayerDataNetworkList_OnListChanged;
     }
@@ -88,6 +88,7 @@ public class GameMultiplayer : NetworkBehaviour
         for (int i = 0; i < playerDataNetworkList.Count; i++)
         {
             PlayerData playerData = playerDataNetworkList[i];
+
             if (playerData.clientId == clientId)
             {
                 playerDataNetworkList.RemoveAt(i);
@@ -129,6 +130,7 @@ public class GameMultiplayer : NetworkBehaviour
     private void NetworkManager_Server_OnClientConnectedCallback(ulong clientId)
     {
         SetPlayerNameServerRpc(GetPlayerName());
+        SetPlayerIdServerRpc(AuthenticationService.Instance.PlayerId);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -265,5 +267,21 @@ public class GameMultiplayer : NetworkBehaviour
     {
         NetworkManager.Singleton.DisconnectClient(clientId);
         NetworkManager_Server_OnClientDisconnectCallback(clientId);
+    }
+
+    public void BackToMainMenu()
+    {
+        if (GameLobby.Instance.IsLobbyHost())
+        {
+            GameLobby.Instance.DeleteLobby();
+            StopHost();
+        }
+        else
+        {
+            GameLobby.Instance.LeaveLobby();
+            StopClient();
+        }
+
+        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 }

@@ -17,7 +17,7 @@ public class CharacterSceneUI : MonoBehaviour
     {
         mainMenuButton.onClick.AddListener(() =>
         {
-            BackToMainMenu();
+            GameMultiplayer.Instance.BackToMainMenu();
         });
 
         readyButton.onClick.AddListener(() =>
@@ -29,22 +29,6 @@ public class CharacterSceneUI : MonoBehaviour
     private void Start()
     {
         UpdateLobbyData();
-    }
-
-    private void BackToMainMenu()
-    {
-        if (GameMultiplayer.Instance.IsHost)
-        {
-            GameLobby.Instance.DeleteLobby();
-            GameMultiplayer.Instance.StopHost();
-        }
-        else
-        {
-            GameLobby.Instance.LeaveLobby();
-            GameMultiplayer.Instance.StopClient();
-        }
-
-        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 
     private void UpdateLobbyData()

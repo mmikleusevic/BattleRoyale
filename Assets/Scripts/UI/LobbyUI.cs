@@ -57,12 +57,12 @@ public class LobbyUI : MonoBehaviour
 
         joinCodeInputField.onValueChanged.AddListener((string lobbyCode) =>
         {
-            OnJoinCodeInput(lobbyCode);
+            OnJoinCodeValueChanged(lobbyCode);
         });
 
         findLobbyInputField.onValueChanged.AddListener((string lobbyName) =>
         {
-            OnFindLobbyInput(lobbyName);
+            OnFindLobbyValueChanged(lobbyName);
         });
 
         lobbyTemplate.gameObject.SetActive(false);
@@ -91,7 +91,7 @@ public class LobbyUI : MonoBehaviour
         UpdateLobbyList(e.lobbyList);
     }
 
-    private void OnJoinCodeInput(string lobbyCode)
+    private void OnJoinCodeValueChanged(string lobbyCode)
     {
         joinCodeInputField.text = lobbyCode.ToUpper();
 
@@ -105,7 +105,7 @@ public class LobbyUI : MonoBehaviour
         }
     }
 
-    private void OnFindLobbyInput(string lobbyName)
+    private void OnFindLobbyValueChanged(string lobbyName)
     {
         OnLobbyFind?.Invoke(this, new OnLobbyFindEventArgs
         {

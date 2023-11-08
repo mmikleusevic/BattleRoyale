@@ -30,6 +30,12 @@ public class PauseMultiplayerUI : MonoBehaviour
         background.gameObject.SetActive(false);
     }
 
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnMultiplayerGamePaused -= GameManager_OnMultiplayerGamePaused;
+        GameManager.Instance.OnMultiplayerGameUnpaused -= GameManager_OnMultiplayerGameUnpaused;
+    }
+
     private void GameManager_OnMultiplayerGameUnpaused(object sender, EventArgs e)
     {
         Hide();

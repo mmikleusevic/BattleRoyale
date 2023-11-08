@@ -26,7 +26,6 @@ public class CardsUI : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log(cardList.Count);
         Instance = this;
 
         closeButton.onClick.AddListener(() =>
@@ -170,3 +169,4 @@ public class CardsUI : MonoBehaviour
         pagedCardList = CardFilter.GetFilteredCards(cardList, page, pageSize);
     }
 }
+

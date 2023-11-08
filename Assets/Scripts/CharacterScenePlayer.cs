@@ -32,6 +32,7 @@ public class CharacterScenePlayer : MonoBehaviour
     private void OnDestroy()
     {
         GameMultiplayer.Instance.OnPlayerDataNetworkListChanged -= GameMultiplayer_OnPlayerDataNetworkListChanged;
+        CharacterSceneReady.Instance.OnReadyChanged -= CharacterSceneReady_OnReadyChanged;
     }
 
     private void CharacterSceneReady_OnReadyChanged(object sender, System.EventArgs e)

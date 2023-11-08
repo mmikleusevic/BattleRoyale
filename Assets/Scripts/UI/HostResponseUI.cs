@@ -10,7 +10,7 @@ public class HostResponseUI : MonoBehaviour
     {
         mainMenuButton.onClick.AddListener(() =>
         {
-            BackToMainMenu();
+            GameMultiplayer.Instance.BackToMainMenu();
         });
     }
 
@@ -45,11 +45,5 @@ public class HostResponseUI : MonoBehaviour
     private void Hide()
     {
         gameObject.SetActive(false);
-    }
-
-    private void BackToMainMenu()
-    {
-        NetworkManager.Singleton.Shutdown();
-        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 }

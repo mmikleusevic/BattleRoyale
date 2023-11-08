@@ -17,9 +17,11 @@ using UnityEngine.SceneManagement;
 public class GameLobby : MonoBehaviour
 {
     private const string KEY_RELAY_JOIN_CODE = "RelayJoinCode";
+    public const string NAME = "Name";
     public static GameLobby Instance { get; private set; }
 
-
+    public event EventHandler OnReconnectStarted;
+    public event EventHandler OnReconnectFailed;
     public event EventHandler OnCreateLobbyStarted;
     public event EventHandler OnCreateLobbyFailed;
     public event EventHandler OnJoinStarted;
@@ -94,7 +96,7 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    private bool IsLobbyHost()
+    public bool IsLobbyHost()
     {
         return joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
     }
@@ -107,17 +109,16 @@ public class GameLobby : MonoBehaviour
             {
                 Filters = new List<QueryFilter>
                 {
-                    new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT)
+                    new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
+                    new QueryFilter(QueryFilter.FieldOptions.Name, lobbyName, QueryFilter.OpOptions.CONTAINS),
                 }
             };
 
             QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
 
-            List<Lobby> lobbies = queryResponse.Results.Where(a => a.Name.Contains(lobbyName)).ToList();
-
             OnLobbyListChanged?.Invoke(this, new OnLobbyListChangdEventArgs
             {
-                lobbyList = lobbies
+                lobbyList = queryResponse.Results
             });
         }
         catch (LobbyServiceException ex)
@@ -128,12 +129,15 @@ public class GameLobby : MonoBehaviour
 
     private void ListLobbiesPeriodicallyAfterTimer()
     {
-        listLobbiesTimer -= Time.deltaTime;
-
-        if (listLobbiesTimer <= 0)
+        if (joinedLobby == null)
         {
-            listLobbiesTimer = listLobbiesTimerMax;
-            ListLobbies();
+            listLobbiesTimer -= Time.deltaTime;
+
+            if (listLobbiesTimer <= 0)
+            {
+                listLobbiesTimer = listLobbiesTimerMax;
+                ListLobbies();
+            }
         }
     }
 
@@ -205,18 +209,21 @@ public class GameLobby : MonoBehaviour
         {
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions
             {
-                IsPrivate = isPrivate
+                IsPrivate = isPrivate              
             });
 
             Allocation allocation = await AllocateRelay();
 
             string relayJoinCode = await GetRelayJoinCode(allocation);
 
+            Debug.Log(GameMultiplayer.Instance.GetPlayerName());
+
             await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>
                 {
-                    { KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
+                    { KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) },
+                    { NAME, new DataObject(DataObject.VisibilityOptions.Public, GameMultiplayer.Instance.GetPlayerName()) }
                 }
             });
 
@@ -231,6 +238,24 @@ public class GameLobby : MonoBehaviour
             Debug.LogError(ex.Message);
             OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    public async void Reconnect(string lobbyId)
+    {
+        OnReconnectStarted?.Invoke(this, EventArgs.Empty);
+
+        try
+        {
+            joinedLobby = await LobbyService.Instance.ReconnectToLobbyAsync(lobbyId);
+
+            LobbyJoinRelayStartClient();
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogError(ex.Message);
+            OnReconnectFailed?.Invoke(this, EventArgs.Empty);
+        }
+
     }
 
     public async void QuickJoin()
