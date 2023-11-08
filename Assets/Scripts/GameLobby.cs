@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -18,6 +19,7 @@ public class GameLobby : MonoBehaviour
     private const string KEY_RELAY_JOIN_CODE = "RelayJoinCode";
     public static GameLobby Instance { get; private set; }
 
+
     public event EventHandler OnCreateLobbyStarted;
     public event EventHandler OnCreateLobbyFailed;
     public event EventHandler OnJoinStarted;
@@ -35,6 +37,7 @@ public class GameLobby : MonoBehaviour
     private float heartbeatTimerMax = 15f;
     private float listLobbiesTimer;
     private float listLobbiesTimerMax = 3f;
+    private string lobbyName = "";
 
     private void Awake()
     {
@@ -51,18 +54,29 @@ public class GameLobby : MonoBehaviour
         HandlePeriodicListLobbies();
     }
 
+    private void Start()
+    {
+        LobbyUI.Instance.OnLobbyFind += LobbyUI_OnLobbySearch;
+    }
+
+    private void OnDestroy()
+    {
+        LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
+    }
+
+    private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
+    {
+        lobbyName = e.lobbyName;
+        ListLobbiesPeriodicallyAfterTimer();
+    }
+
     private void HandlePeriodicListLobbies()
     {
         if (joinedLobby == null &&
             AuthenticationService.Instance.IsSignedIn &&
             SceneManager.GetActiveScene().name == Scene.LobbyScene.ToString())
         {
-            listLobbiesTimer -= Time.deltaTime;
-            if (listLobbiesTimer <= 0)
-            {
-                listLobbiesTimer = listLobbiesTimerMax;
-                ListLobbies();
-            }
+            ListLobbiesPeriodicallyAfterTimer();
         }
     }
 
@@ -99,14 +113,27 @@ public class GameLobby : MonoBehaviour
 
             QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
 
+            List<Lobby> lobbies = queryResponse.Results.Where(a => a.Name.Contains(lobbyName)).ToList();
+
             OnLobbyListChanged?.Invoke(this, new OnLobbyListChangdEventArgs
             {
-                lobbyList = queryResponse.Results
+                lobbyList = lobbies
             });
         }
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
+        }
+    }
+
+    private void ListLobbiesPeriodicallyAfterTimer()
+    {
+        listLobbiesTimer -= Time.deltaTime;
+
+        if (listLobbiesTimer <= 0)
+        {
+            listLobbiesTimer = listLobbiesTimerMax;
+            ListLobbies();
         }
     }
 
@@ -173,6 +200,7 @@ public class GameLobby : MonoBehaviour
         }
 
         OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
+
         try
         {
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions
@@ -207,19 +235,13 @@ public class GameLobby : MonoBehaviour
 
     public async void QuickJoin()
     {
-        OnJoinStarted?.Invoke(this, EventArgs.Empty);
+        JoinStarted();
 
         try
         {
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
 
-            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
-
-            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
-
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
-
-            GameMultiplayer.Instance.StartClient();
+            LobbyJoinRelayStartClient();
         }
         catch (LobbyServiceException ex)
         {
@@ -232,19 +254,13 @@ public class GameLobby : MonoBehaviour
     {
         if (string.IsNullOrEmpty(lobbyId)) return;
 
-        OnJoinStarted?.Invoke(this, EventArgs.Empty);
+        JoinStarted();
 
         try
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
 
-            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
-
-            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
-
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
-
-            GameMultiplayer.Instance.StartClient();
+            LobbyJoinRelayStartClient();
         }
         catch (LobbyServiceException ex)
         {
@@ -257,19 +273,13 @@ public class GameLobby : MonoBehaviour
     {
         if (string.IsNullOrEmpty(lobbyCode)) return;
 
-        OnJoinStarted?.Invoke(this, EventArgs.Empty);
+        JoinStarted();
 
         try
         {
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
 
-            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
-
-            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
-
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
-
-            GameMultiplayer.Instance.StartClient();
+            LobbyJoinRelayStartClient();
         }
         catch (LobbyServiceException ex)
         {
@@ -325,6 +335,22 @@ public class GameLobby : MonoBehaviour
                 Debug.LogError(ex.Message);
             }
         }
+    }
+
+    private async void LobbyJoinRelayStartClient()
+    {
+        string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+
+        JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+
+        NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+
+        GameMultiplayer.Instance.StartClient();
+    }
+
+    private void JoinStarted()
+    {
+        OnJoinStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public Lobby GetLobby()

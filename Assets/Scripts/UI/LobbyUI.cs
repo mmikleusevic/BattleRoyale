@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Services.Lobbies.Models;
@@ -8,11 +9,19 @@ public class LobbyUI : MonoBehaviour
 {
     public static LobbyUI Instance { get; private set; }
 
+    public event EventHandler<OnLobbyFindEventArgs> OnLobbyFind;
+
+    public class OnLobbyFindEventArgs : EventArgs
+    {
+        public string lobbyName;
+    }
+
     [SerializeField] private Button mainMenuButton;
     [SerializeField] private Button createLobbyButton;
     [SerializeField] private Button quickJoinButton;
     [SerializeField] private Button joinCodeButton;
     [SerializeField] private TMP_InputField joinCodeInputField;
+    [SerializeField] private TMP_InputField findLobbyInputField;
     [SerializeField] private TMP_InputField playerNameInputField;
     [SerializeField] private Transform lobbyContainer;
     [SerializeField] private Transform lobbyTemplate;
@@ -48,16 +57,12 @@ public class LobbyUI : MonoBehaviour
 
         joinCodeInputField.onValueChanged.AddListener((string lobbyCode) =>
         {
-            joinCodeInputField.text = lobbyCode.ToUpper();
+            OnJoinCodeInput(lobbyCode);
+        });
 
-            if (string.IsNullOrEmpty(joinCodeInputField.text))
-            {
-                joinCodeButton.interactable = false;
-            }
-            else
-            {
-                joinCodeButton.interactable = true;
-            }
+        findLobbyInputField.onValueChanged.AddListener((string lobbyName) =>
+        {
+            OnFindLobbyInput(lobbyName);
         });
 
         lobbyTemplate.gameObject.SetActive(false);
@@ -84,6 +89,28 @@ public class LobbyUI : MonoBehaviour
     private void GameLobby_OnLobbyListChanged(object sender, GameLobby.OnLobbyListChangdEventArgs e)
     {
         UpdateLobbyList(e.lobbyList);
+    }
+
+    private void OnJoinCodeInput(string lobbyCode)
+    {
+        joinCodeInputField.text = lobbyCode.ToUpper();
+
+        if (string.IsNullOrEmpty(joinCodeInputField.text))
+        {
+            joinCodeButton.interactable = false;
+        }
+        else
+        {
+            joinCodeButton.interactable = true;
+        }
+    }
+
+    private void OnFindLobbyInput(string lobbyName)
+    {
+        OnLobbyFind?.Invoke(this, new OnLobbyFindEventArgs
+        {
+            lobbyName = lobbyName
+        });
     }
 
     private void UpdateLobbyList(List<Lobby> lobbyList)
