@@ -40,6 +40,7 @@ public class CharacterSceneReady : NetworkBehaviour
         if (allClientsReady)
         {
             LevelManager.Instance.LoadNetwork(Scene.GameScene);
+            GameLobby.Instance.DeleteLobby();
         }
     }
 

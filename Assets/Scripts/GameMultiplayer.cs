@@ -32,7 +32,7 @@ public class GameMultiplayer : NetworkBehaviour
         playerDataNetworkList = new NetworkList<PlayerData>();
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
         playerDataNetworkList.OnListChanged += PlayerDataNetworkList_OnListChanged;
     }
