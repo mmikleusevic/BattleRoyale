@@ -17,7 +17,7 @@ using UnityEngine.SceneManagement;
 public class GameLobby : MonoBehaviour
 {
     private const string KEY_RELAY_JOIN_CODE = "RelayJoinCode";
-    public const string NAME = "Name";
+    public const string CREATOR_NAME = "CreatorName";
     public static GameLobby Instance { get; private set; }
 
     public event EventHandler OnReconnectStarted;
@@ -209,21 +209,22 @@ public class GameLobby : MonoBehaviour
         {
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions
             {
-                IsPrivate = isPrivate              
+                IsPrivate = isPrivate,
+                Data = new Dictionary<string, DataObject>
+                {
+                    { CREATOR_NAME, new DataObject(DataObject.VisibilityOptions.Public, GameMultiplayer.Instance.GetPlayerName()) }
+                }
             });
 
             Allocation allocation = await AllocateRelay();
 
             string relayJoinCode = await GetRelayJoinCode(allocation);
 
-            Debug.Log(GameMultiplayer.Instance.GetPlayerName());
-
             await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>
                 {
-                    { KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) },
-                    { NAME, new DataObject(DataObject.VisibilityOptions.Public, GameMultiplayer.Instance.GetPlayerName()) }
+                    { KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
                 }
             });
 

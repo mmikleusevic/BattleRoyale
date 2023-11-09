@@ -22,6 +22,6 @@ public class LobbyListSingleUI : MonoBehaviour
     {
         this.lobby = lobby;
         lobbyNameText.text = lobby.Name;
-        lobbyCreatorText.text = lobby.Data[GameLobby.NAME].Value;
+        lobbyCreatorText.text = lobby.Data[GameLobby.CREATOR_NAME].Value;
     }
 }
