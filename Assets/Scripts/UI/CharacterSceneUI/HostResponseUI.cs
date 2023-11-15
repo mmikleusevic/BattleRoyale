@@ -10,7 +10,7 @@ public class HostResponseUI : MonoBehaviour
     {
         mainMenuButton.onClick.AddListener(() =>
         {
-            GameMultiplayer.Instance.BackToMainMenu();
+            GameMultiplayer.Instance.LeaveLobbyGoToMainMenu();
         });
     }
 

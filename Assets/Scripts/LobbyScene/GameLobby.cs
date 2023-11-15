@@ -1,3 +1,4 @@
+using ParrelSync;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +65,7 @@ public class GameLobby : MonoBehaviour
     private void OnDestroy()
     {
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
+        GameMultiplayer.Instance.LeaveLobbyGoToMainMenu();
     }
 
     private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
@@ -146,6 +148,11 @@ public class GameLobby : MonoBehaviour
         if (UnityServices.State != ServicesInitializationState.Initialized)
         {
             InitializationOptions initializationOptions = new InitializationOptions();
+
+#if UNITY_EDITOR
+            //ParralelSync fix when joining from different editors on the same computer
+            initializationOptions.SetProfile(ClonesManager.IsClone() ? ClonesManager.GetArgument() : "Primary");
+#endif
 
             await UnityServices.InitializeAsync(initializationOptions);
 

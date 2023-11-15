@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Services.Authentication;
+using Unity.Services.Lobbies;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
@@ -269,7 +270,7 @@ public class GameMultiplayer : NetworkBehaviour
         NetworkManager_Server_OnClientDisconnectCallback(clientId);
     }
 
-    public void BackToMainMenu()
+    public void LeaveLobbyGoToMainMenu()
     {
         if (GameLobby.Instance.IsLobbyHost())
         {
