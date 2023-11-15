@@ -65,7 +65,7 @@ public class GameLobby : MonoBehaviour
     private void OnDestroy()
     {
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
-        GameMultiplayer.Instance.LeaveLobbyGoToMainMenu();
+        CloseLobby();
     }
 
     private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
@@ -379,6 +379,27 @@ public class GameLobby : MonoBehaviour
         NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
         GameMultiplayer.Instance.StartClient();
+    }
+
+    public void LeaveLobbyGoToMainMenu()
+    {
+        CloseLobby();
+
+        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+    }
+
+    public void CloseLobby()
+    {
+        if (IsLobbyHost())
+        {
+            DeleteLobby();
+            GameMultiplayer.Instance.StopHost();
+        }
+        else
+        {
+            LeaveLobby();
+            GameMultiplayer.Instance.StopClient();
+        }
     }
 
     private void JoinStarted()

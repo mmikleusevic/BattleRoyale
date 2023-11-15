@@ -17,7 +17,7 @@ public class CharacterSceneUI : MonoBehaviour
     {
         mainMenuButton.onClick.AddListener(() =>
         {
-            GameMultiplayer.Instance.LeaveLobbyGoToMainMenu();
+            GameLobby.Instance.LeaveLobbyGoToMainMenu();
         });
 
         readyButton.onClick.AddListener(() =>

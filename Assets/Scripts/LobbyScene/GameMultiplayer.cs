@@ -269,20 +269,4 @@ public class GameMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.DisconnectClient(clientId);
         NetworkManager_Server_OnClientDisconnectCallback(clientId);
     }
-
-    public void LeaveLobbyGoToMainMenu()
-    {
-        if (GameLobby.Instance.IsLobbyHost())
-        {
-            GameLobby.Instance.DeleteLobby();
-            StopHost();
-        }
-        else
-        {
-            GameLobby.Instance.LeaveLobby();
-            StopClient();
-        }
-
-        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
-    }
 }
