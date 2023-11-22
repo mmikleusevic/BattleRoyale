@@ -23,7 +23,7 @@ namespace QFSW.QC.Extras
                 PropertyInfo property = type.GetProperty(name, flags);
                 if (property != null)
                 {
-                    methods = new[] {property.GetMethod, property.SetMethod}.Where(x => x != null).ToArray();
+                    methods = new[] { property.GetMethod, property.SetMethod }.Where(x => x != null).ToArray();
                     if (methods.Length > 0)
                     {
                         return methods;

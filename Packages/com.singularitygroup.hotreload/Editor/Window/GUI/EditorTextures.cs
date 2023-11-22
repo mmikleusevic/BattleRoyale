@@ -1,12 +1,14 @@
 using UnityEngine;
 
-namespace SingularityGroup.HotReload.Editor {
+namespace SingularityGroup.HotReload.Editor
+{
     /// <summary>
     /// Create a new texture only once. Safe access to generated textures.
     /// </summary>
     /// <remarks>
     /// If </remarks>
-    internal static class EditorTextures {
+    internal static class EditorTextures
+    {
         private static Texture2D black;
         private static Texture2D white;
         private static Texture2D lightGray225;
@@ -15,13 +17,17 @@ namespace SingularityGroup.HotReload.Editor {
         private static Texture2D darkGray30;
 
         // Texture2D.blackTexture doesn't render properly in Editor GUI.
-        public static Texture2D Black {
-            get {
-                if (!black) {
+        public static Texture2D Black
+        {
+            get
+            {
+                if (!black)
+                {
                     black = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    
+
                     var pixels = black.GetPixels32();
-                    for (var i = 0; i < pixels.Length; i++) {
+                    for (var i = 0; i < pixels.Length; i++)
+                    {
                         pixels[i] = new Color32(0, 0, 0, byte.MaxValue);
                     }
                     black.SetPixels32(pixels);
@@ -30,16 +36,20 @@ namespace SingularityGroup.HotReload.Editor {
                 return black;
             }
         }
-        
+
         // Texture2D.whiteTexture might not render properly in Editor GUI.
-        public static Texture2D White {
-            get {
-                
-                if (!white) {
+        public static Texture2D White
+        {
+            get
+            {
+
+                if (!white)
+                {
                     white = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    
+
                     var pixels = white.GetPixels32();
-                    for (var i = 0; i < pixels.Length; i++) {
+                    for (var i = 0; i < pixels.Length; i++)
+                    {
                         pixels[i] = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
                     }
                     white.SetPixels32(pixels);
@@ -49,13 +59,17 @@ namespace SingularityGroup.HotReload.Editor {
             }
         }
 
-        public static Texture2D DarkGray17 {
-            get {
-                if (!darkGray17) {
+        public static Texture2D DarkGray17
+        {
+            get
+            {
+                if (!darkGray17)
+                {
                     darkGray17 = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    
+
                     var pixels = darkGray17.GetPixels32();
-                    for (var i = 0; i < pixels.Length; i++) {
+                    for (var i = 0; i < pixels.Length; i++)
+                    {
                         pixels[i] = new Color32(17, 17, 17, byte.MaxValue);
                     }
                     darkGray17.SetPixels32(pixels);
@@ -64,14 +78,18 @@ namespace SingularityGroup.HotReload.Editor {
                 return darkGray17;
             }
         }
-        
-        public static Texture2D DarkGray40 {
-            get {
-                if (!darkGray30) {
+
+        public static Texture2D DarkGray40
+        {
+            get
+            {
+                if (!darkGray30)
+                {
                     darkGray30 = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    
+
                     var pixels = darkGray30.GetPixels32();
-                    for (var i = 0; i < pixels.Length; i++) {
+                    for (var i = 0; i < pixels.Length; i++)
+                    {
                         pixels[i] = new Color32(40, 40, 40, byte.MaxValue);
                     }
                     darkGray30.SetPixels32(pixels);
@@ -81,13 +99,17 @@ namespace SingularityGroup.HotReload.Editor {
             }
         }
 
-        public static Texture2D LightGray238 {
-            get {
-                if (!lightGray235) {
+        public static Texture2D LightGray238
+        {
+            get
+            {
+                if (!lightGray235)
+                {
                     lightGray235 = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    
+
                     var pixels = lightGray235.GetPixels32();
-                    for (var i = 0; i < pixels.Length; i++) {
+                    for (var i = 0; i < pixels.Length; i++)
+                    {
                         pixels[i] = new Color32(238, 238, 238, byte.MaxValue);
                     }
                     lightGray235.SetPixels32(pixels);
@@ -97,13 +119,17 @@ namespace SingularityGroup.HotReload.Editor {
             }
         }
 
-        public static Texture2D LightGray225 {
-            get {
-                if (!lightGray225) {
+        public static Texture2D LightGray225
+        {
+            get
+            {
+                if (!lightGray225)
+                {
                     lightGray225 = new Texture2D(2, 2, TextureFormat.RGBA32, false);
 
                     var pixels = lightGray225.GetPixels32();
-                    for (var i = 0; i < pixels.Length; i++) {
+                    for (var i = 0; i < pixels.Length; i++)
+                    {
                         pixels[i] = new Color32(225, 225, 225, byte.MaxValue);
                     }
                     lightGray225.SetPixels32(pixels);

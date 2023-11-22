@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using UnityEngine;
-using UnityEditor;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace ParrelSync
@@ -333,7 +333,7 @@ namespace ParrelSync
         {
             sourcePath = sourcePath.Replace(" ", "\\ ");
             destinationPath = destinationPath.Replace(" ", "\\ ");
-            var command = string.Format("ln -s {0} {1}", sourcePath, destinationPath);           
+            var command = string.Format("ln -s {0} {1}", sourcePath, destinationPath);
 
             Debug.Log("Linux Symlink " + command);
 

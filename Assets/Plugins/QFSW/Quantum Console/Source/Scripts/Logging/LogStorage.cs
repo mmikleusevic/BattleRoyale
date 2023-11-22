@@ -21,25 +21,25 @@ namespace QFSW.QC
         public void AddLog(ILog log)
         {
             _consoleLogs.Add(log);
-            
+
             int logLength = _logTraceBuilder.Length + log.Text.Length;
             if (log.NewLine && _logTraceBuilder.Length > 0)
             {
                 logLength += Environment.NewLine.Length;
             }
-            
+
             if (MaxStoredLogs > 0)
             {
                 while (_consoleLogs.Count > MaxStoredLogs)
                 {
                     int junkLength = _consoleLogs[0].Text.Length;
-                    if (_consoleLogs.Count > 1 &&_consoleLogs[1].NewLine)
+                    if (_consoleLogs.Count > 1 && _consoleLogs[1].NewLine)
                     {
                         junkLength += Environment.NewLine.Length;
                     }
                     junkLength = Mathf.Min(junkLength, _logTraceBuilder.Length);
                     logLength -= junkLength;
-                    
+
                     _logTraceBuilder.Remove(0, junkLength);
                     _consoleLogs.RemoveAt(0);
                 }

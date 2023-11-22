@@ -201,7 +201,7 @@ namespace QFSW.QC.Editor
             {
                 EditorGUILayout.PropertyField(_fuzzyProperty, new GUIContent("Use Fuzzy Search", "If fuzzy search is disabled, then your current search must match the beginning of the suggestion to be suggested (foo*). If fuzzy search is enabled, it can be anywhere within the suggestion to be suggested (*foo*)."));
                 EditorGUILayout.PropertyField(_caseSensitiveProperty, new GUIContent("Case Sensitive", "If the search should be case sensitive or not."));
-                EditorGUILayout.PropertyField(_collapseSuggestionOverloadsProperty, new GUIContent("Collapse Overloads", 
+                EditorGUILayout.PropertyField(_collapseSuggestionOverloadsProperty, new GUIContent("Collapse Overloads",
                     "If multiple overloads of the same suggestion should be collapsed into a single suggestion with optional elements where possible." +
                     "\nFor example, the following" +
                     "\ncommand arg0" +

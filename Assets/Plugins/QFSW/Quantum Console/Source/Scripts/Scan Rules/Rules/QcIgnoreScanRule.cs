@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+﻿using QFSW.QC.Utilities;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using QFSW.QC.Utilities;
 
 namespace QFSW.QC.ScanRules
 {

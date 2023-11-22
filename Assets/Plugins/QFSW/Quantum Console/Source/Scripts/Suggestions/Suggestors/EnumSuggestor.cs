@@ -11,7 +11,7 @@ namespace QFSW.QC.Suggestors
         protected override bool CanProvideSuggestions(SuggestionContext context, SuggestorOptions options)
         {
             Type targetType = context.TargetType;
-            return targetType != null 
+            return targetType != null
                 && targetType.IsEnum;
         }
 

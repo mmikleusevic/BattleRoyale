@@ -1,10 +1,10 @@
-﻿using System;
+﻿using QFSW.QC.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using QFSW.QC.Utilities;
 
 namespace QFSW.QC.Grammar
 {

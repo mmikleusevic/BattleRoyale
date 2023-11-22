@@ -197,7 +197,7 @@ namespace QFSW.QC
 
                 // Update cursors to skip over any whitespace to emulate Trim
                 workRemaining = false;
-                while (char.IsWhiteSpace(input[leftCursor]))  { leftCursor++; }
+                while (char.IsWhiteSpace(input[leftCursor])) { leftCursor++; }
                 while (char.IsWhiteSpace(input[rightCursor])) { rightCursor--; }
 
                 // If the right cursor is escaped, then finish here
@@ -223,7 +223,7 @@ namespace QFSW.QC
                         validScoperPair = input[leftCursor] == leftScoper;
                         incompleteReduction = validScoperPair;
                     }
-                    
+
                     if (validScoperPair)
                     {
                         // Search between the two cursors to make sure scope never drops down to 0 between them
@@ -254,7 +254,7 @@ namespace QFSW.QC
                                     return input[cursor] == leftScoper || char.IsWhiteSpace(input[cursor]);
                                 }
 
-                                while (SkipSearch(leftSearch))  { leftSearch++; }
+                                while (SkipSearch(leftSearch)) { leftSearch++; }
                                 while (SkipSearch(rightSearch)) { rightSearch--; }
                             }
 
@@ -280,7 +280,7 @@ namespace QFSW.QC
                                 {
                                     // For normal scopers, just check that scope never hits 0
                                     // Update the current scope level
-                                    if      (input[j] == leftScoper)  { currentScope++; }
+                                    if (input[j] == leftScoper) { currentScope++; }
                                     else if (input[j] == rightScoper) { currentScope--; }
 
                                     // Scope broken if it hits 0
@@ -362,9 +362,9 @@ namespace QFSW.QC
             }
 
             IEnumerable<int> rawSplitIndices = GetScopedSplitPoints(input, splitChar, leftScopers, rightScopers);
-            int[] splitIndices = 
-                options.MaxCount > 0 
-                    ? rawSplitIndices.Take(options.MaxCount - 1).ToArray() 
+            int[] splitIndices =
+                options.MaxCount > 0
+                    ? rawSplitIndices.Take(options.MaxCount - 1).ToArray()
                     : rawSplitIndices.ToArray();
 
             // Return single array when no splits occurred

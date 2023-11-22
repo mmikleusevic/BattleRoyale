@@ -2,14 +2,6 @@
 #define QC_SUPPORTED
 #endif
 
-using Mono.CSharp;
-using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.IO;
-using System.Reflection.Emit;
-using System.Text;
-
 #if QC_SUPPORTED
 namespace CSharpCompiler
 {

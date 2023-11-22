@@ -42,7 +42,7 @@ namespace QFSW.QC.Demo
 
             yield return new Value("Please select a robot");
             yield return new Choice<Robot>(robots, r => robot = r);
-            
+
             robot.Die();
             yield return new Typewriter($"{robot.name} has been killed");
         }

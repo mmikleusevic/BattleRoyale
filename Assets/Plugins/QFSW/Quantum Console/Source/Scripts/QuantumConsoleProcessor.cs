@@ -122,9 +122,9 @@ namespace QFSW.QC
 
         private static IEnumerable<(MethodInfo method, MemberInfo member)> ExtractCommandMethods(Type type)
         {
-            const BindingFlags flags = 
-                  BindingFlags.Static 
-                | BindingFlags.Instance 
+            const BindingFlags flags =
+                  BindingFlags.Static
+                | BindingFlags.Instance
                 | BindingFlags.Public
                 | BindingFlags.NonPublic
                 | BindingFlags.DeclaredOnly;

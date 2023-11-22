@@ -34,7 +34,7 @@ namespace QFSW.QC.Extras
 
         [Command("load-scene-index", "loads a scene by index into the game")]
         private static async Task LoadScene(int sceneIndex,
-        [CommandParameterDescription("'Single' mode replaces the current scene with the new scene, whereas 'Additive' merges them")]LoadSceneMode loadMode = LoadSceneMode.Single)
+        [CommandParameterDescription("'Single' mode replaces the current scene with the new scene, whereas 'Additive' merges them")] LoadSceneMode loadMode = LoadSceneMode.Single)
         {
             AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneIndex, loadMode);
             await PollUntilAsync(16, () => asyncOperation.isDone);

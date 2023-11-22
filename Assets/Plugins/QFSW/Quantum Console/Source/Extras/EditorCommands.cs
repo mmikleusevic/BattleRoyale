@@ -69,9 +69,9 @@ namespace QFSW.QC.Extras
 
         [Command("instantiate-prefab", "Instantiates a GameObject from the specified prefab", Platform.EditorPlatforms)]
         private static void InstantiateGOFromPrefab(
-            [CommandParameterDescription("The name of the prefab to instantiate a copy of.")]string prefabName,
-            [CommandParameterDescription("The position of the instantiated GameObject.")]Vector3 position,
-            [CommandParameterDescription("The rotation of the instantiated GameObject.")]Quaternion rotation)
+            [CommandParameterDescription("The name of the prefab to instantiate a copy of.")] string prefabName,
+            [CommandParameterDescription("The position of the instantiated GameObject.")] Vector3 position,
+            [CommandParameterDescription("The rotation of the instantiated GameObject.")] Quaternion rotation)
         {
             GameObject.Instantiate(LoadPrefab(prefabName), position, rotation);
         }
@@ -91,9 +91,9 @@ namespace QFSW.QC.Extras
 
         [Command("instantiate-model", "Instantiates a GameObject from the specified model prefab", Platform.EditorPlatforms)]
         private static void InstantiateGOFromModelPrefab(
-            [CommandParameterDescription("The name of the model to instantiate a copy of.")]string modelName,
-            [CommandParameterDescription("The position of the instantiated GameObject.")]Vector3 position,
-            [CommandParameterDescription("The rotation of the instantiated GameObject.")]Quaternion rotation)
+            [CommandParameterDescription("The name of the model to instantiate a copy of.")] string modelName,
+            [CommandParameterDescription("The position of the instantiated GameObject.")] Vector3 position,
+            [CommandParameterDescription("The rotation of the instantiated GameObject.")] Quaternion rotation)
         {
             GameObject.Instantiate(LoadModel(modelName), position, rotation);
         }

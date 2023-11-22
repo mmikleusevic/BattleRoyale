@@ -119,7 +119,7 @@ namespace QFSW.QC
                     registry.RemoveAll(IsNull);
                     return registry;
                 }
-                
+
                 return Enumerable.Empty<object>();
             }
         }
@@ -149,8 +149,8 @@ namespace QFSW.QC
         [Command("display-registry", "Displays the contents of the specified registry")]
         private static IEnumerable<object> DisplayRegistry<T>() where T : class
         {
-            if (GetRegistrySize<T>() <= 0) 
-            { 
+            if (GetRegistrySize<T>() <= 0)
+            {
                 return ($"The registry '{typeof(T).GetDisplayName()}' is empty").Yield();
             }
 

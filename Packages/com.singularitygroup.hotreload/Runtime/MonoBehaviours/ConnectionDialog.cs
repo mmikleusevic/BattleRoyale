@@ -2,34 +2,41 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SingularityGroup.HotReload {
-    internal class ConnectionDialog : MonoBehaviour {
+namespace SingularityGroup.HotReload
+{
+    internal class ConnectionDialog : MonoBehaviour
+    {
         [Header("UI controls")]
         public Button buttonHide;
 
         [Header("Information")]
         public Text textSummary;
         public Text textSuggestion;
-        
-        void Start() {
+
+        void Start()
+        {
             buttonHide.onClick.AddListener(Hide);
         }
 
         public int pendingPatches = 0;
         public int patchesApplied = 0;
 
-        private void Awake() {
+        private void Awake()
+        {
             SyncPatchCounts();
         }
 
-        bool SyncPatchCounts() {
+        bool SyncPatchCounts()
+        {
             var changed = false;
-            if (pendingPatches != CodePatcher.I.PendingPatches.Count) {
+            if (pendingPatches != CodePatcher.I.PendingPatches.Count)
+            {
                 pendingPatches = CodePatcher.I.PendingPatches.Count;
                 changed = true;
             }
 
-            if (patchesApplied != CodePatcher.I.PatchesApplied) {
+            if (patchesApplied != CodePatcher.I.PatchesApplied)
+            {
                 patchesApplied = CodePatcher.I.PatchesApplied;
                 changed = true;
             }
@@ -38,7 +45,8 @@ namespace SingularityGroup.HotReload {
         }
 
         /// <param name="summary">One of the <see cref="ConnectionSummary"/> constants</param>
-        public void SetSummary(string summary = ConnectionSummary.Connected) {
+        public void SetSummary(string summary = ConnectionSummary.Connected)
+        {
             if (textSummary != null) textSummary.text = summary;
             isConnected = summary == ConnectionSummary.Connected;
         }
@@ -46,15 +54,18 @@ namespace SingularityGroup.HotReload {
         private bool isConnected = false;
 
         // assumes that auto-pair already tried for several seconds
-        void Update() {
+        void Update()
+        {
             textSuggestion.enabled = isConnected;
-            if (SyncPatchCounts()) {
+            if (SyncPatchCounts())
+            {
                 textSuggestion.text = $"Patches: {pendingPatches} pending, {patchesApplied} applied";
             }
         }
 
         /// hide this dialog
-        void Hide() {
+        void Hide()
+        {
             gameObject.SetActive(false); // this should disable the Update loop?
         }
     }
@@ -66,7 +77,8 @@ namespace SingularityGroup.HotReload {
     /// The summary may be shown for less than a second, as the connection can change without warning.<br/>
     /// Therefore, we use short and simple messages.
     /// </remarks>
-    internal static class ConnectionSummary {
+    internal static class ConnectionSummary
+    {
         public const string Cancelled = "Cancelled";
         public const string Connecting = "Connecting ...";
         public const string Handshaking = "Handshaking ...";

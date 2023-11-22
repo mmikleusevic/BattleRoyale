@@ -1,6 +1,7 @@
 using System;
 
-namespace SingularityGroup.HotReload {
+namespace SingularityGroup.HotReload
+{
     /// <summary>
     /// Methods with this attribute will get invoked after a hot reload
     /// </summary>
@@ -11,7 +12,8 @@ namespace SingularityGroup.HotReload {
     /// In case the method has a return value it will be ignored.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
-    public class InvokeOnHotReload : Attribute {
+    public class InvokeOnHotReload : Attribute
+    {
     }
 
 }

@@ -46,7 +46,7 @@ namespace QFSW.QC
             PreprocessContext(ref context);
 
             // Get and filter suggestions
-            IEnumerable<IQcSuggestion> suggestions = 
+            IEnumerable<IQcSuggestion> suggestions =
                 _suggestors
                     .SelectMany(x => x.GetSuggestions(context, options))
                     .Where(x => IsSuggestionPermitted(x, context));

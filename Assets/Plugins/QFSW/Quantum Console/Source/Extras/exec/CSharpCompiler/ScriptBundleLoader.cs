@@ -2,14 +2,6 @@
 #define QC_SUPPORTED
 #endif
 
-using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-
 #if QC_SUPPORTED
 namespace CSharpCompiler
 {

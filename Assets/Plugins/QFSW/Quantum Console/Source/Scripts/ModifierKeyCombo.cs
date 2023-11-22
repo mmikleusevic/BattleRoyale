@@ -20,9 +20,9 @@ namespace QFSW.QC
             get
             {
                 bool ctrlDown = !Ctrl ^
-                                (InputHelper.GetKey(KeyCode.LeftControl)  ||
+                                (InputHelper.GetKey(KeyCode.LeftControl) ||
                                  InputHelper.GetKey(KeyCode.RightControl) ||
-                                 InputHelper.GetKey(KeyCode.LeftCommand)  ||
+                                 InputHelper.GetKey(KeyCode.LeftCommand) ||
                                  InputHelper.GetKey(KeyCode.RightCommand));
 
                 bool altDown = !Alt ^ (InputHelper.GetKey(KeyCode.LeftAlt) || InputHelper.GetKey(KeyCode.RightAlt));

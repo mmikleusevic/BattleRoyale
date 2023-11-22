@@ -26,41 +26,41 @@ namespace QFSW.QC
             switch (method)
             {
                 case MonoTargetType.Single:
-                {
-                    Object target = Object.FindObjectOfType(classType);
-                    return target == null ? Enumerable.Empty<object>() : target.Yield();
-                }
-                case MonoTargetType.SingleInactive:
-                {
-                    return WrapSingleCached(classType, method, type =>
                     {
-                        return Resources.FindObjectsOfTypeAll(type)
-                            .FirstOrDefault(x => !x.hideFlags.HasFlag(HideFlags.HideInHierarchy));
-                    });
-                }
+                        Object target = Object.FindObjectOfType(classType);
+                        return target == null ? Enumerable.Empty<object>() : target.Yield();
+                    }
+                case MonoTargetType.SingleInactive:
+                    {
+                        return WrapSingleCached(classType, method, type =>
+                        {
+                            return Resources.FindObjectsOfTypeAll(type)
+                                .FirstOrDefault(x => !x.hideFlags.HasFlag(HideFlags.HideInHierarchy));
+                        });
+                    }
                 case MonoTargetType.All:
-                {
-                    return Object.FindObjectsOfType(classType)
-                        .OrderBy(x => x.name, new AlphanumComparator());
-                }
+                    {
+                        return Object.FindObjectsOfType(classType)
+                            .OrderBy(x => x.name, new AlphanumComparator());
+                    }
                 case MonoTargetType.AllInactive:
-                {
-                    return Resources.FindObjectsOfTypeAll(classType)
-                        .Where(x => !x.hideFlags.HasFlag(HideFlags.HideInHierarchy))
-                        .OrderBy(x => x.name, new AlphanumComparator());
-                }
+                    {
+                        return Resources.FindObjectsOfTypeAll(classType)
+                            .Where(x => !x.hideFlags.HasFlag(HideFlags.HideInHierarchy))
+                            .OrderBy(x => x.name, new AlphanumComparator());
+                    }
                 case MonoTargetType.Registry:
-                {
-                    return QuantumRegistry.GetRegistryContents(classType);
-                }
+                    {
+                        return QuantumRegistry.GetRegistryContents(classType);
+                    }
                 case MonoTargetType.Singleton:
-                {
-                    return GetSingletonInstance(classType).Yield();
-                }
+                    {
+                        return GetSingletonInstance(classType).Yield();
+                    }
                 default:
-                {
-                    throw new ArgumentException($"Unsupported MonoTargetType {method}");
-                }
+                    {
+                        throw new ArgumentException($"Unsupported MonoTargetType {method}");
+                    }
             }
         }
 
@@ -119,19 +119,19 @@ namespace QFSW.QC
                 case 0:
                     throw new Exception("No targets could be found");
                 case 1:
-                {
-                    string name;
-                    if (lastTarget is Object obj)
                     {
-                        name = obj.name;
-                    }
-                    else
-                    {
-                        name = lastTarget?.ToString();
-                    }
+                        string name;
+                        if (lastTarget is Object obj)
+                        {
+                            name = obj.name;
+                        }
+                        else
+                        {
+                            name = lastTarget?.ToString();
+                        }
 
-                    return $"> Invoked on {name}";
-                }
+                        return $"> Invoked on {name}";
+                    }
                 default:
                     return $"> Invoked on {invocationCount} targets";
             }

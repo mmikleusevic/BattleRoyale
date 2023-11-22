@@ -1,9 +1,9 @@
-﻿using QFSW.QC.Utilities;
+﻿using QFSW.QC.Internal;
+using QFSW.QC.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using QFSW.QC.Internal;
 
 namespace QFSW.QC
 {

@@ -43,7 +43,7 @@ namespace QFSW.QC
         [Command("man")]
         private static string GenerateCommandManual([CommandName] string commandName)
         {
-            string[] matchingCommands = 
+            string[] matchingCommands =
                 _commandTable
                     .Keys
                     .Where(key => key.Split('(')[0] == commandName)

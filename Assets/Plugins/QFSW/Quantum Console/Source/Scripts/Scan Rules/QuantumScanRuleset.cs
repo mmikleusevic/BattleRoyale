@@ -41,18 +41,18 @@ namespace QFSW.QC
                 switch (scanRule.ShouldScan(entity))
                 {
                     case ScanRuleResult.Accept:
-                    {
-                        break;
-                    }
+                        {
+                            break;
+                        }
                     case ScanRuleResult.Reject:
-                    {
-                        shouldScan = false;
-                        break;
-                    }
+                        {
+                            shouldScan = false;
+                            break;
+                        }
                     case ScanRuleResult.ForceAccept:
-                    {
-                        return true;
-                    }
+                        {
+                            return true;
+                        }
                 }
             }
 
