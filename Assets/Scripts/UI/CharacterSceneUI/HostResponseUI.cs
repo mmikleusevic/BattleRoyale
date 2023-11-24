@@ -33,6 +33,7 @@ public class HostResponseUI : MonoBehaviour
     {
         if (clientId == NetworkManager.ServerClientId)
         {
+            GameLobby.Instance.ResetLobby();
             Show();
         }
     }

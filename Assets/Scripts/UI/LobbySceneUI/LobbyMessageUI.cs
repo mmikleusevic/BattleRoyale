@@ -18,8 +18,6 @@ public class LobbyMessageUI : MonoBehaviour
         Hide();
 
         GameMultiplayer.Instance.OnFailedToJoinGame += GameMultiplayer_OnFailedToJoinGame;
-        GameLobby.Instance.OnReconnectStarted += GameLobby_OnReconnectStarted;
-        GameLobby.Instance.OnReconnectFailed += GameLobby_OnReconnectFailed;
         GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyFailed += GameLobby_OnCreateLobbyFailed;
@@ -41,8 +39,6 @@ public class LobbyMessageUI : MonoBehaviour
     private void OnDestroy()
     {
         GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
-        GameLobby.Instance.OnReconnectStarted -= GameLobby_OnReconnectStarted;
-        GameLobby.Instance.OnReconnectFailed -= GameLobby_OnReconnectFailed;
         GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
         GameLobby.Instance.OnCreateLobbyFailed -= GameLobby_OnCreateLobbyFailed;
         GameLobby.Instance.OnJoinStarted -= GameLobby_OnJoinStarted;

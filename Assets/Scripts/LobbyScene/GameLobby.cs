@@ -20,8 +20,6 @@ public class GameLobby : MonoBehaviour
     public const string CREATOR_NAME = "CreatorName";
     public static GameLobby Instance { get; private set; }
 
-    public event EventHandler OnReconnectStarted;
-    public event EventHandler OnReconnectFailed;
     public event EventHandler OnCreateLobbyStarted;
     public event EventHandler OnCreateLobbyFailed;
     public event EventHandler OnJoinStarted;
@@ -61,10 +59,11 @@ public class GameLobby : MonoBehaviour
         LobbyUI.Instance.OnLobbyFind += LobbyUI_OnLobbySearch;
     }
 
-    private void OnDestroy()
+    private async void OnDestroy()
     {
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
-        CloseLobby();
+
+        if (LobbyExists()) await CloseLobby();
     }
 
     private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
@@ -247,24 +246,6 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async void Reconnect(string lobbyId)
-    {
-        OnReconnectStarted?.Invoke(this, EventArgs.Empty);
-
-        try
-        {
-            joinedLobby = await LobbyService.Instance.ReconnectToLobbyAsync(lobbyId);
-
-            LobbyJoinRelayStartClient();
-        }
-        catch (LobbyServiceException ex)
-        {
-            Debug.LogError(ex.Message);
-            OnReconnectFailed?.Invoke(this, EventArgs.Empty);
-        }
-
-    }
-
     public async void QuickJoin()
     {
         JoinStarted();
@@ -320,32 +301,49 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async void DeleteLobby()
+    public async Task DeleteLobby()
     {
-        if (joinedLobby != null)
+        if (LobbyExists())
         {
             try
             {
                 await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
 
-                joinedLobby = null;
+                ResetLobby();
             }
             catch (LobbyServiceException ex)
             {
                 Debug.LogError(ex.Message);
+                ResetLobby();
             }
         }
     }
 
-    public async void LeaveLobby()
+    public async Task LeaveLobby()
     {
-        if (joinedLobby != null)
+        if (LobbyExists())
         {
             try
             {
                 await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
 
-                joinedLobby = null;
+                ResetLobby();
+            }
+            catch (LobbyServiceException ex)
+            {
+                Debug.LogError(ex.Message);
+                ResetLobby();
+            }
+        }
+    }
+
+    public async void KickPlayer(PlayerData playerData)
+    {
+        if (IsLobbyHost())
+        {
+            try
+            {
+                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerData.playerId.ToString());
             }
             catch (LobbyServiceException ex)
             {
@@ -354,20 +352,6 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async void KickPlayer(string playerId)
-    {
-        if (IsLobbyHost())
-        {
-            try
-            {
-                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
-            }
-            catch (LobbyServiceException ex)
-            {
-                Debug.LogError(ex.Message);
-            }
-        }
-    }
 
     private async void LobbyJoinRelayStartClient()
     {
@@ -380,23 +364,23 @@ public class GameLobby : MonoBehaviour
         GameMultiplayer.Instance.StartClient();
     }
 
-    public void LeaveLobbyGoToMainMenu()
+    public async void LeaveLobbyGoToMainMenu()
     {
-        CloseLobby();
+        await CloseLobby();
 
         LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 
-    public void CloseLobby()
+    public async Task CloseLobby()
     {
         if (IsLobbyHost())
         {
-            DeleteLobby();
+            await DeleteLobby();
             GameMultiplayer.Instance.StopHost();
         }
         else
         {
-            LeaveLobby();
+            await LeaveLobby();
             GameMultiplayer.Instance.StopClient();
         }
     }
@@ -414,5 +398,10 @@ public class GameLobby : MonoBehaviour
     public bool LobbyExists()
     {
         return joinedLobby != null;
+    }
+
+    public void ResetLobby()
+    {
+        joinedLobby = null;
     }
 }

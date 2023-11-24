@@ -12,7 +12,6 @@ public class CharacterSceneUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI readyButtonText;
 
     private bool isReady = false;
-
     private void Awake()
     {
         mainMenuButton.onClick.AddListener(() =>
@@ -25,7 +24,6 @@ public class CharacterSceneUI : MonoBehaviour
             UpdateReadyButton();
         });
     }
-
     private void Start()
     {
         UpdateLobbyData();

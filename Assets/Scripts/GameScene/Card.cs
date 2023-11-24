@@ -1,4 +1,3 @@
-using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,43 +6,28 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private GameObject highlight;
 
-    private bool isActive = false;
-    private float rotationPerSecond = 180f;
+    private bool isOpen = false;
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!isActive)
+        Show();
+
+        if (!isOpen)
         {
-            //TODO Replace with animation
-            StartCoroutine(RotateCard());
+            OpenCard();
 
-            isActive = true;
+            isOpen = true;
         }
-
-        //TODO temp only
-        //Show();
     }
 
-    private IEnumerator RotateCard()
+    private void OpenCard()
     {
-        float amountRotated = 0f;
-
-        while (amountRotated < rotationPerSecond)
-        {
-            float frameRotation = rotationPerSecond * Time.deltaTime;
-
-            transform.Rotate(frameRotation, 0, 0);
-
-            amountRotated += frameRotation;
-
-            yield return new WaitForEndOfFrame();
-        }
+        GetComponent<CardAnimator>().OpenCard();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        //TODO temp only
-        //Hide();
+        Hide();
     }
 
     private void Show()

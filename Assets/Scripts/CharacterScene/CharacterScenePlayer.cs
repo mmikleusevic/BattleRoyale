@@ -75,7 +75,7 @@ public class CharacterScenePlayer : MonoBehaviour
     private void KickPlayer()
     {
         PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
-        GameLobby.Instance.KickPlayer(playerData.playerId.ToString());
-        GameMultiplayer.Instance.KickPlayer(playerData.clientId);
+        GameLobby.Instance.KickPlayer(playerData);
+        GameMultiplayer.Instance.KickPlayer(playerData);
     }
 }

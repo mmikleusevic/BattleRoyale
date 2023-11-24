@@ -162,7 +162,6 @@ public class GameMultiplayer : NetworkBehaviour
         OnFailedToJoinGame?.Invoke(this, EventArgs.Empty);
     }
 
-
     public bool IsPlayerIndexConnected(int playerIndex)
     {
         return playerIndex < playerDataNetworkList.Count;
@@ -263,9 +262,9 @@ public class GameMultiplayer : NetworkBehaviour
         PlayerPrefs.SetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, playerName);
     }
 
-    public void KickPlayer(ulong clientId)
+    public void KickPlayer(PlayerData playerData)
     {
-        NetworkManager.Singleton.DisconnectClient(clientId);
-        NetworkManager_Server_OnClientDisconnectCallback(clientId);
+        NetworkManager.Singleton.DisconnectClient(playerData.clientId);
+        NetworkManager_Server_OnClientDisconnectCallback(playerData.clientId);
     }
 }
