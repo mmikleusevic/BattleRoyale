@@ -15,16 +15,23 @@ public class Player : NetworkBehaviour
             LocalInstance = this;
         }
 
-        transform.position = spawnPositionList[GameMultiplayer.Instance.GetPlayerDataIndexFromClientId(OwnerClientId)];
+        int playerIndex = GameMultiplayer.Instance.GetPlayerDataIndexFromClientId(OwnerClientId);
+
+        transform.position = spawnPositionList[playerIndex];
 
         if (IsServer)
         {
-            NetworkManager.Singleton.OnClientDisconnectCallback += GameManager_OnClientDisconnectCallback; ;
+            NetworkManager.Singleton.OnClientDisconnectCallback += GameManager_OnClientDisconnectCallback;
         }
+
+        //TODO fix player names sync
+        //TODO fix networkspawn before everyone loaded
+        GameMultiplayer.Instance.SetNameClientRpc(gameObject, "Player" + playerIndex);
     }
 
     private void GameManager_OnClientDisconnectCallback(ulong obj)
     {
         //Destroy players objects
+        Destroy(gameObject);
     }
 }

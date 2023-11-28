@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e651dbb3fbac04af2b8f5abf007ddc23, type: 3}
-  m_Name: CardNetworkPrefabsList
+  m_Name: NetworkPrefabsList
   m_EditorClassIdentifier: 
   IsDefault: 0
   List:
@@ -98,6 +98,12 @@ MonoBehaviour:
     OverridingTargetPrefab: {fileID: 0}
   - Override: 0
     Prefab: {fileID: 4537910342110308141, guid: eeaa1b4023686e34db81ac588551e171,
+      type: 3}
+    SourcePrefabToOverride: {fileID: 0}
+    SourceHashToOverride: 0
+    OverridingTargetPrefab: {fileID: 0}
+  - Override: 0
+    Prefab: {fileID: 3933511763536735899, guid: fa3f5ee7498110144a0607cd537de78d,
       type: 3}
     SourcePrefabToOverride: {fileID: 0}
     SourceHashToOverride: 0

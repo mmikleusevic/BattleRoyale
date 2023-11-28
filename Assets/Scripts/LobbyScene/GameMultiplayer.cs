@@ -267,4 +267,13 @@ public class GameMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.DisconnectClient(playerData.clientId);
         NetworkManager_Server_OnClientDisconnectCallback(playerData.clientId);
     }
+
+    [ClientRpc]
+    public void SetNameClientRpc(NetworkObjectReference networkObject, string newName)
+    {
+        GameObject gameObject = (GameObject)networkObject;
+        if (gameObject == null) return;
+
+        gameObject.name = newName;
+    }
 }

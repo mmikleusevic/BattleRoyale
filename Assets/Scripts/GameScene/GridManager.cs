@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class GridManager : MonoBehaviour
+public class GridManager : NetworkBehaviour
 {
     [SerializeField] private int width;
     [SerializeField] private int height;
@@ -15,17 +15,17 @@ public class GridManager : MonoBehaviour
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
     private Dictionary<int, int> randomCardNumberCountChecker;
-    private List<int> randomNumberList;
+    private NetworkList<int> randomNumberList = new NetworkList<int>();
     private Vector2 cardDimensions;
 
     private Dictionary<Vector2, Card> spawnedCards;
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        GetCardDimensions();
         GenerateRandomCardNumbers();
-        GenerateGridServerRpc();
+        GetCardDimensions();
         PositionCamera();
+        if(IsServer) GenerateGrid();
     }
 
     private void GetCardDimensions()
@@ -38,7 +38,6 @@ public class GridManager : MonoBehaviour
     private void GenerateRandomCardNumbers()
     {
         randomCardNumberCountChecker = new Dictionary<int, int>();
-        randomNumberList = new List<int>();
 
         while (randomNumberList.Count < tilesToInitialize.Count)
         {
@@ -57,14 +56,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void GenerateGridServerRpc()
-    {
-        GenerateGridClientRpc();
-    }
-
-    [ClientRpc]
-    private void GenerateGridClientRpc()
+    private void GenerateGrid()
     {
         spawnedCards = new Dictionary<Vector2, Card>();
 
@@ -76,10 +68,18 @@ public class GridManager : MonoBehaviour
             Vector2 position = new Vector3((tileCoordinates.x * cardDimensions.x) + tileCoordinates.x * spacing, (tileCoordinates.y * cardDimensions.y) + tileCoordinates.y * spacing);
 
             Transform cardContainer = Instantiate(this.cardContainer, position, Quaternion.identity, transform);
-            cardContainer.name = $"CardContainer{i}";
+
+            NetworkObject cardContainerNetworkObject = cardContainer.GetComponent<NetworkObject>();
+            cardContainerNetworkObject.Spawn();
+            cardContainerNetworkObject.TrySetParent(transform);
+            GameMultiplayer.Instance.SetNameClientRpc(cardContainer.gameObject, $"CardContainer{cardSO.name}");
 
             Card spawnedCard = Instantiate(cardSO.prefab, cardContainer.position, Quaternion.identity, cardContainer);
-            spawnedCard.name = cardSO.name;
+
+            NetworkObject spawnedCardNetworkObject = spawnedCard.GetComponent<NetworkObject>();
+            spawnedCardNetworkObject.Spawn();
+            spawnedCardNetworkObject.TrySetParent(cardContainer.transform);
+            GameMultiplayer.Instance.SetNameClientRpc(spawnedCard.gameObject, cardSO.name);
 
             spawnedCards[position] = spawnedCard;
         }
