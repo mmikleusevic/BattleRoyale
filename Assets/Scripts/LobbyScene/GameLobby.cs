@@ -309,11 +309,13 @@ public class GameLobby : MonoBehaviour
             try
             {
                 await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+                
                 ResetLobby();
             }
             catch (LobbyServiceException ex)
             {
                 Debug.LogError(ex.Message);
+
                 ResetLobby();
             }
         }
@@ -326,11 +328,13 @@ public class GameLobby : MonoBehaviour
             try
             {
                 await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
+
                 ResetLobby();
             }
             catch (LobbyServiceException ex)
             {
                 Debug.LogError(ex.Message);
+
                 ResetLobby();
             }
         }

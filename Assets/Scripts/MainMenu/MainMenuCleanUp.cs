@@ -5,9 +5,9 @@ public class MainMenuCleanUp : MonoBehaviour
 {
     private void Awake()
     {
-        if (NetworkManager.Singleton != null)
+        if (GameLobby.Instance != null)
         {
-            Destroy(NetworkManager.Singleton.gameObject);
+            Destroy(GameLobby.Instance.gameObject);
         }
 
         if (GameMultiplayer.Instance != null)
@@ -15,9 +15,9 @@ public class MainMenuCleanUp : MonoBehaviour
             Destroy(GameMultiplayer.Instance.gameObject);
         }
 
-        if (GameLobby.Instance != null)
+        if (NetworkManager.Singleton != null)
         {
-            Destroy(GameLobby.Instance.gameObject);
+            Destroy(NetworkManager.Singleton.gameObject);
         }
     }
 }

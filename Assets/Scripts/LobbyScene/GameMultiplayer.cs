@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.Netcode;
 using Unity.Services.Authentication;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
@@ -85,15 +87,23 @@ public class GameMultiplayer : NetworkBehaviour
 
     private void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
     {
-        for (int i = 0; i < playerDataNetworkList.Count; i++)
+        try
         {
-            PlayerData playerData = playerDataNetworkList[i];
-
-            if (playerData.clientId == clientId)
+            for (int i = 0; i < playerDataNetworkList.Count; i++)
             {
-                playerDataNetworkList.RemoveAt(i);
+                PlayerData playerData = playerDataNetworkList[i];
+
+                if (playerData.clientId == clientId)
+                {
+                    playerDataNetworkList.RemoveAt(i);
+                    break;
+                }
             }
         }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log(ex);
+        }        
     }
 
     private void NetworkManager_OnClientConnectedCallback(ulong clientId)
