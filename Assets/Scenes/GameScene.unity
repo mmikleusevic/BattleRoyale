@@ -1185,6 +1185,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 6111445030822079297, guid: e3a7bdd3dea739b44ab813777dff0b4d,
     type: 3}
+  spawnPositionList:
+  - {x: 0, y: 14.5, z: -1.1}
+  - {x: 0, y: 28.7, z: -1.1}
+  - {x: 31.2, y: 14.5, z: -1.1}
+  - {x: 31.2, y: 28.7, z: -1.1}
+  - {x: 15.6, y: 49.5, z: -1.1}
+  - {x: 15.6, y: -6.3, z: -1.1}
 --- !u!4 &803078845
 Transform:
   m_ObjectHideFlags: 0
@@ -1492,8 +1499,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 999039096}
-  - {fileID: 262120753}
   - {fileID: 168691809}
+  - {fileID: 262120753}
   m_Father: {fileID: 781323583}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

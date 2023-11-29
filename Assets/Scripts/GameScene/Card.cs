@@ -43,7 +43,6 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     [ClientRpc]
     private void OpenCardClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        Debug.Log("b");
         OpenCard();
     }
 

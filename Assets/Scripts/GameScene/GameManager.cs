@@ -13,6 +13,7 @@ public class GameManager : NetworkBehaviour
     public event EventHandler OnMultiplayerGameUnpaused;
 
     [SerializeField] private Transform playerPrefab;
+    [SerializeField] private List<Vector3> spawnPositionList = new List<Vector3>();
 
     private bool isLocalGamePaused = false;
 
@@ -33,7 +34,7 @@ public class GameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted; ;
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
         }
     }
 
@@ -41,8 +42,13 @@ public class GameManager : NetworkBehaviour
     {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
-            Transform playerTransform = Instantiate(playerPrefab);
+            int playerIndex = GameMultiplayer.Instance.GetPlayerDataIndexFromClientId(clientId);
+            Vector3 position = spawnPositionList[playerIndex];
+            
+            Transform playerTransform = Instantiate(playerPrefab, position, playerPrefab.rotation, null);
             playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+
+            GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
         }
     }
 

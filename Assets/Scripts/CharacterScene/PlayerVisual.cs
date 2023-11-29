@@ -16,4 +16,9 @@ public class PlayerVisual : MonoBehaviour
     {
         material.color = color;
     }
+
+    private void OnDestroy()
+    {
+        Destroy(gameObject);
+    }
 }

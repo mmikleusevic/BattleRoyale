@@ -15,17 +15,26 @@ public class GridManager : NetworkBehaviour
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
     private Dictionary<int, int> randomCardNumberCountChecker;
-    private NetworkList<int> randomNumberList = new NetworkList<int>();
+    private NetworkList<int> randomNumberList;
     private Vector2 cardDimensions;
 
     private Dictionary<Vector2, Card> spawnedCards;
 
+    private void Awake()
+    {
+        randomNumberList = new NetworkList<int>();
+    }
+
     public override void OnNetworkSpawn()
     {
-        GenerateRandomCardNumbers();
         GetCardDimensions();
         PositionCamera();
-        if(IsServer) GenerateGrid();
+
+        if (IsServer)
+        {
+            GenerateRandomCardNumbers();
+            GenerateGrid();
+        }
     }
 
     private void GetCardDimensions()

@@ -1,5 +1,6 @@
 using ParrelSync;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -59,11 +60,11 @@ public class GameLobby : MonoBehaviour
         LobbyUI.Instance.OnLobbyFind += LobbyUI_OnLobbySearch;
     }
 
-    private async void OnDestroy()
+    private void OnDestroy()
     {
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
 
-        if (LobbyExists()) await CloseLobby();
+        CloseLobby();
     }
 
     private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
@@ -301,14 +302,13 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async Task DeleteLobby()
+    public async void DeleteLobby()
     {
         if (LobbyExists())
         {
             try
             {
                 await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
-
                 ResetLobby();
             }
             catch (LobbyServiceException ex)
@@ -319,14 +319,13 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async Task LeaveLobby()
+    public async void LeaveLobby()
     {
         if (LobbyExists())
         {
             try
             {
                 await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
-
                 ResetLobby();
             }
             catch (LobbyServiceException ex)
@@ -364,23 +363,21 @@ public class GameLobby : MonoBehaviour
         GameMultiplayer.Instance.StartClient();
     }
 
-    public async void LeaveLobbyGoToMainMenu()
+    public void LeaveLobbyGoToMainMenu()
     {
-        await CloseLobby();
-
         LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 
-    public async Task CloseLobby()
+    public void CloseLobby()
     {
         if (IsLobbyHost())
         {
-            await DeleteLobby();
+            DeleteLobby();
             GameMultiplayer.Instance.StopHost();
         }
         else
         {
-            await LeaveLobby();
+            LeaveLobby();
             GameMultiplayer.Instance.StopClient();
         }
     }
