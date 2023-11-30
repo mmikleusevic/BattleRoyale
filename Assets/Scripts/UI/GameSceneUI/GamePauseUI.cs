@@ -2,12 +2,14 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PauseLocalUI : MonoBehaviour
+public class GamePauseUI : MonoBehaviour
 {
-    public static PauseLocalUI Instance { get; private set; }
+    public static GamePauseUI Instance { get; private set; }
 
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button mainMenuButton;
+
+    bool isPaused = false;
 
     private void Awake()
     {
@@ -27,20 +29,23 @@ public class PauseLocalUI : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnLocalGamePaused += GameManager_OnLocalGamePaused;
-        GameManager.Instance.OnLocalGameUnpaused += GameManager_OnLocalGameUnpaused;
+        GameManager.Instance.OnToggleLocalGamePause += GameManager_OnToggleLocalGamePause;
 
         Hide();
     }
 
-    private void GameManager_OnLocalGameUnpaused(object sender, EventArgs e)
+    private void GameManager_OnToggleLocalGamePause(object sender, EventArgs e)
     {
-        Hide();
-    }
+        isPaused = !isPaused;
 
-    private void GameManager_OnLocalGamePaused(object sender, EventArgs e)
-    {
-        Show();
+        if (isPaused)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
     }
 
     private void Show()
