@@ -2,7 +2,7 @@
 
 public class Won : State
 {
-    public Won(BattleSystem battleSystem) : base(battleSystem)
+    public Won(GameManager battleSystem) : base(battleSystem)
     {
 
     }

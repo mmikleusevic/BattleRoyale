@@ -4,7 +4,7 @@ public partial class Begin
 {
     public class PlayerTurn : State
     {
-        public PlayerTurn(BattleSystem battleSystem) : base(battleSystem)
+        public PlayerTurn(GameManager battleSystem) : base(battleSystem)
         {
 
         }
@@ -44,6 +44,16 @@ public partial class Begin
 
             battleSystem.SetState(new Won(battleSystem));
             battleSystem.SetState(new Lost(battleSystem));
+
+            await Awaitable.NextFrameAsync();
+        }
+
+        public override async Awaitable Move()
+        {
+            Debug.Log("Check if dead");
+            Debug.Log("Move");
+
+            battleSystem.SetState(new Move(battleSystem));
 
             await Awaitable.NextFrameAsync();
         }

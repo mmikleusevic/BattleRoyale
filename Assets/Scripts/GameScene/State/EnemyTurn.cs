@@ -2,7 +2,7 @@
 
 public class EnemyTurn : State
 {
-    public EnemyTurn(BattleSystem battleSystem) : base(battleSystem)
+    public EnemyTurn(GameManager battleSystem) : base(battleSystem)
     {
 
     }

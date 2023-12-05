@@ -2,7 +2,7 @@ using UnityEngine;
 
 public partial class Begin : State
 {
-    public Begin(BattleSystem battleSystem) : base(battleSystem)
+    public Begin(GameManager battleSystem) : base(battleSystem)
     {
     }
 
@@ -12,7 +12,7 @@ public partial class Begin : State
 
         battleSystem.SetState(new PlayerTurn(battleSystem));
 
-        await Awaitable.WaitForSecondsAsync(2f);
+        await Awaitable.WaitForSecondsAsync(3f);
     }
 }
 

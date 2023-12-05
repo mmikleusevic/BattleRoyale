@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class Lost : State
+public class Move : State
 {
-    public Lost(GameManager battleSystem) : base(battleSystem)
+    public Move(GameManager battleSystem) : base(battleSystem)
     {
 
     }
 
     public override async Awaitable Start()
     {
-        Debug.Log("You were defeated.");
+        Debug.Log("You moved.");
 
         await Awaitable.NextFrameAsync();
     }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
+    private bool isDead = false;
+
     public static Player LocalInstance { get; private set; }
 
     [SerializeField] private PlayerVisual playerVisual;
@@ -24,7 +26,9 @@ public class Player : NetworkBehaviour
         if (IsServer)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback += GameManager_OnClientDisconnectCallback;
-        }      
+        }
+
+        GameManager.Instance.SetPlayer(this);
     }
 
     private void GameManager_OnClientDisconnectCallback(ulong obj)

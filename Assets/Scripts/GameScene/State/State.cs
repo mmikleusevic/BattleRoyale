@@ -2,9 +2,9 @@ using UnityEngine;
 
 public abstract class State
 {
-    protected BattleSystem battleSystem;
+    protected GameManager battleSystem;
 
-    public State(BattleSystem battleSystem)
+    public State(GameManager battleSystem)
     {
         this.battleSystem = battleSystem;
     }
@@ -29,6 +29,11 @@ public abstract class State
         return Awaitable.NextFrameAsync();
     }
 
+    public virtual Awaitable Move()
+    {
+        return Awaitable.NextFrameAsync();
+    }
+
     public virtual Awaitable AttackCard()
     {
         return Awaitable.NextFrameAsync();
@@ -40,6 +45,11 @@ public abstract class State
     }
 
     public virtual Awaitable Won()
+    {
+        return Awaitable.NextFrameAsync();
+    }
+
+    public virtual Awaitable Lost()
     {
         return Awaitable.NextFrameAsync();
     }
