@@ -47,6 +47,13 @@ public class GameManager : StateMachine
 
     public async void StartGame()
     {
+        foreach (KeyValuePair<ulong, NetworkClient> client in NetworkManager.ConnectedClients)
+        {
+            Player player = client.Value.PlayerObject.GetComponent<Player>();
+
+            players.Add(player);
+        }
+
         await Awaitable.WaitForSecondsAsync(3f);
 
         SetState(new StartGame(this));
@@ -168,22 +175,5 @@ public class GameManager : StateMachine
         {
             StartGame();
         }
-    }
-
-    public void SetPlayer(Player player)
-    {
-        SetPlayerServerRpc(player);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SetPlayerServerRpc(Player player)
-    {
-       SetPlayerClientRpc(player);
-    }
-
-    [ClientRpc]
-    private void SetPlayerClientRpc(Player player,ClientRpcParams clientRpcParams = default)
-    {
-        players.Add(player);
     }
 }

@@ -8,23 +8,29 @@ public abstract class StateMachine : NetworkBehaviour
 
     public static event EventHandler OnStateChanged;
 
-    public async void SetState(State state)
+    public void SetState(State state)
     {
-        await SetStateServerRpc(state);
+        SetStateServerRpc(state.NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private async Awaitable SetStateServerRpc(State state)
+    private void SetStateServerRpc(NetworkObjectReference networkObject)
     {
-        await SetStateClientRpc(state);
+        SetStateClientRpc(networkObject);
     }
 
     [ClientRpc]
-    private async Awaitable SetStateClientRpc(State state)
+    private void SetStateClientRpc(NetworkObjectReference networkObject, ClientRpcParams clientRpcParams = default)
     {
+        networkObject.TryGet(out NetworkObject stateNetworkObject);
+
+        if (stateNetworkObject == null) return;
+
+        State state = stateNetworkObject.GetComponent<State>();
+
         this.state = state;
 
-        await this.state.Start();
+        this.state.Start();
 
         OnStateChanged?.Invoke(this, EventArgs.Empty);
     }

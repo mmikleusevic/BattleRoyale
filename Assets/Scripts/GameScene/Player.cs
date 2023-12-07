@@ -27,8 +27,6 @@ public class Player : NetworkBehaviour
         {
             NetworkManager.Singleton.OnClientDisconnectCallback += GameManager_OnClientDisconnectCallback;
         }
-
-        GameManager.Instance.SetPlayer(this);
     }
 
     private void GameManager_OnClientDisconnectCallback(ulong obj)

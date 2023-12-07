@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public abstract class State
+public abstract class State : NetworkBehaviour
 {
     protected GameManager battleSystem;
 
