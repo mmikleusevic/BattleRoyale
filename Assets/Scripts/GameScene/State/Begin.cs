@@ -1,18 +1,19 @@
+using System.Collections;
 using UnityEngine;
 
-public partial class Begin : State
+public partial class Begin : BattleState
 {
     public Begin(GameManager battleSystem) : base(battleSystem)
     {
     }
 
-    public override async Awaitable Start()
+    public override IEnumerator Start()
     {
         Debug.Log("Player turn started");
 
-        battleSystem.SetState(new PlayerTurn(battleSystem));
+        yield return new WaitForSeconds(2f);
 
-        await Awaitable.WaitForSecondsAsync(3f);
+        battleSystem.SetState(new PlayerTurn(battleSystem));
     }
 }
 

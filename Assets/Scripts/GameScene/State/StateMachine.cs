@@ -1,14 +1,13 @@
 using System;
 using Unity.Netcode;
-using UnityEngine;
 
 public abstract class StateMachine : NetworkBehaviour
 {
-    protected State state;
+    protected BattleState state;
 
     public static event EventHandler OnStateChanged;
 
-    public void SetState(State state)
+    public void SetState(BattleState state)
     {
         SetStateServerRpc(state.NetworkObject);
     }
@@ -26,7 +25,7 @@ public abstract class StateMachine : NetworkBehaviour
 
         if (stateNetworkObject == null) return;
 
-        State state = stateNetworkObject.GetComponent<State>();
+        BattleState state = stateNetworkObject.GetComponent<BattleState>();
 
         this.state = state;
 

@@ -1,29 +1,29 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public partial class Begin
 {
-    public class PlayerTurn : State
+    public class PlayerTurn : BattleState
     {
         public PlayerTurn(GameManager battleSystem) : base(battleSystem)
         {
-
         }
 
-        public override async Awaitable BeforeStart()
+        public override IEnumerator BeforeStart()
         {
             Debug.Log("Change Card if Needed");
 
-            await Awaitable.NextFrameAsync();
+            yield break;
         }
 
-        public override async Awaitable Start()
+        public override IEnumerator Start()
         {
             Debug.Log("Choose an action");
 
-            await Awaitable.WaitForSecondsAsync(1f);
+            yield return new WaitForSeconds(1f);
         }
 
-        public override async Awaitable AttackCard()
+        public override IEnumerator AttackCard()
         {
             Debug.Log("Check if dead");
             Debug.Log("Check if drinking");
@@ -31,10 +31,10 @@ public partial class Begin
             battleSystem.SetState(new Won(battleSystem));
             battleSystem.SetState(new Lost(battleSystem));
 
-            await Awaitable.NextFrameAsync();
+            yield break;
         }
 
-        public override async Awaitable AttackPlayer()
+        public override IEnumerator AttackPlayer()
         {
             Debug.Log("Check if dead");
             Debug.Log("Check if drinking");
@@ -45,27 +45,27 @@ public partial class Begin
             battleSystem.SetState(new Won(battleSystem));
             battleSystem.SetState(new Lost(battleSystem));
 
-            await Awaitable.NextFrameAsync();
+            yield break;
         }
 
-        public override async Awaitable Move()
+        public override IEnumerator Move()
         {
             Debug.Log("Check if dead");
             Debug.Log("Move");
 
             battleSystem.SetState(new Move(battleSystem));
 
-            await Awaitable.NextFrameAsync();
+            yield break;
         }
 
-        public override async Awaitable End()
+        public override IEnumerator End()
         {
             Debug.Log("End turn");
             Debug.Log("Switch to other player");
 
             battleSystem.SetState(new EnemyTurn(battleSystem));
 
-            await Awaitable.WaitForSecondsAsync(1f);
+            yield return new WaitForSeconds(1f);
         }
     }
 }

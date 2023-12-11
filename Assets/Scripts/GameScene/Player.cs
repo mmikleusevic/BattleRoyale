@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,11 +8,12 @@ public class Player : NetworkBehaviour
     public static Player LocalInstance { get; private set; }
 
     [SerializeField] private PlayerVisual playerVisual;
-
+    [SerializeField] private CubeVisual cubeVisual;
     private void Start()
     {
         PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
         playerVisual.SetPlayerColor(GameMultiplayer.Instance.GetPlayerColor(playerData.colorId));
+        cubeVisual.SetCubeColor(GameMultiplayer.Instance.GetPlayerColor(playerData.colorId));
     }
 
     public override void OnNetworkSpawn()
@@ -21,7 +21,7 @@ public class Player : NetworkBehaviour
         if (IsOwner)
         {
             LocalInstance = this;
-        }      
+        }
 
         if (IsServer)
         {

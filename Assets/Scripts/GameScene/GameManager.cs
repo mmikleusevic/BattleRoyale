@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class GameManager : StateMachine
@@ -12,8 +11,10 @@ public class GameManager : StateMachine
     public event EventHandler OnMultiplayerGamePaused;
     public event EventHandler OnMultiplayerGameUnpaused;
     public event EventHandler OnLocalPlayerReadyChanged;
-    
+    public event EventHandler OnGamePlaying;
+
     [SerializeField] private Transform playerPrefab;
+    [SerializeField] private Transform cubePrefab;
     [SerializeField] private List<Vector3> spawnPositionList = new List<Vector3>();
 
     private bool isLocalPlayerReady = false;
@@ -21,13 +22,15 @@ public class GameManager : StateMachine
     private Dictionary<ulong, bool> playerReadyDictonary;
     private Dictionary<ulong, bool> playerPausedDictionary;
     private NetworkVariable<bool> isGamePaused = new NetworkVariable<bool>(false);
-
+    private NetworkVariable<GameState> gameState;
+    private bool autoCheckGamePauseState;
     private void Awake()
     {
         Instance = this;
 
         playerReadyDictonary = new Dictionary<ulong, bool>();
         playerPausedDictionary = new Dictionary<ulong, bool>();
+        gameState = new NetworkVariable<GameState>(GameState.WaitingToStart);
     }
 
     public override void OnNetworkSpawn()
@@ -45,6 +48,15 @@ public class GameManager : StateMachine
         isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
     }
 
+    private void LateUpdate()
+    {
+        if (autoCheckGamePauseState)
+        {
+            autoCheckGamePauseState = false;
+            CheckGamePauseState();
+        }
+    }
+
     public async void StartGame()
     {
         foreach (KeyValuePair<ulong, NetworkClient> client in NetworkManager.ConnectedClients)
@@ -56,47 +68,24 @@ public class GameManager : StateMachine
 
         await Awaitable.WaitForSecondsAsync(3f);
 
-        SetState(new StartGame(this));
+        gameState.Value = GameState.GamePlaying;
+
+        OnGamePlaying?.Invoke(this, EventArgs.Empty);
     }
-
-    //TODO Fix
-
-    //public async void OnStartButton()
-    //{
-    //    await state.Start();
-    //}
-
-    //public async void OnAttackCardButton()
-    //{
-    //    await state.AttackCard();
-    //}
-
-    //public async void OnMoveButton()
-    //{
-    //    await state.AttackCard();
-    //}
-
-    //public async void OnAttackPlayerButton()
-    //{
-    //    await state.AttackPlayer();
-    //}
-
-    //public async void OnEndTurnButton()
-    //{
-    //    await state.End();
-    //}
-
     private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             int playerIndex = GameMultiplayer.Instance.GetPlayerDataIndexFromClientId(clientId);
             Vector3 position = spawnPositionList[playerIndex];
-            
+
             Transform playerTransform = Instantiate(playerPrefab, position, playerPrefab.rotation, null);
             playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-
             GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
+
+            Transform cubeTransform = Instantiate(cubePrefab, position, cubePrefab.rotation, null);
+            cubeTransform.GetComponent<NetworkObject>().Spawn(true);
+            GameMultiplayer.Instance.SetNameClientRpc(cubeTransform.gameObject, "CubePlayer" + playerIndex);
         }
 
         isLocalPlayerReady = true;

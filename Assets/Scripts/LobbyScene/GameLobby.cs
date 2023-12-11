@@ -1,6 +1,5 @@
 using ParrelSync;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -309,7 +308,7 @@ public class GameLobby : MonoBehaviour
             try
             {
                 await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
-                
+
                 ResetLobby();
             }
             catch (LobbyServiceException ex)

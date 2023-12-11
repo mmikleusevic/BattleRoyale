@@ -1,17 +1,18 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
-public class EnemyTurn : State
+public class EnemyTurn : BattleState
 {
     public EnemyTurn(GameManager battleSystem) : base(battleSystem)
     {
 
     }
 
-    public override async Awaitable Start()
+    public override IEnumerator Start()
     {
         Debug.Log("Disable most controls of the player");
 
-        await Awaitable.NextFrameAsync();
+        yield break;
     }
 }
 

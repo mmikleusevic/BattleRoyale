@@ -1,17 +1,17 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
-public class Won : State
+public class Won : BattleState
 {
     public Won(GameManager battleSystem) : base(battleSystem)
     {
-
     }
 
-    public override async Awaitable Start()
+    public override IEnumerator Start()
     {
         Debug.Log("You won the battle");
 
-        await Awaitable.WaitForSecondsAsync(2f);
+        yield return new WaitForSeconds(2f);
     }
 }
 

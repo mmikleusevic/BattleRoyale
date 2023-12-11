@@ -1,16 +1,17 @@
+using System.Collections;
 using UnityEngine;
 
-public class Lost : State
+public class Lost : BattleState
 {
     public Lost(GameManager battleSystem) : base(battleSystem)
     {
 
     }
 
-    public override async Awaitable Start()
+    public override IEnumerator Start()
     {
         Debug.Log("You were defeated.");
 
-        await Awaitable.NextFrameAsync();
+        yield break;
     }
 }

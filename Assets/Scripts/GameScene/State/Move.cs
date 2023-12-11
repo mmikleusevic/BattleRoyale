@@ -1,16 +1,16 @@
+using System.Collections;
 using UnityEngine;
 
-public class Move : State
+public class Move : BattleState
 {
     public Move(GameManager battleSystem) : base(battleSystem)
     {
-
     }
 
-    public override async Awaitable Start()
+    public override IEnumerator Start()
     {
         Debug.Log("You moved.");
 
-        await Awaitable.NextFrameAsync();
+        yield break;
     }
 }

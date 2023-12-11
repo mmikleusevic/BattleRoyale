@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Unity.Netcode;
 using Unity.Services.Authentication;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
@@ -103,7 +101,7 @@ public class GameMultiplayer : NetworkBehaviour
         catch (NullReferenceException ex)
         {
             Debug.Log(ex);
-        }        
+        }
     }
 
     private void NetworkManager_OnClientConnectedCallback(ulong clientId)
