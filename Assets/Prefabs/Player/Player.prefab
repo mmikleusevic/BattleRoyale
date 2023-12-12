@@ -232,3 +232,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerVisual: {fileID: 7860407659914280080}
+  diceVisual: {fileID: 0}

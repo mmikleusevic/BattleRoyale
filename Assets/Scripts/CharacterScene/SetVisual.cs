@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CubeVisual : MonoBehaviour
+public class SetVisual : MonoBehaviour
 {
     [SerializeField] private MeshRenderer bodyMeshRenderer;
 
@@ -12,7 +12,7 @@ public class CubeVisual : MonoBehaviour
         bodyMeshRenderer.material = material;
     }
 
-    public void SetCubeColor(Color color)
+    public void SetColor(Color color)
     {
         material.color = color;
     }

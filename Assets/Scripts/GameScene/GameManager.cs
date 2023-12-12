@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class GameManager : StateMachine
@@ -10,31 +12,31 @@ public class GameManager : StateMachine
     public event EventHandler OnToggleLocalGamePause;
     public event EventHandler OnMultiplayerGamePaused;
     public event EventHandler OnMultiplayerGameUnpaused;
-    public event EventHandler OnLocalPlayerReadyChanged;
-    public event EventHandler OnGamePlaying;
+    public event EventHandler OnGameStateChanged;
 
     [SerializeField] private Transform playerPrefab;
-    [SerializeField] private Transform cubePrefab;
+    [SerializeField] private Transform dicePrefab;
     [SerializeField] private List<Vector3> spawnPositionList = new List<Vector3>();
 
-    private bool isLocalPlayerReady = false;
+    private bool autoCheckGamePauseState;
     private List<Player> players;
     private Dictionary<ulong, bool> playerReadyDictonary;
     private Dictionary<ulong, bool> playerPausedDictionary;
-    private NetworkVariable<bool> isGamePaused = new NetworkVariable<bool>(false);
+    private NetworkVariable<bool> isGamePaused;
     private NetworkVariable<GameState> gameState;
-    private bool autoCheckGamePauseState;
     private void Awake()
     {
         Instance = this;
 
         playerReadyDictonary = new Dictionary<ulong, bool>();
         playerPausedDictionary = new Dictionary<ulong, bool>();
+        isGamePaused = new NetworkVariable<bool>(false);
         gameState = new NetworkVariable<GameState>(GameState.WaitingToStart);
     }
 
     public override void OnNetworkSpawn()
     {
+        gameState.OnValueChanged += GameState_OnValueChanged;
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
 
         if (IsServer)
@@ -45,8 +47,15 @@ public class GameManager : StateMachine
 
     public override void OnNetworkDespawn()
     {
+        gameState.OnValueChanged -= GameState_OnValueChanged;
         isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
     }
+
+    private void Start()
+    {
+        SetPlayerReadyServerRpc();
+    }
+
 
     private void LateUpdate()
     {
@@ -57,21 +66,17 @@ public class GameManager : StateMachine
         }
     }
 
-    public async void StartGame()
+    private void GameState_OnValueChanged(GameState previousValue, GameState newValue)
     {
-        foreach (KeyValuePair<ulong, NetworkClient> client in NetworkManager.ConnectedClients)
-        {
-            Player player = client.Value.PlayerObject.GetComponent<Player>();
-
-            players.Add(player);
-        }
-
-        await Awaitable.WaitForSecondsAsync(3f);
-
-        gameState.Value = GameState.GamePlaying;
-
-        OnGamePlaying?.Invoke(this, EventArgs.Empty);
+        OnGameStateChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    [ServerRpc]
+    private void StartGameServerRpc()
+    {
+        gameState.Value = GameState.GamePlaying;
+    }
+
     private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
@@ -83,16 +88,12 @@ public class GameManager : StateMachine
             playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
             GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
 
-            Transform cubeTransform = Instantiate(cubePrefab, position, cubePrefab.rotation, null);
-            cubeTransform.GetComponent<NetworkObject>().Spawn(true);
-            GameMultiplayer.Instance.SetNameClientRpc(cubeTransform.gameObject, "CubePlayer" + playerIndex);
+            //SetPlayerToPlayerListClientRpc(playerTransform.GetComponent<Player>().NetworkObject);
+
+            Transform diceTransform = Instantiate(dicePrefab, Vector3.zero, dicePrefab.rotation, null);
+            diceTransform.GetComponent<NetworkObject>().Spawn(true);
+            GameMultiplayer.Instance.SetNameClientRpc(diceTransform.gameObject, "DicePlayer" + playerIndex);
         }
-
-        isLocalPlayerReady = true;
-
-        SetPlayerReadyServerRpc();
-
-        OnLocalPlayerReadyChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void IsGamePaused_OnValueChanged(bool previousValue, bool newValue)
@@ -162,7 +163,19 @@ public class GameManager : StateMachine
 
         if (allClientsReady)
         {
-            StartGame();
+            StartGameServerRpc();
         }
+    }
+
+    [ClientRpc]
+    private void SetPlayerToPlayerListClientRpc(NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        playerNetworkObjectReference.TryGet(out NetworkObject playerNetworkObject);
+
+        if (playerNetworkObject == null) return;
+
+        Player player = playerNetworkObject.GetComponent<Player>();
+
+        players.Add(player);
     }
 }

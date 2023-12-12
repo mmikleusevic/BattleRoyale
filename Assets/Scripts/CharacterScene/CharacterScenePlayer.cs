@@ -7,7 +7,7 @@ public class CharacterScenePlayer : MonoBehaviour
 {
     [SerializeField] private int playerIndex;
     [SerializeField] private GameObject readyGameObject;
-    [SerializeField] private PlayerVisual playerVisual;
+    [SerializeField] private SetVisual playerVisual;
     [SerializeField] private Button kickButton;
     [SerializeField] private TextMeshPro playerNameText;
 
@@ -54,7 +54,7 @@ public class CharacterScenePlayer : MonoBehaviour
             PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
             readyGameObject.SetActive(CharacterSceneReady.Instance.IsPlayerReady(playerData.clientId));
             playerNameText.text = playerData.playerName.ToString();
-            playerVisual.SetPlayerColor(GameMultiplayer.Instance.GetPlayerColor(playerData.colorId));
+            playerVisual.SetColor(GameMultiplayer.Instance.GetPlayerColor(playerData.colorId));
         }
         else
         {

@@ -7,13 +7,16 @@ public class Player : NetworkBehaviour
 
     public static Player LocalInstance { get; private set; }
 
-    [SerializeField] private PlayerVisual playerVisual;
-    [SerializeField] private CubeVisual cubeVisual;
+    [SerializeField] private SetVisual playerVisual;
+
+    public Color playerColor;
+
     private void Start()
     {
         PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
-        playerVisual.SetPlayerColor(GameMultiplayer.Instance.GetPlayerColor(playerData.colorId));
-        cubeVisual.SetCubeColor(GameMultiplayer.Instance.GetPlayerColor(playerData.colorId));
+        playerColor = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
+
+        playerVisual.SetColor(playerColor);
     }
 
     public override void OnNetworkSpawn()

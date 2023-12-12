@@ -1350,6 +1350,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 6111445030822079297, guid: e3a7bdd3dea739b44ab813777dff0b4d,
     type: 3}
+  dicePrefab: {fileID: 29937253422010119, guid: 56f14da0a49868b4ca275ee9e663e754,
+    type: 3}
   spawnPositionList:
   - {x: 0, y: 14.5, z: -1.1}
   - {x: 0, y: 28.7, z: -1.1}
