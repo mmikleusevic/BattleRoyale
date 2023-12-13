@@ -17,6 +17,7 @@ public class GameManager : StateMachine
     [SerializeField] private List<Vector3> spawnPositionList = new List<Vector3>();
 
     private bool autoCheckGamePauseState;
+
     private List<Player> players;
     private Dictionary<ulong, bool> playerReadyDictonary;
     private Dictionary<ulong, bool> playerPausedDictionary;
@@ -27,6 +28,7 @@ public class GameManager : StateMachine
     {
         Instance = this;
 
+        players = new List<Player>();
         playerReadyDictonary = new Dictionary<ulong, bool>();
         playerPausedDictionary = new Dictionary<ulong, bool>();
         isGamePaused = new NetworkVariable<bool>(false);
@@ -73,6 +75,8 @@ public class GameManager : StateMachine
     [ServerRpc]
     private void StartGameServerRpc()
     {
+        SetPlayerToPlayersListClientRpc();
+
         gameState.Value = GameState.GamePlaying;
     }
 
@@ -84,10 +88,9 @@ public class GameManager : StateMachine
             Vector3 position = spawnPositionList[playerIndex];
 
             Transform playerTransform = Instantiate(playerPrefab, position, playerPrefab.rotation, null);
-            playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+            NetworkObject playerNetworkObject = playerTransform.GetComponent<NetworkObject>();
+            playerNetworkObject.SpawnAsPlayerObject(clientId, true);
             GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
-
-            //SetPlayerToPlayerListClientRpc(playerTransform.GetComponent<Player>().NetworkObject);
 
             Transform diceTransform = Instantiate(dicePrefab, Vector3.zero, dicePrefab.rotation, null);
             diceTransform.GetComponent<NetworkObject>().Spawn(true);
@@ -167,14 +170,13 @@ public class GameManager : StateMachine
     }
 
     [ClientRpc]
-    private void SetPlayerToPlayerListClientRpc(NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    private void SetPlayerToPlayersListClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        playerNetworkObjectReference.TryGet(out NetworkObject playerNetworkObject);
+        Player[] players = FindObjectsByType<Player>(FindObjectsSortMode.InstanceID);
 
-        if (playerNetworkObject == null) return;
-
-        Player player = playerNetworkObject.GetComponent<Player>();
-
-        players.Add(player);
+        foreach (Player player in players)
+        {
+            this.players.Add(player);
+        }
     }
 }
