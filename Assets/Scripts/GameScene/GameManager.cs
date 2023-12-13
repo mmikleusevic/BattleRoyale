@@ -13,7 +13,6 @@ public class GameManager : StateMachine
     public event EventHandler OnGameStateChanged;
 
     [SerializeField] private Transform playerPrefab;
-    [SerializeField] private Transform dicePrefab;
     [SerializeField] private List<Vector3> spawnPositionList = new List<Vector3>();
 
     private bool autoCheckGamePauseState;
@@ -91,10 +90,6 @@ public class GameManager : StateMachine
             NetworkObject playerNetworkObject = playerTransform.GetComponent<NetworkObject>();
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
             GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
-
-            Transform diceTransform = Instantiate(dicePrefab, Vector3.zero, dicePrefab.rotation, null);
-            diceTransform.GetComponent<NetworkObject>().Spawn(true);
-            GameMultiplayer.Instance.SetNameClientRpc(diceTransform.gameObject, "DicePlayer" + playerIndex);
         }
     }
 

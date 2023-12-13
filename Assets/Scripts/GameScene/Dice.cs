@@ -1,25 +1,9 @@
-using Unity.Netcode;
 using UnityEngine;
 
-public class Dice : NetworkBehaviour
+public class Dice : MonoBehaviour
 {
-    [SerializeField] private SetVisual diceVisual;
-
-    void Start()
+    private void RotateSingle()
     {
-        diceVisual.SetColor(Player.LocalInstance.playerColor);
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        if (IsServer)
-        {
-            NetworkManager.Singleton.OnClientDisconnectCallback += GameManager_OnClientDisconnectCallback;
-        }
-    }
-
-    private void GameManager_OnClientDisconnectCallback(ulong obj)
-    {
-        Destroy(gameObject);
+        Quaternion a = Random.rotation;
     }
 }
