@@ -8,7 +8,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - SingleDice
+  - SingleDie
   - Water
   - UI
   - ThreeDice
