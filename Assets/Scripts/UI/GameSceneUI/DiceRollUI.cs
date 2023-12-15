@@ -23,14 +23,14 @@ public class DiceRollUI : MonoBehaviour
     {
         rollThreeButton.onClick.AddListener(() =>
         {
+            rollThreeButton.gameObject.SetActive(false);
             StartCoroutine(RotateDice());
-            //rollThreeButton.gameObject.SetActive(false);
         });
 
         rollSingleButton.onClick.AddListener(() =>
         {
+            rollSingleButton.gameObject.SetActive(false);
             StartCoroutine(RotateDie());
-            //rollSingleButton.gameObject.SetActive(false);
         });
 
         positions = new Vector3[4];
