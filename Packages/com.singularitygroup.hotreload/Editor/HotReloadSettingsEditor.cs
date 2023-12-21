@@ -2,28 +2,20 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace SingularityGroup.HotReload.Editor
-{
-    static class HotReloadSettingsEditor
-    {
+namespace SingularityGroup.HotReload.Editor {
+    static class HotReloadSettingsEditor {
         /// Ensure settings asset file is created and saved
-        public static void EnsureSettingsCreated(HotReloadSettingsObject asset)
-        {
-            if (!SettingsExists())
-            {
+        public static void EnsureSettingsCreated(HotReloadSettingsObject asset) {
+            if (!SettingsExists()) {
                 CreateNewSettingsFile(asset, HotReloadSettingsObject.editorAssetPath);
             }
         }
 
         /// Load existing settings asset or return the default settings
-        public static HotReloadSettingsObject LoadSettingsOrDefault()
-        {
-            if (SettingsExists())
-            {
+        public static HotReloadSettingsObject LoadSettingsOrDefault() {
+            if (SettingsExists()) {
                 return AssetDatabase.LoadAssetAtPath<HotReloadSettingsObject>(HotReloadSettingsObject.editorAssetPath);
-            }
-            else
-            {
+            } else {
                 // create an instance with default values
                 return ScriptableObject.CreateInstance<HotReloadSettingsObject>();
             }
@@ -34,13 +26,11 @@ namespace SingularityGroup.HotReload.Editor
         /// </summary>
         /// <remarks>Assume that settings asset doesn't exist yet</remarks>
         /// <returns>The settings asset</returns>
-        static void CreateNewSettingsFile(HotReloadSettingsObject asset, string editorAssetPath)
-        {
+        static void CreateNewSettingsFile(HotReloadSettingsObject asset, string editorAssetPath) {
             // create new settings asset
             // ReSharper disable once AssignNullToNotNullAttribute
             Directory.CreateDirectory(Path.GetDirectoryName(editorAssetPath));
-            if (asset == null)
-            {
+            if (asset == null) {
                 asset = ScriptableObject.CreateInstance<HotReloadSettingsObject>();
             }
             AssetDatabase.CreateAsset(asset, editorAssetPath);
@@ -50,36 +40,27 @@ namespace SingularityGroup.HotReload.Editor
 
         #region include/exclude in build
 
-        private static bool SettingsExists()
-        {
+        private static bool SettingsExists() {
             return AssetExists(HotReloadSettingsObject.editorAssetPath);
         }
 
-        private static bool AssetExists(string assetPath)
-        {
+        private static bool AssetExists(string assetPath) {
             return AssetDatabase.GetMainAssetTypeAtPath(assetPath) != null;
         }
 
-        public static void AddOrRemoveFromBuild(bool includeSettingsInBuild)
-        {
+        public static void AddOrRemoveFromBuild(bool includeSettingsInBuild) {
             AssetDatabase.StartAssetEditing();
             var so = LoadSettingsOrDefault();
-            try
-            {
-                if (includeSettingsInBuild)
-                {
+            try {
+                if (includeSettingsInBuild) {
                     // Note: don't need to force create settings because we know the defaults in player.
                     so.EnsurePrefabSetCorrectly();
                     EnsureSettingsCreated(so);
-                }
-                else
-                {
+                } else {
                     // this block shouldn't create the asset file, but it's also fine if it does
                     so.EnsurePrefabNotInBuild();
                 }
-            }
-            finally
-            {
+            } finally {
                 AssetDatabase.StopAssetEditing();
             }
         }

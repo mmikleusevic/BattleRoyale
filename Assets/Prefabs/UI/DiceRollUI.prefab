@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 715435131737199753}
   - component: {fileID: 2719814021471791679}
   m_Layer: 5
-  m_Name: RotateSingle
+  m_Name: RollSingle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 89}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1024, y: 1024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &715435131737199753
@@ -132,6 +132,8 @@ MonoBehaviour:
   - {fileID: 0}
   threeDiceCamera: {fileID: 0}
   singleDieCamera: {fileID: 0}
+  rollSingleUI: {fileID: 3753573248260593135}
+  rollThreeUI: {fileID: 7223345269901502215}
 --- !u!1 &7223345269901502215
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,7 +146,7 @@ GameObject:
   - component: {fileID: 3939678521206097776}
   - component: {fileID: 4187164671874211741}
   m_Layer: 5
-  m_Name: RotateThree
+  m_Name: RollThree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,8 +169,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 89}
-  m_SizeDelta: {x: 2045, y: 2048}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 2048, y: 2048}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3939678521206097776
 CanvasRenderer:

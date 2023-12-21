@@ -9,8 +9,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace SingularityGroup.HotReload
-{
+namespace SingularityGroup.HotReload {
     /// <summary>
     /// HotReload runtime settings. These can be changed while the app is running.
     /// </summary>
@@ -19,16 +18,12 @@ namespace SingularityGroup.HotReload
     /// See also Editor/PrebuildIncludeResources.cs
     /// </remarks>
     [Serializable]
-    class HotReloadSettingsObject : ScriptableObject
-    {
+    class HotReloadSettingsObject : ScriptableObject {
         #region singleton
         private static HotReloadSettingsObject _I;
-        public static HotReloadSettingsObject I
-        {
-            get
-            {
-                if (_I == null)
-                {
+        public static HotReloadSettingsObject I {
+            get {
+                if (_I == null) {
                     _I = LoadSettingsOrDefault();
                 }
                 return _I;
@@ -42,27 +37,21 @@ namespace SingularityGroup.HotReload
         public static string editorAssetPath = "Assets/HotReload/Resources/HotReloadSettingsObject.asset";
 
         private static string resourceName => Path.GetFileNameWithoutExtension(editorAssetPath);
-
-        public static bool TryLoadSettings(out HotReloadSettingsObject settings)
-        {
-            try
-            {
+        
+        public static bool TryLoadSettings(out HotReloadSettingsObject settings) {
+            try {
                 settings = LoadSettings();
                 return settings != null;
-            }
-            catch (FileNotFoundException)
-            {
+            } catch(FileNotFoundException) {
                 settings = null;
                 return false;
             }
         }
 
         [NotNull]
-        private static HotReloadSettingsObject LoadSettingsOrDefault()
-        {
+        private static HotReloadSettingsObject LoadSettingsOrDefault() {
             var settings = LoadSettings();
-            if (settings == null)
-            {
+            if (settings == null) {
                 // load defaults
                 settings = CreateInstance<HotReloadSettingsObject>();
             }
@@ -70,19 +59,15 @@ namespace SingularityGroup.HotReload
         }
 
         [CanBeNull]
-        private static HotReloadSettingsObject LoadSettings()
-        {
+        private static HotReloadSettingsObject LoadSettings() {
             HotReloadSettingsObject settings;
-            if (Application.isEditor)
-            {
-#if UNITY_EDITOR
+            if (Application.isEditor) {
+                #if UNITY_EDITOR
                 settings = AssetDatabase.LoadAssetAtPath<HotReloadSettingsObject>(editorAssetPath);
-#else
+                #else
                 settings = null;
-#endif
-            }
-            else
-            {
+                #endif
+            } else {
                 // load from Resources (assumes that build includes the resource)
                 settings = Resources.Load<HotReloadSettingsObject>(resourceName);
             }
@@ -97,8 +82,7 @@ namespace SingularityGroup.HotReload
         /// This is called by the Unity editor when the ScriptableObject is first created.
         /// This function is only called in editor mode.
         /// </remarks>
-        private void Reset()
-        {
+        private void Reset() {
             EnsurePrefabSetCorrectly();
         }
 
@@ -106,39 +90,34 @@ namespace SingularityGroup.HotReload
         /// Path to the prefab asset file.
         /// </summary>
         const string prefabAssetPath = "Packages/com.singularitygroup.hotreload/Runtime/HotReloadPrompts.prefab";
-
+        
         // Call this during build, just to be sure the field is correct. (I had some issues with it while editing the prefab)
-        public void EnsurePrefabSetCorrectly()
-        {
+        public void EnsurePrefabSetCorrectly() {
 #if UNITY_EDITOR
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabAssetPath);
-            if (prefab == null)
-            {
+            if (prefab == null) {
                 // when you use HotReload as a unitypackage, prefab is somewhere inside your assets folder
-                var guids = AssetDatabase.FindAssets("HotReloadPrompts t:prefab", new string[] { "Assets" });
+                var guids = AssetDatabase.FindAssets("HotReloadPrompts t:prefab", new string[]{"Assets"});
                 var paths = guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
                 var promptsPrefabPath = paths.FirstOrDefault(assetpath => Path.GetFileName(assetpath) == "HotReloadPrompts.prefab");
-                if (promptsPrefabPath != null)
-                {
+                if (promptsPrefabPath != null) {
                     prefab = AssetDatabase.LoadAssetAtPath<GameObject>(promptsPrefabPath);
                 }
             }
-            if (prefab == null)
-            {
+            if (prefab == null) {
                 throw new Exception("Failed to find PromptsPrefab (are you using Hot Reload as a package?");
             }
             PromptsPrefab = prefab;
 #endif
         }
 
-        public void EnsurePrefabNotInBuild()
-        {
+        public void EnsurePrefabNotInBuild() {
 #if UNITY_EDITOR
             PromptsPrefab = null;
 #endif
         }
 
-
+        
         // put the stored settings here
 
         [Header("Build Settings")]
@@ -154,7 +133,7 @@ namespace SingularityGroup.HotReload
         [HideInInspector]
         public GameObject PromptsPrefab;
         #endregion
-
+        
         #endregion settings
     }
 }

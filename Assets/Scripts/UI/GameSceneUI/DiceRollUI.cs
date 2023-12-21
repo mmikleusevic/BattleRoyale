@@ -5,14 +5,16 @@ using UnityEngine.UI;
 
 public class DiceRollUI : MonoBehaviour
 {
-    [SerializeField] Button rollThreeButton;
-    [SerializeField] Button rollSingleButton;
-    [SerializeField] List<GameObject> dice;
-    [SerializeField] Camera threeDiceCamera;
-    [SerializeField] Camera singleDieCamera;
+    [SerializeField] private Button rollThreeButton;
+    [SerializeField] private Button rollSingleButton;
+    [SerializeField] private List<GameObject> dice;
+    [SerializeField] private Camera threeDiceCamera;
+    [SerializeField] private Camera singleDieCamera;
+    [SerializeField] private GameObject rollSingleUI;
+    [SerializeField] private GameObject rollThreeUI;
 
-    Vector3 threeDiceCameraPosition;
-    Vector3 singleDiceCameraPosition;
+    private Vector3 threeDiceCameraPosition;
+    private Vector3 singleDiceCameraPosition;
     private Vector3[] positions;
     private float interactDistance = 0.51f;
     private float rotationSpeed = 150f;
@@ -34,6 +36,8 @@ public class DiceRollUI : MonoBehaviour
         });
 
         positions = new Vector3[4];
+
+        Hide();
     }
 
     private void Start()
@@ -157,5 +161,21 @@ public class DiceRollUI : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    private void ShowOne()
+    {
+        rollSingleUI.SetActive(true);
+    }
+
+    private void ShowThree()
+    {
+        rollThreeUI.SetActive(true);
+    }
+
+    private void Hide()
+    {
+        rollSingleUI.SetActive(false);
+        rollThreeUI.SetActive(false);
     }
 }

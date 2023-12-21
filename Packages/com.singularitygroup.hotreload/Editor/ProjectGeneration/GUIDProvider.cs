@@ -1,10 +1,9 @@
-namespace SingularityGroup.HotReload.Editor.ProjectGeneration
-{
-    class GUIDProvider : IGUIDGenerator
+namespace SingularityGroup.HotReload.Editor.ProjectGeneration {
+  class GUIDProvider : IGUIDGenerator
+  {
+    public string ProjectGuid(string name)
     {
-        public string ProjectGuid(string name)
-        {
-            return SolutionGuidGenerator.GuidForProject(name);
-        }
+      return SolutionGuidGenerator.GuidForProject(name);
     }
+  }
 }

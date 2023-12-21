@@ -122,7 +122,7 @@ namespace SingularityGroup.HotReload.Editor.Semver
 
             var minorMatch = match.Groups["minor"];
             int minor = 0;
-            if (minorMatch.Success)
+            if (minorMatch.Success) 
             {
 #if NETSTANDARD
                 minor = int.Parse(minorMatch.Value);
@@ -145,7 +145,7 @@ namespace SingularityGroup.HotReload.Editor.Semver
                 patch = int.Parse(patchMatch.Value, CultureInfo.InvariantCulture);
 #endif
             }
-            else if (strict)
+            else if (strict) 
             {
                 throw new InvalidOperationException("Invalid version (no patch version given in strict mode)");
             }
@@ -469,12 +469,10 @@ namespace SingularityGroup.HotReload.Editor.Semver
         /// <returns>If left is equal to right <c>true</c>, else <c>false</c>.</returns>
         public static bool operator ==(SemVersion left, SemVersion right)
         {
-            if (ReferenceEquals(right, null))
-            {
+            if(ReferenceEquals(right, null)) {
                 return ReferenceEquals(left, null);
             }
-            if (ReferenceEquals(left, null))
-            {
+            if(ReferenceEquals(left, null)) {
                 return false;
             }
             return left.PrecedenceMatches(right);
