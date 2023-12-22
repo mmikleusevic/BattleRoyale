@@ -22,6 +22,8 @@ public class SingleDiceRollUI : Roll
             rollSingleButton.gameObject.SetActive(false);
             StartCoroutine(RotateDie());
         });
+
+        Hide();
     }
 
     private void Start()
