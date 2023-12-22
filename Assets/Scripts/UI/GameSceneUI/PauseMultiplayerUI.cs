@@ -48,14 +48,12 @@ public class PauseMultiplayerUI : MonoBehaviour
 
     private void Show()
     {
-        pauseButton.gameObject.SetActive(false);
         pauseText.gameObject.SetActive(true);
         background.gameObject.SetActive(true);
     }
 
     private void Hide()
     {
-        pauseButton.gameObject.SetActive(true);
         pauseText.gameObject.SetActive(false);
         background.gameObject.SetActive(false);
     }
