@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4243809051605195515}
   - component: {fileID: 715435131737199753}
   - component: {fileID: 2719814021471791679}
+  - component: {fileID: 523181764902705831}
   m_Layer: 5
   m_Name: RollSingle
   m_TagString: Untagged
@@ -73,6 +74,21 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &523181764902705831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3753573248260593135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da31be3c4e2d83348add1cf23addb7ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rollSingleButton: {fileID: 3031603972052962308}
+  die: {fileID: 0}
+  singleDieCamera: {fileID: 0}
 --- !u!1 &6786975145521896742
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,17 +139,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b66b2208a5211f14187105646282378a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rollThreeButton: {fileID: 3376424424406391638}
-  rollSingleButton: {fileID: 3031603972052962308}
-  dice:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  threeDiceCamera: {fileID: 0}
-  singleDieCamera: {fileID: 0}
-  rollSingleUI: {fileID: 3753573248260593135}
-  rollThreeUI: {fileID: 7223345269901502215}
 --- !u!1 &7223345269901502215
 GameObject:
   m_ObjectHideFlags: 0
@@ -145,6 +150,7 @@ GameObject:
   - component: {fileID: 4290820748300717741}
   - component: {fileID: 3939678521206097776}
   - component: {fileID: 4187164671874211741}
+  - component: {fileID: 1745106503618461480}
   m_Layer: 5
   m_Name: RollThree
   m_TagString: Untagged
@@ -207,6 +213,24 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &1745106503618461480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7223345269901502215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d892076c28b1c84c9e1c30f132aa160, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rollThreeButton: {fileID: 3376424424406391638}
+  dice:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  threeDiceCamera: {fileID: 0}
 --- !u!1001 &8313809485977593067
 PrefabInstance:
   m_ObjectHideFlags: 0

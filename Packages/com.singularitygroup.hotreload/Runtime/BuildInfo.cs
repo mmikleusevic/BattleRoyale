@@ -1,13 +1,14 @@
 #if ENABLE_MONO && (DEVELOPMENT_BUILD || UNITY_EDITOR)
+using JetBrains.Annotations;
+using SingularityGroup.HotReload.Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using JetBrains.Annotations;
-using SingularityGroup.HotReload.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace SingularityGroup.HotReload {
+namespace SingularityGroup.HotReload
+{
     /// <summary>
     /// Information about the Unity Player build.
     /// </summary>
@@ -23,7 +24,8 @@ namespace SingularityGroup.HotReload {
     /// </para>
     /// </remarks>
     [Serializable]
-    class BuildInfo {
+    class BuildInfo
+    {
         /// <summary>
         /// Uniquely identifies the Unity project.
         /// </summary>
@@ -54,7 +56,7 @@ namespace SingularityGroup.HotReload {
         /// Separate the symbols with a semi-colon character ';'
         /// </remarks>
         public string defineSymbols;
-        
+
         /// <summary>
         /// A regex of C# project names (*.csproj) to be omitted from compilation.  
         /// </summary>
@@ -69,7 +71,7 @@ namespace SingularityGroup.HotReload {
         /// The hostname (ip address) where Hot Reload server would be listening.
         /// </summary>
         public string buildMachineHostName;
-        
+
         /// <summary>
         /// The computer that made the Android (or Standalone etc) build.<br/>
         /// The port where Hot Reload server would be listening.
@@ -82,11 +84,14 @@ namespace SingularityGroup.HotReload {
         public string activeBuildTarget;
 
         [JsonIgnore]
-        public HashSet<string> DefineSymbolsAsHashSet {
-            get {
+        public HashSet<string> DefineSymbolsAsHashSet
+        {
+            get
+            {
                 var symbols = defineSymbols.Trim().Split(';');
                 // split on an empty string produces 1 empty string
-                if (symbols.Length == 1 && symbols[0] == string.Empty) {
+                if (symbols.Length == 1 && symbols[0] == string.Empty)
+                {
                     return new HashSet<string>();
                 }
                 return new HashSet<string>(symbols);
@@ -94,22 +99,28 @@ namespace SingularityGroup.HotReload {
         }
 
         [JsonIgnore]
-        public PatchServerInfo BuildMachineServer {
-            get {
-                if (buildMachineHostName == null || buildMachinePort == 0) {
+        public PatchServerInfo BuildMachineServer
+        {
+            get
+            {
+                if (buildMachineHostName == null || buildMachinePort == 0)
+                {
                     return null;
                 }
                 return new PatchServerInfo(buildMachineHostName, buildMachinePort, commitHash, null);
             }
         }
 
-        public string ToJson() {
+        public string ToJson()
+        {
             return JsonConvert.SerializeObject(this);
         }
 
         [CanBeNull]
-        public static BuildInfo FromJson(string json) {
-            if (string.IsNullOrEmpty(json)) {
+        public static BuildInfo FromJson(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+            {
                 return null;
             }
             return JsonConvert.DeserializeObject<BuildInfo>(json);
@@ -119,17 +130,21 @@ namespace SingularityGroup.HotReload {
         /// Path to read/write the json file to.
         /// </summary>
         /// <returns>A filepath that is inside the player build</returns>
-        public static string GetStoredPath() {
+        public static string GetStoredPath()
+        {
             return Path.Combine(Application.streamingAssetsPath, GetStoredName());
         }
 
-        public static string GetStoredName() {
+        public static string GetStoredName()
+        {
             return "HotReload_BuildInfo.json";
         }
 
         /// <returns>True if the commit hashes are definately different, otherwise False</returns>
-        public bool IsDifferentCommit(string remoteCommit) {
-            if (commitHash == PatchServerInfo.UnknownCommitHash) {
+        public bool IsDifferentCommit(string remoteCommit)
+        {
+            if (commitHash == PatchServerInfo.UnknownCommitHash)
+            {
                 return false;
             }
 
@@ -142,21 +157,26 @@ namespace SingularityGroup.HotReload {
         /// <param name="commitA"></param>
         /// <param name="commitB"></param>
         /// <returns>False if the commit hashes are definately different, otherwise True</returns>
-        public static bool SameCommit(string commitA, string commitB) {
-            if (commitA == null) {
+        public static bool SameCommit(string commitA, string commitB)
+        {
+            if (commitA == null)
+            {
                 // unknown commit hash, so approve anything
                 return true;
             }
 
-            if (commitA.Length == commitB.Length) {
+            if (commitA.Length == commitB.Length)
+            {
                 return commitA == commitB;
-            } else if (commitA.Length >= 6 && commitB.Length >= 6) {
+            }
+            else if (commitA.Length >= 6 && commitB.Length >= 6)
+            {
                 // depending on OS, the git log pretty output has different length (7 or 8 chars)
                 // if the longer hash starts with the shorter hash, return true
                 // Assumption: commits have different length.
                 var longer = commitA.Length > commitB.Length ? commitA : commitB;
                 var shorter = commitA.Length > commitB.Length ? commitB : commitA;
-                
+
                 return longer.StartsWith(shorter);
             }
             return false;

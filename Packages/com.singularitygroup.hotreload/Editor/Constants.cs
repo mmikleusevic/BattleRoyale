@@ -1,6 +1,8 @@
 ﻿
-namespace SingularityGroup.HotReload.Editor {
-    internal static class Constants {
+namespace SingularityGroup.HotReload.Editor
+{
+    internal static class Constants
+    {
         public const string WebsiteURL = "https://hotreload.net";
 
         public const string ProductPurchaseURL = WebsiteURL + "/pricing";
@@ -21,7 +23,7 @@ namespace SingularityGroup.HotReload.Editor {
         public const string UnityStoreRateAppURL = "https://assetstore.unity.com/packages/slug/254358#reviews";
         public const string ChangelogURL = WebsiteURL + "/changelog";
         public const string DiscordInviteUrl = "https://discord.com/invite/kgxAS4Bqxr";
-        
+
         public const int DaysToRateApp = 5;
         public const int RecompileButtonTextHideWidth = 460;
         public const int IndicationTextHideWidth = 360;
@@ -35,7 +37,7 @@ namespace SingularityGroup.HotReload.Editor {
         public const int EventFiltersShownHideWidth = 275;
         public const int ConsumptionsHideWidth = 300;
         public const int ConsumptionsHideHeight = 360;
-        
+
         public const string Only40EntriesShown = "Only last 40 entries are shown";
     }
 }

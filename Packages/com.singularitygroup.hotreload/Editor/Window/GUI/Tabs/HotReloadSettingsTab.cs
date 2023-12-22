@@ -1,26 +1,29 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
 using SingularityGroup.HotReload.DTO;
 using SingularityGroup.HotReload.Editor.Cli;
+using System;
+using System.Diagnostics.CodeAnalysis;
 using UnityEditor;
 using UnityEngine;
 using EditorGUI = UnityEditor.EditorGUI;
 
-namespace SingularityGroup.HotReload.Editor {
-    internal struct HotReloadSettingsTabState {
+namespace SingularityGroup.HotReload.Editor
+{
+    internal struct HotReloadSettingsTabState
+    {
         public readonly bool running;
         public readonly bool trialLicense;
         public readonly LoginStatusResponse loginStatus;
         public readonly bool isServerHealthy;
         public readonly bool registrationRequired;
-        
+
         public HotReloadSettingsTabState(
             bool running,
             bool trialLicense,
             LoginStatusResponse loginStatus,
             bool isServerHealthy,
             bool registrationRequired
-        ) {
+        )
+        {
             this.running = running;
             this.trialLicense = trialLicense;
             this.loginStatus = loginStatus;
@@ -29,7 +32,8 @@ namespace SingularityGroup.HotReload.Editor {
         }
     }
 
-    internal class HotReloadSettingsTab : HotReloadTabBase {
+    internal class HotReloadSettingsTab : HotReloadTabBase
+    {
         private readonly HotReloadOptionsSection optionsSection;
 
         // cached because changing built target triggers C# domain reload
@@ -37,7 +41,8 @@ namespace SingularityGroup.HotReload.Editor {
         private readonly Lazy<BuildTargetGroup> currentBuildTarget = new Lazy<BuildTargetGroup>(
             () => BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
 
-        private readonly Lazy<bool> isCurrentBuildTargetSupported = new Lazy<bool>(() => {
+        private readonly Lazy<bool> isCurrentBuildTargetSupported = new Lazy<bool>(() =>
+        {
             var target = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             return HotReloadBuildHelper.IsMonoSupported(target);
         });
@@ -51,22 +56,25 @@ namespace SingularityGroup.HotReload.Editor {
         public HotReloadSettingsTab(HotReloadWindow window) : base(window,
             "Settings",
             "_Popup",
-            "Make changes to a build running on-device.") {
+            "Make changes to a build running on-device.")
+        {
             optionsSection = new HotReloadOptionsSection();
         }
 
         private GUIStyle headlineStyle;
         private GUIStyle paddedStyle;
-        
+
         private Vector2 _settingsTabScrollPos;
-        
+
         HotReloadSettingsTabState currentState;
-        public override void OnGUI() {
+        public override void OnGUI()
+        {
             // HotReloadAboutTabState ensures rendering is consistent between Layout and Repaint calls
             // Without it errors like this happen:
             // ArgumentException: Getting control 2's position in a group with only 2 controls when doing repaint
             // See thread for more context: https://answers.unity.com/questions/17718/argumentexception-getting-control-2s-position-in-a.html
-            if (Event.current.type == EventType.Layout) {
+            if (Event.current.type == EventType.Layout)
+            {
                 currentState = new HotReloadSettingsTabState(
                     running: EditorCodePatcher.Running,
                     trialLicense: EditorCodePatcher.Status != null && (EditorCodePatcher.Status?.isTrial == true),
@@ -75,45 +83,60 @@ namespace SingularityGroup.HotReload.Editor {
                     registrationRequired: RedeemLicenseHelper.I.RegistrationRequired
                 );
             }
-            using (var scope = new EditorGUILayout.ScrollViewScope(_settingsTabScrollPos, GUI.skin.horizontalScrollbar, GUI.skin.verticalScrollbar, GUILayout.MaxHeight(Math.Max(HotReloadWindowStyles.windowScreenHeight, 800)), GUILayout.MaxWidth(Math.Max(HotReloadWindowStyles.windowScreenWidth, 800)))) {
+            using (var scope = new EditorGUILayout.ScrollViewScope(_settingsTabScrollPos, GUI.skin.horizontalScrollbar, GUI.skin.verticalScrollbar, GUILayout.MaxHeight(Math.Max(HotReloadWindowStyles.windowScreenHeight, 800)), GUILayout.MaxWidth(Math.Max(HotReloadWindowStyles.windowScreenWidth, 800))))
+            {
                 _settingsTabScrollPos.x = scope.scrollPosition.x;
                 _settingsTabScrollPos.y = scope.scrollPosition.y;
-                using (new EditorGUILayout.VerticalScope(HotReloadWindowStyles.DynamicSectionHelpTab)) {
+                using (new EditorGUILayout.VerticalScope(HotReloadWindowStyles.DynamicSectionHelpTab))
+                {
                     GUILayout.Space(10);
                     if (!EditorCodePatcher.LoginNotRequired
                         && !currentState.registrationRequired
                         // Delay showing login in settings to not confuse users that they need to login to use Free trial
                         && (HotReloadPrefs.RateAppShown
                             || PackageConst.IsAssetStoreBuild)
-                       ) {
-                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact)) {
-                            using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide)) {
-                                using (new EditorGUILayout.VerticalScope()) {
+                       )
+                    {
+                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact))
+                        {
+                            using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide))
+                            {
+                                using (new EditorGUILayout.VerticalScope())
+                                {
                                     RenderLicenseInfoSection();
                                 }
                             }
                         }
                     }
 
-                    using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact)) {
-                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide)) {
-                            using (new EditorGUILayout.VerticalScope()) {
+                    using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact))
+                    {
+                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide))
+                        {
+                            using (new EditorGUILayout.VerticalScope())
+                            {
                                 HotReloadPrefs.ShowConfiguration = EditorGUILayout.Foldout(HotReloadPrefs.ShowConfiguration, "Configuration", true, HotReloadWindowStyles.FoldoutStyle);
-                                if (HotReloadPrefs.ShowConfiguration) {
+                                if (HotReloadPrefs.ShowConfiguration)
+                                {
                                     EditorGUILayout.Space();
                                     RenderUnityAutoRefresh();
                                     RenderAssetRefresh();
-                                    if (HotReloadPrefs.AllAssetChanges) {
-                                        using (new EditorGUILayout.VerticalScope(paddedStyle ?? (paddedStyle = new GUIStyle { padding = new RectOffset(20, 0, 0, 0) }))) {
+                                    if (HotReloadPrefs.AllAssetChanges)
+                                    {
+                                        using (new EditorGUILayout.VerticalScope(paddedStyle ?? (paddedStyle = new GUIStyle { padding = new RectOffset(20, 0, 0, 0) })))
+                                        {
                                             RenderIncludeShaderChanges();
                                         }
 
                                         EditorGUILayout.Space();
                                     }
-                                    using (new EditorGUI.DisabledScope(!EditorCodePatcher.autoRecompileUnsupportedChangesSupported)) {
+                                    using (new EditorGUI.DisabledScope(!EditorCodePatcher.autoRecompileUnsupportedChangesSupported))
+                                    {
                                         RenderAutoRecompileUnsupportedChanges();
-                                        if (HotReloadPrefs.AutoRecompileUnsupportedChanges && EditorCodePatcher.autoRecompileUnsupportedChangesSupported) {
-                                            using (new EditorGUILayout.VerticalScope(paddedStyle ?? (paddedStyle = new GUIStyle { padding = new RectOffset(20, 0, 0, 0) }))) {
+                                        if (HotReloadPrefs.AutoRecompileUnsupportedChanges && EditorCodePatcher.autoRecompileUnsupportedChangesSupported)
+                                        {
+                                            using (new EditorGUILayout.VerticalScope(paddedStyle ?? (paddedStyle = new GUIStyle { padding = new RectOffset(20, 0, 0, 0) })))
+                                            {
                                                 RenderAutoRecompileUnsupportedChangesImmediately();
                                                 RenderAutoRecompileUnsupportedChangesOnExitPlayMode();
                                                 RenderAutoRecompileUnsupportedChangesInPlayMode();
@@ -125,9 +148,11 @@ namespace SingularityGroup.HotReload.Editor {
                                     RenderConsoleWindow();
                                     RenderAutostart();
 
-                                    if (EditorWindowHelper.supportsNotifications) {
+                                    if (EditorWindowHelper.supportsNotifications)
+                                    {
                                         RenderShowNotifications();
-                                        using (new EditorGUILayout.VerticalScope(paddedStyle ?? (paddedStyle = new GUIStyle { padding = new RectOffset(20, 0, 0, 0) }))) {
+                                        using (new EditorGUILayout.VerticalScope(paddedStyle ?? (paddedStyle = new GUIStyle { padding = new RectOffset(20, 0, 0, 0) })))
+                                        {
                                             RenderShowPatchingNotifications();
                                             RenderShowCompilingUnsupportedNotifications();
                                         }
@@ -135,7 +160,8 @@ namespace SingularityGroup.HotReload.Editor {
                                         EditorGUILayout.Space();
                                     }
                                     EditorGUILayout.Space();
-                                    using (new EditorGUILayout.HorizontalScope()) {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
                                         GUILayout.FlexibleSpace();
                                         HotReloadWindow.RenderShowOnStartup();
                                     }
@@ -144,19 +170,26 @@ namespace SingularityGroup.HotReload.Editor {
                         }
                     }
 
-                    if (!EditorCodePatcher.LoginNotRequired && currentState.trialLicense && currentState.running) {
-                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact)) {
-                            using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide)) {
-                                using (new EditorGUILayout.VerticalScope()) {
+                    if (!EditorCodePatcher.LoginNotRequired && currentState.trialLicense && currentState.running)
+                    {
+                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact))
+                        {
+                            using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide))
+                            {
+                                using (new EditorGUILayout.VerticalScope())
+                                {
                                     RenderPromoCodeSection();
                                 }
                             }
                         }
                     }
 
-                    using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact)) {
-                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide)) {
-                            using (new EditorGUILayout.VerticalScope()) {
+                    using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionOuterBoxCompact))
+                    {
+                        using (new EditorGUILayout.HorizontalScope(HotReloadWindowStyles.SectionInnerBoxWide))
+                        {
+                            using (new EditorGUILayout.VerticalScope())
+                            {
                                 RenderOnDevice();
                             }
                         }
@@ -165,98 +198,127 @@ namespace SingularityGroup.HotReload.Editor {
             }
         }
 
-        void RenderUnityAutoRefresh() {
+        void RenderUnityAutoRefresh()
+        {
             var newSettings = EditorGUILayout.BeginToggleGroup(new GUIContent("Allow to manage Unity's Auto Compile settings (recommended)"), HotReloadPrefs.AllowDisableUnityAutoRefresh);
-            if (newSettings != HotReloadPrefs.AllowDisableUnityAutoRefresh) {
+            if (newSettings != HotReloadPrefs.AllowDisableUnityAutoRefresh)
+            {
                 HotReloadPrefs.AllowDisableUnityAutoRefresh = newSettings;
             }
             string toggleDescription;
-            if (HotReloadPrefs.AllowDisableUnityAutoRefresh) {
+            if (HotReloadPrefs.AllowDisableUnityAutoRefresh)
+            {
                 toggleDescription = "Hot Reload will manage Unity's Auto Refresh and Script Compilation settings when it's running. Previous settings will be restored when Hot Reload is stopped.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to allow Hot Reload to manage Unity's Auto Refresh and Script Compilation settings when it's running. If enabled, previous settings will be restored when Hot Reload is stopped.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.Space(3f);
         }
-        
-        void RenderAssetRefresh() {
+
+        void RenderAssetRefresh()
+        {
             var newSettings = EditorGUILayout.BeginToggleGroup(new GUIContent("Asset refresh (recommended)"), HotReloadPrefs.AllAssetChanges);
-            if (newSettings != HotReloadPrefs.AllAssetChanges) {
+            if (newSettings != HotReloadPrefs.AllAssetChanges)
+            {
                 HotReloadPrefs.AllAssetChanges = newSettings;
                 // restart when setting changes
-                if (ServerHealthCheck.I.IsServerHealthy) {
+                if (ServerHealthCheck.I.IsServerHealthy)
+                {
                     var restartServer = EditorUtility.DisplayDialog("Hot Reload",
                         $"When changing 'Asset refresh', the Hot Reload server must be restarted for this to take effect." +
                         "\nDo you want to restart it now?",
                         "Restart server", "Don't restart");
-                    if (restartServer) {
+                    if (restartServer)
+                    {
                         EditorCodePatcher.RestartCodePatcher().Forget();
                     }
                 }
             }
             string toggleDescription;
-            if (HotReloadPrefs.AllAssetChanges) {
+            if (HotReloadPrefs.AllAssetChanges)
+            {
                 toggleDescription = "Hot Reload will refresh changed assets in the project.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to allow Hot Reload to refresh changed assets in the project. All asset types are supported including sprites, prefabs, shaders etc.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.Space(3f);
         }
-        
-        void RenderIncludeShaderChanges() {
+
+        void RenderIncludeShaderChanges()
+        {
             HotReloadPrefs.IncludeShaderChanges = EditorGUILayout.BeginToggleGroup(new GUIContent("Refresh shaders"), HotReloadPrefs.IncludeShaderChanges);
             string toggleDescription;
-            if (HotReloadPrefs.IncludeShaderChanges) {
+            if (HotReloadPrefs.IncludeShaderChanges)
+            {
                 toggleDescription = "Hot Reload will auto refresh shaders. Note that enabling this setting might impact performance.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to auto-refresh shaders. Note that enabling this setting might impact performance";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
 
-        void RenderConsoleWindow() {
-            if (!HotReloadCli.CanOpenInBackground) {
+        void RenderConsoleWindow()
+        {
+            if (!HotReloadCli.CanOpenInBackground)
+            {
                 return;
             }
             var newSettings = EditorGUILayout.BeginToggleGroup(new GUIContent("Hide console window on start"), HotReloadPrefs.DisableConsoleWindow);
-            if (newSettings != HotReloadPrefs.DisableConsoleWindow) {
+            if (newSettings != HotReloadPrefs.DisableConsoleWindow)
+            {
                 HotReloadPrefs.DisableConsoleWindow = newSettings;
                 // restart when setting changes
-                if (ServerHealthCheck.I.IsServerHealthy) {
+                if (ServerHealthCheck.I.IsServerHealthy)
+                {
                     var restartServer = EditorUtility.DisplayDialog("Hot Reload",
                         $"When changing 'Hide console window on start', the Hot Reload server must be restarted for this to take effect." +
                         "\nDo you want to restart it now?",
                         "Restart server", "Don't restart");
-                    if (restartServer) {
+                    if (restartServer)
+                    {
                         EditorCodePatcher.RestartCodePatcher().Forget();
                     }
                 }
             }
             string toggleDescription;
-            if (HotReloadPrefs.DisableConsoleWindow) {
+            if (HotReloadPrefs.DisableConsoleWindow)
+            {
                 toggleDescription = "Hot Reload will start without creating a console window. Logs can be accessed through \"Help\" tab.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to start Hot Reload without creating a console window.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.Space(3f);
         }
-        
-        void RenderAutostart() {
+
+        void RenderAutostart()
+        {
             var newSettings = EditorGUILayout.BeginToggleGroup(new GUIContent("Autostart on Unity open"), HotReloadPrefs.LaunchOnEditorStart);
-            if (newSettings != HotReloadPrefs.LaunchOnEditorStart) {
+            if (newSettings != HotReloadPrefs.LaunchOnEditorStart)
+            {
                 HotReloadPrefs.LaunchOnEditorStart = newSettings;
             }
             string toggleDescription;
-            if (HotReloadPrefs.LaunchOnEditorStart) {
+            if (HotReloadPrefs.LaunchOnEditorStart)
+            {
                 toggleDescription = "Hot Reload will be launched when Unity project opens.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to launch Hot Reload when Unity project opens.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
@@ -264,128 +326,173 @@ namespace SingularityGroup.HotReload.Editor {
             EditorGUILayout.Space();
         }
 
-        void RenderShowNotifications() {
+        void RenderShowNotifications()
+        {
             GUILayout.Label("Indications", HotReloadWindowStyles.NotificationsTitleStyle);
-            
+
             string toggleDescription;
-            if (!EditorWindowHelper.supportsNotifications && !UnitySettingsHelper.I.playmodeTintSupported) {
+            if (!EditorWindowHelper.supportsNotifications && !UnitySettingsHelper.I.playmodeTintSupported)
+            {
                 toggleDescription = "Indications are not supported in the Unity version you use.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Chosen indications are enabled:";
             }
 
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
         }
 
-        void RenderShowPatchingNotifications() {
+        void RenderShowPatchingNotifications()
+        {
             HotReloadPrefs.ShowPatchingNotifications = EditorGUILayout.BeginToggleGroup(new GUIContent("Patching Indication"), HotReloadPrefs.ShowPatchingNotifications);
             string toggleDescription;
-            if (!EditorWindowHelper.supportsNotifications) {
+            if (!EditorWindowHelper.supportsNotifications)
+            {
                 toggleDescription = "Patching Notification is not supported in the Unity version you use.";
-            } else if (!HotReloadPrefs.ShowPatchingNotifications) {
+            }
+            else if (!HotReloadPrefs.ShowPatchingNotifications)
+            {
                 toggleDescription = "Enable to show GameView and SceneView indications when Patching.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Indications will be shown in GameView and SceneView when Patching.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
 
-        void RenderShowCompilingUnsupportedNotifications() {
+        void RenderShowCompilingUnsupportedNotifications()
+        {
             HotReloadPrefs.ShowCompilingUnsupportedNotifications = EditorGUILayout.BeginToggleGroup(new GUIContent("Compiling Unsupported Changes Indication"), HotReloadPrefs.ShowCompilingUnsupportedNotifications);
             string toggleDescription;
-            if (!EditorWindowHelper.supportsNotifications) {
+            if (!EditorWindowHelper.supportsNotifications)
+            {
                 toggleDescription = "Compiling Unsupported Changes Notification is not supported in the Unity version you use.";
-            } else if (!HotReloadPrefs.ShowCompilingUnsupportedNotifications) {
+            }
+            else if (!HotReloadPrefs.ShowCompilingUnsupportedNotifications)
+            {
                 toggleDescription = "Enable to show GameView and SceneView indications when compiling unsupported changes.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Indications will be shown in GameView and SceneView when compiling unsupported changes.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
-        
-        void RenderAutoRecompileUnsupportedChanges() {
+
+        void RenderAutoRecompileUnsupportedChanges()
+        {
             HotReloadPrefs.AutoRecompileUnsupportedChanges = EditorGUILayout.BeginToggleGroup(new GUIContent("Auto recompile unsupported changes (recommended)"), HotReloadPrefs.AutoRecompileUnsupportedChanges && EditorCodePatcher.autoRecompileUnsupportedChangesSupported);
             string toggleDescription;
-            if (!EditorCodePatcher.autoRecompileUnsupportedChangesSupported) {
+            if (!EditorCodePatcher.autoRecompileUnsupportedChangesSupported)
+            {
                 toggleDescription = "Auto recompiling unsupported changes is not supported in the Unity version you use.";
-            } else if (HotReloadPrefs.AutoRecompileUnsupportedChanges) {
+            }
+            else if (HotReloadPrefs.AutoRecompileUnsupportedChanges)
+            {
                 toggleDescription = "Hot Reload will recompile when unsupported changes are detected.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to recompile when unsupported changes are detected.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
-        
-        void RenderAutoRecompilePartiallyUnsupportedChanges() {
+
+        void RenderAutoRecompilePartiallyUnsupportedChanges()
+        {
             HotReloadPrefs.AutoRecompilePartiallyUnsupportedChanges = EditorGUILayout.BeginToggleGroup(new GUIContent("Include partially unsupported changes"), HotReloadPrefs.AutoRecompilePartiallyUnsupportedChanges);
             string toggleDescription;
-            if (HotReloadPrefs.AutoRecompilePartiallyUnsupportedChanges) {
+            if (HotReloadPrefs.AutoRecompilePartiallyUnsupportedChanges)
+            {
                 toggleDescription = "Hot Reload will recompile partially unsupported changes.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to recompile partially unsupported changes.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
-        
-        void RenderAutoRecompileUnsupportedChangesImmediately() {
+
+        void RenderAutoRecompileUnsupportedChangesImmediately()
+        {
             HotReloadPrefs.AutoRecompileUnsupportedChangesImmediately = EditorGUILayout.BeginToggleGroup(new GUIContent("Recompile immediately"), HotReloadPrefs.AutoRecompileUnsupportedChangesImmediately);
             string toggleDescription;
-            if (HotReloadPrefs.AutoRecompileUnsupportedChangesImmediately) {
+            if (HotReloadPrefs.AutoRecompileUnsupportedChangesImmediately)
+            {
                 toggleDescription = "Unsupported changes will be recompiled immediately.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Unsupported changes will be recompiled when editor is focused. Enable to recompile immediately.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
-        
-        void RenderAutoRecompileUnsupportedChangesInPlayMode() {
+
+        void RenderAutoRecompileUnsupportedChangesInPlayMode()
+        {
             HotReloadPrefs.AutoRecompileUnsupportedChangesInPlayMode = EditorGUILayout.BeginToggleGroup(new GUIContent("Recompile in Play Mode"), HotReloadPrefs.AutoRecompileUnsupportedChangesInPlayMode);
             string toggleDescription;
-            if (HotReloadPrefs.AutoRecompileUnsupportedChangesInPlayMode) {
+            if (HotReloadPrefs.AutoRecompileUnsupportedChangesInPlayMode)
+            {
                 toggleDescription = "Hot Reload will exit Play Mode to recompile unsupported changes.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to auto exit Play Mode to recompile unsupported changes.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
-        
-        void RenderAutoRecompileUnsupportedChangesOnExitPlayMode() {
+
+        void RenderAutoRecompileUnsupportedChangesOnExitPlayMode()
+        {
             HotReloadPrefs.AutoRecompileUnsupportedChangesOnExitPlayMode = EditorGUILayout.BeginToggleGroup(new GUIContent("Recompile on exit Play Mode"), HotReloadPrefs.AutoRecompileUnsupportedChangesOnExitPlayMode);
             string toggleDescription;
-            if (HotReloadPrefs.AutoRecompileUnsupportedChangesOnExitPlayMode) {
+            if (HotReloadPrefs.AutoRecompileUnsupportedChangesOnExitPlayMode)
+            {
                 toggleDescription = "Hot Reload will recompile unsupported changes when exiting Play Mode.";
-            } else {
+            }
+            else
+            {
                 toggleDescription = "Enable to recompile unsupported changes when exiting Play Mode.";
             }
             EditorGUILayout.LabelField(toggleDescription, HotReloadWindowStyles.WrapStyle);
             EditorGUILayout.EndToggleGroup();
         }
 
-        void RenderOnDevice() {
+        void RenderOnDevice()
+        {
             HotReloadPrefs.ShowOnDevice = EditorGUILayout.Foldout(HotReloadPrefs.ShowOnDevice, "On-Device", true, HotReloadWindowStyles.FoldoutStyle);
-            if (!HotReloadPrefs.ShowOnDevice) {
+            if (!HotReloadPrefs.ShowOnDevice)
+            {
                 return;
             }
             // header with explainer image
             {
-                if (headlineStyle == null) {
+                if (headlineStyle == null)
+                {
                     // start with textArea for the background and border colors
-                    headlineStyle = new GUIStyle(GUI.skin.label) {
+                    headlineStyle = new GUIStyle(GUI.skin.label)
+                    {
                         fontStyle = FontStyle.Bold,
                         alignment = TextAnchor.MiddleLeft
                     };
                     headlineStyle.normal.textColor = HotReloadWindowStyles.H2TitleStyle.normal.textColor;
-            
+
                     // bg color
-                    if (HotReloadWindowStyles.IsDarkMode) {
+                    if (HotReloadWindowStyles.IsDarkMode)
+                    {
                         headlineStyle.normal.background = EditorTextures.DarkGray40;
-                    } else {
+                    }
+                    else
+                    {
                         headlineStyle.normal.background = EditorTextures.LightGray225;
                     }
                     // layout
@@ -393,7 +500,7 @@ namespace SingularityGroup.HotReload.Editor {
                     headlineStyle.margin = new RectOffset(6, 6, 6, 6);
                 }
                 GUILayout.Space(9f); // space between logo and headline
-            
+
                 GUILayout.Label("Make changes to a build running on-device",
                     headlineStyle, GUILayout.MinHeight(EditorGUIUtility.singleLineHeight * 1.4f));
                 // image showing how Hot Reload works with a phone
@@ -402,89 +509,97 @@ namespace SingularityGroup.HotReload.Editor {
             }
 
             GUILayout.Space(16f);
-            
+
             //ButtonToOpenBuildSettings();
 
             {
                 GUILayout.Label("Manual connect", HotReloadWindowStyles.H3TitleStyle);
                 EditorGUILayout.Space();
-                
+
                 GUILayout.BeginHorizontal();
-                
+
                 // indent all controls (this works with non-labels)
                 GUILayout.Space(16f);
                 GUILayout.BeginVertical();
-            
+
                 string text;
                 var ip = IpHelper.GetIpAddressCached();
-                if (string.IsNullOrEmpty(ip)) {
+                if (string.IsNullOrEmpty(ip))
+                {
                     text = $"If auto-pair fails, find your local IP in OS settings, and use this format to connect: '{{ip}}'";
-                } else {
+                }
+                else
+                {
                     text = $"If auto-pair fails, use this IP to connect: {ip}" +
                         "\nMake sure you are on the same LAN/WiFi network";
                 }
                 GUILayout.Label(text, HotReloadWindowStyles.H3TitleWrapStyle);
 
-                if (!currentState.isServerHealthy) {
+                if (!currentState.isServerHealthy)
+                {
                     DrawHorizontalCheck(ServerHealthCheck.I.IsServerHealthy,
                         "Hot Reload is running",
                         "Hot Reload is not running",
                         hasFix: false);
                 }
-                
-                if (!HotReloadPrefs.ExposeServerToLocalNetwork) {
+
+                if (!HotReloadPrefs.ExposeServerToLocalNetwork)
+                {
                     var summary = $"Enable '{new ExposeServerOption().ShortSummary}'";
                     DrawHorizontalCheck(HotReloadPrefs.ExposeServerToLocalNetwork,
                         summary,
                         summary);
                 }
-            
+
                 // explainer image that shows phone needs same wifi to auto connect ?
-                
+
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }
-            
+
             GUILayout.Space(16f);
-            
+
             // loading again is smooth, pretty sure AssetDatabase.LoadAssetAtPath is caching -Troy
             var settingsObject = HotReloadSettingsEditor.LoadSettingsOrDefault();
             var so = new SerializedObject(settingsObject);
-            
+
             // if you build for Android now, will Hot Reload work?
             {
-                
+
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Label("Build Settings Checklist", HotReloadWindowStyles.H3TitleStyle);
                 EditorGUI.BeginDisabledGroup(isSupported);
                 // One-click to change each setting to the supported value
-                if (GUILayout.Button("Fix All", GUILayout.MaxWidth(90f))) {
+                if (GUILayout.Button("Fix All", GUILayout.MaxWidth(90f)))
+                {
                     FixAllUnsupportedSettings(so);
                 }
                 EditorGUI.EndDisabledGroup();
                 EditorGUILayout.EndHorizontal();
-                
-                
+
+
                 // NOTE: After user changed some build settings, window may not immediately repaint
                 // (e.g. toggle Development Build in Build Settings window)
                 // We could show a refresh button (to encourage the user to click the window which makes it repaint).
                 DrawSectionCheckBuildSupport(so);
             }
-            
+
 
             GUILayout.Space(16f);
 
             // Settings checkboxes (Hot Reload options)
             {
                 GUILayout.Label("Options", HotReloadWindowStyles.H3TitleStyle);
-                if (settingsObject) {
+                if (settingsObject)
+                {
                     optionsSection.DrawGUI(so);
                 }
             }
             GUILayout.FlexibleSpace(); // needed otherwise vertical scrollbar is appearing for no reason (Unity 2021 glitch perhaps)
         }
-        
-        private void RenderLicenseInfoSection() {
+
+        private void RenderLicenseInfoSection()
+        {
             HotReloadRunTab.RenderLicenseInfo(
                 _window.RunTabState,
                 currentState.loginStatus,
@@ -494,12 +609,14 @@ namespace SingularityGroup.HotReload.Editor {
                 showConsumptions: true
             );
         }
-        
-        private void RenderPromoCodeSection() {
+
+        private void RenderPromoCodeSection()
+        {
             _window.RunTab.RenderPromoCodes();
         }
-        
-        public void FocusLicenseFoldout() {
+
+        public void FocusLicenseFoldout()
+        {
             HotReloadPrefs.ShowLogin = true;
         }
 
@@ -521,59 +638,78 @@ namespace SingularityGroup.HotReload.Editor {
         /// <summary>
         /// Change each setting to the value supported by Hot Reload
         /// </summary>
-        private void FixAllUnsupportedSettings(SerializedObject so) {
-            if (!isCurrentBuildTargetSupported.Value) {
+        private void FixAllUnsupportedSettings(SerializedObject so)
+        {
+            if (!isCurrentBuildTargetSupported.Value)
+            {
                 // try switch to Android platform
                 // (we also support Standalone but HotReload on mobile is a better selling point)
-                if (!TrySwitchToStandalone()) {
+                if (!TrySwitchToStandalone())
+                {
                     // skip changing other options (user won't readthe gray text) - user has to click Fix All again
                     return;
                 }
             }
-            
-            foreach (var buildOption in allOptions) {
-                if (!buildOption.GetValue(so)) {
+
+            foreach (var buildOption in allOptions)
+            {
+                if (!buildOption.GetValue(so))
+                {
                     buildOption.SetValue(so, true);
                 }
             }
             so.ApplyModifiedProperties();
             var settingsObject = so.targetObject as HotReloadSettingsObject;
-            if (settingsObject) {
+            if (settingsObject)
+            {
                 // when you click fix all, make sure to save the settings, otherwise ui does not update
                 HotReloadSettingsEditor.EnsureSettingsCreated(settingsObject);
             }
-            
-            if (!EditorUserBuildSettings.development) {
+
+            if (!EditorUserBuildSettings.development)
+            {
                 EditorUserBuildSettings.development = true;
             }
-            
+
             HotReloadBuildHelper.SetCurrentScriptingBackend(ScriptingImplementation.Mono2x);
             HotReloadBuildHelper.SetCurrentStrippingLevel(ManagedStrippingLevel.Disabled);
         }
 
-        public static bool TrySwitchToStandalone() {
+        public static bool TrySwitchToStandalone()
+        {
             BuildTarget buildTarget;
-            if (Application.platform == RuntimePlatform.LinuxEditor) {
+            if (Application.platform == RuntimePlatform.LinuxEditor)
+            {
                 buildTarget = BuildTarget.StandaloneLinux64;
-            } else if (Application.platform == RuntimePlatform.WindowsEditor) {
+            }
+            else if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
                 buildTarget = BuildTarget.StandaloneWindows64;
-            } else if (Application.platform == RuntimePlatform.OSXEditor) {
+            }
+            else if (Application.platform == RuntimePlatform.OSXEditor)
+            {
                 buildTarget = BuildTarget.StandaloneOSX;
-            } else {
+            }
+            else
+            {
                 return false;
             }
             var current = EditorUserBuildSettings.activeBuildTarget;
-            if (current == buildTarget) {
+            if (current == buildTarget)
+            {
                 return true;
             }
             var confirmed = EditorUtility.DisplayDialog("Switch Build Target",
                 "Switching the build target can take a while depending on project size.",
                 $"Switch to Standalone", "Cancel");
-            if (confirmed) {
+            if (confirmed)
+            {
                 EditorUserBuildSettings.SwitchActiveBuildTargetAsync(BuildTargetGroup.Standalone, buildTarget);
                 Log.Info($"Build target is switching to {buildTarget}.");
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
         }
@@ -586,15 +722,18 @@ namespace SingularityGroup.HotReload.Editor {
         /// This section is for confirming your build will work with Hot Reload.<br/>
         /// Options that can be changed after the build is made should be drawn elsewhere.
         /// </remarks>
-        public void DrawSectionCheckBuildSupport(SerializedObject so) {
+        public void DrawSectionCheckBuildSupport(SerializedObject so)
+        {
             isSupported = true;
             var selectedPlatform = currentBuildTarget.Value;
             DrawHorizontalCheck(isCurrentBuildTargetSupported.Value,
                 $"The {selectedPlatform.ToString()} platform is selected",
                 $"The current platform is {selectedPlatform.ToString()} which is not supported");
 
-            using (new EditorGUI.DisabledScope(!isCurrentBuildTargetSupported.Value)) {
-                foreach (var option in allOptions) {
+            using (new EditorGUI.DisabledScope(!isCurrentBuildTargetSupported.Value))
+            {
+                foreach (var option in allOptions)
+                {
                     DrawHorizontalCheck(option.GetValue(so),
                         $"Enable \"{option.ShortSummary}\"",
                         $"Enable \"{option.ShortSummary}\"");
@@ -603,11 +742,11 @@ namespace SingularityGroup.HotReload.Editor {
                 DrawHorizontalCheck(EditorUserBuildSettings.development,
                     "Development Build is enabled",
                     "Enable \"Development Build\"");
-                
+
                 DrawHorizontalCheck(ScriptingBackend == ScriptingImplementation.Mono2x,
                     $"Scripting Backend is set to Mono",
                     $"Set Scripting Backend to Mono");
-                
+
                 DrawHorizontalCheck(StrippingLevel == ManagedStrippingLevel.Disabled,
                     $"Stripping Level = {StrippingLevel}",
                     $"Stripping Level = {StrippingLevel}",
@@ -623,11 +762,14 @@ namespace SingularityGroup.HotReload.Editor {
         /// <param name="okText">Shown when condition is true</param>
         /// <param name="notOkText">Shown when condition is false</param>
         /// <param name="suggestedSolutionText">Shown when <paramref name="condition"/> is false</param>
-        void DrawHorizontalCheck(bool condition, string okText, string notOkText = null, string suggestedSolutionText = null, bool hasFix = true) {
-            if (okText == null) {
+        void DrawHorizontalCheck(bool condition, string okText, string notOkText = null, string suggestedSolutionText = null, bool hasFix = true)
+        {
+            if (okText == null)
+            {
                 throw new ArgumentNullException(nameof(okText));
             }
-            if (notOkText == null) {
+            if (notOkText == null)
+            {
                 notOkText = okText;
             }
 
@@ -645,25 +787,31 @@ namespace SingularityGroup.HotReload.Editor {
                 Mathf.CeilToInt(iconRect.height));
             var text = condition ? okText : notOkText;
             var icon = condition ? iconCheck : iconWarning;
-            if (GUI.enabled) {
+            if (GUI.enabled)
+            {
                 DrawBlackCircle(iconRect);
                 // resource can be null when building player (Editor Resources not available)
-                if (icon) {
+                if (icon)
+                {
                     GUI.DrawTexture(iconRect, icon, ScaleMode.ScaleToFit);
                 }
-            } else {
+            }
+            else
+            {
                 // show something (instead of hiding) so that layout stays same size
                 DrawDisabledCircle(iconRect);
             }
             GUILayout.Space(4f);
             GUILayout.Label(text, style, height);
 
-            if (!condition && hasFix) {
+            if (!condition && hasFix)
+            {
                 isSupported = false;
             }
 
             GUILayout.EndHorizontal();
-            if (!condition && !String.IsNullOrEmpty(suggestedSolutionText)) {
+            if (!condition && !String.IsNullOrEmpty(suggestedSolutionText))
+            {
                 // suggest to the user how they can resolve the issue
                 EditorGUI.indentLevel++;
                 GUILayout.Label(suggestedSolutionText, HotReloadWindowStyles.WrapStyle);
@@ -679,13 +827,15 @@ namespace SingularityGroup.HotReload.Editor {
             Resources.Load<Texture>("icon_circle_black"),
             new Color(0.14f, 0.14f, 0.14f)); // black is too dark in unity light theme
 
-        void DrawCircleIcon(Rect rect, Texture circleIcon, Color borderColor) {
+        void DrawCircleIcon(Rect rect, Texture circleIcon, Color borderColor)
+        {
             // Note: drawing texture from resources is pixelated on the edges, so it has some transperancy around the edges.
             // While building for Android, Resources.Load returns null for our editor Resources. 
-            if (circleIcon != null) {
+            if (circleIcon != null)
+            {
                 GUI.DrawTexture(rect, circleIcon, ScaleMode.ScaleToFit);
             }
-            
+
             // Draw smooth circle border
             const float borderWidth = 2f;
             GUI.DrawTexture(rect, EditorTextures.White, ScaleMode.ScaleToFit, true,

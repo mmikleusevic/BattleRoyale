@@ -540,7 +540,7 @@ Transform:
   m_GameObject: {fileID: 135866992}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -91.34922, y: -103.131454, z: -0.2339507}
+  m_LocalPosition: {x: -100, y: -100, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1260,17 +1260,17 @@ PrefabInstance:
     - target: {fileID: 589941221236604246, guid: 7e803956f0b63944eb0f81212558c5af,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 91.34922
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 589941221236604246, guid: 7e803956f0b63944eb0f81212558c5af,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 103.131454
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 589941221236604246, guid: 7e803956f0b63944eb0f81212558c5af,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.2339507
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 589941221236604246, guid: 7e803956f0b63944eb0f81212558c5af,
         type: 3}
@@ -1757,17 +1757,17 @@ PrefabInstance:
     - target: {fileID: 3752977807954274775, guid: d9ec6b55a6bbfd848bbf3d00a8003c3b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 91.34922
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3752977807954274775, guid: d9ec6b55a6bbfd848bbf3d00a8003c3b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 103.131454
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3752977807954274775, guid: d9ec6b55a6bbfd848bbf3d00a8003c3b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.2339507
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3752977807954274775, guid: d9ec6b55a6bbfd848bbf3d00a8003c3b,
         type: 3}
@@ -2119,41 +2119,41 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1479356192}
     m_Modifications:
+    - target: {fileID: 523181764902705831, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: die
+      value: 
+      objectReference: {fileID: 767002210}
+    - target: {fileID: 523181764902705831, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: singleDieCamera
+      value: 
+      objectReference: {fileID: 767002209}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: threeDiceCamera
+      value: 
+      objectReference: {fileID: 1416660398}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: 'dice.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1416660401}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: 'dice.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1416660400}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: 'dice.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1416660399}
     - target: {fileID: 6786975145521896742, guid: da0fcede0a31e2347a0294d250dfceb9,
         type: 3}
       propertyPath: m_Name
       value: DiceRollUI
       objectReference: {fileID: 0}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: singleDieCamera
-      value: 
-      objectReference: {fileID: 767002209}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: threeDiceCamera
-      value: 
-      objectReference: {fileID: 1416660398}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1416660401}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[1]'
-      value: 
-      objectReference: {fileID: 1416660400}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[2]'
-      value: 
-      objectReference: {fileID: 1416660399}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[3]'
-      value: 
-      objectReference: {fileID: 767002210}
     - target: {fileID: 9065777268820500391, guid: da0fcede0a31e2347a0294d250dfceb9,
         type: 3}
       propertyPath: m_Pivot.x

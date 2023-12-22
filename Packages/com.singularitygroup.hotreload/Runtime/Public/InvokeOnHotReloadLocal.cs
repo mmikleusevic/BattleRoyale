@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace SingularityGroup.HotReload {
+namespace SingularityGroup.HotReload
+{
     /// <summary>
     /// Method with this attribute will get invoked when it gets patched
     /// </summary>
@@ -11,10 +12,12 @@ namespace SingularityGroup.HotReload {
     /// In case the method has a return value it will be ignored.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
-    public class InvokeOnHotReloadLocal : Attribute {
+    public class InvokeOnHotReloadLocal : Attribute
+    {
         public readonly string methodToInvoke;
 
-        public InvokeOnHotReloadLocal(string methodToInvoke = null) {
+        public InvokeOnHotReloadLocal(string methodToInvoke = null)
+        {
             this.methodToInvoke = methodToInvoke;
         }
     }

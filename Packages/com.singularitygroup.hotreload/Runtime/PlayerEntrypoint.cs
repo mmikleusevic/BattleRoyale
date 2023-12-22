@@ -16,12 +16,13 @@ using System.Threading.Tasks;
 using UnityEngine.Networking;
 #endif
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 using System.IO;
 
-namespace SingularityGroup.HotReload {
+namespace SingularityGroup.HotReload
+{
     // entrypoint for Unity Player builds. Not necessary in Unity Editor.
-    internal static class PlayerEntrypoint {
+    internal static class PlayerEntrypoint
+    {
         /// Set when behaviour is created, when you access this instance through the singleton,
         /// you can assume that this field is not null.
         /// <remarks>
@@ -33,15 +34,18 @@ namespace SingularityGroup.HotReload {
         /// In Player code you can assume this is set (not null)
         public static BuildInfo PlayerBuildInfo => buildInfo;
 
-        #if ENABLE_MONO
+#if ENABLE_MONO
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        #endif
-        private static void InitOnAppLoad() {
+#endif
+        private static void InitOnAppLoad()
+        {
             AppCallbackListener.Init(); // any platform might be using this
             UnityHelper.Init();
             bool onlyPrefabMissing;
-            if (!IsPlayerWithHotReload(out onlyPrefabMissing)) {
-                if (onlyPrefabMissing) {
+            if (!IsPlayerWithHotReload(out onlyPrefabMissing))
+            {
+                if (onlyPrefabMissing)
+                {
                     Log.Warning("Hot Reload is not available in this build because one or more build settings were not supported.");
                 }
                 return;
@@ -50,42 +54,59 @@ namespace SingularityGroup.HotReload {
             TryAutoConnect().Forget();
         }
 
-        static async Task TryAutoConnect() {
-            try {
+        static async Task TryAutoConnect()
+        {
+            try
+            {
                 buildInfo = await GetBuildInfo();
-            } catch (Exception e) {
-                if (e is IOException) {
+            }
+            catch (Exception e)
+            {
+                if (e is IOException)
+                {
                     Log.Warning("Hot Reload is not available in this build because one or more build settings were not supported.");
-                } else {
+                }
+                else
+                {
                     Log.Error($"Uknown exception happened when reading build info\n{e.GetType().Name}: {e.Message}");
                 }
                 return;
             }
-            if (buildInfo == null) {
+            if (buildInfo == null)
+            {
                 Log.Error($"Uknown issue happened when reading build info.");
                 return;
             }
 
-            try {
+            try
+            {
                 var customIp = PlayerPrefs.GetString("HotReloadRuntime.CustomIP", "");
-                if (!string.IsNullOrEmpty(customIp)) {
+                if (!string.IsNullOrEmpty(customIp))
+                {
                     buildInfo.buildMachineHostName = customIp;
                 }
 
-                if (buildInfo.BuildMachineServer == null) {
+                if (buildInfo.BuildMachineServer == null)
+                {
                     Prompts.ShowRetryDialog(null);
-                } else {
+                }
+                else
+                {
                     // try reach server running on the build machine.
                     TryConnect(buildInfo.BuildMachineServer, auto: true).Forget();
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Log.Exception(ex);
             }
         }
 
-        public static Task TryConnectToIp(string ip) {
+        public static Task TryConnectToIp(string ip)
+        {
             ip = ip.Trim();
-            if (buildInfo == null) {
+            if (buildInfo == null)
+            {
                 throw new ArgumentException("Build info not found");
             }
             buildInfo.buildMachineHostName = ip;
@@ -93,14 +114,16 @@ namespace SingularityGroup.HotReload {
             return TryConnect(buildInfo.BuildMachineServer, auto: false);
         }
 
-        public static async Task TryConnect(PatchServerInfo serverInfo, bool auto) {
+        public static async Task TryConnect(PatchServerInfo serverInfo, bool auto)
+        {
             // try reach server running on the build machine.
             var handshake = PlayerCodePatcher.UpdateHost(serverInfo);
             await Task.WhenAny(handshake, Task.Delay(TimeSpan.FromSeconds(40)));
             await ThreadUtility.SwitchToMainThread();
             var handshakeResults = await handshake;
             var handshakeOk = handshakeResults.HasFlag(ServerHandshake.Result.Verified);
-            if (!handshakeOk) {
+            if (!handshakeOk)
+            {
                 Log.Debug("ShowRetryPrompt because handshake result is {0}", handshakeResults);
                 Prompts.ShowRetryDialog(serverInfo, handshakeResults, auto);
                 // cancel trying to connect. They can use the retry button
@@ -111,41 +134,48 @@ namespace SingularityGroup.HotReload {
         }
 
         /// on Android, streaming assets are inside apk zip, which can only be read using unity web request
-        private static async Task<BuildInfo> GetBuildInfo() {
+        private static async Task<BuildInfo> GetBuildInfo()
+        {
             var path = BuildInfo.GetStoredPath();
-            #if MOBILE_ANDROID
+#if MOBILE_ANDROID
             var json = await RequestHelper.GetAsync(path);
             return await Task.Run(() => BuildInfo.FromJson(json));
-            #else
-            return await Task.Run(() => {
+#else
+            return await Task.Run(() =>
+            {
                 return BuildInfo.FromJson(File.ReadAllText(path));
             });
-            #endif
+#endif
         }
 
         public static bool IsPlayer() => !Application.isEditor;
 
-        public static bool IsPlayerWithHotReload() {
+        public static bool IsPlayerWithHotReload()
+        {
             bool _;
             return IsPlayerWithHotReload(out _);
         }
 
-        public static bool IsPlayerWithHotReload(out bool onlyPrefabMissing) {
+        public static bool IsPlayerWithHotReload(out bool onlyPrefabMissing)
+        {
             onlyPrefabMissing = false;
-            if (!IsPlayer() || !RuntimeSupportsHotReload || !HotReloadSettingsObject.I.IncludeInBuild) {
+            if (!IsPlayer() || !RuntimeSupportsHotReload || !HotReloadSettingsObject.I.IncludeInBuild)
+            {
                 return false;
             }
             onlyPrefabMissing = !HotReloadSettingsObject.I.PromptsPrefab;
             return !onlyPrefabMissing;
         }
-        
-        public static bool RuntimeSupportsHotReload {
-            get {
-                #if DEVELOPMENT_BUILD && ENABLE_MONO
+
+        public static bool RuntimeSupportsHotReload
+        {
+            get
+            {
+#if DEVELOPMENT_BUILD && ENABLE_MONO
                 return true;
-                #else
+#else
                 return false;
-                #endif
+#endif
             }
         }
     }

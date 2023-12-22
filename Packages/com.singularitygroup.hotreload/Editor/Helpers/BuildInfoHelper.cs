@@ -6,27 +6,33 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace SingularityGroup.HotReload.Editor {
-    struct BuildInfoInput {
+namespace SingularityGroup.HotReload.Editor
+{
+    struct BuildInfoInput
+    {
         public readonly string allDefineSymbols;
         public readonly BuildTarget activeBuildTarget;
         public readonly string[] omittedProjects;
         public readonly bool batchMode;
 
-        public BuildInfoInput(string allDefineSymbols, BuildTarget activeBuildTarget, string[] omittedProjects, bool batchMode) {
+        public BuildInfoInput(string allDefineSymbols, BuildTarget activeBuildTarget, string[] omittedProjects, bool batchMode)
+        {
             this.allDefineSymbols = allDefineSymbols;
             this.activeBuildTarget = activeBuildTarget;
             this.omittedProjects = omittedProjects;
             this.batchMode = batchMode;
         }
     }
-    
-    static class BuildInfoHelper {
-        public static async Task<BuildInfoInput> GetGenerateBuildInfoInput() {
+
+    static class BuildInfoHelper
+    {
+        public static async Task<BuildInfoInput> GetGenerateBuildInfoInput()
+        {
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
             var activeDefineSymbols = EditorUserBuildSettings.activeScriptCompilationDefines;
             var batchMode = Application.isBatchMode;
-            var allDefineSymbols = await Task.Run(() => {
+            var allDefineSymbols = await Task.Run(() =>
+            {
                 return GetAllAndroidMonoBuildDefineSymbolsThreaded(activeDefineSymbols);
             });
             // cached so unexpensive most of the time
@@ -40,33 +46,37 @@ namespace SingularityGroup.HotReload.Editor {
             );
         }
 
-        public static BuildInfo GenerateBuildInfoMainThread() {
+        public static BuildInfo GenerateBuildInfoMainThread()
+        {
             return GenerateBuildInfoMainThread(EditorUserBuildSettings.activeBuildTarget);
         }
-        
-        public static BuildInfo GenerateBuildInfoMainThread(BuildTarget buildTarget) {
+
+        public static BuildInfo GenerateBuildInfoMainThread(BuildTarget buildTarget)
+        {
             var allDefineSymbols = GetAllAndroidMonoBuildDefineSymbolsThreaded(EditorUserBuildSettings.activeScriptCompilationDefines);
             return GenerateBuildInfoThreaded(new BuildInfoInput(
-                allDefineSymbols: allDefineSymbols, 
-                activeBuildTarget: buildTarget, 
+                allDefineSymbols: allDefineSymbols,
+                activeBuildTarget: buildTarget,
                 omittedProjects: AssemblyOmission.GetOmittedProjects(allDefineSymbols),
                 batchMode: Application.isBatchMode
             ));
         }
 
-        public static BuildInfo GenerateBuildInfoThreaded(BuildInfoInput input) {
+        public static BuildInfo GenerateBuildInfoThreaded(BuildInfoInput input)
+        {
             var omittedProjectRegex = String.Join("|", input.omittedProjects.Select(name => Regex.Escape(name)));
             var shortCommitHash = GitUtil.GetShortCommitHashOrFallback();
-            var hostname = IsHumanControllingUs(input.batchMode) ? IpHelper.GetIpAddress() : null; 
-            
+            var hostname = IsHumanControllingUs(input.batchMode) ? IpHelper.GetIpAddress() : null;
+
             //  Note: add a string to uniquely identify the Unity project. Could use filepath to /MyProject/Assets/ (editor Application.dataPath)
             //  or application identifier (com.company.appname).
             //  Do this when supporting multiple projects: SG-28807
             //  The matching code is in Runtime assembly which compares server response with built BuildInfo.
-            return new BuildInfo {
+            return new BuildInfo
+            {
                 projectIdentifier = "SG-29580",
                 commitHash = shortCommitHash,
-                defineSymbols = input.allDefineSymbols, 
+                defineSymbols = input.allDefineSymbols,
                 projectOmissionRegex = omittedProjectRegex,
                 buildMachineHostName = hostname,
                 buildMachinePort = RequestHelper.port,
@@ -74,8 +84,10 @@ namespace SingularityGroup.HotReload.Editor {
             };
         }
 
-        public static bool IsHumanControllingUs(bool batchMode) {
-            if (batchMode) {
+        public static bool IsHumanControllingUs(bool batchMode)
+        {
+            if (batchMode)
+            {
                 return false;
             }
 
@@ -104,7 +116,7 @@ namespace SingularityGroup.HotReload.Editor {
             "ENABLE_CLUSTERINPUT",
         };
 
-        private static readonly string[] androidSymbolsToAdd = { 
+        private static readonly string[] androidSymbolsToAdd = {
             "CSHARP_7_OR_LATER",
             "CSHARP_7_3_OR_NEWER",
             "PLATFORM_ANDROID",
@@ -126,12 +138,13 @@ namespace SingularityGroup.HotReload.Editor {
             "ENABLE_UNITYADS_RUNTIME",
             "UNITY_UNITYADS_API",
         };
-        
+
         // Currently there is no better way. Alternatively we could hook into unity's call to csc.exe and parse the /define: arguments. 
         //   Hardcoding the differences was less effort and is less error prone.
         // I also looked into it and tried all the Build interfaces like this one https://docs.unity3d.com/ScriptReference/Build.IPostBuildPlayerScriptDLLs.html
         //   and logging EditorUserBuildSettings.activeScriptCompilationDefines in the callbacks - result: all same like editor, so I agree that hardcode is best. 
-        public static string GetAllAndroidMonoBuildDefineSymbolsThreaded(string[] defineSymbols) {
+        public static string GetAllAndroidMonoBuildDefineSymbolsThreaded(string[] defineSymbols)
+        {
             var defines = new HashSet<string>(defineSymbols);
             defines.ExceptWith(editorSymbolsToRemove);
             defines.UnionWith(androidSymbolsToAdd);

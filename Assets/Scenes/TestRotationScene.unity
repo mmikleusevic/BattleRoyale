@@ -663,6 +663,36 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1945472530}
     m_Modifications:
+    - target: {fileID: 523181764902705831, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: die
+      value: 
+      objectReference: {fileID: 2018620301}
+    - target: {fileID: 523181764902705831, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: singleDieCamera
+      value: 
+      objectReference: {fileID: 713541647}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: threeDiceCamera
+      value: 
+      objectReference: {fileID: 550741544}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: 'dice.Array.data[0]'
+      value: 
+      objectReference: {fileID: 537775638}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: 'dice.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1368975743}
+    - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: 'dice.Array.data[2]'
+      value: 
+      objectReference: {fileID: 331574352}
     - target: {fileID: 6786975145521896742, guid: da0fcede0a31e2347a0294d250dfceb9,
         type: 3}
       propertyPath: m_Name
