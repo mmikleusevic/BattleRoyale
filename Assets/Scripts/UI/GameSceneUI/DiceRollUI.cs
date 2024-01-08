@@ -7,7 +7,7 @@ public class DiceRollUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-    }  
+    }
 
     private void Show()
     {

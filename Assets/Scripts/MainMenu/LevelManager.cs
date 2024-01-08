@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -28,12 +29,12 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public async void LoadScene(Scene targetScene)
+    public void LoadScene(Scene targetScene)
     {
-        await LoadAsynchronously(targetScene);
+        StartCoroutine(LoadAsynchronously(targetScene));
     }
 
-    private async Awaitable LoadAsynchronously(Scene targetScene)
+    private IEnumerator LoadAsynchronously(Scene targetScene)
     {
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(targetScene.ToString());
 
@@ -48,7 +49,7 @@ public class LevelManager : MonoBehaviour
             slider.value = progress;
             progressText.text = progress * 100f + "%";
 
-            await Awaitable.NextFrameAsync();
+            yield return null;
         }
 
         Hide();

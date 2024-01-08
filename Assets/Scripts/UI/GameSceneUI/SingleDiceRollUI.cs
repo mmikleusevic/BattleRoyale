@@ -55,7 +55,7 @@ public class SingleDiceRollUI : Roll
         Vector3 direction = diePosition - singleDiceCameraPosition;
 
         int result = GetSideAndRotate(direction, singleDiceCameraPosition, die);
-
+       
         Debug.Log(result);
 
         rotationTime = 3f;
