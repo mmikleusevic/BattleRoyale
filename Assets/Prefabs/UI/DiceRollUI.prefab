@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2719814021471791679}
   - component: {fileID: 523181764902705831}
   m_Layer: 5
-  m_Name: RollSingle
+  m_Name: SingleDieRollUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 4187164671874211741}
   - component: {fileID: 1745106503618461480}
   m_Layer: 5
-  m_Name: RollThree
+  m_Name: ThreeDiceRollUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

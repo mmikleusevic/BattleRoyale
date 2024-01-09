@@ -23,6 +23,8 @@ public class SingleDiceRollUI : Roll
             StartCoroutine(RotateDie());
         });
 
+        GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
+
         Hide();
     }
 
@@ -35,13 +37,24 @@ public class SingleDiceRollUI : Roll
         factor = rotationSpeed * Time.deltaTime;
     }
 
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
+    }
+
+    private void GameManager_OnGameStateChanged(object sender, System.EventArgs e)
+    {
+        Debug.Log("radi");
+        Show();
+    }
+
     private IEnumerator RotateDie()
     {
         die.transform.rotation = Random.rotation;
 
-        float xAxis = Random.Range(0f, 1f) * factor;
-        float yAxis = Random.Range(0f, 1f) * factor;
-        float zAxis = Random.Range(0f, 1f) * factor;
+        float xAxis = Random.Range(0.5f, 1f) * factor;
+        float yAxis = Random.Range(0.5f, 1f) * factor;
+        float zAxis = Random.Range(0.5f, 1f) * factor;
 
         while (rotationTime > 0)
         {
@@ -56,6 +69,7 @@ public class SingleDiceRollUI : Roll
 
         int result = GetSideAndRotate(direction, singleDiceCameraPosition, die);
        
+        //TODO remove
         Debug.Log(result);
 
         rotationTime = 3f;

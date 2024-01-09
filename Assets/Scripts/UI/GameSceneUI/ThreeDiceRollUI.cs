@@ -51,9 +51,9 @@ public class ThreeDiceRollUI : Roll
         {
             dice[i].transform.rotation = Random.rotation;
 
-            float xAxis = Random.Range(0f, 1f) * factor;
-            float yAxis = Random.Range(0f, 1f) * factor;
-            float zAxis = Random.Range(0f, 1f) * factor;
+            float xAxis = Random.Range(0.5f, 1f) * factor;
+            float yAxis = Random.Range(0.5f, 1f) * factor;
+            float zAxis = Random.Range(0.5f, 1f) * factor;
 
             while (rotationTime > 0)
             {
@@ -71,6 +71,7 @@ public class ThreeDiceRollUI : Roll
             rotationTime = 2f;
         }
 
+        //TODO remove
         Debug.Log(result);
     }
 
