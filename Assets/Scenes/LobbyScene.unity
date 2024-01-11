@@ -722,6 +722,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lobbyNameText: {fileID: 439605427}
   lobbyCreatorText: {fileID: 2136694498}
+  image: {fileID: 338177047}
 --- !u!114 &338177050
 MonoBehaviour:
   m_ObjectHideFlags: 0

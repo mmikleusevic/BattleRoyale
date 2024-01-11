@@ -23,9 +23,11 @@ public class GridManager : NetworkBehaviour
     private void Awake()
     {
         randomNumberList = new NetworkList<int>();
+
+        GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
-    public override void OnNetworkSpawn()
+    private void GameManager_OnGameStateChanged(object sender, System.EventArgs e)
     {
         GetCardDimensions();
         PositionCamera();
@@ -35,6 +37,11 @@ public class GridManager : NetworkBehaviour
             GenerateRandomCardNumbers();
             GenerateGrid();
         }
+    }
+
+    public override void OnDestroy()
+    {
+        randomNumberList.Dispose();
     }
 
     private void GetCardDimensions()
@@ -80,7 +87,6 @@ public class GridManager : NetworkBehaviour
 
             NetworkObject cardContainerNetworkObject = cardContainer.GetComponent<NetworkObject>();
             cardContainerNetworkObject.Spawn();
-            cardContainerNetworkObject.TrySetParent(transform);
             GameMultiplayer.Instance.SetNameClientRpc(cardContainer.gameObject, $"CardContainer{cardSO.name}");
 
             Card spawnedCard = Instantiate(cardSO.prefab, cardContainer.position, Quaternion.identity, cardContainer);

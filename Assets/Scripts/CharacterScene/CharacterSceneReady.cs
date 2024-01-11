@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEngine;
 
 public class CharacterSceneReady : NetworkBehaviour
 {
@@ -40,7 +41,7 @@ public class CharacterSceneReady : NetworkBehaviour
         if (allClientsReady)
         {
             LevelManager.Instance.LoadNetwork(Scene.GameScene);
-            GameLobby.Instance.DeleteLobby();
+            GameLobby.Instance.UpdateLobbyColor();
         }
     }
 

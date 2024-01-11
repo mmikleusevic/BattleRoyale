@@ -37,14 +37,13 @@ public class SingleDiceRollUI : Roll
         factor = rotationSpeed * Time.deltaTime;
     }
 
-    private void OnDestroy()
+    public override void OnDestroy()
     {
         GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
     }
 
     private void GameManager_OnGameStateChanged(object sender, System.EventArgs e)
     {
-        Debug.Log("radi");
         Show();
     }
 
@@ -70,7 +69,9 @@ public class SingleDiceRollUI : Roll
         int result = GetSideAndRotate(direction, singleDiceCameraPosition, die);
        
         //TODO remove
-        Debug.Log(result);
+        Debug.Log("roll result: " + result);
+
+        GameManager.Instance.SetRollResults(result);
 
         rotationTime = 3f;
     }

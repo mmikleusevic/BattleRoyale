@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Authentication;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
@@ -40,6 +42,20 @@ public class GameMultiplayer : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         playerDataNetworkList.OnListChanged -= PlayerDataNetworkList_OnListChanged;
+
+        if (NetworkManager.Singleton == null) return;
+
+        if (GameLobby.Instance.IsLobbyHost())
+        {
+            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
+            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Server_OnClientDisconnectCallback;
+        }
+        else
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Client_OnClientDisconnectCallback;
+            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_Server_OnClientConnectedCallback;
+        }
     }
 
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
@@ -55,17 +71,6 @@ public class GameMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.StartHost();
     }
 
-    public void StopHost()
-    {
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
-            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Server_OnClientDisconnectCallback;
-            NetworkManager.Singleton.Shutdown();
-        }
-    }
-
     public void StartClient()
     {
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_Client_OnClientDisconnectCallback;
@@ -73,34 +78,17 @@ public class GameMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.StartClient();
     }
 
-    public void StopClient()
-    {
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Client_OnClientDisconnectCallback;
-            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_Server_OnClientConnectedCallback;
-            NetworkManager.Singleton.Shutdown();
-        }
-    }
-
     private void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
     {
-        try
-        {
-            for (int i = 0; i < playerDataNetworkList.Count; i++)
-            {
-                PlayerData playerData = playerDataNetworkList[i];
+        if (NetworkManager.ShutdownInProgress) return;
 
-                if (playerData.clientId == clientId)
-                {
-                    playerDataNetworkList.RemoveAt(i);
-                    break;
-                }
-            }
-        }
-        catch (NullReferenceException ex)
+        for (int i = 0; i < playerDataNetworkList.Count; i++)
         {
-            Debug.Log(ex);
+            PlayerData playerData = playerDataNetworkList[i];
+            if (playerData.clientId == clientId)
+            {
+                playerDataNetworkList.RemoveAt(i);
+            }
         }
     }
 
@@ -273,7 +261,54 @@ public class GameMultiplayer : NetworkBehaviour
     public void KickPlayer(PlayerData playerData)
     {
         NetworkManager.Singleton.DisconnectClient(playerData.clientId);
-        NetworkManager_Server_OnClientDisconnectCallback(playerData.clientId);
+    }
+
+    public void ShutdownClients()
+    {
+        if (IsServer)
+        {
+            ShutdownClientsServerRpc();
+        }
+        else
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+    } 
+
+    [ServerRpc]
+    private void ShutdownClientsServerRpc()
+    {
+        ShutdownClientsClientRpc();
+    }
+
+    [ClientRpc]
+    private void ShutdownClientsClientRpc()
+    {
+        NetworkManager.Singleton.Shutdown();
+    }
+
+    public void LoadMainMenu()
+    {
+        if (IsServer)
+        {
+            LoadMainMenuServerRpc();
+        }
+        else
+        {
+            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+        }
+    }
+
+    [ServerRpc]
+    private void LoadMainMenuServerRpc()
+    {
+        LoadMainMenuClientRpc();
+    }
+
+    [ClientRpc]
+    private void LoadMainMenuClientRpc()
+    {
+        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 
     [ClientRpc]

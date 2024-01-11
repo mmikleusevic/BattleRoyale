@@ -1,7 +1,8 @@
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Roll : MonoBehaviour
+public class Roll : NetworkBehaviour
 {
     private float interactDistance = 0.51f;
 

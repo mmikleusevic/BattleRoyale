@@ -18,6 +18,8 @@ public class GameLobby : MonoBehaviour
 {
     private const string KEY_RELAY_JOIN_CODE = "RelayJoinCode";
     public const string CREATOR_NAME = "CreatorName";
+    public const string LOBBY_COLOR = "LobbyColor";
+
     public static GameLobby Instance { get; private set; }
 
     public event EventHandler OnCreateLobbyStarted;
@@ -59,11 +61,9 @@ public class GameLobby : MonoBehaviour
         LobbyUI.Instance.OnLobbyFind += LobbyUI_OnLobbySearch;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
-
-        CloseLobby();
     }
 
     private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
@@ -212,12 +212,14 @@ public class GameLobby : MonoBehaviour
 
         try
         {
+            
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions
             {
                 IsPrivate = isPrivate,
                 Data = new Dictionary<string, DataObject>
                 {
-                    { CREATOR_NAME, new DataObject(DataObject.VisibilityOptions.Public, GameMultiplayer.Instance.GetPlayerName()) }
+                    { CREATOR_NAME, new DataObject(DataObject.VisibilityOptions.Public, GameMultiplayer.Instance.GetPlayerName()) },
+                    { LOBBY_COLOR, new DataObject(DataObject.VisibilityOptions.Public, Color.black.ToString()) }
                 }
             });
 
@@ -244,6 +246,17 @@ public class GameLobby : MonoBehaviour
             Debug.LogError(ex.Message);
             OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    public async void UpdateLobbyColor()
+    {
+        await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
+        {
+            Data = new Dictionary<string, DataObject>
+            {
+                { LOBBY_COLOR, new DataObject(DataObject.VisibilityOptions.Public, Color.red.ToString()) }
+            }
+        });
     }
 
     public async void QuickJoin()
@@ -307,15 +320,13 @@ public class GameLobby : MonoBehaviour
         {
             try
             {
-                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+                GameMultiplayer.Instance.ShutdownClients();
 
-                ResetLobby();
+                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
             }
             catch (LobbyServiceException ex)
             {
                 Debug.LogError(ex.Message);
-
-                ResetLobby();
             }
         }
     }
@@ -326,15 +337,15 @@ public class GameLobby : MonoBehaviour
         {
             try
             {
-                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
+                GameMultiplayer.Instance.ShutdownClients();
 
-                ResetLobby();
+                string playerId = AuthenticationService.Instance.PlayerId;
+
+                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
             }
             catch (LobbyServiceException ex)
             {
                 Debug.LogError(ex.Message);
-
-                ResetLobby();
             }
         }
     }
@@ -368,21 +379,16 @@ public class GameLobby : MonoBehaviour
 
     public void LeaveLobbyGoToMainMenu()
     {
-        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
-    }
-
-    public void CloseLobby()
-    {
         if (IsLobbyHost())
         {
             DeleteLobby();
-            GameMultiplayer.Instance.StopHost();
         }
         else
         {
             LeaveLobby();
-            GameMultiplayer.Instance.StopClient();
         }
+
+        GameMultiplayer.Instance.LoadMainMenu();
     }
 
     private void JoinStarted()
@@ -398,10 +404,5 @@ public class GameLobby : MonoBehaviour
     public bool LobbyExists()
     {
         return joinedLobby != null;
-    }
-
-    public void ResetLobby()
-    {
-        joinedLobby = null;
     }
 }
