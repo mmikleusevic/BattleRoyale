@@ -212,7 +212,7 @@ public class GameLobby : MonoBehaviour
 
         try
         {
-            
+
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions
             {
                 IsPrivate = isPrivate,

@@ -665,17 +665,17 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 523181764902705831, guid: da0fcede0a31e2347a0294d250dfceb9,
         type: 3}
-      propertyPath: die
-      value: 
-      objectReference: {fileID: 2018620301}
-    - target: {fileID: 523181764902705831, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: singleDieCamera
+      propertyPath: diceCamera
       value: 
       objectReference: {fileID: 713541647}
+    - target: {fileID: 523181764902705831, guid: da0fcede0a31e2347a0294d250dfceb9,
+        type: 3}
+      propertyPath: 'dice.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2018620301}
     - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
         type: 3}
-      propertyPath: threeDiceCamera
+      propertyPath: diceCamera
       value: 
       objectReference: {fileID: 550741544}
     - target: {fileID: 1745106503618461480, guid: da0fcede0a31e2347a0294d250dfceb9,
@@ -698,36 +698,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DiceRollUI
       objectReference: {fileID: 0}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: singleDieCamera
-      value: 
-      objectReference: {fileID: 713541647}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: threeDiceCamera
-      value: 
-      objectReference: {fileID: 550741544}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[0]'
-      value: 
-      objectReference: {fileID: 537775638}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[1]'
-      value: 
-      objectReference: {fileID: 1368975743}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[2]'
-      value: 
-      objectReference: {fileID: 331574352}
-    - target: {fileID: 7447619002759673382, guid: da0fcede0a31e2347a0294d250dfceb9,
-        type: 3}
-      propertyPath: 'dice.Array.data[3]'
-      value: 
-      objectReference: {fileID: 2018620301}
     - target: {fileID: 9065777268820500391, guid: da0fcede0a31e2347a0294d250dfceb9,
         type: 3}
       propertyPath: m_Pivot.x

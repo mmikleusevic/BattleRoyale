@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -23,7 +22,7 @@ public class LobbyListSingleUI : MonoBehaviour
     {
         this.lobby = lobby;
         lobbyNameText.text = lobby.Name;
-        lobbyCreatorText.text = lobby.Data[GameLobby.CREATOR_NAME].Value;    
+        lobbyCreatorText.text = lobby.Data[GameLobby.CREATOR_NAME].Value;
         image.color = GetColor();
     }
 

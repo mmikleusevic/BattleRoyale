@@ -1,8 +1,7 @@
 using System.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
-public class Roll : NetworkBehaviour
+public class Roll : IRoll
 {
     private float interactDistance = 0.51f;
 
@@ -10,20 +9,21 @@ public class Roll : NetworkBehaviour
     protected float rotationTime = 2f;
     protected float factor;
 
-    protected int GetSideAndRotate(Vector3 direction, Vector3 cameraPosition, GameObject die)
+    public Roll()
+    {
+        factor = rotationSpeed * Time.deltaTime;
+    }
+
+    private int GetResult(Vector3 direction, Vector3 cameraPosition)
     {
         Physics.Raycast(cameraPosition, direction, out RaycastHit raycastHit, interactDistance);
 
         int.TryParse(raycastHit.collider.name, out int result);
 
-        Vector3 side = GetSide(result);
-
-        StartCoroutine(RotateToward(side, die));
-
         return result;
     }
 
-    protected Vector3 GetSide(int number)
+    private Vector3 GetSide(int number)
     {
         Vector3 side = Vector3.zero;
 
@@ -52,20 +52,65 @@ public class Roll : NetworkBehaviour
         return side;
     }
 
-    protected IEnumerator RotateToward(Vector3 side, GameObject die)
+    public IEnumerator RotateDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
     {
-        float timer = 1f;
-        float speed = 10f * Time.deltaTime;
+        int resultSum = 0;
 
-        while (timer > 0)
+        for (int i = 0; i < dice.Length; i++)
         {
-            timer -= Time.deltaTime;
+            dice[i].transform.rotation = Random.rotation;
 
-            Quaternion rotation = Quaternion.LookRotation(side);
+            float xAxis = Random.Range(0.8f, 1.2f) * factor;
+            float yAxis = Random.Range(0.8f, 1.2f) * factor;
+            float zAxis = Random.Range(0.8f, 1.2f) * factor;
 
-            die.transform.rotation = Quaternion.Slerp(die.transform.rotation, rotation, speed);
+            // Roll the dice in random direction
 
-            yield return null;
+            while (rotationTime > 0)
+            {
+                rotationTime -= Time.deltaTime;
+
+                dice[i].transform.Rotate(xAxis, yAxis, zAxis);
+
+                yield return null;
+            }
+
+            // ---------------------------------
+
+            Vector3 direction = dicePositions[i] - cameraPosition;
+
+            int result = GetResult(direction, cameraPosition);
+
+            resultSum += result;
+
+            Vector3 side = GetSide(result);
+
+            float timer = 1f;
+            float speed = 10f * Time.deltaTime;
+
+            // Rotate towards side face
+
+            while (timer > 0)
+            {
+                timer -= Time.deltaTime;
+
+                Quaternion rotation = Quaternion.LookRotation(side);
+
+                dice[i].transform.rotation = Quaternion.Slerp(dice[i].transform.rotation, rotation, speed);
+
+                yield return null;
+            }
+
+            // -------------------------
+
+            rotationTime = 3f;
         }
+
+        GameManager.Instance.SetRollResults(resultSum);
+
+        //TODO remove
+        Debug.Log(resultSum);
+
+        yield return resultSum;
     }
 }

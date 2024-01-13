@@ -1,43 +1,13 @@
-using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
-
-public class SingleDiceRollUI : Roll
+public class SingleDiceRollUI : RollUI
 {
-    public static SingleDiceRollUI Instance { get; private set; }
-
-    [SerializeField] private Button rollSingleButton;
-    [SerializeField] private GameObject die;
-    [SerializeField] private Camera singleDieCamera;
-
-    private Vector3 singleDiceCameraPosition;
-    private Vector3 diePosition;
-
-    private void Awake()
+    public override void Awake()
     {
-        Instance = this;
-
-        rollSingleButton.onClick.AddListener(() =>
-        {
-            rollSingleButton.gameObject.SetActive(false);
-            StartCoroutine(RotateDie());
-        });
+        base.Awake();
 
         GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
-
-        Hide();
     }
 
-    private void Start()
-    {
-        diePosition = die.transform.position;
-
-        singleDiceCameraPosition = singleDieCamera.transform.position;
-
-        factor = rotationSpeed * Time.deltaTime;
-    }
-
-    public override void OnDestroy()
+    public void OnDestroy()
     {
         GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
     }
@@ -45,44 +15,5 @@ public class SingleDiceRollUI : Roll
     private void GameManager_OnGameStateChanged(object sender, System.EventArgs e)
     {
         Show();
-    }
-
-    private IEnumerator RotateDie()
-    {
-        die.transform.rotation = Random.rotation;
-
-        float xAxis = Random.Range(0.5f, 1f) * factor;
-        float yAxis = Random.Range(0.5f, 1f) * factor;
-        float zAxis = Random.Range(0.5f, 1f) * factor;
-
-        while (rotationTime > 0)
-        {
-            rotationTime -= Time.deltaTime;
-
-            die.transform.Rotate(xAxis, yAxis, zAxis);
-
-            yield return null;
-        }
-
-        Vector3 direction = diePosition - singleDiceCameraPosition;
-
-        int result = GetSideAndRotate(direction, singleDiceCameraPosition, die);
-       
-        //TODO remove
-        Debug.Log("roll result: " + result);
-
-        GameManager.Instance.SetRollResults(result);
-
-        rotationTime = 3f;
-    }
-
-    private void Show()
-    {
-        gameObject.SetActive(true);
-    }
-
-    private void Hide()
-    {
-        gameObject.SetActive(false);
     }
 }

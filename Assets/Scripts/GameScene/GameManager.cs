@@ -214,7 +214,7 @@ public class GameManager : StateMachine
 
         Debug.Log("playerInitiativeOrder count: " + playerInitiativeOrder.Count);
 
-        foreach(var a in playerInitiativeOrder)
+        foreach (var a in playerInitiativeOrder)
         {
             Debug.Log(a);
         }

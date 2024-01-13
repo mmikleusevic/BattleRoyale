@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Authentication;
-using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
@@ -273,7 +271,7 @@ public class GameMultiplayer : NetworkBehaviour
         {
             NetworkManager.Singleton.Shutdown();
         }
-    } 
+    }
 
     [ServerRpc]
     private void ShutdownClientsServerRpc()

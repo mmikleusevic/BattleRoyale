@@ -86,9 +86,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da31be3c4e2d83348add1cf23addb7ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rollSingleButton: {fileID: 3031603972052962308}
-  die: {fileID: 0}
-  singleDieCamera: {fileID: 0}
+  rollButton: {fileID: 3031603972052962308}
+  dice:
+  - {fileID: 8668726856756859945, guid: 7e803956f0b63944eb0f81212558c5af, type: 3}
+  diceCamera: {fileID: 0}
 --- !u!1 &6786975145521896742
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,12 +226,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d892076c28b1c84c9e1c30f132aa160, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rollThreeButton: {fileID: 3376424424406391638}
+  rollButton: {fileID: 3376424424406391638}
   dice:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  threeDiceCamera: {fileID: 0}
+  diceCamera: {fileID: 0}
 --- !u!1001 &8313809485977593067
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -241,7 +242,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5177797995948525, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8, type: 3}
       propertyPath: m_Name
-      value: RollButton
+      value: SingleDieRollButton
       objectReference: {fileID: 0}
     - target: {fileID: 4099264714930777846, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,
         type: 3}
@@ -396,7 +397,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5177797995948525, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8, type: 3}
       propertyPath: m_Name
-      value: RollButton
+      value: ThreeDiceRollButton
       objectReference: {fileID: 0}
     - target: {fileID: 4099264714930777846, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,
         type: 3}
