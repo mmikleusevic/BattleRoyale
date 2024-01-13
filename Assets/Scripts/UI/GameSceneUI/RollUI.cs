@@ -12,7 +12,7 @@ public class RollUI : MonoBehaviour
     private Vector3 cameraPosition;
     private Vector3[] dicePositions;
 
-    public virtual void Awake()
+    public void Awake()
     {
         roll = new Roll();
 
@@ -22,21 +22,25 @@ public class RollUI : MonoBehaviour
             StartCoroutine(roll.RotateDice(dice, dicePositions, cameraPosition));
         });
 
-        dicePositions = new Vector3[dice.Length];
+        cameraPosition = diceCamera.transform.position;
+
+        AssignDicePosition();
 
         Hide();
     }
 
-    public virtual void Start()
+    public virtual void Start() { }
+
+    private void AssignDicePosition()
     {
+        dicePositions = new Vector3[dice.Length];
+
         for (int i = 0; i < dice.Length; i++)
         {
             Vector3 position = dice[i].transform.position;
 
             dicePositions[i] = position;
         }
-
-        cameraPosition = diceCamera.transform.position;
     }
 
     public void Show()
