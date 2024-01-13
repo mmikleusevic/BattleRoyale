@@ -87,6 +87,7 @@ public class GridManager : NetworkBehaviour
 
             NetworkObject cardContainerNetworkObject = cardContainer.GetComponent<NetworkObject>();
             cardContainerNetworkObject.Spawn();
+            cardContainerNetworkObject.TrySetParent(transform);
             GameMultiplayer.Instance.SetNameClientRpc(cardContainer.gameObject, $"CardContainer{cardSO.name}");
 
             Card spawnedCard = Instantiate(cardSO.prefab, cardContainer.position, Quaternion.identity, cardContainer);
