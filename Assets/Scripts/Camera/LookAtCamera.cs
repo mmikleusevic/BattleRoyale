@@ -8,7 +8,8 @@ public class LookAtCamera : MonoBehaviour
         LookAt,
         LookAtInverted,
         CameraForward,
-        CameraForwardInverted
+        CameraForwardInverted,
+        Forward
     }
 
     [SerializeField] private Mode mode;
@@ -29,6 +30,9 @@ public class LookAtCamera : MonoBehaviour
                 break;
             case Mode.CameraForwardInverted:
                 transform.forward = -Camera.main.transform.forward;
+                break;
+            case Mode.Forward:
+                transform.forward = Vector3.forward;
                 break;
         }
     }

@@ -5,13 +5,16 @@ public class Roll : IRoll
 {
     private float interactDistance = 0.51f;
 
-    protected float rotationSpeed = 150f;
-    protected float rotationTime = 2f;
-    protected float factor;
+    private float rotationSpeed = 150f;
+    private float rotationTime = 2f;
+    private float factor;
+
+    private IRollResults rollResults;
 
     public Roll()
     {
         factor = rotationSpeed * Time.deltaTime;
+        rollResults = new RollResults();
     }
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)
@@ -88,7 +91,7 @@ public class Roll : IRoll
             float timer = 1f;
             float speed = 10f * Time.deltaTime;
 
-            // Rotate towards side face
+            // Rotate sides face towards camera
 
             while (timer > 0)
             {
@@ -106,7 +109,7 @@ public class Roll : IRoll
             rotationTime = 3f;
         }
 
-        GameManager.Instance.SetRollResults(resultSum);
+        rollResults.SetRollResults(resultSum);
 
         //TODO remove
         Debug.Log(resultSum);

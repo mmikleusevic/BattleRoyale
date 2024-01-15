@@ -16,12 +16,10 @@ public class GameManager : StateMachine
     [SerializeField] private List<Vector3> spawnPositionList = new List<Vector3>();
 
     private bool autoCheckGamePauseState;
-    private bool rollForInitiative = true;
 
     private List<Player> players;
     private Dictionary<ulong, bool> playerReadyDictonary;
     private Dictionary<ulong, bool> playerPausedDictionary;
-    private Dictionary<ulong, int> playerInitiativeOrder;
     private NetworkVariable<bool> isGamePaused;
     private NetworkVariable<GameState> gameState;
 
@@ -32,7 +30,6 @@ public class GameManager : StateMachine
         players = new List<Player>();
         playerReadyDictonary = new Dictionary<ulong, bool>();
         playerPausedDictionary = new Dictionary<ulong, bool>();
-        playerInitiativeOrder = new Dictionary<ulong, int>();
         isGamePaused = new NetworkVariable<bool>(false);
         gameState = new NetworkVariable<GameState>(GameState.WaitingToStart);
     }
@@ -177,58 +174,4 @@ public class GameManager : StateMachine
             this.players.Add(player);
         }
     }
-
-    public void SetRollResults(int result)
-    {
-        if (rollForInitiative)
-        {
-            SetInitiativeResultServerRpc(result);
-        }
-        //else
-        //{
-        //    SetBattleResultServerRpc(result);
-        //}
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SetInitiativeResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
-    {
-        var clientId = serverRpcParams.Receive.SenderClientId;
-
-        Debug.Log("clientId: " + clientId);
-
-        SetInitiativeResultClientRpc(result, clientId);
-    }
-
-    [ClientRpc]
-    private void SetInitiativeResultClientRpc(int result, ulong clientId)
-    {
-        if (playerInitiativeOrder.ContainsKey(clientId))
-        {
-            playerInitiativeOrder[clientId] = result;
-        }
-        else
-        {
-            playerInitiativeOrder.Add(clientId, result);
-        }
-
-        Debug.Log("playerInitiativeOrder count: " + playerInitiativeOrder.Count);
-
-        foreach (var a in playerInitiativeOrder)
-        {
-            Debug.Log(a);
-        }
-    }
-
-    //[ServerRpc(RequireOwnership = false)]
-    //private void SetBattleResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
-    //{
-    //    SetBattleResultClientRpc(result);
-    //}
-
-    //[ClientRpc]
-    //private void SetBattleResultClientRpc(int result)
-    //{
-
-    //}
 }
