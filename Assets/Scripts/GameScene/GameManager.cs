@@ -165,7 +165,7 @@ public class GameManager : StateMachine
     }
 
     [ClientRpc]
-    private void SetPlayerToPlayersListClientRpc(ClientRpcParams clientRpcParams = default)
+    private void SetPlayerToPlayersListClientRpc()
     {
         Player[] players = FindObjectsByType<Player>(FindObjectsSortMode.InstanceID);
 

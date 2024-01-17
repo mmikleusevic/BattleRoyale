@@ -3,18 +3,19 @@ using UnityEngine;
 
 public class Roll : IRoll
 {
-    private float interactDistance = 0.51f;
+    private readonly float interactDistance = 0.51f;
 
-    private float rotationSpeed = 150f;
+    private readonly float rotationSpeed = 150f;
     private float rotationTime = 2f;
-    private float factor;
+    private readonly float factor;
 
     private IRollResults rollResults;
 
     public Roll()
     {
         factor = rotationSpeed * Time.deltaTime;
-        rollResults = new RollResults();
+
+        rollResults = Object.FindAnyObjectByType<RollResults>();
     }
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)

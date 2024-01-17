@@ -12,7 +12,7 @@ public class RollUI : MonoBehaviour
     private Vector3 cameraPosition;
     private Vector3[] dicePositions;
 
-    public void Awake()
+    public virtual void Awake()
     {
         roll = new Roll();
 
@@ -28,8 +28,6 @@ public class RollUI : MonoBehaviour
 
         Hide();
     }
-
-    public virtual void Start() { }
 
     private void AssignDicePosition()
     {

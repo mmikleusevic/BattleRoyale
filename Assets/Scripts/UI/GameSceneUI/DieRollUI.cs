@@ -1,8 +1,10 @@
-public class SingleDiceRollUI : RollUI
+using UnityEngine;
+
+public class DieRollUI : RollUI
 {
-    public override void Start()
+    public override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
     }

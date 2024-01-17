@@ -170,6 +170,7 @@ public class GameMultiplayer : NetworkBehaviour
                 return playerData;
             }
         }
+
         return default;
     }
 

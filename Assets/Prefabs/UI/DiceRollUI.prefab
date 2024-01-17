@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2719814021471791679}
   - component: {fileID: 523181764902705831}
   m_Layer: 5
-  m_Name: SingleDieRollUI
+  m_Name: DieRollUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rollButton: {fileID: 3031603972052962308}
   dice:
-  - {fileID: 8668726856756859945, guid: 7e803956f0b63944eb0f81212558c5af, type: 3}
+  - {fileID: 0}
   diceCamera: {fileID: 0}
 --- !u!1 &6786975145521896742
 GameObject:
@@ -151,9 +151,9 @@ GameObject:
   - component: {fileID: 4290820748300717741}
   - component: {fileID: 3939678521206097776}
   - component: {fileID: 4187164671874211741}
-  - component: {fileID: 1745106503618461480}
+  - component: {fileID: 7433220419627854051}
   m_Layer: 5
-  m_Name: ThreeDiceRollUI
+  m_Name: MultipleDiceRollUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,7 +214,7 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!114 &1745106503618461480
+--- !u!114 &7433220419627854051
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7223345269901502215}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d892076c28b1c84c9e1c30f132aa160, type: 3}
+  m_Script: {fileID: 11500000, guid: f91e4cf1eec935949af10148196a3143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rollButton: {fileID: 3376424424406391638}
@@ -242,7 +242,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5177797995948525, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8, type: 3}
       propertyPath: m_Name
-      value: SingleDieRollButton
+      value: DieRollUIButton
       objectReference: {fileID: 0}
     - target: {fileID: 4099264714930777846, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,
         type: 3}
@@ -397,7 +397,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5177797995948525, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8, type: 3}
       propertyPath: m_Name
-      value: ThreeDiceRollButton
+      value: MultipleDiceRollUI
       objectReference: {fileID: 0}
     - target: {fileID: 4099264714930777846, guid: 8fa7ed6e7135d0440bf8fed0ad38c9f8,
         type: 3}
