@@ -15,7 +15,7 @@ public class Roll : IRoll
     {
         factor = rotationSpeed * Time.deltaTime;
 
-        rollResults = Object.FindAnyObjectByType<RollResults>();
+        rollResults = Object.FindFirstObjectByType<RollResults>();
     }
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)

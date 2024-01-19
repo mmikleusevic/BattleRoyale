@@ -44,10 +44,12 @@ public class RollUI : MonoBehaviour
     public void Show()
     {
         gameObject.SetActive(true);
+        rollButton.gameObject.SetActive(true);
     }
 
     public void Hide()
     {
         gameObject.SetActive(false);
+        rollButton.gameObject.SetActive(false);
     }
 }
