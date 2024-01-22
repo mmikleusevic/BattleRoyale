@@ -173,6 +173,8 @@ public class RollResults : NetworkBehaviour, IRollResults
             int indexToSwap = finalOrder.IndexOf(clientsToReRoll[0]);
             int resultOfIndexToSwap = clientInitiative[clientsToReRoll[0]].Last();
 
+            clientInitiative.OrderByDescending(a => a.Value).ThenBy(a => a.Value.Last());
+
             foreach (ulong clientId in clientsToReRoll)
             {
                 int result = clientInitiative[clientId].Last();

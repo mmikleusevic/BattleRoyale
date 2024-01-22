@@ -14,11 +14,11 @@ public class CharacterSceneUI : MonoBehaviour
 
     private int playerCount = 0;
 
-    private bool isReady = false;
     private void Awake()
     {
         mainMenuButton.onClick.AddListener(() =>
         {
+            CharacterSceneReady.Instance.RemoveKeyFromPlayerReady();
             GameLobby.Instance.LeaveLobbyGoToMainMenu();
         });
 
@@ -29,6 +29,12 @@ public class CharacterSceneUI : MonoBehaviour
 
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        CharacterSceneReady.Instance.OnReadyChanged += CharacterSceneReady_OnReadyChanged;
+    }
+
+    private void CharacterSceneReady_OnReadyChanged(object sender, System.EventArgs e)
+    {
+        ChangeReadyButtonText();
     }
 
     private void Start()
@@ -38,6 +44,10 @@ public class CharacterSceneUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        CharacterSceneReady.Instance.OnReadyChanged -= CharacterSceneReady_OnReadyChanged;
+
+        if (NetworkManager.Singleton == null) return;
+
         NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
     }
@@ -62,22 +72,16 @@ public class CharacterSceneUI : MonoBehaviour
 
         playerCount = lobby.Players.Count;
         ToggleReadyButton();
+
+        CharacterSceneReady.Instance.GetPlayerReadyValuesForClient();
+
     }
 
     private void UpdateReadyButton()
     {
         CharacterSceneReady.Instance.TogglePlayerReady();
 
-        isReady = !isReady;
-
-        if (isReady)
-        {
-            readyButtonText.text = "NOT READY";
-        }
-        else
-        {
-            readyButtonText.text = "READY";
-        }
+        ChangeReadyButtonText();
     }
 
     private void ToggleReadyButton()
@@ -90,6 +94,20 @@ public class CharacterSceneUI : MonoBehaviour
         else
         {
             readyButton.interactable = false;
+        }
+    }
+
+    private void ChangeReadyButtonText()
+    {
+        bool isClientReady = CharacterSceneReady.Instance.IsPlayerReady(NetworkManager.Singleton.LocalClientId);
+
+        if (isClientReady)
+        {
+            readyButtonText.text = "NOT READY";
+        }
+        else
+        {
+            readyButtonText.text = "READY";
         }
     }
 }
