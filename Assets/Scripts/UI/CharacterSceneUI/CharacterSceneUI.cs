@@ -19,7 +19,8 @@ public class CharacterSceneUI : MonoBehaviour
         mainMenuButton.onClick.AddListener(() =>
         {
             CharacterSceneReady.Instance.RemoveKeyFromPlayerReady();
-            GameLobby.Instance.LeaveLobbyGoToMainMenu();
+            GameLobby.Instance.LeaveLobbyOrDelete();
+            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
         });
 
         readyButton.onClick.AddListener(() =>

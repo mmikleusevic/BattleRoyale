@@ -1447,8 +1447,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 803078845}
-  - component: {fileID: 803078844}
   - component: {fileID: 803078846}
+  - component: {fileID: 803078844}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1869,8 +1869,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1247854081}
-  - component: {fileID: 1247854080}
   - component: {fileID: 1247854079}
+  - component: {fileID: 1247854080}
   m_Layer: 0
   m_Name: RollResults
   m_TagString: Untagged
@@ -2458,8 +2458,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1788039437}
-  - component: {fileID: 1788039436}
   - component: {fileID: 1788039438}
+  - component: {fileID: 1788039436}
   m_Layer: 0
   m_Name: GridManager
   m_TagString: Untagged
@@ -2482,6 +2482,8 @@ MonoBehaviour:
   width: 7
   height: 7
   cardContainer: {fileID: 2927354692460094327, guid: fa3f5ee7498110144a0607cd537de78d,
+    type: 3}
+  cardBorderTemplate: {fileID: 2288565847465462566, guid: 2eab42c5e79101a4d9aea4166abb9573,
     type: 3}
   Camera: {fileID: 1652582190}
   tilesToInitialize:
@@ -2559,7 +2561,7 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1

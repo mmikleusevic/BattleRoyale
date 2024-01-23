@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 
 public class GridManager : NetworkBehaviour
@@ -7,41 +8,40 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private Transform cardContainer;
+    [SerializeField] private Transform cardBorderTemplate;
     [SerializeField] private Transform Camera;
     [SerializeField] private List<Vector2> tilesToInitialize;
     [SerializeField] private Card cardTemplate;
     [SerializeField] private List<CardSO> cardSOs;
 
+    private Dictionary<int, int> randomCardNumberCountChecker;
+    private Dictionary<Vector2, Card> spawnedCards;
+    private List<int> randomNumberList;
+
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
-    private Dictionary<int, int> randomCardNumberCountChecker;
-    private NetworkList<int> randomNumberList;
     private Vector2 cardDimensions;
 
-    private Dictionary<Vector2, Card> spawnedCards;
-
-    private void Awake()
+    public void Awake()
     {
-        randomNumberList = new NetworkList<int>();
+        randomNumberList = new List<int>();
 
         GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
 
-    private void GameManager_OnGameStateChanged(object sender, System.EventArgs e)
+    public override void OnNetworkDespawn()
     {
-        GetCardDimensions();
-        PositionCamera();
-
-        if (IsServer)
-        {
-            GenerateRandomCardNumbers();
-            GenerateGrid();
-        }
+        GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
     }
 
-    public override void OnDestroy()
+    private void GameManager_OnGameStateChanged(object sender, GameState e)
     {
-        randomNumberList.Dispose();
+        if (e == GameState.GamePlaying)
+        {
+            GetCardDimensions();
+            PositionCamera();
+            GenerateRandomCardNumbers();
+        }
     }
 
     private void GetCardDimensions()
@@ -53,6 +53,8 @@ public class GridManager : NetworkBehaviour
 
     private void GenerateRandomCardNumbers()
     {
+        if (!IsServer) return;
+
         randomCardNumberCountChecker = new Dictionary<int, int>();
 
         while (randomNumberList.Count < tilesToInitialize.Count)
@@ -70,7 +72,10 @@ public class GridManager : NetworkBehaviour
                 randomNumberList.Add(randomNumber);
             }
         }
+
+        GenerateGrid();
     }
+
 
     private void GenerateGrid()
     {
@@ -83,25 +88,35 @@ public class GridManager : NetworkBehaviour
 
             Vector2 position = new Vector3((tileCoordinates.x * cardDimensions.x) + tileCoordinates.x * spacing, (tileCoordinates.y * cardDimensions.y) + tileCoordinates.y * spacing);
 
-            Transform cardContainer = Instantiate(this.cardContainer, position, Quaternion.identity, transform);
+            Transform cardContainerTransform = SpawnObject(cardContainer, position, Quaternion.identity, transform, $"CardContainer{cardSO.name}");
 
-            NetworkObject cardContainerNetworkObject = cardContainer.GetComponent<NetworkObject>();
-            cardContainerNetworkObject.Spawn();
-            cardContainerNetworkObject.TrySetParent(transform);
-            GameMultiplayer.Instance.SetNameClientRpc(cardContainer.gameObject, $"CardContainer{cardSO.name}");
+            SpawnObject(cardBorderTemplate, cardContainerTransform.position, Quaternion.identity, cardContainerTransform, $"CardBorderTemplate{cardSO.name}");
 
-            Card spawnedCard = Instantiate(cardSO.prefab, cardContainer.position, Quaternion.identity, cardContainer);
+            Transform cardTransform = SpawnObject(cardSO.prefab.transform, cardContainerTransform.position, Quaternion.identity, cardContainerTransform, $"CardContainer{cardSO.name}");
+            Card card = cardTransform.GetComponent<Card>();
 
-            NetworkObject spawnedCardNetworkObject = spawnedCard.GetComponent<NetworkObject>();
-            spawnedCardNetworkObject.Spawn();
-            spawnedCardNetworkObject.TrySetParent(cardContainer.transform);
-            GameMultiplayer.Instance.SetNameClientRpc(spawnedCard.gameObject, cardSO.name);
-
-            spawnedCards[position] = spawnedCard;
+            spawnedCards[position] = card;
         }
     }
 
-    public void PositionCamera()
+    private Transform SpawnObject(Transform transform, Vector3 position, Quaternion rotation, Transform parent, string objectName)
+    {
+        Transform transformObject = Instantiate(transform, position, rotation, parent);
+
+        SetNetworkObjectInScene(transformObject, parent, objectName);
+
+        return transformObject;
+    }
+
+    private void SetNetworkObjectInScene(Transform transform, Transform parent, string objectName)
+    {
+        NetworkObject networkObject = transform.GetComponent<NetworkObject>();
+        networkObject.Spawn(true);
+        networkObject.TrySetParent(parent.transform);
+        GameMultiplayer.Instance.SetNameClientRpc(transform.gameObject, objectName);
+    }
+
+    private void PositionCamera()
     {
         float halfWidth = ((width * cardDimensions.x) + width * spacing) / 2f;
         float halfHeight = ((height * cardDimensions.y) + height * spacing) / 2f;
@@ -116,7 +131,7 @@ public class GridManager : NetworkBehaviour
         Camera.transform.rotation = Quaternion.Euler(0, 0, 90);
     }
 
-    public Card GetTileAtPosition(Vector2 position)
+    private Card GetTileAtPosition(Vector2 position)
     {
         if (spawnedCards.ContainsKey(position))
         {

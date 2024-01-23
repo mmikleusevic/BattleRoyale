@@ -27,6 +27,7 @@ public class GameLobby : MonoBehaviour
     public event EventHandler OnJoinStarted;
     public event EventHandler OnQuickJoinFailed;
     public event EventHandler OnJoinFailed;
+    public event EventHandler OnLobbyDeleted;
     public event EventHandler<OnLobbyListChangdEventArgs> OnLobbyListChanged;
 
     public class OnLobbyListChangdEventArgs : EventArgs
@@ -59,17 +60,24 @@ public class GameLobby : MonoBehaviour
     private void Start()
     {
         LobbyUI.Instance.OnLobbyFind += LobbyUI_OnLobbySearch;
+        OnLobbyDeleted += GameLobby_OnLobbyDeleted;
     }
 
     private void OnDisable()
     {
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
+        OnLobbyDeleted -= GameLobby_OnLobbyDeleted;
     }
 
     private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
     {
         lobbyName = e.lobbyName;
         ListLobbiesPeriodicallyAfterTimer();
+    }
+
+    private void GameLobby_OnLobbyDeleted(object sender, EventArgs e)
+    {
+        SetLobbyNullToEveryoneServerRpc();
     }
 
     private void HandlePeriodicListLobbies()
@@ -110,7 +118,11 @@ public class GameLobby : MonoBehaviour
                 Filters = new List<QueryFilter>
                 {
                     new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-                    new QueryFilter(QueryFilter.FieldOptions.Name, lobbyName, QueryFilter.OpOptions.CONTAINS),
+                    new QueryFilter(QueryFilter.FieldOptions.Name, lobbyName, QueryFilter.OpOptions.CONTAINS)
+                },
+                Order = new List<QueryOrder>
+                {
+                    new QueryOrder(false, QueryOrder.FieldOptions.Created)
                 }
             };
 
@@ -314,15 +326,15 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async void DeleteLobby()
+    public async Task DeleteLobby()
     {
         if (LobbyExists())
         {
             try
             {
-                GameMultiplayer.Instance.ShutdownClients();
-
                 await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+
+                OnLobbyDeleted?.Invoke(this, EventArgs.Empty);
             }
             catch (LobbyServiceException ex)
             {
@@ -331,17 +343,17 @@ public class GameLobby : MonoBehaviour
         }
     }
 
-    public async void LeaveLobby()
+    public async Task LeaveLobby()
     {
         if (LobbyExists())
         {
             try
             {
-                GameMultiplayer.Instance.ShutdownClients();
-
                 string playerId = AuthenticationService.Instance.PlayerId;
 
                 await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
+
+                SetLobbyToNull();
             }
             catch (LobbyServiceException ex)
             {
@@ -349,22 +361,6 @@ public class GameLobby : MonoBehaviour
             }
         }
     }
-
-    public async void KickPlayer(PlayerData playerData)
-    {
-        if (IsLobbyHost())
-        {
-            try
-            {
-                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerData.playerId.ToString());
-            }
-            catch (LobbyServiceException ex)
-            {
-                Debug.LogError(ex.Message);
-            }
-        }
-    }
-
 
     private async void LobbyJoinRelayStartClient()
     {
@@ -377,18 +373,17 @@ public class GameLobby : MonoBehaviour
         GameMultiplayer.Instance.StartClient();
     }
 
-    public void LeaveLobbyGoToMainMenu()
+    public async void LeaveLobbyOrDelete()
     {
         if (IsLobbyHost())
         {
-            DeleteLobby();
+            GameMultiplayer.Instance.DisconnectClientsFromGame();
+            await DeleteLobby();
         }
         else
         {
-            LeaveLobby();
+            await LeaveLobby();
         }
-
-        GameMultiplayer.Instance.LoadMainMenu();
     }
 
     private void JoinStarted()
@@ -404,5 +399,22 @@ public class GameLobby : MonoBehaviour
     public bool LobbyExists()
     {
         return joinedLobby != null;
+    }
+
+    [ServerRpc]
+    private void SetLobbyNullToEveryoneServerRpc()
+    {
+        SetLobbyNullToEveryoneClientRpc();
+    }
+
+    [ClientRpc]
+    private void SetLobbyNullToEveryoneClientRpc()
+    {
+        SetLobbyToNull();
+    }
+
+    private void SetLobbyToNull()
+    {
+        joinedLobby = null;
     }
 }

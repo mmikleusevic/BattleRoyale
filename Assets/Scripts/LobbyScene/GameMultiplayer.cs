@@ -78,7 +78,7 @@ public class GameMultiplayer : NetworkBehaviour
 
     private void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
     {
-        if (NetworkManager.ShutdownInProgress) return;
+        if (!NetworkManager.IsConnectedClient) return;
 
         for (int i = 0; i < playerDataNetworkList.Count; i++)
         {
@@ -119,6 +119,11 @@ public class GameMultiplayer : NetworkBehaviour
         }
 
         connectionApprovalResponse.Approved = true;
+    }
+
+    private void GameLobby_OnLobbyDeleted(object sender, EventArgs e)
+    {
+        DisconnectClientsFromGame();
     }
 
     private void NetworkManager_Server_OnClientConnectedCallback(ulong clientId)
@@ -257,57 +262,9 @@ public class GameMultiplayer : NetworkBehaviour
         PlayerPrefs.SetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, playerName);
     }
 
-    public void KickPlayer(PlayerData playerData)
+    public void DisconnectPlayer(ulong clientId)
     {
-        NetworkManager.Singleton.DisconnectClient(playerData.clientId);
-    }
-
-    public void ShutdownClients()
-    {
-        if (IsServer)
-        {
-            ShutdownClientsServerRpc();
-        }
-        else
-        {
-            NetworkManager.Singleton.Shutdown();
-        }
-    }
-
-    [ServerRpc]
-    private void ShutdownClientsServerRpc()
-    {
-        ShutdownClientsClientRpc();
-    }
-
-    [ClientRpc]
-    private void ShutdownClientsClientRpc()
-    {
-        NetworkManager.Singleton.Shutdown();
-    }
-
-    public void LoadMainMenu()
-    {
-        if (IsServer)
-        {
-            LoadMainMenuServerRpc();
-        }
-        else
-        {
-            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
-        }
-    }
-
-    [ServerRpc]
-    private void LoadMainMenuServerRpc()
-    {
-        LoadMainMenuClientRpc();
-    }
-
-    [ClientRpc]
-    private void LoadMainMenuClientRpc()
-    {
-        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+        NetworkManager.Singleton.DisconnectClient(clientId);
     }
 
     [ClientRpc]
@@ -317,5 +274,26 @@ public class GameMultiplayer : NetworkBehaviour
         if (gameObject == null) return;
 
         gameObject.name = newName;
+    }
+
+    public void DisconnectClientsFromGame()
+    {
+        DisconnectClientsFromGameServerRpc();
+    }
+
+    [ServerRpc]
+    public void DisconnectClientsFromGameServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        DisconnectClientsFromGameClientRpc();
+    }
+
+    [ClientRpc]
+    public void DisconnectClientsFromGameClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        NetworkManager.Shutdown();
+
+        if (IsServer) return;
+
+        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
     }
 }

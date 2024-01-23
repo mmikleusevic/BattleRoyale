@@ -23,14 +23,6 @@ public class LobbyListSingleUI : MonoBehaviour
         this.lobby = lobby;
         lobbyNameText.text = lobby.Name;
         lobbyCreatorText.text = lobby.Data[GameLobby.CREATOR_NAME].Value;
-        image.color = GetColor();
-    }
-
-    private Color GetColor()
-    {
-        string[] rgba = lobby.Data[GameLobby.LOBBY_COLOR].Value.Substring(5, lobby.Data[GameLobby.LOBBY_COLOR].Value.Length - 6).Split(", ");
-        Color color = new Color(float.Parse(rgba[0]), float.Parse(rgba[1]), float.Parse(rgba[2]), float.Parse(rgba[3]));
-
-        return color;
+        image.color = lobby.Data[GameLobby.LOBBY_COLOR].Value.ToColor();
     }
 }

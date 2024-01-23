@@ -22,7 +22,8 @@ public class GamePauseUI : MonoBehaviour
 
         mainMenuButton.onClick.AddListener(() =>
         {
-            GameLobby.Instance.LeaveLobbyGoToMainMenu();
+            GameLobby.Instance.LeaveLobbyOrDelete();
+            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
             Time.timeScale = 1f;
         });
     }

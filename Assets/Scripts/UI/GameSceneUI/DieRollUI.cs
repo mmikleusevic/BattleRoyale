@@ -22,7 +22,7 @@ public class DieRollUI : RollUI
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
     }
 
-    private void GameManager_OnGameStateChanged(object sender, System.EventArgs e)
+    private void GameManager_OnGameStateChanged(object sender, GameState e)
     {
         Show();
     }

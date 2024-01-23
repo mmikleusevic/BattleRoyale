@@ -10,7 +10,8 @@ public class HostResponseUI : MonoBehaviour
     {
         mainMenuButton.onClick.AddListener(() =>
         {
-            GameLobby.Instance.LeaveLobbyGoToMainMenu();
+            GameLobby.Instance.LeaveLobbyOrDelete();
+            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
         });
     }
 

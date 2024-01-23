@@ -12,7 +12,7 @@ public class WaitingForOtherPlayersUI : MonoBehaviour
         GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
     }
 
-    private void GameManager_OnGameStateChanged(object sender, System.EventArgs e)
+    private void GameManager_OnGameStateChanged(object sender, GameState e)
     {
         Hide();
     }

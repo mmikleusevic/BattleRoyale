@@ -196,7 +196,7 @@ MonoBehaviour:
     RecycleNetworkIds: 1
     NetworkIdRecycleDelay: 120
     RpcHashSize: 0
-    LoadSceneTimeOut: 120
+    LoadSceneTimeOut: 30
     SpawnTimeout: 1
     EnableNetworkLogs: 1
     OldPrefabList: []

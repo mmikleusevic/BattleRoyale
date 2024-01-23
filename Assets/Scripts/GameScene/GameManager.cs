@@ -10,10 +10,10 @@ public class GameManager : StateMachine
     public event EventHandler OnToggleLocalGamePause;
     public event EventHandler OnMultiplayerGamePaused;
     public event EventHandler OnMultiplayerGameUnpaused;
-    public event EventHandler OnGameStateChanged;
+    public event EventHandler<GameState> OnGameStateChanged;
 
     [SerializeField] private Transform playerPrefab;
-    [SerializeField] private List<Vector3> spawnPositionList = new List<Vector3>();
+    [SerializeField] private List<Vector3> spawnPositionList;
 
     private bool autoCheckGamePauseState;
 
@@ -38,24 +38,24 @@ public class GameManager : StateMachine
     {
         gameState.OnValueChanged += GameState_OnValueChanged;
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
-
-        if (IsServer)
-        {
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
-        }
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
     }
 
     public override void OnNetworkDespawn()
     {
         gameState.OnValueChanged -= GameState_OnValueChanged;
         isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
+
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+        }
     }
 
     private void Start()
     {
         SetPlayerReadyServerRpc();
     }
-
 
     private void LateUpdate()
     {
@@ -68,29 +68,7 @@ public class GameManager : StateMachine
 
     private void GameState_OnValueChanged(GameState previousValue, GameState newValue)
     {
-        OnGameStateChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    [ServerRpc]
-    private void StartGameServerRpc()
-    {
-        SetPlayerToPlayersListClientRpc();
-
-        gameState.Value = GameState.GamePlaying;
-    }
-
-    private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
-    {
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            int playerIndex = GameMultiplayer.Instance.GetPlayerDataIndexFromClientId(clientId);
-            Vector3 position = spawnPositionList[playerIndex];
-
-            Transform playerTransform = Instantiate(playerPrefab, position, playerPrefab.rotation, null);
-            NetworkObject playerNetworkObject = playerTransform.GetComponent<NetworkObject>();
-            playerNetworkObject.SpawnAsPlayerObject(clientId, true);
-            GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
-        }
+        OnGameStateChanged?.Invoke(this, newValue);
     }
 
     private void IsGamePaused_OnValueChanged(bool previousValue, bool newValue)
@@ -105,6 +83,25 @@ public class GameManager : StateMachine
             Time.timeScale = 1f;
             OnMultiplayerGameUnpaused?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    private void NetworkManager_OnClientDisconnectCallback(ulong obj)
+    {
+        if (obj == NetworkManager.ServerClientId && NetworkManager.IsConnectedClient)
+        {
+            GameLobby.Instance.LeaveLobbyOrDelete();
+            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+        }
+    }
+
+    [ServerRpc]
+    private void StartGameServerRpc()
+    {
+        SpawnPlayers();
+
+        SetPlayerToPlayersListClientRpc();
+
+        gameState.Value = GameState.GamePlaying;
     }
 
     public void TogglePauseGame()
@@ -161,6 +158,20 @@ public class GameManager : StateMachine
         if (allClientsReady)
         {
             StartGameServerRpc();
+        }
+    }
+
+    private void SpawnPlayers()
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            int playerIndex = GameMultiplayer.Instance.GetPlayerDataIndexFromClientId(clientId);
+            Vector3 position = spawnPositionList[playerIndex];
+
+            Transform playerTransform = Instantiate(playerPrefab, position, playerPrefab.rotation, null);
+            NetworkObject playerNetworkObject = playerTransform.GetComponent<NetworkObject>();
+            playerNetworkObject.SpawnAsPlayerObject(clientId, true);
+            GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
         }
     }
 
