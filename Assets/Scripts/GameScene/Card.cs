@@ -16,6 +16,8 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     public override void OnNetworkDespawn()
     {
         isOpen.OnValueChanged -= OnValueChanged;
+
+        base.OnNetworkDespawn();
     }
 
     private void OnValueChanged(bool previous, bool current)

@@ -50,6 +50,8 @@ public class GameManager : StateMachine
         {
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
         }
+
+        base.OnNetworkDespawn();
     }
 
     private void Start()
@@ -87,11 +89,9 @@ public class GameManager : StateMachine
 
     private void NetworkManager_OnClientDisconnectCallback(ulong obj)
     {
-        if (obj == NetworkManager.ServerClientId && NetworkManager.IsConnectedClient)
-        {
-            GameLobby.Instance.LeaveLobbyOrDelete();
-            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
-        }
+        Time.timeScale = 1;
+
+        GameLobby.Instance.DisconnectClientsOnServerLeaving(obj);
     }
 
     [ServerRpc]

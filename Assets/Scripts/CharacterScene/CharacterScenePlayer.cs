@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.UI;
 
 public class CharacterScenePlayer : MonoBehaviour
 {
+    public static event EventHandler OnPlayerKicked;
+
     [SerializeField] private int playerIndex;
     [SerializeField] private GameObject readyGameObject;
     [SerializeField] private SetVisual playerVisual;
@@ -76,5 +79,7 @@ public class CharacterScenePlayer : MonoBehaviour
     {
         PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
         GameMultiplayer.Instance.DisconnectPlayer(playerData.clientId);
+
+        OnPlayerKicked?.Invoke(this, EventArgs.Empty);
     }
 }

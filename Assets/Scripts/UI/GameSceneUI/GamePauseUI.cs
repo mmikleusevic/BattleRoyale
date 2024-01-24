@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,9 +21,9 @@ public class GamePauseUI : MonoBehaviour
             GameManager.Instance.TogglePauseGame();
         });
 
-        mainMenuButton.onClick.AddListener(() =>
+        mainMenuButton.onClick.AddListener(async () =>
         {
-            GameLobby.Instance.LeaveLobbyOrDelete();
+            await GameLobby.Instance.LeaveLobbyOrDelete();
             LevelManager.Instance.LoadScene(Scene.MainMenuScene);
             Time.timeScale = 1f;
         });

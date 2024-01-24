@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -43,6 +44,8 @@ public class GameMultiplayer : NetworkBehaviour
 
         if (NetworkManager.Singleton == null) return;
 
+        if (!NetworkManager.Singleton.ShutdownInProgress) NetworkManager.Singleton.Shutdown();
+
         if (GameLobby.Instance.IsLobbyHost())
         {
             NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
@@ -54,6 +57,8 @@ public class GameMultiplayer : NetworkBehaviour
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Client_OnClientDisconnectCallback;
             NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_Server_OnClientConnectedCallback;
         }
+
+        base.OnNetworkDespawn();
     }
 
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
@@ -119,11 +124,6 @@ public class GameMultiplayer : NetworkBehaviour
         }
 
         connectionApprovalResponse.Approved = true;
-    }
-
-    private void GameLobby_OnLobbyDeleted(object sender, EventArgs e)
-    {
-        DisconnectClientsFromGame();
     }
 
     private void NetworkManager_Server_OnClientConnectedCallback(ulong clientId)
@@ -290,10 +290,11 @@ public class GameMultiplayer : NetworkBehaviour
     [ClientRpc]
     public void DisconnectClientsFromGameClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        NetworkManager.Shutdown();
+        if (!NetworkManager.Singleton.IsServer)
+        {
+            GameLobby.Instance.SetLobbyToNull();
+        }    
 
-        if (IsServer) return;
-
-        LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+        NetworkManager.Singleton.Shutdown();
     }
 }

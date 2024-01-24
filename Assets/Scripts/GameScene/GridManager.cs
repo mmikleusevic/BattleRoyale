@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
 
 public class GridManager : NetworkBehaviour
@@ -32,6 +31,9 @@ public class GridManager : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
+
+        gameObject.SetActive(false);
+        base.OnNetworkDespawn();
     }
 
     private void GameManager_OnGameStateChanged(object sender, GameState e)

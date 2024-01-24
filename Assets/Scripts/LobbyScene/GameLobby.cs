@@ -1,5 +1,6 @@
 using ParrelSync;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -27,7 +28,6 @@ public class GameLobby : MonoBehaviour
     public event EventHandler OnJoinStarted;
     public event EventHandler OnQuickJoinFailed;
     public event EventHandler OnJoinFailed;
-    public event EventHandler OnLobbyDeleted;
     public event EventHandler<OnLobbyListChangdEventArgs> OnLobbyListChanged;
 
     public class OnLobbyListChangdEventArgs : EventArgs
@@ -60,24 +60,17 @@ public class GameLobby : MonoBehaviour
     private void Start()
     {
         LobbyUI.Instance.OnLobbyFind += LobbyUI_OnLobbySearch;
-        OnLobbyDeleted += GameLobby_OnLobbyDeleted;
     }
 
     private void OnDisable()
     {
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
-        OnLobbyDeleted -= GameLobby_OnLobbyDeleted;
     }
 
     private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
     {
         lobbyName = e.lobbyName;
         ListLobbiesPeriodicallyAfterTimer();
-    }
-
-    private void GameLobby_OnLobbyDeleted(object sender, EventArgs e)
-    {
-        SetLobbyNullToEveryoneServerRpc();
     }
 
     private void HandlePeriodicListLobbies()
@@ -284,7 +277,10 @@ public class GameLobby : MonoBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
+
             OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
+
+            await LeaveLobby();
         }
     }
 
@@ -303,7 +299,10 @@ public class GameLobby : MonoBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
+
             OnJoinFailed?.Invoke(this, EventArgs.Empty);
+
+            await LeaveLobby();
         }
     }
 
@@ -322,58 +321,70 @@ public class GameLobby : MonoBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
+
             OnJoinFailed?.Invoke(this, EventArgs.Empty);
+
+            await LeaveLobby();
         }
     }
 
     public async Task DeleteLobby()
     {
-        if (LobbyExists())
+        try
         {
-            try
-            {
-                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+            bool lobbyExists = await LobbyExists();
 
-                OnLobbyDeleted?.Invoke(this, EventArgs.Empty);
-            }
-            catch (LobbyServiceException ex)
-            {
-                Debug.LogError(ex.Message);
-            }
+            if (!lobbyExists) return;
+
+            await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogError(ex.Message);
         }
     }
 
     public async Task LeaveLobby()
     {
-        if (LobbyExists())
+        try
         {
-            try
-            {
-                string playerId = AuthenticationService.Instance.PlayerId;
+            bool lobbyExists = await LobbyExists();
 
-                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
+            if (!lobbyExists) return;
 
-                SetLobbyToNull();
-            }
-            catch (LobbyServiceException ex)
-            {
-                Debug.LogError(ex.Message);
-            }
+            string playerId = AuthenticationService.Instance.PlayerId;
+
+            await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogError(ex.Message);
         }
     }
 
     private async void LobbyJoinRelayStartClient()
     {
-        string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+        try
+        {
+            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
 
-        JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
 
-        NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
-        GameMultiplayer.Instance.StartClient();
+            GameMultiplayer.Instance.StartClient();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.Message);
+
+            OnJoinFailed?.Invoke(this, EventArgs.Empty);
+
+            await LeaveLobby();
+        }
     }
 
-    public async void LeaveLobbyOrDelete()
+    public async Task LeaveLobbyOrDelete()
     {
         if (IsLobbyHost())
         {
@@ -382,6 +393,7 @@ public class GameLobby : MonoBehaviour
         }
         else
         {
+            NetworkManager.Singleton.Shutdown();
             await LeaveLobby();
         }
     }
@@ -391,30 +403,47 @@ public class GameLobby : MonoBehaviour
         OnJoinStarted?.Invoke(this, EventArgs.Empty);
     }
 
+    public void SetLobbyToNull()
+    {
+        joinedLobby = null;
+    }
+
     public Lobby GetLobby()
     {
         return joinedLobby;
+    }   
+
+    public async Task<bool> LobbyExists()
+    {
+        try
+        {
+            if (joinedLobby != null)
+
+            joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby?.Id);
+
+            return joinedLobby != null;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.Message);
+
+            return false;
+        }
     }
 
-    public bool LobbyExists()
+    public async void DisconnectClientsOnServerLeaving(ulong clientId)
     {
-        return joinedLobby != null;
-    }
+        if (clientId == NetworkManager.ServerClientId && NetworkManager.Singleton.IsConnectedClient)
+        {
+            await LeaveLobbyOrDelete();
 
-    [ServerRpc]
-    private void SetLobbyNullToEveryoneServerRpc()
-    {
-        SetLobbyNullToEveryoneClientRpc();
-    }
+            await Awaitable.NextFrameAsync();
 
-    [ClientRpc]
-    private void SetLobbyNullToEveryoneClientRpc()
-    {
-        SetLobbyToNull();
-    }
-
-    private void SetLobbyToNull()
-    {
-        joinedLobby = null;
+            LevelManager.Instance.LoadScene(Scene.MainMenuScene);
+        }
+        else if (clientId == NetworkManager.ServerClientId)
+        {
+            await LeaveLobbyOrDelete();
+        }
     }
 }

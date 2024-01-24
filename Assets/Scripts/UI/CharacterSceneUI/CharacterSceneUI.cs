@@ -16,10 +16,10 @@ public class CharacterSceneUI : MonoBehaviour
 
     private void Awake()
     {
-        mainMenuButton.onClick.AddListener(() =>
+        mainMenuButton.onClick.AddListener(async () =>
         {
             CharacterSceneReady.Instance.RemoveKeyFromPlayerReady();
-            GameLobby.Instance.LeaveLobbyOrDelete();
+            await GameLobby.Instance.LeaveLobbyOrDelete();
             LevelManager.Instance.LoadScene(Scene.MainMenuScene);
         });
 
@@ -31,11 +31,18 @@ public class CharacterSceneUI : MonoBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
         CharacterSceneReady.Instance.OnReadyChanged += CharacterSceneReady_OnReadyChanged;
+        CharacterScenePlayer.OnPlayerKicked += CharacterScenePlayer_OnPlayerKicked;
     }
 
     private void CharacterSceneReady_OnReadyChanged(object sender, System.EventArgs e)
     {
         ChangeReadyButtonText();
+    }
+
+    private void CharacterScenePlayer_OnPlayerKicked(object sender, System.EventArgs e)
+    {
+        CharacterSceneReady.Instance.RemoveKeyFromPlayerReady();
+        ToggleReadyButton();
     }
 
     private void Start()
@@ -46,6 +53,7 @@ public class CharacterSceneUI : MonoBehaviour
     private void OnDestroy()
     {
         CharacterSceneReady.Instance.OnReadyChanged -= CharacterSceneReady_OnReadyChanged;
+        CharacterScenePlayer.OnPlayerKicked -= CharacterScenePlayer_OnPlayerKicked;
 
         if (NetworkManager.Singleton == null) return;
 
@@ -61,6 +69,8 @@ public class CharacterSceneUI : MonoBehaviour
 
     private void NetworkManager_OnClientDisconnectCallback(ulong obj)
     {
+        GameLobby.Instance.DisconnectClientsOnServerLeaving(obj);
+
         playerCount--;
         ToggleReadyButton();
     }
