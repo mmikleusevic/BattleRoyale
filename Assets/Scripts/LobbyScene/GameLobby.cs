@@ -1,6 +1,5 @@
 using ParrelSync;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -411,7 +410,7 @@ public class GameLobby : MonoBehaviour
     public Lobby GetLobby()
     {
         return joinedLobby;
-    }   
+    }
 
     public async Task<bool> LobbyExists()
     {
@@ -419,7 +418,7 @@ public class GameLobby : MonoBehaviour
         {
             if (joinedLobby != null)
 
-            joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby?.Id);
+                joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby?.Id);
 
             return joinedLobby != null;
         }

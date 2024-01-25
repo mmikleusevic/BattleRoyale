@@ -58,7 +58,7 @@ public class LevelManager : MonoBehaviour
     }
 
     public void LoadNetwork(Scene targetScene)
-    {       
+    {
         NetworkManager.Singleton.SceneManager.LoadScene(targetScene.ToString(), LoadSceneMode.Single);
     }
 

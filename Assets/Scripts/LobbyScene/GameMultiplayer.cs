@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -293,7 +292,7 @@ public class GameMultiplayer : NetworkBehaviour
         if (!NetworkManager.Singleton.IsServer)
         {
             GameLobby.Instance.SetLobbyToNull();
-        }    
+        }
 
         NetworkManager.Singleton.Shutdown();
     }

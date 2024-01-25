@@ -24,6 +24,7 @@ public class GridManager : NetworkBehaviour
     public void Awake()
     {
         randomNumberList = new List<int>();
+        spawnedCards = new Dictionary<Vector2, Card>();
 
         GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
     }
@@ -32,7 +33,6 @@ public class GridManager : NetworkBehaviour
     {
         GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
 
-        gameObject.SetActive(false);
         base.OnNetworkDespawn();
     }
 
@@ -80,9 +80,7 @@ public class GridManager : NetworkBehaviour
 
 
     private void GenerateGrid()
-    {
-        spawnedCards = new Dictionary<Vector2, Card>();
-
+    {     
         for (int i = 0; i < tilesToInitialize.Count; i++)
         {
             Vector2 tileCoordinates = tilesToInitialize[i];
@@ -95,9 +93,9 @@ public class GridManager : NetworkBehaviour
             SpawnObject(cardBorderTemplate, cardContainerTransform.position, Quaternion.identity, cardContainerTransform, $"CardBorderTemplate{cardSO.name}");
 
             Transform cardTransform = SpawnObject(cardSO.prefab.transform, cardContainerTransform.position, Quaternion.identity, cardContainerTransform, $"CardContainer{cardSO.name}");
-            Card card = cardTransform.GetComponent<Card>();
+            NetworkObject cardNetworkObject = cardTransform.GetComponent<Card>().NetworkObject;
 
-            spawnedCards[position] = card;
+            AddCardToSpawnedCardsOnClientServerRpc(position, cardNetworkObject);
         }
     }
 
@@ -131,6 +129,24 @@ public class GridManager : NetworkBehaviour
 
         Camera.transform.position = new Vector3(cameraX, cameraY, -33);
         Camera.transform.rotation = Quaternion.Euler(0, 0, 90);
+    }
+
+    [ServerRpc]
+    private void AddCardToSpawnedCardsOnClientServerRpc(Vector2 position, NetworkObjectReference networkObjectReference, ServerRpcParams serverRpcParams = default)
+    {
+        AddCardToSpawnedCardsOnClientClientRpc(position, networkObjectReference);
+    }
+
+    [ClientRpc]
+    private void AddCardToSpawnedCardsOnClientClientRpc(Vector2 position, NetworkObjectReference networkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        networkObjectReference.TryGet(out NetworkObject networkObject);
+
+        if (networkObject == null) return;
+
+        Card card = networkObject.GetComponent<Card>();
+
+        spawnedCards[position] = card;
     }
 
     private Card GetTileAtPosition(Vector2 position)
