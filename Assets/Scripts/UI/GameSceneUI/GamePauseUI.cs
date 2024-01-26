@@ -26,13 +26,18 @@ public class GamePauseUI : MonoBehaviour
             LevelManager.Instance.LoadScene(Scene.MainMenuScene);
             Time.timeScale = 1f;
         });
+
+        Hide();
     }
 
     private void Start()
     {
         GameManager.Instance.OnToggleLocalGamePause += GameManager_OnToggleLocalGamePause;
+    }
 
-        Hide();
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnToggleLocalGamePause -= GameManager_OnToggleLocalGamePause;
     }
 
     private void GameManager_OnToggleLocalGamePause(object sender, EventArgs e)

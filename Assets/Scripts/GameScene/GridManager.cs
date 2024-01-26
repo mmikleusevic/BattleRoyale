@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -26,24 +27,21 @@ public class GridManager : NetworkBehaviour
         randomNumberList = new List<int>();
         spawnedCards = new Dictionary<Vector2, Card>();
 
-        GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
+        GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;
     }
 
     public override void OnNetworkDespawn()
     {
-        GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
+        GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
 
         base.OnNetworkDespawn();
     }
 
-    private void GameManager_OnGameStateChanged(object sender, GameState e)
+    private void GameManager_OnGameStarted(object sender, EventArgs e)
     {
-        if (e == GameState.GamePlaying)
-        {
-            GetCardDimensions();
-            PositionCamera();
-            GenerateRandomCardNumbers();
-        }
+        GetCardDimensions();
+        PositionCamera();
+        GenerateRandomCardNumbers();       
     }
 
     private void GetCardDimensions()
@@ -61,7 +59,7 @@ public class GridManager : NetworkBehaviour
 
         while (randomNumberList.Count < tilesToInitialize.Count)
         {
-            int randomNumber = Random.Range(0, cardSOs.Count);
+            int randomNumber = UnityEngine.Random.Range(0, cardSOs.Count);
 
             if (!randomCardNumberCountChecker.ContainsKey(randomNumber))
             {

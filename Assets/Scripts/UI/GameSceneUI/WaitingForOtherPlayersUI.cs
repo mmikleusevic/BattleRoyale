@@ -1,18 +1,24 @@
+using System;
 using UnityEngine;
 
 public class WaitingForOtherPlayersUI : MonoBehaviour
 {
+    private void Awake()
+    {
+        Hide();
+    }
+
     private void Start()
     {
-        GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
+        GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
+        GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
     }
 
-    private void GameManager_OnGameStateChanged(object sender, GameState e)
+    private void GameManager_OnGameStarted(object sender, EventArgs e)
     {
         Hide();
     }

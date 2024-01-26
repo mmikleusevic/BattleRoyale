@@ -170,7 +170,7 @@ public class RollResults : NetworkBehaviour, IRollResults
             Dictionary<int, List<ulong>> clientsReOrder = new Dictionary<int, List<ulong>>();
 
             int indexToSwap = finalOrder.IndexOf(clientsToReRoll[0]);
-            int resultOfIndexToSwap = clientInitiative[clientsToReRoll[0]].Last();
+            int lastResultOfIndexToSwap = clientInitiative[clientsToReRoll[0]].Last();
 
             clientInitiative.OrderByDescending(a => a.Value).ThenBy(a => a.Value.Last());
 
@@ -194,16 +194,16 @@ public class RollResults : NetworkBehaviour, IRollResults
             {
                 ulong clientIdToReOrder = clientResult.Value.FirstOrDefault();
                 int newIndexToSwap = finalOrder.IndexOf(clientIdToReOrder);
-                int resultOfNewIndexToSwap = clientInitiative[clientIdToReOrder].Last();
+                int lastResultOfNewIndexToSwap = clientInitiative[clientIdToReOrder].Last();
 
-                if (resultOfNewIndexToSwap > resultOfIndexToSwap)
+                if (lastResultOfNewIndexToSwap > lastResultOfIndexToSwap)
                 {
                     ulong temp = finalOrder[indexToSwap];
                     finalOrder[indexToSwap] = clientIdToReOrder;
                     finalOrder[newIndexToSwap] = temp;
 
                     indexToSwap = newIndexToSwap;
-                    resultOfIndexToSwap = resultOfNewIndexToSwap;
+                    lastResultOfIndexToSwap = lastResultOfNewIndexToSwap;
                 }
 
                 clientsToReRoll.Remove(clientIdToReOrder);

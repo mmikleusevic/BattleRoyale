@@ -7,6 +7,7 @@ public class GameManager : StateMachine
 {
     public static GameManager Instance { get; private set; }
 
+    public event EventHandler OnGameStarted;
     public event EventHandler OnToggleLocalGamePause;
     public event EventHandler OnMultiplayerGamePaused;
     public event EventHandler OnMultiplayerGameUnpaused;
@@ -102,6 +103,15 @@ public class GameManager : StateMachine
         SetPlayerToPlayersListClientRpc();
 
         gameState.Value = GameState.GamePlaying;
+
+        StartGameClientRpc();
+    }
+
+    [ClientRpc]
+    private void StartGameClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        Debug.Log("Started");
+        OnGameStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public void TogglePauseGame()

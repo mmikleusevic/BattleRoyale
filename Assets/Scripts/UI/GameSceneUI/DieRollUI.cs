@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class DieRollUI : RollUI
     {
         base.Awake();
 
-        GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
+        GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;
     }
 
     private void Start()
@@ -17,22 +18,22 @@ public class DieRollUI : RollUI
     }
     public void OnDestroy()
     {
-        GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
+        GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
         RollResults.OnReRoll -= RollResults_OnReRoll;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
     }
 
-    private void GameManager_OnGameStateChanged(object sender, GameState e)
+    private void GameManager_OnGameStarted(object sender, EventArgs e)
     {
         Show();
     }
 
-    private void RollResults_OnReRoll(object sender, System.EventArgs e)
+    private void RollResults_OnReRoll(object sender, EventArgs e)
     {
         Show();
     }
 
-    private void RollResults_OnInitiativeRollOver(object sender, System.EventArgs e)
+    private void RollResults_OnInitiativeRollOver(object sender, EventArgs e)
     {
         StartCoroutine(DelayDisablingDice());
     }

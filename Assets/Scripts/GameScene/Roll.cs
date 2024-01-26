@@ -1,8 +1,11 @@
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Roll : IRoll
 {
+    public static event System.EventHandler<int> OnRoll;
+
     private readonly float interactDistance = 0.51f;
 
     private readonly float rotationSpeed = 150f;
@@ -112,9 +115,6 @@ public class Roll : IRoll
 
         rollResults.SetRollResults(resultSum);
 
-        //TODO remove
-        Debug.Log(resultSum);
-
-        yield return resultSum;
+        OnRoll?.Invoke(this, resultSum);
     }
 }
