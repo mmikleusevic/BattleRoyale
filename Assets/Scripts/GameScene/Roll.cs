@@ -1,10 +1,11 @@
 using System.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Roll : IRoll
 {
-    public static event System.EventHandler<int> OnRoll;
+    public static event System.EventHandler<string> OnRoll;
 
     private readonly float interactDistance = 0.51f;
 
@@ -114,7 +115,16 @@ public class Roll : IRoll
         }
 
         rollResults.SetRollResults(resultSum);
+        SendToMessageUI(resultSum);
+    }
 
-        OnRoll?.Invoke(this, resultSum);
+    private void SendToMessageUI(int result)
+    {
+        PlayerData playerData = GameMultiplayer.Instance.GetPlayerData();
+        string colorString = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId).ToHexString();
+
+        string message = $"<color=#{colorString}>{playerData.playerName}</color> rolled <color=#{colorString}>{result}</color>";
+
+        OnRoll?.Invoke(this, message);
     }
 }

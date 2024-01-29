@@ -1,13 +1,17 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RollResults : NetworkBehaviour, IRollResults
 {
     public static event EventHandler OnReRoll;
-    public static event EventHandler OnInitiativeRollOver;
+    public static event EventHandler<string> OnInitiativeRollOver;
 
     private Dictionary<ulong, bool> clientRolled;
     private Dictionary<int, List<ulong>> rollResults;
@@ -15,12 +19,7 @@ public class RollResults : NetworkBehaviour, IRollResults
     private List<List<ulong>> clientsToReRollList;
     private List<ulong> finalOrder;
 
-    private bool rollForInitiative;
-
-    private void Awake()
-    {
-        rollForInitiative = true;
-    }
+    private bool rollForInitiative = true;
 
     private void Start()
     {
@@ -167,57 +166,62 @@ public class RollResults : NetworkBehaviour, IRollResults
 
         foreach (List<ulong> clientsToReRoll in clientsToReRollList.ToList())
         {
-            Dictionary<int, List<ulong>> clientsReOrder = new Dictionary<int, List<ulong>>();
+            Dictionary<int, List<ulong>> clientsToReOrder = new Dictionary<int, List<ulong>>();
 
-            int indexToSwap = finalOrder.IndexOf(clientsToReRoll[0]);
-            int lastResultOfIndexToSwap = clientInitiative[clientsToReRoll[0]].Last();
+            int firstIndex = finalOrder.IndexOf(clientsToReRoll[0]);
+            int lastValueOfFirstIndex = clientInitiative[clientsToReRoll[0]].Last();
 
             clientInitiative.OrderByDescending(a => a.Value).ThenBy(a => a.Value.Last());
 
-            foreach (ulong clientId in clientsToReRoll)
-            {
-                int result = clientInitiative[clientId].Last();
+            SetDictionaryValuesOfClientsToReOrder(clientsToReOrder, clientsToReRoll);
 
-                if (clientsReOrder.ContainsKey(result))
-                {
-                    clientsReOrder[result].Add(clientId);
-                }
-                else
-                {
-                    clientsReOrder[result] = new List<ulong>() { clientId };
-                }
-            }
+            KeyValuePair<int, List<ulong>>[] clientsResults = clientsToReOrder.OrderByDescending(a => a.Key).Where(a => a.Value.Count == 1).ToArray();
 
-            KeyValuePair<int, List<ulong>>[] clientsResults = clientsReOrder.OrderByDescending(a => a.Key).Where(a => a.Value.Count == 1).ToArray();
-
-            foreach (KeyValuePair<int, List<ulong>> clientResult in clientsResults)
-            {
-                ulong clientIdToReOrder = clientResult.Value.FirstOrDefault();
-                int newIndexToSwap = finalOrder.IndexOf(clientIdToReOrder);
-                int lastResultOfNewIndexToSwap = clientInitiative[clientIdToReOrder].Last();
-
-                if (lastResultOfNewIndexToSwap > lastResultOfIndexToSwap)
-                {
-                    ulong temp = finalOrder[indexToSwap];
-                    finalOrder[indexToSwap] = clientIdToReOrder;
-                    finalOrder[newIndexToSwap] = temp;
-
-                    indexToSwap = newIndexToSwap;
-                    lastResultOfIndexToSwap = lastResultOfNewIndexToSwap;
-                }
-
-                clientsToReRoll.Remove(clientIdToReOrder);
-            }
+            SwapPlacesIfValueLargerAndRemoveFromList(clientsResults, clientsToReRoll, lastValueOfFirstIndex, firstIndex);
 
             if (!clientsToReRoll.Any()) clientsToReRollList.Remove(clientsToReRoll);
         }
 
-        foreach (var item in finalOrder)
-        {
-            Debug.Log("clientId:" + item);
-        }
-
         if (!clientsToReRollList.Any()) clientsToReRollList = null;
+    }
+
+    private void SetDictionaryValuesOfClientsToReOrder(Dictionary<int, List<ulong>> clientsToReOrder, List<ulong> clientsToReRoll)
+    {
+        foreach (ulong clientId in clientsToReRoll)
+        {
+            int result = clientInitiative[clientId].Last();
+
+            if (clientsToReOrder.ContainsKey(result))
+            {
+                clientsToReOrder[result].Add(clientId);
+            }
+            else
+            {
+                clientsToReOrder[result] = new List<ulong>() { clientId };
+            }
+        }
+    }
+
+    private void SwapPlacesIfValueLargerAndRemoveFromList(KeyValuePair<int, List<ulong>>[] clientsResults, List<ulong> clientsToReRoll, int lastValueOfFirstIndex, int firstIndex)
+    {
+        foreach (KeyValuePair<int, List<ulong>> clientResult in clientsResults)
+        {
+            ulong clientIdToReOrder = clientResult.Value.FirstOrDefault();
+            int indexToSwap = finalOrder.IndexOf(clientIdToReOrder);
+            int lastValueOfIndexToSwap = clientInitiative[clientIdToReOrder].Last();
+
+            if (lastValueOfIndexToSwap > lastValueOfFirstIndex)
+            {
+                ulong temp = finalOrder[firstIndex];
+                finalOrder[firstIndex] = clientIdToReOrder;
+                finalOrder[indexToSwap] = temp;
+
+                firstIndex = indexToSwap;
+                lastValueOfFirstIndex = lastValueOfIndexToSwap;
+            }
+
+            clientsToReRoll.Remove(clientIdToReOrder);
+        }
     }
 
     private void FinishClientInitiativeOrReRoll(List<ulong> clientIdsForReRoll)
@@ -230,13 +234,27 @@ public class RollResults : NetworkBehaviour, IRollResults
         }
         else if (clientIdsForReRoll.Count == 0)
         {
-            rollForInitiative = false;
-
             CallOnInitiativeRollOverServerRpc();
+            rollForInitiative = false;
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    private string SendToMessageUI()
+    {
+        string message = "Final order is: " + '\n';
+
+        for (int i = 0; i < finalOrder.Count; i++)
+        {
+            PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(finalOrder[i]);
+            string colorString = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId).ToHexString();
+
+            message += $"<color=#{colorString}> {playerData.playerName} {i + 1}.</color>" + '\n';
+        }
+
+        return message;
+    }
+
+    [ServerRpc]
     private void CallOnOnReRollServerRpc(ulong[] clientIdsForReRoll, ServerRpcParams serverRpcParams = default)
     {
         ClientRpcParams clientRpcParams = new ClientRpcParams()
@@ -256,19 +274,21 @@ public class RollResults : NetworkBehaviour, IRollResults
         OnReRoll?.Invoke(this, EventArgs.Empty);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc]
     private void CallOnInitiativeRollOverServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        CallOnInitiativeRollOverClientRpc();
+        string message = SendToMessageUI();
+
+        CallOnInitiativeRollOverClientRpc(message);
     }
 
     [ClientRpc]
-    private void CallOnInitiativeRollOverClientRpc(ClientRpcParams clientRpcParams = default)
+    private void CallOnInitiativeRollOverClientRpc(string message, ClientRpcParams clientRpcParams = default)
     {
-        OnInitiativeRollOver?.Invoke(this, EventArgs.Empty);
+        OnInitiativeRollOver?.Invoke(this, message);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc]
     private void SetBattleResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
     {
         SetBattleResultClientRpc(result);

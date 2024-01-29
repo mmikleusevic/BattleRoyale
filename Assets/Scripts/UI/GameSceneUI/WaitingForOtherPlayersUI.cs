@@ -3,11 +3,6 @@ using UnityEngine;
 
 public class WaitingForOtherPlayersUI : MonoBehaviour
 {
-    private void Awake()
-    {
-        Hide();
-    }
-
     private void Start()
     {
         GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;

@@ -3066,8 +3066,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1234834116}
-  - component: {fileID: 1234834118}
   - component: {fileID: 1234834117}
+  - component: {fileID: 1234834118}
   m_Layer: 0
   m_Name: GameMultiplayer
   m_TagString: Untagged
@@ -3125,10 +3125,10 @@ MonoBehaviour:
   playerColorList:
   - {r: 0.9622642, g: 0.022694906, b: 0.022694906, a: 1}
   - {r: 0, g: 0.20794582, b: 1, a: 1}
-  - {r: 0, g: 1, b: 0.974314, a: 1}
-  - {r: 0.7186446, g: 0, b: 1, a: 1}
-  - {r: 1, g: 0.9397521, b: 0, a: 1}
-  - {r: 1, g: 0.53481394, b: 0, a: 1}
+  - {r: 0.08235294, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0.41228476, b: 0, a: 1}
+  - {r: 0.6930852, g: 0, b: 1, a: 1}
+  - {r: 1, g: 0.99437773, b: 0, a: 1}
 --- !u!1 &1236063835
 GameObject:
   m_ObjectHideFlags: 0
