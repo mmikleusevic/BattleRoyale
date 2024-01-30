@@ -1,17 +1,19 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Unity.Netcode;
 using Unity.VisualScripting;
-using UnityEngine;
 
 public class RollResults : NetworkBehaviour, IRollResults
 {
     public static event EventHandler OnReRoll;
-    public static event EventHandler<string> OnInitiativeRollOver;
+    public static event EventHandler<OnInitiativeRollOverEventArgs> OnInitiativeRollOver;
+
+    public class OnInitiativeRollOverEventArgs : EventArgs
+    {
+        public string message;
+        public List<ulong> playerOrder;
+    }
 
     private Dictionary<ulong, bool> clientRolled;
     private Dictionary<int, List<ulong>> rollResults;
@@ -23,13 +25,14 @@ public class RollResults : NetworkBehaviour, IRollResults
 
     private void Start()
     {
+        finalOrder = new List<ulong>();
+
         if (!IsServer) return;
 
         clientRolled = new Dictionary<ulong, bool>();
         rollResults = new Dictionary<int, List<ulong>>();
         clientInitiative = new Dictionary<ulong, List<int>>();
         clientsToReRollList = new List<List<ulong>>();
-        finalOrder = new List<ulong>();
 
         SetClientIdToDictionary();
     }
@@ -234,9 +237,26 @@ public class RollResults : NetworkBehaviour, IRollResults
         }
         else if (clientIdsForReRoll.Count == 0)
         {
-            CallOnInitiativeRollOverServerRpc();
+            SetFinalOrderOnClients();
+            CallOnInitiativeRollOver();
             rollForInitiative = false;
         }
+    }
+
+    private void SetFinalOrderOnClients()
+    {
+        foreach (ulong clientId in finalOrder)
+        {
+            SetFinalOrderOnClientsClientRpc(clientId);
+        }
+    }
+
+    [ClientRpc]
+    private void SetFinalOrderOnClientsClientRpc(ulong clientId, ClientRpcParams clientRpcParams = default)
+    {
+        if (IsServer) return;
+
+        finalOrder.Add(clientId);
     }
 
     private string SendToMessageUI()
@@ -248,7 +268,7 @@ public class RollResults : NetworkBehaviour, IRollResults
             PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(finalOrder[i]);
             string colorString = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId).ToHexString();
 
-            message += $"<color=#{colorString}> {playerData.playerName} {i + 1}.</color>" + '\n';
+            message += $"<color=#{colorString}> {i + 1}. {playerData.playerName}</color>" + '\n';
         }
 
         return message;
@@ -274,8 +294,7 @@ public class RollResults : NetworkBehaviour, IRollResults
         OnReRoll?.Invoke(this, EventArgs.Empty);
     }
 
-    [ServerRpc]
-    private void CallOnInitiativeRollOverServerRpc(ServerRpcParams serverRpcParams = default)
+    private void CallOnInitiativeRollOver()
     {
         string message = SendToMessageUI();
 
@@ -285,7 +304,13 @@ public class RollResults : NetworkBehaviour, IRollResults
     [ClientRpc]
     private void CallOnInitiativeRollOverClientRpc(string message, ClientRpcParams clientRpcParams = default)
     {
-        OnInitiativeRollOver?.Invoke(this, message);
+        OnInitiativeRollOverEventArgs eventArgs = new OnInitiativeRollOverEventArgs
+        {
+            message = message,
+            playerOrder = finalOrder
+        };
+
+        OnInitiativeRollOver?.Invoke(this, eventArgs);
     }
 
     [ServerRpc]

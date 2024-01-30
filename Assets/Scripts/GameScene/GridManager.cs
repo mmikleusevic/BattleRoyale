@@ -41,7 +41,7 @@ public class GridManager : NetworkBehaviour
     {
         GetCardDimensions();
         PositionCamera();
-        GenerateRandomCardNumbers();       
+        GenerateRandomCardNumbers();
     }
 
     private void GetCardDimensions()
@@ -78,7 +78,7 @@ public class GridManager : NetworkBehaviour
 
 
     private void GenerateGrid()
-    {     
+    {
         for (int i = 0; i < tilesToInitialize.Count; i++)
         {
             Vector2 tileCoordinates = tilesToInitialize[i];

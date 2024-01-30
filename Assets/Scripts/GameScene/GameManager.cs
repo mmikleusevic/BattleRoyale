@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -18,7 +19,6 @@ public class GameManager : StateMachine
 
     private bool autoCheckGamePauseState;
 
-    private List<Player> players;
     private Dictionary<ulong, bool> playerReadyDictonary;
     private Dictionary<ulong, bool> playerPausedDictionary;
     private NetworkVariable<bool> isGamePaused;
@@ -28,7 +28,6 @@ public class GameManager : StateMachine
     {
         Instance = this;
 
-        players = new List<Player>();
         playerReadyDictonary = new Dictionary<ulong, bool>();
         playerPausedDictionary = new Dictionary<ulong, bool>();
         isGamePaused = new NetworkVariable<bool>(false);
@@ -40,6 +39,7 @@ public class GameManager : StateMachine
         gameState.OnValueChanged += GameState_OnValueChanged;
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
     }
 
     public override void OnNetworkDespawn()
@@ -95,12 +95,15 @@ public class GameManager : StateMachine
         GameLobby.Instance.DisconnectClientsOnServerLeaving(obj);
     }
 
+    private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
+    {
+        SetPlayerToPlayersList(e.playerOrder);
+    }
+
     [ServerRpc]
     private void StartGameServerRpc()
     {
         SpawnPlayers();
-
-        SetPlayerToPlayersListClientRpc();
 
         gameState.Value = GameState.GamePlaying;
 
@@ -110,7 +113,6 @@ public class GameManager : StateMachine
     [ClientRpc]
     private void StartGameClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        Debug.Log("Started");
         OnGameStarted?.Invoke(this, EventArgs.Empty);
     }
 
@@ -185,14 +187,14 @@ public class GameManager : StateMachine
         }
     }
 
-    [ClientRpc]
-    private void SetPlayerToPlayersListClientRpc()
+    private void SetPlayerToPlayersList(List<ulong> playerOrder)
     {
-        Player[] players = FindObjectsByType<Player>(FindObjectsSortMode.InstanceID);
+        Player[] players = FindObjectsByType<Player>(FindObjectsSortMode.None);
 
-        foreach (Player player in players)
+        foreach (ulong clientId in playerOrder)
         {
-            this.players.Add(player);
+            Player player = players.Where(a => a.ClientId == clientId).FirstOrDefault();
+            PlayerManager.Instance.Players.Add(clientId, player);
         }
     }
 }

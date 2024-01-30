@@ -7,7 +7,15 @@ public class Player : NetworkBehaviour
 
     [SerializeField] private SetVisual playerVisual;
 
+    NetworkVariable<ulong> clientId;
+
     public Color playerColor;
+    public ulong ClientId { get => clientId.Value; }
+
+    private void Awake()
+    {
+        clientId = new NetworkVariable<ulong>(NetworkObject.OwnerClientId, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    }
 
     private void Start()
     {

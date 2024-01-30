@@ -1,11 +1,18 @@
+using System;
 using System.Collections;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Roll : IRoll
 {
-    public static event System.EventHandler<string> OnRoll;
+    public static event EventHandler<OnRollEventArgs> OnRoll;
+
+    public class OnRollEventArgs : EventArgs
+    {
+        public string message;
+        public int rollValue;
+    }
 
     private readonly float interactDistance = 0.51f;
 
@@ -19,7 +26,7 @@ public class Roll : IRoll
     {
         factor = rotationSpeed * Time.deltaTime;
 
-        rollResults = Object.FindFirstObjectByType<RollResults>();
+        rollResults = UnityEngine.Object.FindFirstObjectByType<RollResults>();
     }
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)
@@ -125,6 +132,12 @@ public class Roll : IRoll
 
         string message = $"<color=#{colorString}>{playerData.playerName}</color> rolled <color=#{colorString}>{result}</color>";
 
-        OnRoll?.Invoke(this, message);
+        OnRollEventArgs eventArgs = new OnRollEventArgs
+        {
+            message = message,
+            rollValue = result
+        };
+
+        OnRoll?.Invoke(this, eventArgs);
     }
 }

@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
-using System.Text;
 using TMPro;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MessageUI : NetworkBehaviour
@@ -35,14 +32,14 @@ public class MessageUI : NetworkBehaviour
         SetMessage("Game started");
     }
 
-    private void Roll_OnRollResult(object sender, string e)
+    private void Roll_OnRollResult(object sender, Roll.OnRollEventArgs e)
     {
-        SetMessageForEveryoneServerRpc(e);
+        SetMessageForEveryoneServerRpc(e.message);
     }
 
-    private void RollResults_OnInitiativeRollOver(object sender, string e)
+    private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
-        StartCoroutine(DelaySendingMessage(3f, e));
+        StartCoroutine(DelaySendingMessage(3f, e.message));
     }
 
     private IEnumerator DelaySendingMessage(float timeToDelay, string message)

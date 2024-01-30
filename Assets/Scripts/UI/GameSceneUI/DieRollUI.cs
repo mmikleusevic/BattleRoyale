@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
 public class DieRollUI : RollUI
@@ -17,6 +16,7 @@ public class DieRollUI : RollUI
         RollResults.OnReRoll += RollResults_OnReRoll;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
     }
+
     public void OnDestroy()
     {
         GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
@@ -34,7 +34,7 @@ public class DieRollUI : RollUI
         Show();
     }
 
-    private void RollResults_OnInitiativeRollOver(object sender, string message)
+    private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
         StartCoroutine(DelayDisablingDice(3f));
     }
