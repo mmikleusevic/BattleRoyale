@@ -7,14 +7,17 @@ public class Player : NetworkBehaviour
 
     [SerializeField] private SetVisual playerVisual;
 
-    NetworkVariable<ulong> clientId;
-
     public Color playerColor;
-    public ulong ClientId { get => clientId.Value; }
+    public NetworkVariable<ulong> ClientId { get; private set; }
 
     private void Awake()
     {
-        clientId = new NetworkVariable<ulong>(NetworkObject.OwnerClientId, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        if (IsOwner)
+        {           
+            LocalInstance = this;
+        }
     }
 
     private void Start()
@@ -29,7 +32,9 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner)
         {
-            LocalInstance = this;
+            ClientId.Value = NetworkObject.OwnerClientId;
         }
+
+        base.OnNetworkSpawn();
     }
 }

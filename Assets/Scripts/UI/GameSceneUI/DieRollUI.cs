@@ -8,7 +8,7 @@ public class DieRollUI : RollUI
     {
         base.Awake();
 
-        GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
     }
 
     private void Start()
@@ -19,12 +19,12 @@ public class DieRollUI : RollUI
 
     public void OnDestroy()
     {
-        GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         RollResults.OnReRoll -= RollResults_OnReRoll;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
     }
 
-    private void GameManager_OnGameStarted(object sender, EventArgs e)
+    private void Initiative_OnInitiativeStart(object sender, EventArgs e)
     {
         Show();
     }

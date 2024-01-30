@@ -1,12 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class Won : BattleState
+public class Won : State
 {
-    public Won(GameManager battleSystem) : base(battleSystem)
-    {
-    }
-
     public override IEnumerator Start()
     {
         Debug.Log("You won the battle");

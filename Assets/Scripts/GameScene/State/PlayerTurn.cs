@@ -1,72 +1,58 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public partial class Begin
+public class PlayerTurn : State
 {
-    public class PlayerTurn : BattleState
+    public override IEnumerator Start()
     {
-        public PlayerTurn(GameManager battleSystem) : base(battleSystem)
-        {
-        }
+        Debug.Log("Choose an action");
 
-        public override IEnumerator BeforeStart()
-        {
-            Debug.Log("Change Card if Needed");
+        yield return new WaitForSeconds(1f);
+    }
 
-            yield break;
-        }
+    public IEnumerator AttackCard()
+    {
+        Debug.Log("Check if dead");
+        Debug.Log("Check if drinking");
 
-        public override IEnumerator Start()
-        {
-            Debug.Log("Choose an action");
+        GameManager.Instance.SetState(StateEnum.Won);
+        GameManager.Instance.SetState(StateEnum.Lost);
 
-            yield return new WaitForSeconds(1f);
-        }
+        yield break;
+    }
 
-        public override IEnumerator AttackCard()
-        {
-            Debug.Log("Check if dead");
-            Debug.Log("Check if drinking");
+    public IEnumerator AttackPlayer()
+    {
+        Debug.Log("Check if dead");
+        Debug.Log("Check if drinking");
+        Debug.Log("Check if won the card");
+        Debug.Log("Choose card randomly");
+        Debug.Log("Equip if all slots not filled");
 
-            battleSystem.SetState(new Won(battleSystem));
-            battleSystem.SetState(new Lost(battleSystem));
+        GameManager.Instance.SetState(StateEnum.Won);
+        GameManager.Instance.SetState(StateEnum.Lost);
 
-            yield break;
-        }
+        yield break;
+    }
 
-        public override IEnumerator AttackPlayer()
-        {
-            Debug.Log("Check if dead");
-            Debug.Log("Check if drinking");
-            Debug.Log("Check if won the card");
-            Debug.Log("Choose card randomly");
-            Debug.Log("Equip if all slots not filled");
+    public IEnumerator Move()
+    {
+        Debug.Log("Check if dead");
+        Debug.Log("Move");
 
-            battleSystem.SetState(new Won(battleSystem));
-            battleSystem.SetState(new Lost(battleSystem));
+        GameManager.Instance.SetState(StateEnum.Move);
 
-            yield break;
-        }
+        yield break;
+    }
 
-        public override IEnumerator Move()
-        {
-            Debug.Log("Check if dead");
-            Debug.Log("Move");
+    public IEnumerator End()
+    {
+        Debug.Log("End turn");
+        Debug.Log("Switch to other player");
 
-            battleSystem.SetState(new Move(battleSystem));
+        GameManager.Instance.SetState(StateEnum.EnemyTurn);
 
-            yield break;
-        }
-
-        public override IEnumerator End()
-        {
-            Debug.Log("End turn");
-            Debug.Log("Switch to other player");
-
-            battleSystem.SetState(new EnemyTurn(battleSystem));
-
-            yield return new WaitForSeconds(1f);
-        }
+        yield return new WaitForSeconds(1f);
     }
 }
 

@@ -5,15 +5,15 @@ public class WaitingForOtherPlayersUI : MonoBehaviour
 {
     private void Start()
     {
-        GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
     }
 
-    private void GameManager_OnGameStarted(object sender, EventArgs e)
+    private void Initiative_OnInitiativeStart(object sender, EventArgs e)
     {
         Hide();
     }

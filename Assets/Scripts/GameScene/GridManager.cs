@@ -27,17 +27,17 @@ public class GridManager : NetworkBehaviour
         randomNumberList = new List<int>();
         spawnedCards = new Dictionary<Vector2, Card>();
 
-        GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
     }
 
     public override void OnNetworkDespawn()
     {
-        GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
 
         base.OnNetworkDespawn();
     }
 
-    private void GameManager_OnGameStarted(object sender, EventArgs e)
+    private void Initiative_OnInitiativeStart(object sender, EventArgs e)
     {
         GetCardDimensions();
         PositionCamera();

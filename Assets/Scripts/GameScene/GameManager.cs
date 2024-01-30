@@ -4,25 +4,23 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : StateMachine
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public event EventHandler OnGameStarted;
     public event EventHandler OnToggleLocalGamePause;
     public event EventHandler OnMultiplayerGamePaused;
     public event EventHandler OnMultiplayerGameUnpaused;
-    public event EventHandler<GameState> OnGameStateChanged;
 
     [SerializeField] private Transform playerPrefab;
     [SerializeField] private List<Vector3> spawnPositionList;
+    [SerializeField] private StateManager stateManager;
 
     private bool autoCheckGamePauseState;
 
     private Dictionary<ulong, bool> playerReadyDictonary;
     private Dictionary<ulong, bool> playerPausedDictionary;
     private NetworkVariable<bool> isGamePaused;
-    private NetworkVariable<GameState> gameState;
 
     private void Awake()
     {
@@ -31,12 +29,11 @@ public class GameManager : StateMachine
         playerReadyDictonary = new Dictionary<ulong, bool>();
         playerPausedDictionary = new Dictionary<ulong, bool>();
         isGamePaused = new NetworkVariable<bool>(false);
-        gameState = new NetworkVariable<GameState>(GameState.WaitingToStart);
     }
 
     public override void OnNetworkSpawn()
     {
-        gameState.OnValueChanged += GameState_OnValueChanged;
+        SetState(StateEnum.WaitingForPlayers);
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
@@ -44,7 +41,6 @@ public class GameManager : StateMachine
 
     public override void OnNetworkDespawn()
     {
-        gameState.OnValueChanged -= GameState_OnValueChanged;
         isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
 
         if (NetworkManager.Singleton != null)
@@ -67,11 +63,6 @@ public class GameManager : StateMachine
             autoCheckGamePauseState = false;
             CheckGamePauseState();
         }
-    }
-
-    private void GameState_OnValueChanged(GameState previousValue, GameState newValue)
-    {
-        OnGameStateChanged?.Invoke(this, newValue);
     }
 
     private void IsGamePaused_OnValueChanged(bool previousValue, bool newValue)
@@ -100,20 +91,23 @@ public class GameManager : StateMachine
         SetPlayerToPlayersList(e.playerOrder);
     }
 
+    public void SetState(StateEnum state, ClientRpcParams clientRpcParams = default)
+    {
+        SetStateClientRpc(state, clientRpcParams);
+    }
+
+    [ClientRpc]
+    private void SetStateClientRpc(StateEnum state, ClientRpcParams clientRpcParams = default)
+    {
+        stateManager.SetState(state);
+    }
+
     [ServerRpc]
     private void StartGameServerRpc()
     {
         SpawnPlayers();
 
-        gameState.Value = GameState.GamePlaying;
-
-        StartGameClientRpc();
-    }
-
-    [ClientRpc]
-    private void StartGameClientRpc(ClientRpcParams clientRpcParams = default)
-    {
-        OnGameStarted?.Invoke(this, EventArgs.Empty);
+        SetState(StateEnum.Initiative);
     }
 
     public void TogglePauseGame()
@@ -193,7 +187,7 @@ public class GameManager : StateMachine
 
         foreach (ulong clientId in playerOrder)
         {
-            Player player = players.Where(a => a.ClientId == clientId).FirstOrDefault();
+            Player player = players.Where(a => a.ClientId.Value == clientId).FirstOrDefault();
             PlayerManager.Instance.Players.Add(clientId, player);
         }
     }

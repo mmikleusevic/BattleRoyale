@@ -1,13 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class EnemyTurn : BattleState
+public class EnemyTurn : State
 {
-    public EnemyTurn(GameManager battleSystem) : base(battleSystem)
-    {
-
-    }
-
     public override IEnumerator Start()
     {
         Debug.Log("Disable most controls of the player");

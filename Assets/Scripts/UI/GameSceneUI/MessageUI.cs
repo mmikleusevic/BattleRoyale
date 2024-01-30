@@ -12,22 +12,21 @@ public class MessageUI : NetworkBehaviour
 
     public void Awake()
     {
-
-        GameManager.Instance.OnGameStarted += GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         Roll.OnRoll += Roll_OnRollResult;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
     }
 
     public override void OnNetworkDespawn()
     {
-        GameManager.Instance.OnGameStarted -= GameManager_OnGameStarted;
+        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         Roll.OnRoll -= Roll_OnRollResult;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
 
         base.OnNetworkDespawn();
     }
 
-    private void GameManager_OnGameStarted(object sender, EventArgs e)
+    private void Initiative_OnInitiativeStart(object sender, EventArgs e)
     {
         SetMessage("Game started");
     }

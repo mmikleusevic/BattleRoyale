@@ -1,11 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
-public class Move : State
+public class PlaceOnGrid : State
 {
     public override IEnumerator Start()
     {
-        Debug.Log("You moved.");
+        Debug.Log("You placed yourself.");
 
         yield break;
     }
