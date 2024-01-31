@@ -6,56 +6,27 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private GameObject highlight;
 
-    private NetworkVariable<bool> isOpen = new NetworkVariable<bool>(false);
+    private GridManager gridManager;
 
-    public override void OnNetworkSpawn()
+    private bool IsDisabled { get; set; } = true;
+
+    private void Start()
     {
-        isOpen.OnValueChanged += OnValueChanged;
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        isOpen.OnValueChanged -= OnValueChanged;
-
-        base.OnNetworkDespawn();
-    }
-
-    private void OnValueChanged(bool previous, bool current)
-    {
-        isOpen.Value = current;
+        gridManager = FindFirstObjectByType<GridManager>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         Show();
 
-        OpenCardServerRpc();
+        Debug.Log("You placed");
+
+        gridManager.NextClientPlacingServerRpc();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         Hide();
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void OpenCardServerRpc()
-    {
-        if (!isOpen.Value)
-        {
-            OpenCardClientRpc();
-            isOpen.Value = true;
-        }
-    }
-
-    [ClientRpc]
-    private void OpenCardClientRpc(ClientRpcParams clientRpcParams = default)
-    {
-        OpenCard();
-    }
-
-    private void OpenCard()
-    {
-        GetComponent<CardAnimator>().OpenCard();
     }
 
     private void Show()

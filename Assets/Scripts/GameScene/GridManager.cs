@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.ProBuilder.Shapes;
 
 public class GridManager : NetworkBehaviour
 {
@@ -28,11 +30,12 @@ public class GridManager : NetworkBehaviour
         spawnedCards = new Dictionary<Vector2, Card>();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
+        GameManager.Instance.OnPlayersOrderSet += GameManager_OnPlayersOrderSet;
     }
 
     public override void OnNetworkDespawn()
     {
-        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
+        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;    
 
         base.OnNetworkDespawn();
     }
@@ -42,6 +45,13 @@ public class GridManager : NetworkBehaviour
         GetCardDimensions();
         PositionCamera();
         GenerateRandomCardNumbers();
+    }
+
+    private void GameManager_OnPlayersOrderSet(object sender, EventArgs e)
+    {
+        GameManager.Instance.OnPlayersOrderSet -= GameManager_OnPlayersOrderSet;
+
+        PlacePlayerOnGrid();
     }
 
     private void GetCardDimensions()
@@ -86,20 +96,20 @@ public class GridManager : NetworkBehaviour
 
             Vector2 position = new Vector3((tileCoordinates.x * cardDimensions.x) + tileCoordinates.x * spacing, (tileCoordinates.y * cardDimensions.y) + tileCoordinates.y * spacing);
 
-            Transform cardContainerTransform = SpawnObject(cardContainer, position, Quaternion.identity, transform, $"CardContainer{cardSO.name}");
+            Transform cardContainerTransform = SpawnObject(cardContainer, position, transform, $"CardContainer{cardSO.name}");
 
-            SpawnObject(cardBorderTemplate, cardContainerTransform.position, Quaternion.identity, cardContainerTransform, $"CardBorderTemplate{cardSO.name}");
+            SpawnObject(cardBorderTemplate, cardContainerTransform.position, cardContainerTransform, $"CardBorderTemplate{cardSO.name}");
 
-            Transform cardTransform = SpawnObject(cardSO.prefab.transform, cardContainerTransform.position, Quaternion.identity, cardContainerTransform, $"CardContainer{cardSO.name}");
+            Transform cardTransform = SpawnObject(cardSO.prefab.transform, cardContainerTransform.position, cardContainerTransform, $"{cardSO.name}");
             NetworkObject cardNetworkObject = cardTransform.GetComponent<Card>().NetworkObject;
 
             AddCardToSpawnedCardsOnClientServerRpc(position, cardNetworkObject);
         }
     }
 
-    private Transform SpawnObject(Transform transform, Vector3 position, Quaternion rotation, Transform parent, string objectName)
+    private Transform SpawnObject(Transform transform, Vector3 position, Transform parent, string objectName)
     {
-        Transform transformObject = Instantiate(transform, position, rotation, parent);
+        Transform transformObject = Instantiate(transform, position, Quaternion.identity);
 
         SetNetworkObjectInScene(transformObject, parent, objectName);
 
@@ -111,6 +121,7 @@ public class GridManager : NetworkBehaviour
         NetworkObject networkObject = transform.GetComponent<NetworkObject>();
         networkObject.Spawn(true);
         networkObject.TrySetParent(parent.transform);
+
         GameMultiplayer.Instance.SetNameClientRpc(transform.gameObject, objectName);
     }
 
@@ -145,6 +156,34 @@ public class GridManager : NetworkBehaviour
         Card card = networkObject.GetComponent<Card>();
 
         spawnedCards[position] = card;
+    }
+
+    private void PlacePlayerOnGrid()
+    {
+        Player player = PlayerManager.Instance.GetNextActivePlayerClientRpc();
+
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { player.ClientId.Value }
+            }
+        };
+
+        GameManager.Instance.SetState(StateEnum.PlaceOnGrid, clientRpcParams);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void NextClientPlacingServerRpc()
+    {
+        if (PlayerManager.Instance.ActivePlayer != PlayerManager.Instance.Players[PlayerManager.Instance.Players.Count - 1])
+        {
+            PlacePlayerOnGrid();
+        }
+        else
+        {
+
+        }
     }
 
     private Card GetTileAtPosition(Vector2 position)

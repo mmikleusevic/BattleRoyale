@@ -11,6 +11,7 @@ public class GameManager : NetworkBehaviour
     public event EventHandler OnToggleLocalGamePause;
     public event EventHandler OnMultiplayerGamePaused;
     public event EventHandler OnMultiplayerGameUnpaused;
+    public event EventHandler OnPlayersOrderSet;
 
     [SerializeField] private Transform playerPrefab;
     [SerializeField] private List<Vector3> spawnPositionList;
@@ -188,7 +189,9 @@ public class GameManager : NetworkBehaviour
         foreach (ulong clientId in playerOrder)
         {
             Player player = players.Where(a => a.ClientId.Value == clientId).FirstOrDefault();
-            PlayerManager.Instance.Players.Add(clientId, player);
+            PlayerManager.Instance.Players.Add(player);
         }
+
+        OnPlayersOrderSet?.Invoke(this, EventArgs.Empty);
     }
 }

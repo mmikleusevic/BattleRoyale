@@ -1,18 +1,28 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance { get; private set; }
+    public Player ActivePlayer { get; private set; }
 
-    private Dictionary<ulong, Player> players;
+    private int activeIndex = -1;
 
-    public Dictionary<ulong, Player> Players { get => players; set => players = value; }
+    public List<Player> Players { get; private set; }
 
     private void Awake()
     {
         Instance = this;
 
-        Players = new Dictionary<ulong, Player>();
+        Players = new List<Player>();
+    }
+
+    [ClientRpc]
+    public Player GetNextActivePlayerClientRpc()
+    {
+        activeIndex = (activeIndex + 1) % Players.Count;
+
+        return ActivePlayer = Players[activeIndex];
     }
 }
