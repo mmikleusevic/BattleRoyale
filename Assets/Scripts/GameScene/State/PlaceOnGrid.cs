@@ -8,6 +8,8 @@ public class PlaceOnGrid : State
     {
         Debug.Log("You have to place yourself.");
 
+        GridManager.Instance.PlacePlayerOnGrid();
+
         yield break;
     }
 }

@@ -7,17 +7,17 @@ using UnityEngine.ProBuilder.Shapes;
 
 public class GridManager : NetworkBehaviour
 {
+    public static GridManager Instance { get; private set; }
+     
     [SerializeField] private int width;
     [SerializeField] private int height;
-    [SerializeField] private Transform cardContainer;
-    [SerializeField] private Transform cardBorderTemplate;
     [SerializeField] private Transform Camera;
     [SerializeField] private List<Vector2> tilesToInitialize;
     [SerializeField] private Card cardTemplate;
     [SerializeField] private List<CardSO> cardSOs;
 
     private Dictionary<int, int> randomCardNumberCountChecker;
-    private Dictionary<Vector2, Card> spawnedCards;
+    private Dictionary<Vector2, Card> gridCards;
     private List<int> randomNumberList;
 
     private float spacing = 0.2f;
@@ -27,10 +27,9 @@ public class GridManager : NetworkBehaviour
     public void Awake()
     {
         randomNumberList = new List<int>();
-        spawnedCards = new Dictionary<Vector2, Card>();
+        gridCards = new Dictionary<Vector2, Card>();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
-        GameManager.Instance.OnPlayersOrderSet += GameManager_OnPlayersOrderSet;
     }
 
     public override void OnNetworkDespawn()
@@ -45,13 +44,6 @@ public class GridManager : NetworkBehaviour
         GetCardDimensions();
         PositionCamera();
         GenerateRandomCardNumbers();
-    }
-
-    private void GameManager_OnPlayersOrderSet(object sender, EventArgs e)
-    {
-        GameManager.Instance.OnPlayersOrderSet -= GameManager_OnPlayersOrderSet;
-
-        PlacePlayerOnGrid();
     }
 
     private void GetCardDimensions()
@@ -96,27 +88,23 @@ public class GridManager : NetworkBehaviour
 
             Vector2 position = new Vector3((tileCoordinates.x * cardDimensions.x) + tileCoordinates.x * spacing, (tileCoordinates.y * cardDimensions.y) + tileCoordinates.y * spacing);
 
-            Transform cardContainerTransform = SpawnObject(cardContainer, position, transform, $"CardContainer{cardSO.name}");
-
-            SpawnObject(cardBorderTemplate, cardContainerTransform.position, cardContainerTransform, $"CardBorderTemplate{cardSO.name}");
-
-            Transform cardTransform = SpawnObject(cardSO.prefab.transform, cardContainerTransform.position, cardContainerTransform, $"{cardSO.name}");
+            Transform cardTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"{cardSO.name}");
             NetworkObject cardNetworkObject = cardTransform.GetComponent<Card>().NetworkObject;
 
             AddCardToSpawnedCardsOnClientServerRpc(position, cardNetworkObject);
         }
     }
 
-    private Transform SpawnObject(Transform transform, Vector3 position, Transform parent, string objectName)
+    private Transform SpawnObject(Transform transform, Vector3 position, Quaternion rotation, Transform parent, string objectName)
     {
-        Transform transformObject = Instantiate(transform, position, Quaternion.identity);
+        Transform transformObject = Instantiate(transform, position, rotation);
 
-        SetNetworkObjectInScene(transformObject, parent, objectName);
+        SetNetworkObjectInScene(transformObject, parent, rotation, objectName);
 
         return transformObject;
     }
 
-    private void SetNetworkObjectInScene(Transform transform, Transform parent, string objectName)
+    private void SetNetworkObjectInScene(Transform transform, Transform parent, Quaternion rotation, string objectName)
     {
         NetworkObject networkObject = transform.GetComponent<NetworkObject>();
         networkObject.Spawn(true);
@@ -155,10 +143,10 @@ public class GridManager : NetworkBehaviour
 
         Card card = networkObject.GetComponent<Card>();
 
-        spawnedCards[position] = card;
+        gridCards[position] = card;
     }
 
-    private void PlacePlayerOnGrid()
+    public void PlacePlayerOnGrid()
     {
         Player player = PlayerManager.Instance.GetNextActivePlayerClientRpc();
 
@@ -188,9 +176,9 @@ public class GridManager : NetworkBehaviour
 
     private Card GetTileAtPosition(Vector2 position)
     {
-        if (spawnedCards.ContainsKey(position))
+        if (gridCards.ContainsKey(position))
         {
-            return spawnedCards[position];
+            return gridCards[position];
         }
 
         return null;

@@ -2962,7 +2962,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6554235724207208234}
-  - component: {fileID: 5372091019465925156}
+  - component: {fileID: 6998892136047519848}
   - component: {fileID: 6998892136047519847}
   m_Layer: 0
   m_Name: GridManager
@@ -2971,26 +2971,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &5372091019465925156
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 615452229021799454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 101362676
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!4 &6554235724207208234
 Transform:
   m_ObjectHideFlags: 0
@@ -3020,10 +3000,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 7
   height: 7
-  cardContainer: {fileID: 2927354692460094327, guid: fa3f5ee7498110144a0607cd537de78d,
-    type: 3}
-  cardBorderTemplate: {fileID: 2288565847465462566, guid: 2eab42c5e79101a4d9aea4166abb9573,
-    type: 3}
   Camera: {fileID: 1652582190}
   tilesToInitialize:
   - {x: 0, y: 3}
@@ -3069,6 +3045,26 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ec38e113312d1f948b9dfd33df784665, type: 2}
   - {fileID: 11400000, guid: 708213fd637810a42845091be222e08d, type: 2}
   - {fileID: 11400000, guid: 319e80feaf0d70e478718d6e6e975347, type: 2}
+--- !u!114 &6998892136047519848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615452229021799454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3866229707
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

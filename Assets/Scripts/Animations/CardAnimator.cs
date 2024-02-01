@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CardAnimator : MonoBehaviour
 {
-    private static string IS_OPEN = "IsOpen";
+    private static string IS_CLOSED = "IsClosed";
 
     [SerializeField] private Animator animator;
 
@@ -11,10 +11,15 @@ public class CardAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void OpenCard()
+    public void CloseCard()
     {
         if (animator == null) return;
 
-        animator.SetBool(IS_OPEN, true);
+        Animate(IS_CLOSED, true);
+    }
+
+    private void Animate(string name, bool value)
+    {
+        animator.SetBool(name, value);
     }
 }
