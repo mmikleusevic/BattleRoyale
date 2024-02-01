@@ -4,13 +4,13 @@ using UnityEngine;
 
 public partial class Initiative : State
 {
-    public static event EventHandler OnInitiativeStart;
+    public static event EventHandler<string> OnInitiativeStart;
 
     public override IEnumerator Start()
     {
-        OnInitiativeStart?.Invoke(this, EventArgs.Empty);
+        string message = "ROLL FOR INITIATIVE";
 
-        Debug.Log("Initiative");
+        OnInitiativeStart?.Invoke(this, message);
 
         yield return new WaitForSeconds(2f);
     }

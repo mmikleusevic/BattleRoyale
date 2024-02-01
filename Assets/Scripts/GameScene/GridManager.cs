@@ -30,16 +30,23 @@ public class GridManager : NetworkBehaviour
         gridCards = new Dictionary<Vector2, Card>();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
+        GameManager.Instance.OnPlayersOrderSet += GameManager_OnPlayersOrderSet;
     }
 
     public override void OnNetworkDespawn()
     {
-        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;    
+        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
+        GameManager.Instance.OnPlayersOrderSet -= GameManager_OnPlayersOrderSet;
 
         base.OnNetworkDespawn();
     }
 
-    private void Initiative_OnInitiativeStart(object sender, EventArgs e)
+    private void GameManager_OnPlayersOrderSet(object sender, EventArgs e)
+    {
+        PlacePlayerOnGrid();
+    }
+
+    private void Initiative_OnInitiativeStart(object sender, string e)
     {
         GetCardDimensions();
         PositionCamera();
@@ -146,7 +153,7 @@ public class GridManager : NetworkBehaviour
         gridCards[position] = card;
     }
 
-    public void PlacePlayerOnGrid()
+    private void PlacePlayerOnGrid()
     {
         Player player = PlayerManager.Instance.GetNextActivePlayerClientRpc();
 

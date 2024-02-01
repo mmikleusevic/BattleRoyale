@@ -22,15 +22,14 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         Show();
 
-        Debug.Log("You placed");
-
-
-        if(!isClosed.Value)
+        if (!isClosed.Value && !IsDisabled)
         {
-            CloseCardServerRpc();           
+            CloseCardServerRpc();
         }
-
-        gridManager.NextClientPlacingServerRpc();
+        else if (IsDisabled)
+        {
+            gridManager.NextClientPlacingServerRpc();
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData)

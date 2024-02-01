@@ -12,23 +12,34 @@ public class MessageUI : NetworkBehaviour
 
     public void Awake()
     {
+        SetMessage("Game started");
+
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
+        WaitingForPlayers.OnWaitingForPlayers += WaitingForPlayers_OnWaitingForPlayers;
         Roll.OnRoll += Roll_OnRollResult;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
+        PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
     }
 
     public override void OnNetworkDespawn()
     {
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
+        WaitingForPlayers.OnWaitingForPlayers -= WaitingForPlayers_OnWaitingForPlayers;
         Roll.OnRoll -= Roll_OnRollResult;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
+        PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
 
         base.OnNetworkDespawn();
     }
 
-    private void Initiative_OnInitiativeStart(object sender, EventArgs e)
+    private void Initiative_OnInitiativeStart(object sender, string e)
+    {       
+        SetMessage(e);
+    }
+
+    private void WaitingForPlayers_OnWaitingForPlayers(object sender, string e)
     {
-        SetMessage("Game started");
+        SetMessage(e);
     }
 
     private void Roll_OnRollResult(object sender, Roll.OnRollEventArgs e)
@@ -39,6 +50,11 @@ public class MessageUI : NetworkBehaviour
     private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
         StartCoroutine(DelaySendingMessage(3f, e.message));
+    }
+
+    private void PlaceOnGrid_OnPlaceOnGrid(object sender, string e)
+    {
+        SetMessage(e);
     }
 
     private IEnumerator DelaySendingMessage(float timeToDelay, string message)

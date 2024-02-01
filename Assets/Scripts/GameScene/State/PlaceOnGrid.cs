@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
-using UnityEngine;
 
 public class PlaceOnGrid : State
 {
+    public static event EventHandler<string> OnPlaceOnGrid;
     public override IEnumerator Start()
     {
-        Debug.Log("You have to place yourself.");
-
-        GridManager.Instance.PlacePlayerOnGrid();
+        string message = "YOUR TURN TO CHOOSE PLACEMENT";
+        OnPlaceOnGrid?.Invoke(this, message);
 
         yield break;
     }

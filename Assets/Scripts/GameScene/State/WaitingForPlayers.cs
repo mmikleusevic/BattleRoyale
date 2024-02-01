@@ -4,15 +4,15 @@ using UnityEngine;
 
 public partial class WaitingForPlayers : State
 {
-    public event EventHandler OnWaitingForPlayers;
+    public static event EventHandler<string> OnWaitingForPlayers;
 
     public override IEnumerator Start()
     {
-        OnWaitingForPlayers?.Invoke(this, EventArgs.Empty);
+        string message = "WAITING FOR PLAYERS";
 
-        Debug.Log("Waiting for players");
+        OnWaitingForPlayers?.Invoke(this, message);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
     }
 }
 

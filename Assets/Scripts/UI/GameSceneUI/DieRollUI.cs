@@ -24,7 +24,7 @@ public class DieRollUI : RollUI
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
     }
 
-    private void Initiative_OnInitiativeStart(object sender, EventArgs e)
+    private void Initiative_OnInitiativeStart(object sender, string e)
     {
         Show();
     }
