@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -125,7 +125,7 @@ TextureImporter:
         x: 0
         y: 0
         width: 2550
-        height: 13852
+        height: 12122
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,8 +133,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bee6deaa637ee8b43aed636aab17b491
-      internalID: -1582234668
+      spriteID: acace3a3c23e1d74a8d00b22b484530b
+      internalID: 839124519
       vertices: []
       indices: 
       edges: []
@@ -142,7 +142,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 483521e52c499d248afa50c4f03a2ac8
+    spriteID: 75a5bfa9c1257d344bdd465400c9250b
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BattleRoyaleInstructions_0: -1582234668
+      BattleRoyaleInstructions_0: 839124519
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
