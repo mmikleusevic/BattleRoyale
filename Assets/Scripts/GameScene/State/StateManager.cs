@@ -4,7 +4,7 @@ public class StateManager : MonoBehaviour, IStateManager
 {
     protected State state;
 
-    public void SetState(StateEnum state)
+    public async void SetState(StateEnum state)
     {
         switch (state)
         {
@@ -37,7 +37,7 @@ public class StateManager : MonoBehaviour, IStateManager
                 break;
         }
 
-        StartCoroutine(this.state.Start());
+        await this.state.Start();
     }
 }
 

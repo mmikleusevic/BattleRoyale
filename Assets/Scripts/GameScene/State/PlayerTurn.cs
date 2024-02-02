@@ -1,13 +1,14 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerTurn : State
 {
-    public override IEnumerator Start()
+    public override async Task Start()
     {
-        Debug.Log("Choose an action");
+        await base.Start();
 
-        yield return new WaitForSeconds(1f);
+        Debug.Log("Choose an action");
     }
 
     public IEnumerator AttackCard()

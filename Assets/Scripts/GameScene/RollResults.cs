@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEngine;
 
 public class RollResults : NetworkBehaviour, IRollResults
 {
@@ -237,18 +239,22 @@ public class RollResults : NetworkBehaviour, IRollResults
         }
         else if (clientIdsForReRoll.Count == 0)
         {
-            SetFinalOrderOnClients();
-            CallOnInitiativeRollOver();
-            rollForInitiative = false;
+            StartCoroutine(SetFinalOrderOnClients());
+
         }
     }
 
-    private void SetFinalOrderOnClients()
+    private IEnumerator SetFinalOrderOnClients()
     {
         foreach (ulong clientId in finalOrder)
         {
             SetFinalOrderOnClientsClientRpc(clientId);
         }
+
+        yield return new WaitForEndOfFrame();
+
+        CallOnInitiativeRollOver();
+        rollForInitiative = false;
     }
 
     [ClientRpc]

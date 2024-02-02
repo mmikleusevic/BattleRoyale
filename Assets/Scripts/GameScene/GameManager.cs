@@ -186,11 +186,14 @@ public class GameManager : NetworkBehaviour
     {
         Player[] players = FindObjectsByType<Player>(FindObjectsSortMode.None);
 
+        Player player = null;
         foreach (ulong clientId in playerOrder)
         {
-            Player player = players.Where(a => a.ClientId.Value == clientId).FirstOrDefault();
+            player = players.Where(a => a.ClientId.Value == clientId).FirstOrDefault();
             PlayerManager.Instance.Players.Add(player);
         }
+
+        PlayerManager.Instance.SetLastPlayer(player);
 
         OnPlayersOrderSet?.Invoke(this, EventArgs.Empty);
     }

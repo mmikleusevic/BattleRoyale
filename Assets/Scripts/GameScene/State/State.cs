@@ -1,9 +1,10 @@
-using System.Collections;
+using System.Threading.Tasks;
+using UnityEngine;
 
 public abstract class State
 {
-    public virtual IEnumerator Start()
+    public virtual async Task Start()
     {
-        yield break;
+        await Awaitable.WaitForSecondsAsync(1f);
     }
 }

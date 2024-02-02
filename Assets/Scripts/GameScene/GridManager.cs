@@ -1,14 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.ProBuilder.Shapes;
 
 public class GridManager : NetworkBehaviour
 {
     public static GridManager Instance { get; private set; }
-     
+
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private Transform Camera;
@@ -31,19 +30,26 @@ public class GridManager : NetworkBehaviour
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         GameManager.Instance.OnPlayersOrderSet += GameManager_OnPlayersOrderSet;
+        PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
     }
 
     public override void OnNetworkDespawn()
     {
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         GameManager.Instance.OnPlayersOrderSet -= GameManager_OnPlayersOrderSet;
+        PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
 
         base.OnNetworkDespawn();
     }
 
     private void GameManager_OnPlayersOrderSet(object sender, EventArgs e)
     {
-        PlacePlayerOnGrid();
+        SetStateForNextPlayer(StateEnum.PlaceOnGrid);
+    }
+
+    private void PlaceOnGrid_OnPlaceOnGrid(object sender, string e)
+    {
+        HighlightAllUnoccupiedCards();
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -98,7 +104,7 @@ public class GridManager : NetworkBehaviour
             Transform cardTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"{cardSO.name}");
             NetworkObject cardNetworkObject = cardTransform.GetComponent<Card>().NetworkObject;
 
-            AddCardToSpawnedCardsOnClientServerRpc(position, cardNetworkObject);
+            AddCardToSpawnedCardsOnClientServerRpc(tileCoordinates, cardNetworkObject);
         }
     }
 
@@ -153,7 +159,7 @@ public class GridManager : NetworkBehaviour
         gridCards[position] = card;
     }
 
-    private void PlacePlayerOnGrid()
+    private void SetStateForNextPlayer(StateEnum state)
     {
         Player player = PlayerManager.Instance.GetNextActivePlayerClientRpc();
 
@@ -165,29 +171,68 @@ public class GridManager : NetworkBehaviour
             }
         };
 
-        GameManager.Instance.SetState(StateEnum.PlaceOnGrid, clientRpcParams);
+        GameManager.Instance.SetState(state, clientRpcParams);
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void NextClientPlacingServerRpc()
     {
-        if (PlayerManager.Instance.ActivePlayer != PlayerManager.Instance.Players[PlayerManager.Instance.Players.Count - 1])
+        if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
         {
-            PlacePlayerOnGrid();
+            SetStateForNextPlayer(StateEnum.PlayerTurn);
         }
         else
         {
-
+            SetStateForNextPlayer(StateEnum.PlaceOnGrid);
         }
     }
 
-    private Card GetTileAtPosition(Vector2 position)
+    //Mental note --- Next time make a normal grid...
+    public void HighlightAllUnoccupiedCards()
     {
-        if (gridCards.ContainsKey(position))
-        {
-            return gridCards[position];
-        }
+        int startHeight = height / 2;
+        int mod = height % 2;
+        int maxHeight = startHeight + mod;
 
-        return null;
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = startHeight; j < maxHeight; j++)
+            {
+                if (j == startHeight || j == maxHeight - 1)
+                {
+                    Vector3 tile = tilesToInitialize.Where(a => a.x == i && a.y == j).FirstOrDefault();
+
+                    Card card = gridCards[tile];
+
+                    if (!card.isOccupiedOnPlacing.Value)
+                    {
+                        card.Enable();
+                        card.ShowHighlight();
+                    }
+                }
+            }
+
+            if (i < width / 2)
+            {
+                startHeight--;
+                maxHeight++;
+            }
+            else
+            {
+                startHeight++;
+                maxHeight--;
+            }
+        }
+    }
+
+    public void DisableCards()
+    {
+        foreach (var item in gridCards)
+        {
+            Card card = item.Value;
+
+            card.Disable();
+            card.HideHighlight();
+        }
     }
 }

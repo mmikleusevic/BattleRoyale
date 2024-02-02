@@ -1,12 +1,12 @@
-using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Lost : State
 {
-    public override IEnumerator Start()
+    public override async Task Start()
     {
-        Debug.Log("You were defeated.");
+        await base.Start();
 
-        yield break;
+        Debug.Log("You were defeated.");
     }
 }

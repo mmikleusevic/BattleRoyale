@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using TMPro;
 using Unity.Netcode;
@@ -12,32 +11,27 @@ public class MessageUI : NetworkBehaviour
 
     public void Awake()
     {
-        SetMessage("Game started");
+        SetMessage("GAME STARTED");
 
-        Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
-        WaitingForPlayers.OnWaitingForPlayers += WaitingForPlayers_OnWaitingForPlayers;
+        Initiative.OnInitiativeStart += OnCallbackSetMessage;
+        WaitingForPlayers.OnWaitingForPlayers += OnCallbackSetMessage;
         Roll.OnRoll += Roll_OnRollResult;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
-        PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
+        PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessage;
     }
 
     public override void OnNetworkDespawn()
     {
-        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
-        WaitingForPlayers.OnWaitingForPlayers -= WaitingForPlayers_OnWaitingForPlayers;
+        Initiative.OnInitiativeStart -= OnCallbackSetMessage;
+        WaitingForPlayers.OnWaitingForPlayers -= OnCallbackSetMessage;
         Roll.OnRoll -= Roll_OnRollResult;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
-        PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
+        PlaceOnGrid.OnPlaceOnGrid -= OnCallbackSetMessage;
 
         base.OnNetworkDespawn();
     }
 
-    private void Initiative_OnInitiativeStart(object sender, string e)
-    {       
-        SetMessage(e);
-    }
-
-    private void WaitingForPlayers_OnWaitingForPlayers(object sender, string e)
+    private void OnCallbackSetMessage(object sender, string e)
     {
         SetMessage(e);
     }
@@ -49,19 +43,7 @@ public class MessageUI : NetworkBehaviour
 
     private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
-        StartCoroutine(DelaySendingMessage(3f, e.message));
-    }
-
-    private void PlaceOnGrid_OnPlaceOnGrid(object sender, string e)
-    {
-        SetMessage(e);
-    }
-
-    private IEnumerator DelaySendingMessage(float timeToDelay, string message)
-    {
-        yield return new WaitForSeconds(timeToDelay);
-
-        SetMessage(message);
+        SetMessage(e.message);
     }
 
     [ServerRpc(RequireOwnership = false)]

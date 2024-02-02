@@ -15,7 +15,7 @@ public class Player : NetworkBehaviour
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         if (IsOwner)
-        {           
+        {
             LocalInstance = this;
         }
     }

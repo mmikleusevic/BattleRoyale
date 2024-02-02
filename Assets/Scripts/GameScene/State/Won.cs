@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
 public class Won : State
 {
-    public override IEnumerator Start()
+    public override async Task Start()
     {
-        Debug.Log("You won the battle");
+        await base.Start();
 
-        yield return new WaitForSeconds(2f);
+        Debug.Log("You won the battle");
     }
 }
 

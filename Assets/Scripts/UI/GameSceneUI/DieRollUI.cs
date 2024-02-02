@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using UnityEngine;
 
 public class DieRollUI : RollUI
 {
@@ -36,12 +34,6 @@ public class DieRollUI : RollUI
 
     private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
-        StartCoroutine(DelayDisablingDice(3f));
-    }
-
-    private IEnumerator DelayDisablingDice(float timeToDelay)
-    {
-        yield return new WaitForSeconds(timeToDelay);
         Hide();
     }
 }

@@ -25,7 +25,7 @@ public class FadeMessageUI : MonoBehaviour
         fadePerSecond = 1 / fadeTime;
     }
 
-    private void OnDestroy() 
+    private void OnDestroy()
     {
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
@@ -51,7 +51,7 @@ public class FadeMessageUI : MonoBehaviour
     {
         fadeText.text = message;
 
-        while(fadeTime >= 0)
+        while (fadeTime >= 0)
         {
             fadeTime -= Time.deltaTime;
             alphaValue -= fadePerSecond * Time.deltaTime;

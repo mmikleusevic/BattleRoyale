@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
 public class EnemyTurn : State
 {
-    public override IEnumerator Start()
+    public override async Task Start()
     {
-        Debug.Log("Disable most controls of the player");
+        await base.Start();
 
-        yield break;
+        Debug.Log("Disable most controls of the player");
     }
 }
 

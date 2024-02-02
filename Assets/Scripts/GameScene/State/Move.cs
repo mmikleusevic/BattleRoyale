@@ -1,12 +1,12 @@
-using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Move : State
 {
-    public override IEnumerator Start()
+    public override async Task Start()
     {
-        Debug.Log("You moved.");
+        await base.Start();
 
-        yield break;
+        Debug.Log("You moved.");
     }
 }
