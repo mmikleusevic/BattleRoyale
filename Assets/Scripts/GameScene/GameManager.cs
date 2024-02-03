@@ -11,7 +11,6 @@ public class GameManager : NetworkBehaviour
     public event EventHandler OnToggleLocalGamePause;
     public event EventHandler OnMultiplayerGamePaused;
     public event EventHandler OnMultiplayerGameUnpaused;
-    public event EventHandler OnPlayersOrderSet;
 
     [SerializeField] private Transform playerPrefab;
     [SerializeField] private List<Vector3> spawnPositionList;
@@ -34,15 +33,17 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        SetState(StateEnum.WaitingForPlayers);
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
-        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        PlayerManager.Instance.OnPlayersOrderSet += PlayerManager_OnPlayersOrderSet;
     }
 
     public override void OnNetworkDespawn()
     {
         isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
+        RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
+        PlayerManager.Instance.OnPlayersOrderSet -= PlayerManager_OnPlayersOrderSet;
 
         if (NetworkManager.Singleton != null)
         {
@@ -80,6 +81,11 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
+    {
+        SetPlayerToPlayersList(e.playerOrder);
+    }
+
     private void NetworkManager_OnClientDisconnectCallback(ulong obj)
     {
         Time.timeScale = 1;
@@ -87,9 +93,9 @@ public class GameManager : NetworkBehaviour
         GameLobby.Instance.DisconnectClientsOnServerLeaving(obj);
     }
 
-    private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
+    private void PlayerManager_OnPlayersOrderSet(object sender, EventArgs e)
     {
-        SetPlayerToPlayersList(e.playerOrder);
+        SetStateForNextPlayer(StateEnum.PlaceOnGrid);
     }
 
     public void SetState(StateEnum state, ClientRpcParams clientRpcParams = default)
@@ -168,6 +174,36 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    private void SetStateForNextPlayer(StateEnum state)
+    {
+        PlayerManager.Instance.SetNextActivePlayerClientRpc();
+
+        Player activePlayer = PlayerManager.Instance.ActivePlayer;
+
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { activePlayer.ClientId.Value }
+            }
+        };
+
+        GameManager.Instance.SetState(state, clientRpcParams);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void NextClientPlacingServerRpc()
+    {
+        if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
+        {
+            SetStateForNextPlayer(StateEnum.PlayerTurn);
+        }
+        else
+        {
+            SetStateForNextPlayer(StateEnum.PlaceOnGrid);
+        }
+    }
+
     private void SpawnPlayers()
     {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
@@ -193,8 +229,6 @@ public class GameManager : NetworkBehaviour
             PlayerManager.Instance.Players.Add(player);
         }
 
-        PlayerManager.Instance.SetLastPlayer(player);
-
-        OnPlayersOrderSet?.Invoke(this, EventArgs.Empty);
+        PlayerManager.Instance.SetPlayerReadyServerRpc(true);
     }
 }

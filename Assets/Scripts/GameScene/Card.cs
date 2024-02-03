@@ -42,10 +42,11 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         PlayerCardSpot playerCardSpot = FindFirstEmptyPlayerSpot();
 
-        PlayerManager.Instance.SetPlayersParentAndTransform(transform, playerCardSpot);
+        PlayerManager.Instance.SetPlayersParentAndTransform(this, playerCardSpot);
 
         gridManager.DisableCards();
-        gridManager.NextClientPlacingServerRpc();
+
+        GameManager.Instance.NextClientPlacingServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]

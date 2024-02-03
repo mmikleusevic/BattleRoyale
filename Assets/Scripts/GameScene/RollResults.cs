@@ -240,7 +240,6 @@ public class RollResults : NetworkBehaviour, IRollResults
         else if (clientIdsForReRoll.Count == 0)
         {
             StartCoroutine(SetFinalOrderOnClients());
-
         }
     }
 

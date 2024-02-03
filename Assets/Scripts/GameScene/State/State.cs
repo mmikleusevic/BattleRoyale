@@ -7,4 +7,9 @@ public abstract class State
     {
         await Awaitable.WaitForSecondsAsync(1f);
     }
+
+    public virtual async Task End()
+    {
+        await Awaitable.NextFrameAsync();
+    }
 }

@@ -46,14 +46,14 @@ public class PlayerTurn : State
         yield break;
     }
 
-    public IEnumerator End()
+    public async override Task End()
     {
         Debug.Log("End turn");
         Debug.Log("Switch to other player");
 
         GameManager.Instance.SetState(StateEnum.EnemyTurn);
 
-        yield return new WaitForSeconds(1f);
+        await Awaitable.EndOfFrameAsync();
     }
 }
 

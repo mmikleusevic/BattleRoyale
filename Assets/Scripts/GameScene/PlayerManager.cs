@@ -1,16 +1,21 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager Instance { get; private set; }
+
+    public event EventHandler OnPlayersOrderSet;
+
     public List<Player> Players { get; private set; }
+    private Dictionary<ulong, bool> clientsReady;
     public Player ActivePlayer { get; private set; }
     public Player LastPlayer { get; private set; }
 
     private int activeIndex = -1;
-
 
     private void Awake()
     {
@@ -19,23 +24,82 @@ public class PlayerManager : MonoBehaviour
         Players = new List<Player>();
     }
 
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer) return;
+
+        PrepareClientDictionaryReady();
+
+        base.OnNetworkSpawn();
+    }
+
+    private void PrepareClientDictionaryReady()
+    {
+        clientsReady = new Dictionary<ulong, bool>();
+
+        foreach (var item in NetworkManager.ConnectedClientsIds)
+        {
+            clientsReady[item] = false;
+        }
+    }
+
     [ClientRpc]
-    public Player GetNextActivePlayerClientRpc()
+    public void SetNextActivePlayerClientRpc()
     {
         activeIndex = (activeIndex + 1) % Players.Count;
 
-        return ActivePlayer = Players[activeIndex];
+        ActivePlayer = Players[activeIndex];
     }
 
-    public void SetLastPlayer(Player player)
+    [ClientRpc]
+    public void SetLastPlayerClientRpc(NetworkObjectReference networkObjectReference)
     {
-        LastPlayer = player;
+        networkObjectReference.TryGet(out NetworkObject networkObject);
+
+        if (networkObject == null) return;
+
+        Player lastPlayer = networkObject.GetComponent<Player>();
+
+        LastPlayer = lastPlayer;
     }
 
-    public void SetPlayersParentAndTransform(Transform cardTransform, PlayerCardSpot playerCardSpot)
-    {
-        ActivePlayer.NetworkObject.TrySetParent(cardTransform);
+    public void SetPlayersParentAndTransform(Card card, PlayerCardSpot playerCardSpot)
+    {        
+        ActivePlayer.NetworkObject.TryRemoveParent();
+        TrySetPlayerParentServerRpc(card.NetworkObject, playerCardSpot.position);
+    }
 
-        ActivePlayer.transform.position = cardTransform.position + playerCardSpot.position;
+    [ServerRpc(RequireOwnership = false)]
+    private void TrySetPlayerParentServerRpc(NetworkObjectReference networkObjectReference, Vector3 cardPosition)
+    {
+        networkObjectReference.TryGet(out NetworkObject networkObject);
+
+        if (networkObject == null) return;
+
+        ActivePlayer.NetworkObject.TrySetParent(networkObject.transform);
+
+        Card card = networkObject.GetComponent<Card>();
+
+        ActivePlayer.transform.position = card.transform.position + cardPosition;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetPlayerReadyServerRpc(bool value, ServerRpcParams serverRpcParams = default)
+    {
+        clientsReady[serverRpcParams.Receive.SenderClientId] = value;
+
+        foreach (var item in clientsReady)
+        {
+            if (item.Value == false)
+            {
+                return;
+            }
+        }
+
+        Player lastPlayer = Players.LastOrDefault();
+
+        SetLastPlayerClientRpc(lastPlayer.NetworkObject);
+
+        OnPlayersOrderSet?.Invoke(this, EventArgs.Empty);
     }
 }

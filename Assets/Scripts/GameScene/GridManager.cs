@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -29,22 +28,15 @@ public class GridManager : NetworkBehaviour
         gridCards = new Dictionary<Vector2, Card>();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
-        GameManager.Instance.OnPlayersOrderSet += GameManager_OnPlayersOrderSet;
         PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
     }
 
     public override void OnNetworkDespawn()
     {
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
-        GameManager.Instance.OnPlayersOrderSet -= GameManager_OnPlayersOrderSet;
         PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
 
         base.OnNetworkDespawn();
-    }
-
-    private void GameManager_OnPlayersOrderSet(object sender, EventArgs e)
-    {
-        SetStateForNextPlayer(StateEnum.PlaceOnGrid);
     }
 
     private void PlaceOnGrid_OnPlaceOnGrid(object sender, string e)
@@ -157,34 +149,6 @@ public class GridManager : NetworkBehaviour
         Card card = networkObject.GetComponent<Card>();
 
         gridCards[position] = card;
-    }
-
-    private void SetStateForNextPlayer(StateEnum state)
-    {
-        Player player = PlayerManager.Instance.GetNextActivePlayerClientRpc();
-
-        ClientRpcParams clientRpcParams = new ClientRpcParams
-        {
-            Send = new ClientRpcSendParams
-            {
-                TargetClientIds = new ulong[] { player.ClientId.Value }
-            }
-        };
-
-        GameManager.Instance.SetState(state, clientRpcParams);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void NextClientPlacingServerRpc()
-    {
-        if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
-        {
-            SetStateForNextPlayer(StateEnum.PlayerTurn);
-        }
-        else
-        {
-            SetStateForNextPlayer(StateEnum.PlaceOnGrid);
-        }
     }
 
     //Mental note --- Next time make a normal grid...

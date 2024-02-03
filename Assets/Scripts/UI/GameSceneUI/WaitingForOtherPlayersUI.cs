@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WaitingForOtherPlayersUI : MonoBehaviour
 {
-    private void Start()
+    private void Awake()
     {
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
     }
