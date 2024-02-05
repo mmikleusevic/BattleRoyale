@@ -42,7 +42,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         PlayerCardSpot playerCardSpot = FindFirstEmptyPlayerSpot();
 
-        PlayerManager.Instance.SetPlayersParentAndTransform(this, playerCardSpot);
+        Player.LocalInstance.SetPlayersParentAndTransform(this, playerCardSpot);
 
         gridManager.DisableCards();
 
@@ -57,8 +57,6 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        ShowHighlight();
-
         if (Interactable)
         {
             PlacePlayerOnGrid();

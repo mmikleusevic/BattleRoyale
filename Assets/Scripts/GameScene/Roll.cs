@@ -17,7 +17,8 @@ public class Roll : IRoll
     private readonly float interactDistance = 0.51f;
 
     private readonly float rotationSpeed = 150f;
-    private float rotationTime = 2f;
+    private float maxRotationTime = 3f;
+    private float rotationTime;
     private readonly float factor;
 
     private IRollResults rollResults;
@@ -25,6 +26,8 @@ public class Roll : IRoll
     public Roll()
     {
         factor = rotationSpeed * Time.deltaTime;
+
+        rotationTime = maxRotationTime;
 
         rollResults = UnityEngine.Object.FindFirstObjectByType<RollResults>();
     }
@@ -75,14 +78,22 @@ public class Roll : IRoll
         {
             dice[i].transform.rotation = Random.rotation;
 
-            float xAxis = Random.Range(0.8f, 1.2f) * factor;
-            float yAxis = Random.Range(0.8f, 1.2f) * factor;
-            float zAxis = Random.Range(0.8f, 1.2f) * factor;
+            float xAxis = Random.Range(1f, 5f) * factor;
+            float yAxis = Random.Range(1f, 5f) * factor;
+            float zAxis = Random.Range(1f, 5f) * factor;
 
             // Roll the dice in random direction
 
+            float xRotationPerSecond = xAxis / maxRotationTime;
+            float yRotationPerSecond = yAxis / maxRotationTime;
+            float zRotationPerSecond = zAxis / maxRotationTime;
+
             while (rotationTime > 0)
             {
+                xAxis -= xRotationPerSecond * Time.deltaTime;
+                yAxis -= yRotationPerSecond * Time.deltaTime;
+                zAxis -= zRotationPerSecond * Time.deltaTime;
+
                 rotationTime -= Time.deltaTime;
 
                 dice[i].transform.Rotate(xAxis, yAxis, zAxis);
@@ -118,7 +129,7 @@ public class Roll : IRoll
 
             // -------------------------
 
-            rotationTime = 3f;
+            rotationTime = maxRotationTime;
         }
 
         rollResults.SetRollResults(resultSum);

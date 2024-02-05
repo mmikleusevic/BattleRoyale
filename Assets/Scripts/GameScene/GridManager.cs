@@ -66,7 +66,7 @@ public class GridManager : NetworkBehaviour
 
         while (randomNumberList.Count < tilesToInitialize.Count)
         {
-            int randomNumber = UnityEngine.Random.Range(0, cardSOs.Count);
+            int randomNumber = Random.Range(0, cardSOs.Count);
 
             if (!randomCardNumberCountChecker.ContainsKey(randomNumber))
             {

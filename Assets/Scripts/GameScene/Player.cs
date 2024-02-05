@@ -37,4 +37,11 @@ public class Player : NetworkBehaviour
 
         base.OnNetworkSpawn();
     }
+
+    public void SetPlayersParentAndTransform(Card card, PlayerCardSpot playerCardSpot)
+    {
+        NetworkObject.TryRemoveParent();
+        NetworkObject.TrySetParent(card.transform, false);
+        transform.position = playerCardSpot.position;
+    }
 }

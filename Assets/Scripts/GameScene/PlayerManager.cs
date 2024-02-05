@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -61,26 +62,6 @@ public class PlayerManager : NetworkBehaviour
         Player lastPlayer = networkObject.GetComponent<Player>();
 
         LastPlayer = lastPlayer;
-    }
-
-    public void SetPlayersParentAndTransform(Card card, PlayerCardSpot playerCardSpot)
-    {        
-        ActivePlayer.NetworkObject.TryRemoveParent();
-        TrySetPlayerParentServerRpc(card.NetworkObject, playerCardSpot.position);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void TrySetPlayerParentServerRpc(NetworkObjectReference networkObjectReference, Vector3 cardPosition)
-    {
-        networkObjectReference.TryGet(out NetworkObject networkObject);
-
-        if (networkObject == null) return;
-
-        ActivePlayer.NetworkObject.TrySetParent(networkObject.transform);
-
-        Card card = networkObject.GetComponent<Card>();
-
-        ActivePlayer.transform.position = card.transform.position + cardPosition;
     }
 
     [ServerRpc(RequireOwnership = false)]
