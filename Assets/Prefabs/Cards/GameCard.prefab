@@ -243,7 +243,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 9087249945834913846}
+      addedObject: {fileID: -2189833006103706609}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
         type: 3}
       insertIndex: -1
@@ -295,7 +295,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &9087249945834913846
+--- !u!114 &-2189833006103706609
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -304,7 +304,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4932685657585325972}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d663a7cf0467d434d986b2655ee66b79, type: 3}
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   SyncPositionX: 0

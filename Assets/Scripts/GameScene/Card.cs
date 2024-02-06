@@ -8,6 +8,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     [SerializeField] private PlayerCardSpot[] playerCardSpots;
 
     private GridManager gridManager;
+    private CardAnimator cardAnimator;
 
     private NetworkVariable<bool> isClosed = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> isOccupiedOnPlacing { get; private set; }
@@ -22,6 +23,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     private void Start()
     {
         gridManager = FindFirstObjectByType<GridManager>();
+        cardAnimator = GetComponent<CardAnimator>();
     }
 
     private PlayerCardSpot FindFirstEmptyPlayerSpot()
@@ -42,7 +44,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         PlayerCardSpot playerCardSpot = FindFirstEmptyPlayerSpot();
 
-        Player.LocalInstance.SetPlayersParentAndTransform(this, playerCardSpot);
+        Player.LocalInstance.SetPlayersPosition(this, playerCardSpot);
 
         gridManager.DisableCards();
 
@@ -88,7 +90,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void CloseCard()
     {
-        GetComponent<CardAnimator>().CloseCard();
+        cardAnimator.CloseCard();
     }
 
     public void ShowHighlight()

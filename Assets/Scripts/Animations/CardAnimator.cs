@@ -13,8 +13,6 @@ public class CardAnimator : MonoBehaviour
 
     public void CloseCard()
     {
-        if (animator == null) return;
-
         Animate(IS_CLOSED, true);
     }
 

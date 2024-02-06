@@ -214,6 +214,7 @@ public class GameManager : NetworkBehaviour
             Transform playerTransform = Instantiate(playerPrefab, position, playerPrefab.rotation, null);
             NetworkObject playerNetworkObject = playerTransform.GetComponent<NetworkObject>();
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
+            playerNetworkObject.TrySetParent(PlayerManager.Instance.transform);
             GameMultiplayer.Instance.SetNameClientRpc(playerTransform.gameObject, "Player" + playerIndex);
         }
     }

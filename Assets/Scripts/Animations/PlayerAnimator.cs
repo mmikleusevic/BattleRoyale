@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
-    private static string IS_WALKING = "IsWalking";
+    private static string IS_MOVING = "IsMoving";
     private static string IS_DEAD = "IsDead";
 
     [SerializeField] private Animator animator;
@@ -12,18 +12,24 @@ public class PlayerAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void WalkingAnimation()
+    public void MoveAnimation()
     {
-        if (animator == null) return;
+        Animate(IS_MOVING, true);
+    }
 
-        Animate(IS_WALKING, true);
+    public void StopMoving()
+    {
+        Animate(IS_MOVING, false);
     }
 
     public void DieAnimation()
     {
-        if (animator == null) return;
-
         Animate(IS_DEAD, true);
+    }
+
+    public void AliveAnimation()
+    {
+        Animate(IS_DEAD, false);
     }
 
     private void Animate(string name, bool value)
