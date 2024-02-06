@@ -8,19 +8,29 @@ public class Player : NetworkBehaviour
     public static Player LocalInstance { get; private set; }
 
     [SerializeField] private SetVisual playerVisual;
+    [SerializeField] private GameObject particleCircle;
 
+    ParticleSystem playerParticleSystem;
     PlayerAnimator playerAnimator;
     public NetworkVariable<ulong> ClientId { get; private set; }
     public NetworkVariable<bool> IsDead { get; set; }
 
     public Color playerColor;
 
-    private float moveSpeed = 10f;
+    private int defaultMovement = 0;
+    private int movement;
+    private int defaultActionPoints = 2;
+    private int actionPoints;
+
+    private float moveSpeed = 15f;
 
     private void Awake()
     {
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         IsDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        playerParticleSystem = particleCircle.GetComponent<ParticleSystem>();
+        movement = defaultMovement;
+        actionPoints = defaultActionPoints;
     }
 
     private void Start()
@@ -99,5 +109,17 @@ public class Player : NetworkBehaviour
     private void StopMoving()
     {
         playerAnimator.StopMoving();
+    }
+
+    public void ShowParticleCircle()
+    {
+        particleCircle.SetActive(true);
+        playerParticleSystem.Play();
+    }
+
+    public void HideParticleCircle()
+    {
+        particleCircle.SetActive(false);
+        playerParticleSystem.Stop();
     }
 }

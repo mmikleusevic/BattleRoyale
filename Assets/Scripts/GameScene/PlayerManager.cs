@@ -47,9 +47,16 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     public void SetNextActivePlayerClientRpc()
     {
+        if (ActivePlayer)
+        {
+            ActivePlayer.HideParticleCircle();
+        }
+
         activeIndex = (activeIndex + 1) % Players.Count;
 
         ActivePlayer = Players[activeIndex];
+
+        ActivePlayer.ShowParticleCircle();
     }
 
     [ClientRpc]

@@ -78,9 +78,15 @@ public class Roll : IRoll
         {
             dice[i].transform.rotation = Random.rotation;
 
-            float xAxis = Random.Range(1f, 5f) * factor;
-            float yAxis = Random.Range(1f, 5f) * factor;
-            float zAxis = Random.Range(1f, 5f) * factor;
+            float xAxis = Random.Range(1.5f, 3f) * factor;
+            float yAxis = Random.Range(1.5f, 3f) * factor;
+            float zAxis = Random.Range(1.5f, 3f) * factor;
+
+            Vector3 xAxisVector = new Vector3(xAxis, 0, 0);
+            Vector3 yAxisVector = new Vector3(0, yAxis, 0);
+            Vector3 zAxisVector = new Vector3(0, 0, zAxis);
+
+            Vector3[] axis = new Vector3[] { xAxisVector, yAxisVector, zAxisVector };
 
             // Roll the dice in random direction
 
@@ -88,17 +94,34 @@ public class Roll : IRoll
             float yRotationPerSecond = yAxis / maxRotationTime;
             float zRotationPerSecond = zAxis / maxRotationTime;
 
+            Vector3 xRotationPerSecondVector = new Vector3(xRotationPerSecond, 0, 0);
+            Vector3 yRotationPerSecondVector = new Vector3(0, yRotationPerSecond, 0);
+            Vector3 zRotationPerSecondVector = new Vector3(0, 0, zRotationPerSecond);
+
+            Vector3[] rotationPerSecond = new Vector3[] { xRotationPerSecondVector, yRotationPerSecondVector, zRotationPerSecondVector };
+
+            float axisRotationTime = rotationTime / axis.Length;
+
             while (rotationTime > 0)
             {
-                xAxis -= xRotationPerSecond * Time.deltaTime;
-                yAxis -= yRotationPerSecond * Time.deltaTime;
-                zAxis -= zRotationPerSecond * Time.deltaTime;
+                for (int j = 0; j < axis.Length; j++)
+                {
+                    float axisRotationTimeMax = axisRotationTime;
 
-                rotationTime -= Time.deltaTime;
+                    while (axisRotationTime > 0)
+                    {
+                        axisRotationTime -= Time.deltaTime;
+                        rotationTime -= Time.deltaTime;
 
-                dice[i].transform.Rotate(xAxis, yAxis, zAxis);
+                        axis[j] -= rotationPerSecond[j] * Time.deltaTime;
 
-                yield return null;
+                        dice[i].transform.Rotate(axis[j]);
+
+                        yield return null;
+                    }
+
+                    axisRotationTime = axisRotationTimeMax;
+                }               
             }
 
             // ---------------------------------
