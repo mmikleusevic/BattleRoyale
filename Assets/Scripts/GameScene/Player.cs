@@ -108,7 +108,7 @@ public class Player : NetworkBehaviour
 
     private void StopMoving()
     {
-        playerAnimator.StopMoving();
+        playerAnimator.StopMovingAnimation();
     }
 
     public void ShowParticleCircle()
@@ -121,5 +121,11 @@ public class Player : NetworkBehaviour
     {
         particleCircle.SetActive(false);
         playerParticleSystem.Stop();
+    }
+
+    private void ResetActionsAndMovement()
+    {
+        actionPoints = defaultActionPoints;
+        movement = defaultMovement;
     }
 }

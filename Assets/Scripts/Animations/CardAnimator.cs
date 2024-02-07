@@ -11,7 +11,7 @@ public class CardAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void CloseCard()
+    public void CloseCardAnimation()
     {
         Animate(IS_CLOSED, true);
     }

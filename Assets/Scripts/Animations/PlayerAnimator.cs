@@ -17,7 +17,7 @@ public class PlayerAnimator : MonoBehaviour
         Animate(IS_MOVING, true);
     }
 
-    public void StopMoving()
+    public void StopMovingAnimation()
     {
         Animate(IS_MOVING, false);
     }

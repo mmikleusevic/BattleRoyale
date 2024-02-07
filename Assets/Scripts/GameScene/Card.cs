@@ -90,12 +90,17 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void CloseCard()
     {
-        cardAnimator.CloseCard();
+        cardAnimator.CloseCardAnimation();
     }
 
     public void ShowHighlight()
     {
         highlight.SetActive(true);
+    }
+
+    public void HideHighlight()
+    {
+        highlight.SetActive(false);
     }
 
     public void Enable()
@@ -106,10 +111,5 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     public void Disable()
     {
         Interactable = false;
-    }
-
-    public void HideHighlight()
-    {
-        highlight.SetActive(false);
     }
 }
