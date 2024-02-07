@@ -15,10 +15,7 @@ public class RulesUI : MonoBehaviour
         {
             Hide();
         });
-    }
 
-    private void Start()
-    {
         Hide();
     }
 

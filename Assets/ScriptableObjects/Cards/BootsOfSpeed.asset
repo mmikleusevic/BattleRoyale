@@ -16,4 +16,4 @@ MonoBehaviour:
   cardSprite: {fileID: -275899543, guid: 92588f38822c72f43b81317eeeb6d0a2, type: 3}
   name: Boots Of Speed
   cost: 11
-  cardType: 3
+  cardType: 4

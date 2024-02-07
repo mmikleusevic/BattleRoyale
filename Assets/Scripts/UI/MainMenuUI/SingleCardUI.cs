@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,20 +8,26 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 {
     public static event EventHandler OnCardImageClick;
 
+    private RectTransform cardRectTransform;
+
     private static bool zoomed = false;
     public Sprite sprite { get; private set; }
+
+    private void Awake()
+    {
+        cardRectTransform = GetComponent<RectTransform>();
+    }
 
     private void OnEnable()
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
         rectTransform.localScale = Vector3.zero;
-
-        LeanTween.scale(GetComponent<RectTransform>(), Vector3.one, 0.4f).setDelay(0.3f);
+        cardRectTransform.DOScale(Vector3.one, 0.4f).SetDelay(0.3f);
     }
 
     public void Destroy()
     {
-        LeanTween.scale(GetComponent<RectTransform>(), Vector3.zero, 0.3f).setDestroyOnComplete(true);
+        cardRectTransform.DOScale(Vector3.zero, 0.3f).OnComplete(() => Destroy(gameObject));
     }
 
     public void OnPointerDown(PointerEventData eventData)

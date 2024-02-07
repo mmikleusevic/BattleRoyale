@@ -6,7 +6,6 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Button rulesButton;
     [SerializeField] private Button cardsButton;
-    [SerializeField] private Button musicButton;
     [SerializeField] private Button quitButton;
 
     private void Awake()

@@ -121,7 +121,7 @@ public class Roll : IRoll
                     }
 
                     axisRotationTime = axisRotationTimeMax;
-                }               
+                }
             }
 
             // ---------------------------------
