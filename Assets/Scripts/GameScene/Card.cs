@@ -1,13 +1,15 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 {
+    public static event EventHandler OnCardPressed;
+
     [SerializeField] private GameObject highlight;
     [SerializeField] private PlayerCardSpot[] playerCardSpots;
 
-    private GridManager gridManager;
     private CardAnimator cardAnimator;
 
     private NetworkVariable<bool> isClosed = new NetworkVariable<bool>(false);
@@ -22,11 +24,10 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void Start()
     {
-        gridManager = FindFirstObjectByType<GridManager>();
         cardAnimator = GetComponent<CardAnimator>();
     }
 
-    private PlayerCardSpot FindFirstEmptyPlayerSpot()
+    public PlayerCardSpot FindFirstEmptyPlayerSpot()
     {
         foreach (PlayerCardSpot playerCardSpot in playerCardSpots)
         {
@@ -40,17 +41,6 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
         return null;
     }
 
-    private void PlacePlayerOnGrid()
-    {
-        PlayerCardSpot playerCardSpot = FindFirstEmptyPlayerSpot();
-
-        Player.LocalInstance.SetPlayersPosition(this, playerCardSpot);
-
-        gridManager.DisableCards();
-
-        GameManager.Instance.NextClientPlacingServerRpc();
-    }
-
     [ServerRpc(RequireOwnership = false)]
     private void OccupyCardServerRpc()
     {
@@ -59,14 +49,11 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        ShowHighlight();
+
         if (Interactable)
         {
-            PlacePlayerOnGrid();
-
-            //if (!isClosed.Value)
-            //{
-            //    CloseCardServerRpc();
-            //}
+            OnCardPressed?.Invoke(this, EventArgs.Empty);
         }
     }
 

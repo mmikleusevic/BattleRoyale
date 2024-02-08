@@ -10,6 +10,8 @@ public abstract class State
 
     public virtual async Task End()
     {
-        await Awaitable.NextFrameAsync();
+        GridManager.Instance.DisableCards();
+
+        await Awaitable.WaitForSecondsAsync(1f);
     }
 }

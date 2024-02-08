@@ -21,7 +21,7 @@ public class Player : NetworkBehaviour
     private int defaultActionPoints = 2;
     private int actionPoints;
 
-    private float moveSpeed = 15f;
+    private float moveSpeed = 20f;
 
     private void Awake()
     {

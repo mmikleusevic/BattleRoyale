@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ActionUI : MonoBehaviour
+public class ToggleUI : MonoBehaviour
 {
     [SerializeField] RectTransform handleRectTransform;
     [SerializeField] Color backgroundActiveColor;

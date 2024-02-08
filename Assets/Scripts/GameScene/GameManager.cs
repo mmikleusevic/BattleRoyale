@@ -33,6 +33,8 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        SetState(StateEnum.WaitingForPlayers);
+
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
@@ -188,11 +190,11 @@ public class GameManager : NetworkBehaviour
             }
         };
 
-        GameManager.Instance.SetState(state, clientRpcParams);
+        SetState(state, clientRpcParams);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void NextClientPlacingServerRpc()
+    public void NextClientInitiativeServerRpc()
     {
         if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
         {

@@ -24,6 +24,8 @@ public class GridManager : NetworkBehaviour
 
     public void Awake()
     {
+        Instance = this;
+
         randomNumberList = new List<int>();
         gridCards = new Dictionary<Vector2, Card>();
 
@@ -149,6 +151,13 @@ public class GridManager : NetworkBehaviour
         Card card = networkObject.GetComponent<Card>();
 
         gridCards[position] = card;
+    }
+
+    public void PlacePlayerOnGrid(Card card)
+    {
+        PlayerCardSpot playerCardSpot = card.FindFirstEmptyPlayerSpot();
+
+        Player.LocalInstance.SetPlayersPosition(card, playerCardSpot);       
     }
 
     //Mental note --- Next time make a normal grid...

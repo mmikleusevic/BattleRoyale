@@ -4,16 +4,8 @@ public class StateManager : MonoBehaviour, IStateManager
 {
     protected State state;
 
-    private async void Awake()
-    {
-        state = new WaitingForPlayers();
-        await state.Start();
-    }
-
     public async void SetState(StateEnum state)
     {
-        await this.state.End();
-
         switch (state)
         {
             case StateEnum.WaitingForPlayers:

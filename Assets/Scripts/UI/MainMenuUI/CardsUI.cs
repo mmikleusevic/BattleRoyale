@@ -50,8 +50,6 @@ public class CardsUI : MonoBehaviour
 
         zoomedSingleCardBackground.gameObject.SetActive(false);
 
-        OnCardTypeChanged(CardType.All);
-
         Hide();
     }
 
@@ -68,6 +66,11 @@ public class CardsUI : MonoBehaviour
     public void Show()
     {
         gameObject.SetActive(true);
+
+        if(pagedCardList == null)
+        {
+            OnCardTypeChanged(CardType.All);
+        }
     }
 
     private void Hide()
