@@ -55,6 +55,9 @@ public class CharacterSceneUI : MonoBehaviour
         CharacterSceneReady.Instance.OnReadyChanged -= CharacterSceneReady_OnReadyChanged;
         CharacterScenePlayer.OnPlayerKicked -= CharacterScenePlayer_OnPlayerKicked;
 
+        mainMenuButton.onClick.RemoveAllListeners();
+        readyButton.onClick.RemoveAllListeners();
+
         if (NetworkManager.Singleton == null) return;
 
         NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;

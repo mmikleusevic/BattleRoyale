@@ -18,6 +18,11 @@ public class LobbyListSingleUI : MonoBehaviour
         });
     }
 
+    private void OnDestroy()
+    {
+        GetComponent<Button>().onClick.RemoveAllListeners();
+    }
+
     public void SetLobby(Lobby lobby)
     {
         this.lobby = lobby;

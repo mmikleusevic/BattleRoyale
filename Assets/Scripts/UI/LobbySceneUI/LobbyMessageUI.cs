@@ -43,6 +43,8 @@ public class LobbyMessageUI : MonoBehaviour
         GameLobby.Instance.OnJoinStarted -= GameLobby_OnJoinStarted;
         GameLobby.Instance.OnJoinFailed -= GameLobby_OnJoinFailed;
         GameLobby.Instance.OnQuickJoinFailed -= GameLobby_OnQuickJoinFailed;
+
+        closeButton.onClick.RemoveAllListeners();
     }
 
     private void GameLobby_OnQuickJoinFailed(object sender, System.EventArgs e)

@@ -29,6 +29,11 @@ public class RollUI : MonoBehaviour
         Hide();
     }
 
+    private void OnDestroy()
+    {
+        rollButton.onClick.RemoveAllListeners();
+    }
+
     private void AssignDicePosition()
     {
         dicePositions = new Vector3[dice.Length];

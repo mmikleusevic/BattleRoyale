@@ -7,10 +7,9 @@ public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager Instance { get; private set; }
 
-    public event EventHandler OnPlayersOrderSet;
+    private Dictionary<ulong, bool> clientsReady;
 
     public List<Player> Players { get; private set; }
-    private Dictionary<ulong, bool> clientsReady;
     public Player ActivePlayer { get; private set; }
     public Player LastPlayer { get; private set; }
 
@@ -86,6 +85,6 @@ public class PlayerManager : NetworkBehaviour
 
         SetLastPlayerClientRpc(lastPlayer.NetworkObject);
 
-        OnPlayersOrderSet?.Invoke(this, EventArgs.Empty);
+        StateManager.Instance.NextClientStateServerRpc(StateEnum.PlaceOnGrid);
     }
 }

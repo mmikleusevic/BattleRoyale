@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : NetworkBehaviour
@@ -13,13 +15,16 @@ public class Player : NetworkBehaviour
     PlayerAnimator playerAnimator;
     public NetworkVariable<ulong> ClientId { get; private set; }
     public NetworkVariable<bool> IsDead { get; set; }
+    public Vector2 GridPosition { get; private set; }
+    public int Movement { get; private set; }
+    public int ActionPoints { get; private set; }
 
-    public Color playerColor;
+    public string HexPlayerColor { get; private set; }
+    public string PlayerName { get; private set; }
 
     private int defaultMovement = 0;
-    private int movement;
+
     private int defaultActionPoints = 2;
-    private int actionPoints;
 
     private float moveSpeed = 20f;
 
@@ -28,18 +33,11 @@ public class Player : NetworkBehaviour
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         IsDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         playerParticleSystem = particleCircle.GetComponent<ParticleSystem>();
-        movement = defaultMovement;
-        actionPoints = defaultActionPoints;
-    }
 
-    private void Start()
-    {
-        PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
-        playerColor = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
+        Movement = defaultMovement;
+        ActionPoints = defaultActionPoints;
 
-        playerVisual.SetColor(playerColor);
-
-        playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
+        PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
     }
 
     public override void OnNetworkSpawn()
@@ -50,14 +48,56 @@ public class Player : NetworkBehaviour
             ClientId.Value = NetworkObject.OwnerClientId;
         }
 
+        InitializePlayerClientRpc();
+
         base.OnNetworkSpawn();
     }
 
-    public void SetPlayersPosition(Card card, PlayerCardSpot playerCardSpot)
+    public override void OnDestroy()
     {
+        PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
+
+        base.OnDestroy();
+    }
+
+    [ClientRpc]
+    private void InitializePlayerClientRpc()
+    {
+        PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
+
+        Color color = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
+
+        HexPlayerColor = color.ToHexString();
+        PlayerName = playerData.playerName.ToString();
+
+        playerVisual.SetColor(color);
+
+        playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
+    }
+
+    private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
+    {
+        ResetActionsAndMovement();
+    }
+
+    public void SetPlayersPosition(Card card)
+    {
+        PlayerCardSpot playerCardSpot = card.FindFirstEmptyPlayerSpot();
+
         Vector3 targetPosition = card.transform.position + playerCardSpot.position;
 
         StartCoroutine(PlayWalkingAnimation(targetPosition));
+
+        if (Movement > 0)
+        {
+            SubtractMovement();
+        }
+        else
+        {
+            SubtractActionPoints();
+        }
+
+        GridPosition = card.GridPosition;
     }
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)
@@ -122,9 +162,19 @@ public class Player : NetworkBehaviour
         playerParticleSystem.Stop();
     }
 
+    public void SubtractMovement()
+    {
+        Movement--;
+    }
+
+    public void SubtractActionPoints()
+    {
+        ActionPoints--;
+    }
+
     private void ResetActionsAndMovement()
     {
-        actionPoints = defaultActionPoints;
-        movement = defaultMovement;
+        ActionPoints = defaultActionPoints;
+        Movement = defaultMovement;
     }
 }

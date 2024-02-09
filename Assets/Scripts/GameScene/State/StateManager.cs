@@ -1,8 +1,16 @@
-using UnityEngine;
+using System.Threading.Tasks;
+using Unity.Netcode;
 
-public class StateManager : MonoBehaviour, IStateManager
+public class StateManager : NetworkBehaviour, IStateManager
 {
+    public static StateManager Instance { get; private set; }
+
     protected State state;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     public async void SetState(StateEnum state)
     {
@@ -20,9 +28,6 @@ public class StateManager : MonoBehaviour, IStateManager
             case StateEnum.Lost:
                 this.state = new Lost();
                 break;
-            case StateEnum.Move:
-                this.state = new Move();
-                break;
             case StateEnum.PlayerTurn:
                 this.state = new PlayerTurn();
                 break;
@@ -32,12 +37,48 @@ public class StateManager : MonoBehaviour, IStateManager
             case StateEnum.Won:
                 this.state = new Won();
                 break;
-            case StateEnum.GameFinished:
-                this.state = new GameFinished();
-                break;
         }
 
         await this.state.Start();
+    }
+
+    public async Task EndState()
+    {
+        await state.End();
+    }
+
+    public void SetStateToClients(StateEnum state, ClientRpcParams clientRpcParams = default)
+    {
+        SetStateToClientsClientRpc(state, clientRpcParams);
+    }
+
+    [ClientRpc]
+    private void SetStateToClientsClientRpc(StateEnum state, ClientRpcParams clientRpcParams = default)
+    {
+        SetState(state);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void NextClientStateServerRpc(StateEnum state)
+    {
+        SetStateForNextPlayer(state);
+    }
+
+    private void SetStateForNextPlayer(StateEnum state)
+    {
+        PlayerManager.Instance.SetNextActivePlayerClientRpc();
+
+        Player activePlayer = PlayerManager.Instance.ActivePlayer;
+
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { activePlayer.ClientId.Value }
+            }
+        };
+
+        SetStateToClients(state, clientRpcParams);
     }
 }
 
@@ -46,10 +87,8 @@ public enum StateEnum
     WaitingForPlayers,
     Initiative,
     PlaceOnGrid,
-    Lost,
-    Move,
     PlayerTurn,
     EnemyTurn,
-    Won,
-    GameFinished
+    Lost,
+    Won
 }

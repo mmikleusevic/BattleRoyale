@@ -1,12 +1,13 @@
 using DG.Tweening;
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 {
-    public static event EventHandler OnCardImageClick;
+    [SerializeField] private Image zoomedCardBackground;
+    [SerializeField] private RectTransform zoomedCardTemplateContainer;
+    [SerializeField] private RectTransform zoomedCardTemplate;
 
     private RectTransform cardRectTransform;
 
@@ -32,16 +33,16 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        OnCardImageClick?.Invoke(this, EventArgs.Empty);
+        ToggleZoom();
     }
 
-    public void ToggleZoom(Image zoomedSingleCardBackground, Transform zoomedSingleCardTemplate, Transform zoomedSingleCardContainer)
+    public void ToggleZoom()
     {
         if (!zoomed)
         {
-            zoomedSingleCardBackground.gameObject.SetActive(true);
+            zoomedCardBackground.gameObject.SetActive(true);
 
-            Transform cardTransform = Instantiate(zoomedSingleCardTemplate, zoomedSingleCardContainer);
+            Transform cardTransform = Instantiate(zoomedCardTemplate, zoomedCardTemplateContainer);
 
             cardTransform.gameObject.SetActive(true);
 
@@ -49,17 +50,18 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
         }
         else
         {
-            foreach (Transform child in zoomedSingleCardContainer)
+            foreach (Transform child in zoomedCardTemplateContainer)
             {
-                if (child == zoomedSingleCardTemplate) continue;
+                if (child == zoomedCardTemplate) continue;
                 Destroy();
             }
 
-            zoomedSingleCardBackground.gameObject.SetActive(false);
+            zoomedCardBackground.gameObject.SetActive(false);
         }
 
         zoomed = !zoomed;
     }
+
 
     public void SetSprite(Transform cardTransform, Sprite sprite)
     {

@@ -36,6 +36,8 @@ public class CharacterScenePlayer : MonoBehaviour
     {
         GameMultiplayer.Instance.OnPlayerDataNetworkListChanged -= GameMultiplayer_OnPlayerDataNetworkListChanged;
         CharacterSceneReady.Instance.OnReadyChanged -= CharacterSceneReady_OnReadyChanged;
+
+        kickButton.onClick.RemoveAllListeners();
     }
 
     private void CharacterSceneReady_OnReadyChanged(object sender, System.EventArgs e)

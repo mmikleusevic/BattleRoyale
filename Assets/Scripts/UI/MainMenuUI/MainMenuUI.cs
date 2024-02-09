@@ -33,4 +33,12 @@ public class MainMenuUI : MonoBehaviour
             Application.Quit();
         });
     }
+
+    private void OnDestroy()
+    {
+        playButton.onClick.RemoveAllListeners();
+        rulesButton.onClick.RemoveAllListeners();
+        cardsButton.onClick.RemoveAllListeners();
+        quitButton.onClick.RemoveAllListeners();
+    }
 }

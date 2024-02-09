@@ -273,7 +273,9 @@ public class RollResults : NetworkBehaviour, IRollResults
             PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(finalOrder[i]);
             string colorString = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId).ToHexString();
 
-            message += $"<color=#{colorString}> {i + 1}. {playerData.playerName}</color>" + '\n';
+            message += $"<color=#{colorString}> {i + 1}. {playerData.playerName}</color>";
+
+            if (i < finalOrder.Count - 1) message += '\n';
         }
 
         return message;

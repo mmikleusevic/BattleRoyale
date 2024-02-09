@@ -34,6 +34,8 @@ public class PauseMultiplayerUI : MonoBehaviour
     {
         GameManager.Instance.OnMultiplayerGamePaused -= GameManager_OnMultiplayerGamePaused;
         GameManager.Instance.OnMultiplayerGameUnpaused -= GameManager_OnMultiplayerGameUnpaused;
+
+        pauseButton.onClick.RemoveAllListeners();
     }
 
     private void GameManager_OnMultiplayerGameUnpaused(object sender, EventArgs e)

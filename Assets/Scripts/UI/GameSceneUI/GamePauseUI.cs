@@ -38,6 +38,9 @@ public class GamePauseUI : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.Instance.OnToggleLocalGamePause -= GameManager_OnToggleLocalGamePause;
+
+        resumeButton.onClick.RemoveAllListeners();
+        mainMenuButton.onClick.RemoveAllListeners();
     }
 
     private void GameManager_OnToggleLocalGamePause(object sender, EventArgs e)

@@ -9,26 +9,39 @@ public class MessageUI : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI messageText;
     [SerializeField] private ScrollRect scrollRect;
 
+    ClientRpcParams otherClientsRpcParams;
+
     public void Awake()
     {
         SetMessage("GAME STARTED");
 
-        Initiative.OnInitiativeStart += OnCallbackSetMessage;
         WaitingForPlayers.OnWaitingForPlayers += OnCallbackSetMessage;
+        Initiative.OnInitiativeStart += OnCallbackSetMessage;
         Roll.OnRoll += Roll_OnRollResult;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
-        PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessage;
+        PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessages;
+        PlaceOnGrid.OnPlayerPlaced += PlaceOnGrid_OnPlayerPlaced;
+        PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
+        PlayerTurn.OnPlayerMoved += PlayerTurn_OnPlayerMoved;       
     }
 
     public override void OnNetworkDespawn()
     {
-        Initiative.OnInitiativeStart -= OnCallbackSetMessage;
         WaitingForPlayers.OnWaitingForPlayers -= OnCallbackSetMessage;
+        Initiative.OnInitiativeStart -= OnCallbackSetMessage;
         Roll.OnRoll -= Roll_OnRollResult;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
-        PlaceOnGrid.OnPlaceOnGrid -= OnCallbackSetMessage;
+        PlaceOnGrid.OnPlaceOnGrid -= OnCallbackSetMessages;
+        PlaceOnGrid.OnPlayerPlaced -= PlaceOnGrid_OnPlayerPlaced;
+        PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
+        PlayerTurn.OnPlayerMoved -= PlayerTurn_OnPlayerMoved;
 
         base.OnNetworkDespawn();
+    }
+
+    private void PlaceOnGrid_OnPlayerPlaced(object sender, string e)
+    {
+        SendMessageToEveryoneServerRpc(e);
     }
 
     private void OnCallbackSetMessage(object sender, string e)
@@ -36,9 +49,16 @@ public class MessageUI : NetworkBehaviour
         SetMessage(e);
     }
 
+    private void OnCallbackSetMessages(object sender, string[] e)
+    {
+        SetMessage(e[0]);
+
+        SendMessageToEveryoneExceptMeServerRpc(e[1]);
+    }
+
     private void Roll_OnRollResult(object sender, Roll.OnRollEventArgs e)
     {
-        SetMessageForEveryoneServerRpc(e.message);
+        SendMessageToEveryoneServerRpc(e.message);
     }
 
     private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
@@ -46,14 +66,53 @@ public class MessageUI : NetworkBehaviour
         SetMessage(e.message);
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SetMessageForEveryoneServerRpc(string message, ServerRpcParams serverRpcParams = default)
+    private void PlayerTurn_OnPlayerMoved(object sender, string e)
     {
-        SetMessageForEveryoneClientRpc(message);
+        SendMessageToEveryoneServerRpc(e);
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SendMessageToEveryoneServerRpc(string message, ServerRpcParams serverRpcParams = default)
+    {
+        SendMessageToEveryoneClientRpc(message);
     }
 
     [ClientRpc]
-    private void SetMessageForEveryoneClientRpc(string message, ClientRpcParams clientRpcParams = default)
+    private void SendMessageToEveryoneClientRpc(string message, ClientRpcParams clientRpcParams = default)
+    {
+        SetMessage(message);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SendMessageToEveryoneExceptMeServerRpc(string message, ServerRpcParams serverRpcParams = default)
+    {
+        ulong[] otherCLients = new ulong[NetworkManager.ConnectedClients.Count - 1];
+
+        int i = 0;
+
+        foreach (ulong clientId in NetworkManager.ConnectedClientsIds)
+        {
+            if (clientId == serverRpcParams.Receive.SenderClientId) continue;
+
+            otherCLients[i] = clientId;
+
+            i++;
+        }
+
+        ClientRpcParams otherClientsRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = otherCLients
+            }
+        };
+
+        SendMessageToEveryoneExceptMeClientRpc(message, otherClientsRpcParams);
+    }
+
+    [ClientRpc]
+    private void SendMessageToEveryoneExceptMeClientRpc(string message, ClientRpcParams clientRpcParams = default)
     {
         SetMessage(message);
     }
@@ -69,5 +128,5 @@ public class MessageUI : NetworkBehaviour
     {
         yield return new WaitForEndOfFrame();
         scrollRect.verticalNormalizedPosition = 0;
-    }
+    }    
 }

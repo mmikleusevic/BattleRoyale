@@ -161,10 +161,7 @@ public class Roll : IRoll
 
     private void SendToMessageUI(int result)
     {
-        PlayerData playerData = GameMultiplayer.Instance.GetPlayerData();
-        string colorString = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId).ToHexString();
-
-        string message = $"<color=#{colorString}>{playerData.playerName}</color> rolled <color=#{colorString}>{result}</color>";
+        string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>";
 
         OnRollEventArgs eventArgs = new OnRollEventArgs
         {

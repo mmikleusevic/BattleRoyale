@@ -41,6 +41,10 @@ public class LobbyCreateUI : MonoBehaviour
     private void OnDestroy()
     {
         GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
+
+        createPublicButton.onClick.RemoveAllListeners();
+        createPrivateButton.onClick.RemoveAllListeners();
+        closeButton.onClick.RemoveAllListeners();
     }
 
     private void GameLobby_OnCreateLobbyStarted(object sender, System.EventArgs e)

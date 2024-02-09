@@ -19,6 +19,11 @@ public class RulesUI : MonoBehaviour
         Hide();
     }
 
+    private void OnDestroy()
+    {
+        closeButton.onClick.RemoveAllListeners();
+    }
+
     public void Show()
     {
         gameObject.SetActive(true);

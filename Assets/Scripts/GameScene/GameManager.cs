@@ -14,7 +14,6 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField] private Transform playerPrefab;
     [SerializeField] private List<Vector3> spawnPositionList;
-    [SerializeField] private StateManager stateManager;
 
     private bool autoCheckGamePauseState;
 
@@ -33,19 +32,17 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        SetState(StateEnum.WaitingForPlayers);
+        StateManager.Instance.SetState(StateEnum.WaitingForPlayers);
 
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
-        PlayerManager.Instance.OnPlayersOrderSet += PlayerManager_OnPlayersOrderSet;
     }
 
     public override void OnNetworkDespawn()
     {
         isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
-        PlayerManager.Instance.OnPlayersOrderSet -= PlayerManager_OnPlayersOrderSet;
 
         if (NetworkManager.Singleton != null)
         {
@@ -95,28 +92,12 @@ public class GameManager : NetworkBehaviour
         GameLobby.Instance.DisconnectClientsOnServerLeaving(obj);
     }
 
-    private void PlayerManager_OnPlayersOrderSet(object sender, EventArgs e)
-    {
-        SetStateForNextPlayer(StateEnum.PlaceOnGrid);
-    }
-
-    public void SetState(StateEnum state, ClientRpcParams clientRpcParams = default)
-    {
-        SetStateClientRpc(state, clientRpcParams);
-    }
-
-    [ClientRpc]
-    private void SetStateClientRpc(StateEnum state, ClientRpcParams clientRpcParams = default)
-    {
-        stateManager.SetState(state);
-    }
-
     [ServerRpc]
     private void StartGameServerRpc()
     {
         SpawnPlayers();
 
-        SetState(StateEnum.Initiative);
+        StateManager.Instance.SetStateToClients(StateEnum.Initiative);
     }
 
     public void TogglePauseGame()
@@ -173,36 +154,6 @@ public class GameManager : NetworkBehaviour
         if (allClientsReady)
         {
             StartGameServerRpc();
-        }
-    }
-
-    private void SetStateForNextPlayer(StateEnum state)
-    {
-        PlayerManager.Instance.SetNextActivePlayerClientRpc();
-
-        Player activePlayer = PlayerManager.Instance.ActivePlayer;
-
-        ClientRpcParams clientRpcParams = new ClientRpcParams
-        {
-            Send = new ClientRpcSendParams
-            {
-                TargetClientIds = new ulong[] { activePlayer.ClientId.Value }
-            }
-        };
-
-        SetState(state, clientRpcParams);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void NextClientInitiativeServerRpc()
-    {
-        if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
-        {
-            SetStateForNextPlayer(StateEnum.PlayerTurn);
-        }
-        else
-        {
-            SetStateForNextPlayer(StateEnum.PlaceOnGrid);
         }
     }
 

@@ -3,9 +3,9 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
+public class Card : NetworkBehaviour, IPointerDownHandler
 {
-    public static event EventHandler OnCardPressed;
+    public static event EventHandler<Player> OnCardPressed;
 
     [SerializeField] private GameObject highlight;
     [SerializeField] private PlayerCardSpot[] playerCardSpots;
@@ -17,6 +17,10 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public bool Interactable { get; private set; } = false;
 
+    public Vector2 GridPosition { get; private set; }
+    public string Name { get; private set; }
+    public Sprite Sprite { get; private set; }
+
     private void Awake()
     {
         isOccupiedOnPlacing = new NetworkVariable<bool>(false);
@@ -25,6 +29,16 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     private void Start()
     {
         cardAnimator = GetComponent<CardAnimator>();
+    }
+
+    [ClientRpc]
+    public void InitializeClientRpc(int index, Vector2 gridPosition)
+    {
+        CardSO cardSO = GridManager.Instance.GetCardSOAtPosition(index);
+
+        GridPosition = gridPosition;
+        Sprite = cardSO.cardSprite;
+        Name = cardSO.name;
     }
 
     public PlayerCardSpot FindFirstEmptyPlayerSpot()
@@ -49,18 +63,9 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        ShowHighlight();
-
-        if (Interactable)
-        {
-            OnCardPressed?.Invoke(this, EventArgs.Empty);
-        }
+        OnCardPressed?.Invoke(this, Player.LocalInstance);
     }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        HideHighlight();
-    }
 
     [ServerRpc(RequireOwnership = false)]
     private void CloseCardServerRpc(ServerRpcParams serverRpcParams = default)
@@ -98,5 +103,21 @@ public class Card : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
     public void Disable()
     {
         Interactable = false;
+    }
+
+    public bool AreMultiplePeopleOnTheCard()
+    {
+        int count = 0;
+        foreach (PlayerCardSpot playerCardSpot in playerCardSpots)
+        {
+            if (playerCardSpot.IsOccupied == true)
+            {
+                count++;
+            }
+        }
+
+        if (count >= 2) return true;
+
+        return false;
     }
 }

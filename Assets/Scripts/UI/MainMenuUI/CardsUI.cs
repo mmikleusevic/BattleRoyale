@@ -14,9 +14,6 @@ public class CardsUI : MonoBehaviour
     [SerializeField] private TMP_Dropdown cardTypeDropdown;
     [SerializeField] private Transform cardTemplateContainer;
     [SerializeField] private Transform cardTemplate;
-    [SerializeField] private Image zoomedSingleCardBackground;
-    [SerializeField] private Transform zoomedSingleCardContainer;
-    [SerializeField] private Transform zoomedSingleCardTemplate;
 
     private PagedList<CardSO> pagedCardList;
 
@@ -48,26 +45,22 @@ public class CardsUI : MonoBehaviour
             OnCardTypeChanged((CardType)val);
         });
 
-        zoomedSingleCardBackground.gameObject.SetActive(false);
-
         Hide();
     }
 
-    private void OnEnable()
+    private void OnDestroy()
     {
-        SingleCardUI.OnCardImageClick += SingleCardUI_OnCardImageClick;
-    }
-
-    private void OnDisable()
-    {
-        SingleCardUI.OnCardImageClick -= SingleCardUI_OnCardImageClick;
+        closeButton.onClick.RemoveAllListeners();
+        pageLeftButton.onClick.RemoveAllListeners();
+        pageRightButton.onClick.RemoveAllListeners();
+        cardTypeDropdown.onValueChanged.RemoveAllListeners();
     }
 
     public void Show()
     {
         gameObject.SetActive(true);
 
-        if(pagedCardList == null)
+        if (pagedCardList == null)
         {
             OnCardTypeChanged(CardType.All);
         }
@@ -76,12 +69,6 @@ public class CardsUI : MonoBehaviour
     private void Hide()
     {
         gameObject.SetActive(false);
-    }
-
-    private void SingleCardUI_OnCardImageClick(object sender, System.EventArgs e)
-    {
-        SingleCardUI singleCardUI = sender as SingleCardUI;
-        singleCardUI.ToggleZoom(zoomedSingleCardBackground, zoomedSingleCardTemplate, zoomedSingleCardContainer);
     }
 
     public void GetCardsForUI()

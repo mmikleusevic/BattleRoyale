@@ -84,6 +84,14 @@ public class LobbyUI : MonoBehaviour
     private void OnDestroy()
     {
         GameLobby.Instance.OnLobbyListChanged -= GameLobby_OnLobbyListChanged;
+
+        mainMenuButton.onClick.RemoveAllListeners();
+        createLobbyButton.onClick.RemoveAllListeners();
+        quickJoinButton.onClick.RemoveAllListeners();
+        joinCodeButton.onClick.RemoveAllListeners();
+        playerNameInputField.onValueChanged.RemoveAllListeners();
+        joinCodeInputField.onValueChanged.RemoveAllListeners();
+        findLobbyInputField.onValueChanged.RemoveAllListeners();
     }
 
     private void GameLobby_OnLobbyListChanged(object sender, GameLobby.OnLobbyListChangdEventArgs e)

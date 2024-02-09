@@ -17,6 +17,7 @@ public class GridManager : NetworkBehaviour
     private Dictionary<int, int> randomCardNumberCountChecker;
     private Dictionary<Vector2, Card> gridCards;
     private List<int> randomNumberList;
+    private Vector2[,] movementVectors;
 
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
@@ -28,22 +29,22 @@ public class GridManager : NetworkBehaviour
 
         randomNumberList = new List<int>();
         gridCards = new Dictionary<Vector2, Card>();
+        SetMovementVectors();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
+        PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+        PlayerTurn.OnPlayerMoved += PlayerTurn_OnPlayerMoved;
     }
 
     public override void OnNetworkDespawn()
     {
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
+        PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
+        PlayerTurn.OnPlayerMoved -= PlayerTurn_OnPlayerMoved;
 
         base.OnNetworkDespawn();
-    }
-
-    private void PlaceOnGrid_OnPlaceOnGrid(object sender, string e)
-    {
-        HighlightAllUnoccupiedCards();
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -51,6 +52,40 @@ public class GridManager : NetworkBehaviour
         GetCardDimensions();
         PositionCamera();
         GenerateRandomCardNumbers();
+    }
+
+    private void PlaceOnGrid_OnPlaceOnGrid(object sender, string[] e)
+    {
+        HighlightAllUnoccupiedCards();
+    }
+
+    private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
+    {
+        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+    }
+
+    private void PlayerTurn_OnPlayerMoved(object sender, string e)
+    {
+        DisableCards();
+        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+    }
+
+    private void SetMovementVectors()
+    {
+        movementVectors = new Vector2[3, 3];
+
+        int k = 0;
+        int l = 0;
+        for (int i = -1; i < 2; i++)
+        {
+            for (int j = -1; j < 2; j++)
+            {
+                movementVectors[k, l] = new Vector2(i, j);
+                l++;
+            }
+            l = 0;
+            k++;
+        }
     }
 
     private void GetCardDimensions()
@@ -90,15 +125,19 @@ public class GridManager : NetworkBehaviour
     {
         for (int i = 0; i < tilesToInitialize.Count; i++)
         {
-            Vector2 tileCoordinates = tilesToInitialize[i];
-            CardSO cardSO = cardSOs[randomNumberList[i]];
+            Vector2 gridPosition = tilesToInitialize[i];
 
-            Vector2 position = new Vector3((tileCoordinates.x * cardDimensions.x) + tileCoordinates.x * spacing, (tileCoordinates.y * cardDimensions.y) + tileCoordinates.y * spacing);
+            int index = randomNumberList[i];
+            CardSO cardSO = cardSOs[index];
+
+            Vector2 position = new Vector3((gridPosition.x * cardDimensions.x) + gridPosition.x * spacing, (gridPosition.y * cardDimensions.y) + gridPosition.y * spacing);
 
             Transform cardTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"{cardSO.name}");
-            NetworkObject cardNetworkObject = cardTransform.GetComponent<Card>().NetworkObject;
+            Card card = cardTransform.GetComponent<Card>();
+            card.InitializeClientRpc(index, gridPosition);
+            NetworkObject cardNetworkObject = card.NetworkObject;
 
-            AddCardToSpawnedCardsOnClientServerRpc(tileCoordinates, cardNetworkObject);
+            AddCardToSpawnedCardsOnClientServerRpc(gridPosition, cardNetworkObject);
         }
     }
 
@@ -153,13 +192,6 @@ public class GridManager : NetworkBehaviour
         gridCards[position] = card;
     }
 
-    public void PlacePlayerOnGrid(Card card)
-    {
-        PlayerCardSpot playerCardSpot = card.FindFirstEmptyPlayerSpot();
-
-        Player.LocalInstance.SetPlayersPosition(card, playerCardSpot);       
-    }
-
     //Mental note --- Next time make a normal grid...
     public void HighlightAllUnoccupiedCards()
     {
@@ -198,6 +230,28 @@ public class GridManager : NetworkBehaviour
         }
     }
 
+    public void EnableGridPositionsWherePlayerCanInteract(Player player)
+    {
+        int lengthX = movementVectors.GetLength(0);
+        int lengthY = movementVectors.GetLength(1);
+
+        for (int i = 0; i < lengthX; i++)
+        {
+            for (int j = 0; j < lengthY; j++)
+            {
+                Vector2 position = player.GridPosition - movementVectors[i, j];
+
+                if (gridCards.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
+                {
+                    Card card = gridCards[position];
+
+                    card.Enable();
+                    card.ShowHighlight();
+                }
+            }
+        }
+    }
+
     public void DisableCards()
     {
         foreach (var item in gridCards)
@@ -207,5 +261,10 @@ public class GridManager : NetworkBehaviour
             card.Disable();
             card.HideHighlight();
         }
+    }
+
+    public CardSO GetCardSOAtPosition(int index)
+    {
+        return cardSOs[index];
     }
 }

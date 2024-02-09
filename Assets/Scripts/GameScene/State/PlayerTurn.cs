@@ -1,59 +1,69 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerTurn : State
 {
+    public static event EventHandler<string[]> OnPlayerTurn;
+    public static event EventHandler<string> OnPlayerMoved;
+
     public override async Task Start()
     {
         await base.Start();
 
-        Debug.Log("Choose an action");
+        ActionsUI.OnMove += ActionsUI_OnMove;
+
+        OnPlayerTurn?.Invoke(this, CreateOnPlayerTurnMessage());
     }
 
     public IEnumerator AttackCard()
     {
-        Debug.Log("Check if dead");
-        Debug.Log("Check if drinking");
-
-        GameManager.Instance.SetState(StateEnum.Won);
-        GameManager.Instance.SetState(StateEnum.Lost);
-
         yield break;
     }
 
     public IEnumerator AttackPlayer()
     {
-        Debug.Log("Check if dead");
-        Debug.Log("Check if drinking");
-        Debug.Log("Check if won the card");
-        Debug.Log("Choose card randomly");
-        Debug.Log("Equip if all slots not filled");
-
-        GameManager.Instance.SetState(StateEnum.Won);
-        GameManager.Instance.SetState(StateEnum.Lost);
-
         yield break;
     }
 
-    public IEnumerator Move()
+    public async Task Move(Card card)
     {
-        Debug.Log("Check if dead");
-        Debug.Log("Move");
+        Player.LocalInstance.SetPlayersPosition(card);
 
-        GameManager.Instance.SetState(StateEnum.Move);
+        string message = CreateOnPlayerMovedMessage(card);
 
-        yield break;
+        OnPlayerMoved?.Invoke(this, message);
+
+        await Awaitable.WaitForSecondsAsync(1);
     }
 
     public async override Task End()
     {
-        Debug.Log("End turn");
-        Debug.Log("Switch to other player");
+        await base.End();
 
-        GameManager.Instance.SetState(StateEnum.EnemyTurn);
+        ActionsUI.OnMove -= ActionsUI_OnMove;
 
-        await Awaitable.EndOfFrameAsync();
+        StateManager.Instance.SetState(StateEnum.EnemyTurn);
+        StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerTurn);
+    }
+
+    private async void ActionsUI_OnMove(Card obj)
+    {
+        await Move(obj);
+    }
+
+    private string CreateOnPlayerMovedMessage(Card card)
+    {
+        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"moved to {card.Name}";
+    }
+
+    private string[] CreateOnPlayerTurnMessage()
+    {
+        return new string[] {
+            "YOUR TURN TO PLAY",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"TURN TO PLAY."
+        };
     }
 }
 
