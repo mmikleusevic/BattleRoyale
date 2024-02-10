@@ -38,6 +38,7 @@ public class Player : NetworkBehaviour
         ActionPoints = defaultActionPoints;
 
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+        Card.OnPlayerCardSpotSet += Card_OnPlayerCardSpotSet;
     }
 
     public override void OnNetworkSpawn()
@@ -58,6 +59,30 @@ public class Player : NetworkBehaviour
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
 
         base.OnDestroy();
+    }
+
+    private void Card_OnPlayerCardSpotSet(object sender, EventArgs e)
+    {
+        Card card = sender as Card;
+
+        PlayerCardPosition playerCardSpot = card.GetPlayerCardSpot(this);
+
+        if (playerCardSpot == null) return;
+
+        Vector3 targetPosition = card.transform.position + playerCardSpot.Position;
+
+        StartCoroutine(PlayWalkingAnimation(targetPosition));
+
+        if (Movement > 0)
+        {
+            SubtractMovement();
+        }
+        else
+        {
+            SubtractActionPoints();
+        }
+
+        GridPosition = card.GridPosition;
     }
 
     [ClientRpc]
@@ -82,22 +107,9 @@ public class Player : NetworkBehaviour
 
     public void SetPlayersPosition(Card card)
     {
-        PlayerCardSpot playerCardSpot = card.FindFirstEmptyPlayerSpot();
+        card.OnMoveResetPosition(NetworkObject);
 
-        Vector3 targetPosition = card.transform.position + playerCardSpot.position;
-
-        StartCoroutine(PlayWalkingAnimation(targetPosition));
-
-        if (Movement > 0)
-        {
-            SubtractMovement();
-        }
-        else
-        {
-            SubtractActionPoints();
-        }
-
-        GridPosition = card.GridPosition;
+        card.SetEmptyPlayerCardSpot(this);       
     }
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)

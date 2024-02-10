@@ -28,7 +28,7 @@ public class PlayerTurn : State
     }
 
     public async Task Move(Card card)
-    {
+    { 
         Player.LocalInstance.SetPlayersPosition(card);
 
         string message = CreateOnPlayerMovedMessage(card);
