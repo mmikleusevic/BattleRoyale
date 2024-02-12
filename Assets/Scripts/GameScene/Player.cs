@@ -8,6 +8,8 @@ public class Player : NetworkBehaviour
 {
     public static Player LocalInstance { get; private set; }
 
+    public static event EventHandler<string> OnPlayerMoved;
+
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
 
@@ -18,6 +20,7 @@ public class Player : NetworkBehaviour
     public Vector2 GridPosition { get; private set; }
     public int Movement { get; private set; }
     public int ActionPoints { get; private set; }
+    public int SipValue { get; private set; }
 
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
@@ -37,8 +40,8 @@ public class Player : NetworkBehaviour
         Movement = defaultMovement;
         ActionPoints = defaultActionPoints;
 
+        Card.OnPlayerCardPositionSet += Card_OnPlayerCardPositionSet;
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
-        Card.OnPlayerCardSpotSet += Card_OnPlayerCardSpotSet;
     }
 
     public override void OnNetworkSpawn()
@@ -56,12 +59,29 @@ public class Player : NetworkBehaviour
 
     public override void OnDestroy()
     {
+        Card.OnPlayerCardPositionSet -= Card_OnPlayerCardPositionSet;
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
 
         base.OnDestroy();
     }
 
-    private void Card_OnPlayerCardSpotSet(object sender, EventArgs e)
+
+    [ClientRpc]
+    private void InitializePlayerClientRpc()
+    {
+        PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
+
+        Color color = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
+
+        HexPlayerColor = color.ToHexString();
+        PlayerName = playerData.playerName.ToString();
+
+        playerVisual.SetColor(color);
+
+        playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
+    }
+
+    private void Card_OnPlayerCardPositionSet(object sender, EventArgs e)
     {
         Card card = sender as Card;
 
@@ -83,21 +103,10 @@ public class Player : NetworkBehaviour
         }
 
         GridPosition = card.GridPosition;
-    }
 
-    [ClientRpc]
-    private void InitializePlayerClientRpc()
-    {
-        PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientId(OwnerClientId);
-
-        Color color = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
-
-        HexPlayerColor = color.ToHexString();
-        PlayerName = playerData.playerName.ToString();
-
-        playerVisual.SetColor(color);
-
-        playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
+        string message = CreateOnPlayerMovedMessage(card);
+    
+        OnPlayerMoved?.Invoke(this, message);
     }
 
     private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
@@ -107,9 +116,19 @@ public class Player : NetworkBehaviour
 
     public void SetPlayersPosition(Card card)
     {
-        card.OnMoveResetPosition(NetworkObject);
+        card.OnMoveResetPlayerPosition(NetworkObject);
 
         card.SetEmptyPlayerCardSpot(this);       
+    }
+
+    private string CreateOnPlayerMovedMessage(Card card)
+    {
+        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {card.Name}";
+    }
+
+    public void SetSipValue(int value)
+    {
+        SipValue = value;
     }
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)

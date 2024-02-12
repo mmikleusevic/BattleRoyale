@@ -7,10 +7,10 @@ using UnityEngine.EventSystems;
 public class Card : NetworkBehaviour, IPointerDownHandler
 {
     public static event EventHandler<Player> OnCardPressed;
-    public static event EventHandler OnPlayerCardSpotSet;
+    public static event EventHandler OnPlayerCardPositionSet;
 
     [SerializeField] private GameObject highlight;
-    [SerializeField] private PlayerCardPosition[] playerCardSpots;
+    [SerializeField] private PlayerCardPosition[] playerCardPositions;
 
     private CardAnimator cardAnimator;
 
@@ -45,7 +45,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
     public PlayerCardPosition GetPlayerCardSpot(Player player)
     {
-        return playerCardSpots.Where(a => a.Player == player).FirstOrDefault();
+        return playerCardPositions.Where(a => a.Player == player).FirstOrDefault();
     }
 
     public void SetEmptyPlayerCardSpot(Player player)
@@ -68,13 +68,18 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
         Player player = networkObjectPlayer.GetComponent<Player>();
       
-        foreach (PlayerCardPosition playerCardSpot in playerCardSpots)
+        foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
-            if (playerCardSpot.IsOccupied == false)
+            if (playerCardPosition.IsOccupied == false)
             {
-                playerCardSpot.Player = player;
-                playerCardSpot.IsOccupied = true;
-                OnPlayerCardSpotSet?.Invoke(this, EventArgs.Empty);
+                playerCardPosition.Player = player;
+                playerCardPosition.IsOccupied = true;
+
+                if (player.ClientId.Value == NetworkManager.LocalClientId)
+                {
+                    OnPlayerCardPositionSet?.Invoke(this, EventArgs.Empty);
+                }
+
                 return;
             }
         }        
@@ -83,9 +88,9 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     public bool AreMultiplePeopleOnTheCard()
     {
         int count = 0;
-        foreach (PlayerCardPosition playerCardSpot in playerCardSpots)
+        foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
-            if (playerCardSpot.IsOccupied == true)
+            if (playerCardPosition.IsOccupied == true)
             {
                 count++;
             }
@@ -96,19 +101,19 @@ public class Card : NetworkBehaviour, IPointerDownHandler
         return false;
     }
 
-    public void OnMoveResetPosition(NetworkObjectReference networkObjectReference)
+    public void OnMoveResetPlayerPosition(NetworkObjectReference networkObjectReference)
     {
-        OnMoveResetPositionServerRpc(networkObjectReference);
+        OnMoveResetPlayerPositionServerRpc(networkObjectReference);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void OnMoveResetPositionServerRpc(NetworkObjectReference networkObjectReference)
+    private void OnMoveResetPlayerPositionServerRpc(NetworkObjectReference networkObjectReference)
     {
-        OnMoveResetPositionClientRpc(networkObjectReference);
+        OnMoveResetPlayerPositionClientRpc(networkObjectReference);
     }
 
     [ClientRpc]
-    private void OnMoveResetPositionClientRpc(NetworkObjectReference networkObjectReferencePlayer)
+    private void OnMoveResetPlayerPositionClientRpc(NetworkObjectReference networkObjectReferencePlayer)
     {
         networkObjectReferencePlayer.TryGet(out NetworkObject networkObjectPlayer);
 
@@ -116,12 +121,12 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
         Player player = networkObjectPlayer.GetComponent<Player>();
 
-        PlayerCardPosition playerCardSpot = playerCardSpots.Where(a => a.Player == player).FirstOrDefault();
+        PlayerCardPosition playerCarPosition = playerCardPositions.Where(a => a.Player == player).FirstOrDefault();
 
-        if(playerCardSpot == null) return;
+        if(playerCarPosition == null) return;
 
-        playerCardSpot.IsOccupied = false;
-        playerCardSpot.Player = null;
+        playerCarPosition.IsOccupied = false;
+        playerCarPosition.Player = null;
     }
 
     [ServerRpc(RequireOwnership = false)]

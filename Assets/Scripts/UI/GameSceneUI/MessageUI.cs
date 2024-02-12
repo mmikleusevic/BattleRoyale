@@ -9,8 +9,6 @@ public class MessageUI : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI messageText;
     [SerializeField] private ScrollRect scrollRect;
 
-    ClientRpcParams otherClientsRpcParams;
-
     public void Awake()
     {
         SetMessage("GAME STARTED");
@@ -22,7 +20,7 @@ public class MessageUI : NetworkBehaviour
         PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessages;
         PlaceOnGrid.OnPlayerPlaced += PlaceOnGrid_OnPlayerPlaced;
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
-        PlayerTurn.OnPlayerMoved += PlayerTurn_OnPlayerMoved;       
+        Player.OnPlayerMoved += Player_OnPlayerMoved;       
     }
 
     public override void OnNetworkDespawn()
@@ -34,7 +32,7 @@ public class MessageUI : NetworkBehaviour
         PlaceOnGrid.OnPlaceOnGrid -= OnCallbackSetMessages;
         PlaceOnGrid.OnPlayerPlaced -= PlaceOnGrid_OnPlayerPlaced;
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
-        PlayerTurn.OnPlayerMoved -= PlayerTurn_OnPlayerMoved;
+        Player.OnPlayerMoved -= Player_OnPlayerMoved;
 
         base.OnNetworkDespawn();
     }
@@ -66,7 +64,7 @@ public class MessageUI : NetworkBehaviour
         SetMessage(e.message);
     }
 
-    private void PlayerTurn_OnPlayerMoved(object sender, string e)
+    private void Player_OnPlayerMoved(object sender, string e)
     {
         SendMessageToEveryoneServerRpc(e);
     }

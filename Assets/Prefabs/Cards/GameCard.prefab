@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3708247340
+  GlobalObjectIdHash: 1249534169
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlight: {fileID: 4481677006727412933}
-  playerCardSpots:
+  playerCardPositions:
   - position: {x: 1.07, y: 2.15, z: 0}
   - position: {x: -1.07, y: 2.15, z: 0}
   - position: {x: 1.07, y: 0, z: 0}

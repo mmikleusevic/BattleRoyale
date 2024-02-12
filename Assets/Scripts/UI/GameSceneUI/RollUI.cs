@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class RollUI : MonoBehaviour
 {
+    [SerializeField] private GameObject backgroundImageGameObject;
     [SerializeField] private Button rollButton;
     [SerializeField] private GameObject[] dice;
     [SerializeField] private Camera diceCamera;
@@ -48,12 +49,14 @@ public class RollUI : MonoBehaviour
 
     public void Show()
     {
+        backgroundImageGameObject.SetActive(true);
         gameObject.SetActive(true);
         rollButton.gameObject.SetActive(true);
     }
 
     public void Hide()
     {
+        backgroundImageGameObject.SetActive(false);
         gameObject.SetActive(false);
         rollButton.gameObject.SetActive(false);
     }

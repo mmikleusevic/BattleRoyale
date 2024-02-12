@@ -6,7 +6,6 @@ using UnityEngine;
 public class PlayerTurn : State
 {
     public static event EventHandler<string[]> OnPlayerTurn;
-    public static event EventHandler<string> OnPlayerMoved;
 
     public override async Task Start()
     {
@@ -31,10 +30,6 @@ public class PlayerTurn : State
     { 
         Player.LocalInstance.SetPlayersPosition(card);
 
-        string message = CreateOnPlayerMovedMessage(card);
-
-        OnPlayerMoved?.Invoke(this, message);
-
         await Awaitable.WaitForSecondsAsync(1);
     }
 
@@ -51,11 +46,6 @@ public class PlayerTurn : State
     private async void ActionsUI_OnMove(Card obj)
     {
         await Move(obj);
-    }
-
-    private string CreateOnPlayerMovedMessage(Card card)
-    {
-        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"moved to {card.Name}";
     }
 
     private string[] CreateOnPlayerTurnMessage()

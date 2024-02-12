@@ -19,6 +19,7 @@ public class GridManager : NetworkBehaviour
     private List<int> randomNumberList;
     private Vector2[,] movementVectors;
 
+    private bool placedOnCard = false;
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
     private Vector2 cardDimensions;
@@ -34,7 +35,7 @@ public class GridManager : NetworkBehaviour
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
-        PlayerTurn.OnPlayerMoved += PlayerTurn_OnPlayerMoved;
+        Player.OnPlayerMoved += Player_OnPlayerMoved;
     }
 
     public override void OnNetworkDespawn()
@@ -42,7 +43,7 @@ public class GridManager : NetworkBehaviour
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
-        PlayerTurn.OnPlayerMoved -= PlayerTurn_OnPlayerMoved;
+        Player.OnPlayerMoved -= Player_OnPlayerMoved;
 
         base.OnNetworkDespawn();
     }
@@ -64,10 +65,18 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
     }
 
-    private void PlayerTurn_OnPlayerMoved(object sender, string e)
+    private void Player_OnPlayerMoved(object sender, string e)
     {
         DisableCards();
-        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+
+        if (placedOnCard == true)
+        {
+            EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+        }
+        else
+        {
+            placedOnCard = true;
+        }
     }
 
     private void SetMovementVectors()
