@@ -1,5 +1,4 @@
 using DG.Tweening;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,19 +14,19 @@ public class AlcoholTypeUI : MonoBehaviour
         strongAlcoholButton.onClick.AddListener(() =>
         {
             SendAcoholValue(1);
-            Hide();
+            HideWithAnimation();
         });
 
         mediumAlcoholButton.onClick.AddListener(() =>
         {
             SendAcoholValue(2);
-            Hide();
+            HideWithAnimation();
         });
 
         weakAlcoholButton.onClick.AddListener(() =>
         {
             SendAcoholValue(3);
-            Hide();
+            HideWithAnimation();
         });
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
@@ -54,13 +53,21 @@ public class AlcoholTypeUI : MonoBehaviour
 
     private void Show()
     {
-        alcoholTypeRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
-
         gameObject.SetActive(true);
+    }
+
+
+    private void HideWithAnimation()
+    {
+        alcoholTypeRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() =>
+        {
+            gameObject.SetActive(false);
+            alcoholTypeRectTransform.DOKill(true);
+        });
     }
 
     private void Hide()
     {
-        alcoholTypeRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false)).Kill(true);
+        gameObject.SetActive(false);
     }
 }

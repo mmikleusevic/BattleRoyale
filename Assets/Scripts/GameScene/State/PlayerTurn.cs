@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -12,22 +11,23 @@ public class PlayerTurn : State
         await base.Start();
 
         ActionsUI.OnMove += ActionsUI_OnMove;
+        ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
 
         OnPlayerTurn?.Invoke(this, CreateOnPlayerTurnMessage());
     }
 
-    public IEnumerator AttackCard()
+    public async Task AttackCard()
     {
-        yield break;
+        await Awaitable.NextFrameAsync();
     }
 
-    public IEnumerator AttackPlayer()
+    public async Task AttackPlayer()
     {
-        yield break;
+        await Awaitable.NextFrameAsync();
     }
 
     public async Task Move(Card card)
-    { 
+    {
         Player.LocalInstance.SetPlayersPosition(card);
 
         await Awaitable.WaitForSecondsAsync(1);
@@ -38,6 +38,7 @@ public class PlayerTurn : State
         await base.End();
 
         ActionsUI.OnMove -= ActionsUI_OnMove;
+        ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
 
         StateManager.Instance.SetState(StateEnum.EnemyTurn);
         StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerTurn);
@@ -46,6 +47,11 @@ public class PlayerTurn : State
     private async void ActionsUI_OnMove(Card obj)
     {
         await Move(obj);
+    }
+
+    private async void ActionsUI_OnAttackCard(Card card)
+    {
+        await AttackCard();
     }
 
     private string[] CreateOnPlayerTurnMessage()

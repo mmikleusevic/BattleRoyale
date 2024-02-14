@@ -7,12 +7,14 @@ public class DieRollUI : RollUI
         base.Awake();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
+        AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
     }
 
     private void Start()
     {
         RollResults.OnReRoll += RollResults_OnReRoll;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
+        RollResults.OnBattleRollOver += RollResults_OnBattleRollOver;
     }
 
     public void OnDestroy()
@@ -20,6 +22,8 @@ public class DieRollUI : RollUI
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         RollResults.OnReRoll -= RollResults_OnReRoll;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
+        RollResults.OnBattleRollOver -= RollResults_OnBattleRollOver;
+        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -35,5 +39,15 @@ public class DieRollUI : RollUI
     private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
         Hide();
+    }
+
+    private void RollResults_OnBattleRollOver(object sender, RollResults.OnBattleRollOverEventArgs e)
+    {
+        Hide();
+    }
+
+    private void AttackPlayerInfoUI_OnAttackPlayer(AttackPlayerInfoUI.OnAttackPlayerEventArgs obj)
+    {
+        Show();
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class Player : NetworkBehaviour
 {
     public static Player LocalInstance { get; private set; }
 
+    public static event Action OnPlayerTurnSet;
     public static event EventHandler<string> OnPlayerMoved;
 
     [SerializeField] private SetVisual playerVisual;
@@ -15,27 +17,32 @@ public class Player : NetworkBehaviour
 
     ParticleSystem playerParticleSystem;
     PlayerAnimator playerAnimator;
+
+    private int defaultMovement = 0;
+    private int defaultActionPoints = 2;
+    private float moveSpeed = 20f;
+
+    public List<Card> EquippedCards { get; private set; }
+    public List<Card> UnequippedCards { get; private set; }
     public NetworkVariable<ulong> ClientId { get; private set; }
     public NetworkVariable<bool> IsDead { get; set; }
     public Vector2 GridPosition { get; private set; }
     public int Movement { get; private set; }
     public int ActionPoints { get; private set; }
     public int SipValue { get; private set; }
-
+    public int SipCounter { get; private set; }
+    public int Points { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
-
-    private int defaultMovement = 0;
-
-    private int defaultActionPoints = 2;
-
-    private float moveSpeed = 20f;
+    public bool Dead { get; private set; }
 
     private void Awake()
     {
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         IsDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         playerParticleSystem = particleCircle.GetComponent<ParticleSystem>();
+        EquippedCards = new List<Card>();
+        UnequippedCards = new List<Card>();
 
         Movement = defaultMovement;
         ActionPoints = defaultActionPoints;
@@ -105,7 +112,7 @@ public class Player : NetworkBehaviour
         GridPosition = card.GridPosition;
 
         string message = CreateOnPlayerMovedMessage(card);
-    
+
         OnPlayerMoved?.Invoke(this, message);
     }
 
@@ -118,7 +125,7 @@ public class Player : NetworkBehaviour
     {
         card.OnMoveResetPlayerPosition(NetworkObject);
 
-        card.SetEmptyPlayerCardSpot(this);       
+        card.SetEmptyPlayerCardSpot(this);
     }
 
     private string CreateOnPlayerMovedMessage(Card card)
@@ -129,6 +136,21 @@ public class Player : NetworkBehaviour
     public void SetSipValue(int value)
     {
         SipValue = value;
+    }
+
+    public void SetPlayerPoints(int cardValue)
+    {
+        Points += Points + cardValue;
+    }
+
+    public void SetIsDead(bool isDead)
+    {
+        Dead = isDead;
+    }
+
+    public void SetSipCounter(int sips)
+    {
+        SipCounter += sips;
     }
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)
@@ -207,5 +229,7 @@ public class Player : NetworkBehaviour
     {
         ActionPoints = defaultActionPoints;
         Movement = defaultMovement;
+
+        OnPlayerTurnSet?.Invoke();
     }
 }

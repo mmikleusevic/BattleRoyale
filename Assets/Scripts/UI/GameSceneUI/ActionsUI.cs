@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class ActionsUI : MonoBehaviour
 {
     public static event Action<Card> OnMove;
-    public static event Action OnAttackCard;
-    public static event Action OnAttackPlayer;
+    public static event Action<Card> OnAttackCard;
+    public static event Action<Card> OnAttackPlayer;
 
     [SerializeField] private Button moveButton;
     [SerializeField] private Button attackCardButton;
@@ -23,12 +23,12 @@ public class ActionsUI : MonoBehaviour
 
         attackCardButton.onClick.AddListener(() =>
         {
-            OnAttackCard?.Invoke();
+            OnAttackCard?.Invoke(card);
         });
 
         attackPlayerButton.onClick.AddListener(() =>
         {
-            OnAttackPlayer?.Invoke();
+            OnAttackPlayer?.Invoke(card);
         });
 
         Card.OnCardPressed += Card_OnCardPressed;

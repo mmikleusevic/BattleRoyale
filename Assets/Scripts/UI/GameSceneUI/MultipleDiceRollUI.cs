@@ -1,3 +1,1 @@
-public class MultipleDiceRollUI : RollUI
-{
-}
+public class MultipleDiceRollUI : RollUI { }

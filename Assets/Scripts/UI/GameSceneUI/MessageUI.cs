@@ -20,7 +20,10 @@ public class MessageUI : NetworkBehaviour
         PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessages;
         PlaceOnGrid.OnPlayerPlaced += PlaceOnGrid_OnPlayerPlaced;
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
-        Player.OnPlayerMoved += Player_OnPlayerMoved;       
+        Player.OnPlayerMoved += Player_OnPlayerMoved;
+        RollResults.OnBattleRollOver += RollResults_OnBattleRollOver;
+        RollResults.OnCardRollOver += RollResults_OnCardRollOver;
+        AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
     }
 
     public override void OnNetworkDespawn()
@@ -33,6 +36,9 @@ public class MessageUI : NetworkBehaviour
         PlaceOnGrid.OnPlayerPlaced -= PlaceOnGrid_OnPlayerPlaced;
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
+        RollResults.OnBattleRollOver -= RollResults_OnBattleRollOver;
+        RollResults.OnCardRollOver -= RollResults_OnCardRollOver;
+        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
 
         base.OnNetworkDespawn();
     }
@@ -69,6 +75,20 @@ public class MessageUI : NetworkBehaviour
         SendMessageToEveryoneServerRpc(e);
     }
 
+    private void RollResults_OnBattleRollOver(object sender, RollResults.OnBattleRollOverEventArgs e)
+    {
+        SendMessageToEveryoneServerRpc(e.message);
+    }
+
+    private void RollResults_OnCardRollOver(object sender, string e)
+    {
+        SendMessageToEveryoneExceptMeServerRpc(e);
+    }
+
+    private void AttackPlayerInfoUI_OnAttackPlayer(AttackPlayerInfoUI.OnAttackPlayerEventArgs obj)
+    {
+        SendMessageToEveryoneServerRpc(obj.message);
+    }
 
     [ServerRpc(RequireOwnership = false)]
     private void SendMessageToEveryoneServerRpc(string message, ServerRpcParams serverRpcParams = default)
@@ -126,5 +146,5 @@ public class MessageUI : NetworkBehaviour
     {
         yield return new WaitForEndOfFrame();
         scrollRect.verticalNormalizedPosition = 0;
-    }    
+    }
 }

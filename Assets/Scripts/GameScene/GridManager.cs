@@ -179,7 +179,10 @@ public class GridManager : NetworkBehaviour
         float cameraX = halfWidth - offsetX;
         float cameraY = halfHeight - offsetY;
 
-        Camera.transform.position = new Vector3(cameraX, cameraY, -33);
+        float distanceMultiplier = 1.4f;
+        float cameraDistance = -Mathf.Max(halfWidth, halfHeight) * distanceMultiplier;
+
+        Camera.transform.position = new Vector3(cameraX, cameraY, cameraDistance);
         Camera.transform.rotation = Quaternion.Euler(0, 0, 90);
     }
 

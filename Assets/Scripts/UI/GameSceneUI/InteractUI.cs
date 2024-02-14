@@ -28,17 +28,17 @@ public class InteractUI : MonoBehaviour
         ShowWithAnimation();
     }
 
-    private void ActionsUI_OnMove(Card obj)
+    private void ActionsUI_OnMove(Card card)
     {
         HideWithAnimation();
     }
 
-    private void ActionsUI_OnAttackCard()
+    private void ActionsUI_OnAttackCard(Card card)
     {
         HideWithAnimation();
     }
 
-    private void ActionsUI_OnAttackPlayer()
+    private void ActionsUI_OnAttackPlayer(Card card)
     {
         HideWithAnimation();
     }
@@ -46,7 +46,7 @@ public class InteractUI : MonoBehaviour
     public void ShowWithAnimation()
     {
         gameObject.SetActive(true);
-        interactUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);       
+        interactUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
     }
 
     public void HideWithAnimation()

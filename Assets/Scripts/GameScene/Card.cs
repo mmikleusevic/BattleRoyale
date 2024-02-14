@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -22,6 +23,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     public Vector2 GridPosition { get; private set; }
     public string Name { get; private set; }
     public Sprite Sprite { get; private set; }
+    public int Value { get; private set; }
 
     private void Awake()
     {
@@ -41,6 +43,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
         GridPosition = gridPosition;
         Sprite = cardSO.cardSprite;
         Name = cardSO.name;
+        Value = cardSO.cost;
     }
 
     public PlayerCardPosition GetPlayerCardSpot(Player player)
@@ -67,7 +70,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
         if (networkObjectPlayer == null) return;
 
         Player player = networkObjectPlayer.GetComponent<Player>();
-      
+
         foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
             if (playerCardPosition.IsOccupied == false)
@@ -82,7 +85,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
                 return;
             }
-        }        
+        }
     }
 
     public bool AreMultiplePeopleOnTheCard()
@@ -99,6 +102,21 @@ public class Card : NetworkBehaviour, IPointerDownHandler
         if (count >= 2) return true;
 
         return false;
+    }
+
+    public List<Player> GetPlayersOnCard()
+    {
+        List<Player> players = new List<Player>();
+
+        foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
+        {
+            if (playerCardPosition.Player != null)
+            {
+                players.Add(playerCardPosition.Player);
+            }
+        }
+
+        return players;
     }
 
     public void OnMoveResetPlayerPosition(NetworkObjectReference networkObjectReference)
@@ -123,7 +141,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
         PlayerCardPosition playerCarPosition = playerCardPositions.Where(a => a.Player == player).FirstOrDefault();
 
-        if(playerCarPosition == null) return;
+        if (playerCarPosition == null) return;
 
         playerCarPosition.IsOccupied = false;
         playerCarPosition.Player = null;
