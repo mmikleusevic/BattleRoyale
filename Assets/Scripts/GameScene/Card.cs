@@ -8,7 +8,6 @@ using UnityEngine.EventSystems;
 public class Card : NetworkBehaviour, IPointerDownHandler
 {
     public static event EventHandler<Player> OnCardPressed;
-    public static event EventHandler OnPlayerCardPositionSet;
 
     [SerializeField] private GameObject highlight;
     [SerializeField] private PlayerCardPosition[] playerCardPositions;
@@ -57,13 +56,13 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SetEmptyPlayerSpotServerRpc(NetworkObjectReference networkObjectReferencePlayer)
+    private void SetEmptyPlayerSpotServerRpc(NetworkObjectReference networkObjectReferencePlayer, ServerRpcParams serverRpcParams = default)
     {
         SetEmptyPlayerSpotClientRpc(networkObjectReferencePlayer);
     }
 
     [ClientRpc]
-    private void SetEmptyPlayerSpotClientRpc(NetworkObjectReference networkObjectReferencePlayer)
+    private void SetEmptyPlayerSpotClientRpc(NetworkObjectReference networkObjectReferencePlayer, ClientRpcParams clientRpcParams = default)
     {
         networkObjectReferencePlayer.TryGet(out NetworkObject networkObjectPlayer);
 
@@ -78,9 +77,9 @@ public class Card : NetworkBehaviour, IPointerDownHandler
                 playerCardPosition.Player = player;
                 playerCardPosition.IsOccupied = true;
 
-                if (player.ClientId.Value == NetworkManager.LocalClientId)
+                if (player.ClientId.Value == Player.LocalInstance.ClientId.Value)
                 {
-                    OnPlayerCardPositionSet?.Invoke(this, EventArgs.Empty);
+                    Player.LocalInstance.MovePlayerPosition(this);
                 }
 
                 return;
@@ -93,7 +92,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
         int count = 0;
         foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
-            if (playerCardPosition.IsOccupied == true)
+            if (playerCardPosition.IsOccupied == true && !playerCardPosition.Player.Dead)
             {
                 count++;
             }
@@ -110,7 +109,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
         foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
-            if (playerCardPosition.Player != null)
+            if (playerCardPosition.Player != null && !playerCardPosition.Player.Dead)
             {
                 players.Add(playerCardPosition.Player);
             }

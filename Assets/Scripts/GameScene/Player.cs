@@ -22,6 +22,7 @@ public class Player : NetworkBehaviour
     private int defaultActionPoints = 2;
     private float moveSpeed = 20f;
 
+    public Card CurrentCard { get; private set; }
     public List<Card> EquippedCards { get; private set; }
     public List<Card> UnequippedCards { get; private set; }
     public NetworkVariable<ulong> ClientId { get; private set; }
@@ -45,10 +46,7 @@ public class Player : NetworkBehaviour
         UnequippedCards = new List<Card>();
 
         Movement = defaultMovement;
-        ActionPoints = defaultActionPoints;
-
-        Card.OnPlayerCardPositionSet += Card_OnPlayerCardPositionSet;
-        PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+        ActionPoints = defaultActionPoints;      
     }
 
     public override void OnNetworkSpawn()
@@ -57,6 +55,7 @@ public class Player : NetworkBehaviour
         {
             LocalInstance = this;
             ClientId.Value = NetworkObject.OwnerClientId;
+            PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
         }
 
         InitializePlayerClientRpc();
@@ -66,7 +65,6 @@ public class Player : NetworkBehaviour
 
     public override void OnDestroy()
     {
-        Card.OnPlayerCardPositionSet -= Card_OnPlayerCardPositionSet;
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
 
         base.OnDestroy();
@@ -88,10 +86,8 @@ public class Player : NetworkBehaviour
         playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
     }
 
-    private void Card_OnPlayerCardPositionSet(object sender, EventArgs e)
+    public void MovePlayerPosition(Card card)
     {
-        Card card = sender as Card;
-
         PlayerCardPosition playerCardSpot = card.GetPlayerCardSpot(this);
 
         if (playerCardSpot == null) return;
@@ -109,11 +105,16 @@ public class Player : NetworkBehaviour
             SubtractActionPoints();
         }
 
-        GridPosition = card.GridPosition;
-
         string message = CreateOnPlayerMovedMessage(card);
 
-        OnPlayerMoved?.Invoke(this, message);
+        GridPosition = card.GridPosition;
+
+        if (CurrentCard != null)
+        {
+            OnPlayerMoved?.Invoke(this, message);
+        }
+
+        CurrentCard = card;
     }
 
     private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
@@ -123,7 +124,10 @@ public class Player : NetworkBehaviour
 
     public void SetPlayersPosition(Card card)
     {
-        card.OnMoveResetPlayerPosition(NetworkObject);
+        if (CurrentCard != null)
+        {
+            CurrentCard.OnMoveResetPlayerPosition(NetworkObject);
+        }
 
         card.SetEmptyPlayerCardSpot(this);
     }
@@ -155,7 +159,7 @@ public class Player : NetworkBehaviour
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)
     {
-        MoveServerRpc();
+        Move();
 
         while (targetPosition != transform.position)
         {
@@ -164,38 +168,12 @@ public class Player : NetworkBehaviour
             yield return null;
         }
 
-        StopMovingServerRpc();
-
-        yield return null;
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void MoveServerRpc(ServerRpcParams serverRpcParams = default)
-    {
-        MoveClientRpc();
-    }
-
-    [ClientRpc]
-    private void MoveClientRpc(ClientRpcParams clientRpcParams = default)
-    {
-        Move();
+        StopMoving();
     }
 
     private void Move()
     {
         playerAnimator.MoveAnimation();
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void StopMovingServerRpc()
-    {
-        StopMovingClientRpc();
-    }
-
-    [ClientRpc]
-    private void StopMovingClientRpc()
-    {
-        StopMoving();
     }
 
     private void StopMoving()

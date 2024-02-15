@@ -84,13 +84,6 @@ public class ActionsUI : MonoBehaviour
         }
     }
 
-    private void ShowAll()
-    {
-        ShowMoveButton();
-        ShowAttackCardButton();
-        ShowAttackPlayerButton();
-    }
-
     private void HideAll()
     {
         HideMoveButton();

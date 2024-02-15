@@ -39,6 +39,8 @@ public class AlcoholTypeUI : MonoBehaviour
         strongAlcoholButton.onClick.RemoveAllListeners();
         mediumAlcoholButton.onClick.RemoveAllListeners();
         weakAlcoholButton.onClick.RemoveAllListeners();
+
+        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)

@@ -30,13 +30,13 @@ public class PlaceOnGrid : State
 
     private async void ActionsUI_OnMove(Card card)
     {
+        ActionsUI.OnMove -= ActionsUI_OnMove;
+
         card.OccupyCardOnPlaceOnGridServerRpc();
 
         Player.LocalInstance.SetPlayersPosition(card);
 
         OnPlayerPlaced?.Invoke(this, CreateOnPlayerPlacedMessage(card));
-
-        ActionsUI.OnMove -= ActionsUI_OnMove;
 
         await End();
     }

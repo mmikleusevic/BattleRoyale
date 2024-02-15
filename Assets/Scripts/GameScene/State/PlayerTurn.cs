@@ -35,10 +35,10 @@ public class PlayerTurn : State
 
     public async override Task End()
     {
-        await base.End();
-
         ActionsUI.OnMove -= ActionsUI_OnMove;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
+
+        await base.End();
 
         StateManager.Instance.SetState(StateEnum.EnemyTurn);
         StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerTurn);
