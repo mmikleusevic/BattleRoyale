@@ -69,6 +69,8 @@ public class Roll : IRoll
 
         for (int i = 0; i < dice.Length; i++)
         {
+            dice[i].transform.rotation = Random.rotationUniform;
+
             Vector3 randomAxis = new Vector3(Random.value, Random.value, Random.value).normalized;
             float spinTimer = rotationTime;
             float rotationTimer = 0.0f;
