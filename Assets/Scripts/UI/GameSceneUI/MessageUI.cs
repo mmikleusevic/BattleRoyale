@@ -24,6 +24,7 @@ public class MessageUI : NetworkBehaviour
         RollResults.OnBattleRollOver += RollResults_OnBattleRollOver;
         RollResults.OnCardRollOver += RollResults_OnCardRollOver;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
+        EndTurnUI.OnEndTurn += OnCallbackSetMessages;
     }
 
     public override void OnNetworkDespawn()
@@ -39,6 +40,7 @@ public class MessageUI : NetworkBehaviour
         RollResults.OnBattleRollOver -= RollResults_OnBattleRollOver;
         RollResults.OnCardRollOver -= RollResults_OnCardRollOver;
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
+        EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
 
         base.OnNetworkDespawn();
     }
@@ -58,6 +60,13 @@ public class MessageUI : NetworkBehaviour
         SetMessage(e[0]);
 
         SendMessageToEveryoneExceptMeServerRpc(e[1]);
+    }
+
+    private void OnCallbackSetMessages(string e)
+    {
+        SetMessage(e);
+
+        SendMessageToEveryoneExceptMeServerRpc(e);
     }
 
     private void Roll_OnRollResult(object sender, Roll.OnRollEventArgs e)
@@ -89,6 +98,7 @@ public class MessageUI : NetworkBehaviour
     {
         SendMessageToEveryoneServerRpc(obj.message);
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     private void SendMessageToEveryoneServerRpc(string message, ServerRpcParams serverRpcParams = default)

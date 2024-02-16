@@ -114,6 +114,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3752977807954274775}
+  - component: {fileID: 7444306988423934881}
   m_Layer: 6
   m_Name: ThreeDice
   m_TagString: Untagged
@@ -140,6 +141,19 @@ Transform:
   - {fileID: 9190719038277303670}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7444306988423934881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365047831100272335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da716c60d74b14f4b87be34d875d0424, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rollResults: {fileID: 0}
 --- !u!1 &1469211460511884319
 GameObject:
   m_ObjectHideFlags: 0
@@ -1031,7 +1045,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3916845978911928039}
-  - component: {fileID: 2719945581055274229}
   m_Layer: 6
   m_Name: Die1
   m_TagString: Untagged
@@ -1061,18 +1074,6 @@ Transform:
   - {fileID: 4300541028103061444}
   m_Father: {fileID: 3752977807954274775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2719945581055274229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4258229333985547518}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdccf65358296884b8c0869a7911a121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4715478736241708105
 GameObject:
   m_ObjectHideFlags: 0
@@ -1922,7 +1923,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7951700789827268731}
-  - component: {fileID: 3255654202867234887}
   m_Layer: 6
   m_Name: Die2
   m_TagString: Untagged
@@ -1952,18 +1952,6 @@ Transform:
   - {fileID: 8672027124542761111}
   m_Father: {fileID: 3752977807954274775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3255654202867234887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6849811979914293090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdccf65358296884b8c0869a7911a121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7505895880897353740
 GameObject:
   m_ObjectHideFlags: 0
@@ -2206,7 +2194,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6164156110509079122}
-  - component: {fileID: 7342805484418436546}
   m_Layer: 6
   m_Name: Die3
   m_TagString: Untagged
@@ -2236,18 +2223,6 @@ Transform:
   - {fileID: 4041677233353225916}
   m_Father: {fileID: 3752977807954274775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7342805484418436546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8406938584728435845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdccf65358296884b8c0869a7911a121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8723521539567885505
 GameObject:
   m_ObjectHideFlags: 0

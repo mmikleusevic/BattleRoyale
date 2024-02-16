@@ -7,16 +7,13 @@ public class RollUI : MonoBehaviour
     [SerializeField] private Button rollButton;
     [SerializeField] private GameObject[] dice;
     [SerializeField] private Camera diceCamera;
-
-    private IRoll roll;
+    [SerializeField] private Roll roll;
 
     private Vector3 cameraPosition;
     private Vector3[] dicePositions;
 
     public virtual void Awake()
     {
-        roll = new Roll();
-
         rollButton.onClick.AddListener(() =>
         {
             rollButton.gameObject.SetActive(false);

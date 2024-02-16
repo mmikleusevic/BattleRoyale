@@ -1,11 +1,13 @@
 using System;
+using Unity.Netcode;
+using UnityEngine;
 
-public class DieRollUI : RollUI
+public class DieRollUI : MonoBehaviour
 {
-    public override void Awake()
-    {
-        base.Awake();
+    [SerializeField] private RollUI rollUI;
 
+    private void Awake()
+    {
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
     }
@@ -28,26 +30,26 @@ public class DieRollUI : RollUI
 
     private void Initiative_OnInitiativeStart(object sender, string e)
     {
-        Show();
+        rollUI.Show();
     }
 
     private void RollResults_OnReRoll(object sender, EventArgs e)
     {
-        Show();
+        rollUI.Show();
     }
 
     private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
-        Hide();
+        rollUI.Hide();
     }
 
     private void RollResults_OnBattleRollOver(object sender, RollResults.OnBattleRollOverEventArgs e)
     {
-        Hide();
+        rollUI.Hide();
     }
 
     private void AttackPlayerInfoUI_OnAttackPlayer(AttackPlayerInfoUI.OnAttackPlayerEventArgs obj)
     {
-        Show();
+        rollUI.Show();
     }
 }

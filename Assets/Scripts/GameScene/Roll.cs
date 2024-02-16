@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Roll : IRoll
+public class Roll : MonoBehaviour, IRoll
 {
     public static event EventHandler<OnRollEventArgs> OnRoll;
 
@@ -13,17 +13,12 @@ public class Roll : IRoll
         public int rollValue;
     }
 
+    [SerializeField] private RollResults rollResults;
+
     private readonly float interactDistance = 0.51f;
 
     private float rotationTime = 3f;
     private float rotationSpeed = 540f;
-
-    private IRollResults rollResults;
-
-    public Roll()
-    {
-        rollResults = UnityEngine.Object.FindFirstObjectByType<RollResults>();
-    }
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)
     {
