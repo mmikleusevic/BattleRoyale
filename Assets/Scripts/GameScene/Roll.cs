@@ -15,19 +15,13 @@ public class Roll : IRoll
 
     private readonly float interactDistance = 0.51f;
 
-    private readonly float rotationSpeed = 180f;
-    private float maxRotationTime = 3f;
-    private float rotationTime;
-    private readonly float factor;
+    private float rotationTime = 3f;
+    private float rotationSpeed = 540f;
 
     private IRollResults rollResults;
 
     public Roll()
     {
-        factor = rotationSpeed * Time.deltaTime;
-
-        rotationTime = maxRotationTime;
-
         rollResults = UnityEngine.Object.FindFirstObjectByType<RollResults>();
     }
 
@@ -75,28 +69,22 @@ public class Roll : IRoll
 
         for (int i = 0; i < dice.Length; i++)
         {
-            Quaternion startRotation = Random.rotationUniform;
-            Quaternion endRotation = Random.rotationUniform;
-            dice[i].transform.rotation = startRotation;
+            Vector3 randomAxis = new Vector3(Random.value, Random.value, Random.value).normalized;
+            float spinTimer = rotationTime;
+            float rotationTimer = 0.0f;
 
-            // Roll the dice in random direction
+            while (spinTimer > 0)
+            {               
+                spinTimer -= Time.deltaTime;
+                rotationTimer += Time.deltaTime;
 
-            float rotationDuration = 0f;
+                Quaternion targetRotation = dice[i].transform.rotation * Quaternion.Euler(randomAxis * rotationSpeed * Time.deltaTime);
+                dice[i].transform.rotation = Quaternion.RotateTowards(dice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-            while (rotationTime > 0)
-            {
-                rotationTime -= Time.deltaTime;
-                rotationDuration += Time.deltaTime;
-
-                float time = Mathf.Clamp01(rotationDuration / 1.0f);
-
-                dice[i].transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
-
-                if (time >= 1)
+                if(rotationTimer >= 0.2f)
                 {
-                    startRotation = dice[i].transform.rotation;
-                    endRotation = Random.rotationUniform;
-                    rotationDuration = 0.0f;
+                    randomAxis = new Vector3(Random.value, Random.value, Random.value).normalized;
+                    rotationTimer = 0.0f;
                 }
 
                 yield return null;
@@ -127,10 +115,6 @@ public class Roll : IRoll
 
                 yield return null;
             }
-
-            // -------------------------
-
-            rotationTime = maxRotationTime;
         }
 
         rollResults.SetRollResults(resultSum);
