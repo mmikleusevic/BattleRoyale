@@ -15,7 +15,7 @@ public class Roll : IRoll
 
     private readonly float interactDistance = 0.51f;
 
-    private readonly float rotationSpeed = 150f;
+    private readonly float rotationSpeed = 180f;
     private float maxRotationTime = 3f;
     private float rotationTime;
     private readonly float factor;
@@ -75,52 +75,31 @@ public class Roll : IRoll
 
         for (int i = 0; i < dice.Length; i++)
         {
-            dice[i].transform.rotation = Random.rotation;
-
-            float xAxis = Random.Range(1.5f, 3f) * factor;
-            float yAxis = Random.Range(1.5f, 3f) * factor;
-            float zAxis = Random.Range(1.5f, 3f) * factor;
-
-            Vector3 xAxisVector = new Vector3(xAxis, 0, 0);
-            Vector3 yAxisVector = new Vector3(0, yAxis, 0);
-            Vector3 zAxisVector = new Vector3(0, 0, zAxis);
-
-            Vector3[] axis = new Vector3[] { xAxisVector, yAxisVector, zAxisVector };
+            Quaternion startRotation = Random.rotationUniform;
+            Quaternion endRotation = Random.rotationUniform;
+            dice[i].transform.rotation = startRotation;
 
             // Roll the dice in random direction
 
-            float xRotationPerSecond = xAxis / maxRotationTime;
-            float yRotationPerSecond = yAxis / maxRotationTime;
-            float zRotationPerSecond = zAxis / maxRotationTime;
-
-            Vector3 xRotationPerSecondVector = new Vector3(xRotationPerSecond, 0, 0);
-            Vector3 yRotationPerSecondVector = new Vector3(0, yRotationPerSecond, 0);
-            Vector3 zRotationPerSecondVector = new Vector3(0, 0, zRotationPerSecond);
-
-            Vector3[] rotationPerSecond = new Vector3[] { xRotationPerSecondVector, yRotationPerSecondVector, zRotationPerSecondVector };
-
-            float axisRotationTime = rotationTime / axis.Length;
+            float rotationDuration = 0f;
 
             while (rotationTime > 0)
             {
-                for (int j = 0; j < axis.Length; j++)
+                rotationTime -= Time.deltaTime;
+                rotationDuration += Time.deltaTime;
+
+                float time = Mathf.Clamp01(rotationDuration / 1.0f);
+
+                dice[i].transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
+
+                if (time >= 1)
                 {
-                    float axisRotationTimeMax = axisRotationTime;
-
-                    while (axisRotationTime > 0)
-                    {
-                        axisRotationTime -= Time.deltaTime;
-                        rotationTime -= Time.deltaTime;
-
-                        axis[j] -= rotationPerSecond[j] * Time.deltaTime;
-
-                        dice[i].transform.Rotate(axis[j]);
-
-                        yield return null;
-                    }
-
-                    axisRotationTime = axisRotationTimeMax;
+                    startRotation = dice[i].transform.rotation;
+                    endRotation = Random.rotationUniform;
+                    rotationDuration = 0.0f;
                 }
+
+                yield return null;
             }
 
             // ---------------------------------
