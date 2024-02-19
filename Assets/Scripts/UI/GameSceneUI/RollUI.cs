@@ -1,14 +1,14 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RollUI : MonoBehaviour
+public class RollUI : NetworkBehaviour
 {
     [SerializeField] private GameObject backgroundImageGameObject;
     [SerializeField] private Button rollButton;
     [SerializeField] private GameObject[] dice;
     [SerializeField] private Camera diceCamera;
     [SerializeField] private Roll roll;
-
     private Vector3 cameraPosition;
     private Vector3[] dicePositions;
 
@@ -23,13 +23,20 @@ public class RollUI : MonoBehaviour
         cameraPosition = diceCamera.transform.position;
 
         AssignDicePosition();
-
-        Hide();
     }
 
-    private void OnDestroy()
+    public override void OnDestroy()
     {
         rollButton.onClick.RemoveAllListeners();
+
+        base.OnDestroy();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        Hide();
+
+        base.OnNetworkSpawn();
     }
 
     private void AssignDicePosition()

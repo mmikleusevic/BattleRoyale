@@ -209,5 +209,5 @@ public class Player : NetworkBehaviour
         Movement = defaultMovement;
 
         OnPlayerTurnSet?.Invoke();
-    }
+    } 
 }

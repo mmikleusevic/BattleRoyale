@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -61,6 +62,7 @@ public class Roll : MonoBehaviour, IRoll
     public IEnumerator RotateDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
     {
         int resultSum = 0;
+        int min = int.MaxValue;
 
         for (int i = 0; i < dice.Length; i++)
         {
@@ -109,13 +111,18 @@ public class Roll : MonoBehaviour, IRoll
                 Quaternion rotation = Quaternion.LookRotation(side);
 
                 dice[i].transform.rotation = Quaternion.Slerp(dice[i].transform.rotation, rotation, speed);
-
                 yield return null;
+            }
+
+            if (RollType.rollTypeSelf == RollTypeEnum.Disadvantage && result < min)
+            {
+                min = result;
+                resultSum = min;
             }
         }
 
-        rollResults.SetRollResults(resultSum);
-        SendToMessageUI(resultSum);
+        rollResults.SetRollResults(resultSum, RollType.rollTypeSelf);
+        SendToMessageUI(resultSum);          
     }
 
     private void SendToMessageUI(int result)

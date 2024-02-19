@@ -33,8 +33,6 @@ public class RollResults : NetworkBehaviour, IRollResults
     private List<List<ulong>> clientsToReRollList;
     private List<ulong> finalOrder;
 
-    private bool rollForInitiative = true;
-
     private void Start()
     {
         finalOrder = new List<ulong>();
@@ -51,15 +49,21 @@ public class RollResults : NetworkBehaviour, IRollResults
         SetClientIdToDictionary();
     }
 
-    public void SetRollResults(int result)
+    public void SetRollResults(int result, RollTypeEnum rollType)
     {
-        if (rollForInitiative)
+        switch (rollType)
         {
-            SetInitiativeResultServerRpc(result);
-        }
-        else
-        {
-            SetBattleResultServerRpc(result);
+            case RollTypeEnum.Initiative:
+                SetInitiativeResultServerRpc(result);
+                break;
+            case RollTypeEnum.PlayerAttack:
+            case RollTypeEnum.Disadvantage:
+                //TODO finish
+                SetBattleResultServerRpc(result);
+                break;
+            case RollTypeEnum.CardAttack:
+                // TODO
+                break;
         }
     }
 
@@ -266,7 +270,6 @@ public class RollResults : NetworkBehaviour, IRollResults
         yield return new WaitForEndOfFrame();
 
         CallOnInitiativeRollOver();
-        rollForInitiative = false;
     }
 
     [ClientRpc]

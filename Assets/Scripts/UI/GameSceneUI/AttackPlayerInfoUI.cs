@@ -15,7 +15,7 @@ public class AttackPlayerInfoUI : MonoBehaviour
         public string message;
     }
 
-    private Player player; 
+    private Player player;
 
     [SerializeField] private Image backgroundImage;
     [SerializeField] private TextMeshProUGUI playerNameText;
@@ -55,6 +55,8 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
         attackPlayerButton.onClick.AddListener(() =>
         {
+            RollType.SetRollType(Player.LocalInstance, player);
+
             OnAttackPlayer?.Invoke(new OnAttackPlayerEventArgs
             {
                 player = this.player,
