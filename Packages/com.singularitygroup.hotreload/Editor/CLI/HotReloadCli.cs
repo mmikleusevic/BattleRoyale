@@ -1,80 +1,71 @@
-using SingularityGroup.HotReload.Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using SingularityGroup.HotReload.Newtonsoft.Json;
 using UnityEditor;
 
-namespace SingularityGroup.HotReload.Editor.Cli
-{
+namespace SingularityGroup.HotReload.Editor.Cli {
     [InitializeOnLoad]
-    public static class HotReloadCli
-    {
+    public static class HotReloadCli {
         internal static readonly ICliController controller;
-
+        
         //InitializeOnLoad ensures controller gets initialized on unity thread
-        static HotReloadCli()
-        {
+        static HotReloadCli() {
             controller =
-#if UNITY_EDITOR_OSX
+    #if UNITY_EDITOR_OSX
                 new OsxCliController();
-#elif UNITY_EDITOR_LINUX
+    #elif UNITY_EDITOR_LINUX
                 new LinuxCliController();
-#elif UNITY_EDITOR_WIN
+    #elif UNITY_EDITOR_WIN
                 new WindowsCliController();
-#else
+    #else
                 new FallbackCliController();
-#endif
+    #endif
         }
 
         public static bool CanOpenInBackground => controller.CanOpenInBackground;
-
+        
         /// <summary>
         /// Public API: Starts the Hot Reload server. Must be on the main thread
         /// </summary>
-        public static Task StartAsync()
-        {
+        public static Task StartAsync() {
             return StartAsync(
-                exposeServerToNetwork: HotReloadPrefs.ExposeServerToLocalNetwork,
-                allAssetChanges: HotReloadPrefs.AllAssetChanges,
+                exposeServerToNetwork: HotReloadPrefs.ExposeServerToLocalNetwork, 
+                allAssetChanges: HotReloadPrefs.AllAssetChanges, 
                 createNoWindow: HotReloadPrefs.DisableConsoleWindow
             );
         }
-
-        internal static async Task StartAsync(bool exposeServerToNetwork, bool allAssetChanges, bool createNoWindow, LoginData loginData = null)
-        {
+        
+        internal static async Task StartAsync(bool exposeServerToNetwork, bool allAssetChanges, bool createNoWindow, LoginData loginData = null) {
             await Prepare().ConfigureAwait(false);
             await ThreadUtility.SwitchToThreadPool();
             StartArgs args;
-            if (TryGetStartArgs(UnityHelper.DataPath, exposeServerToNetwork, allAssetChanges, createNoWindow, loginData, out args))
-            {
+            if (TryGetStartArgs(UnityHelper.DataPath, exposeServerToNetwork, allAssetChanges, createNoWindow, loginData, out args)) {
                 await controller.Start(args);
             }
         }
-
+        
         /// <summary>
         /// Public API: Stops the Hot Reload server
         /// </summary>
         /// <remarks>
         /// This is a no-op in case the server is not running
         /// </remarks>
-        public static Task StopAsync()
-        {
+        public static Task StopAsync() {
             return controller.Stop();
         }
-
-        class Config
-        {
+        
+        class Config {
 #pragma warning disable CS0649
             public bool useBuiltInProjectGeneration;
 #pragma warning restore CS0649
         }
-
-        static bool TryGetStartArgs(string dataPath, bool exposeServerToNetwork, bool allAssetChanges, bool createNoWindow, LoginData loginData, out StartArgs args)
-        {
+        
+        static bool TryGetStartArgs(string dataPath, bool exposeServerToNetwork, bool allAssetChanges, bool createNoWindow, LoginData loginData, out StartArgs args) {
             string serverDir;
-            if (!CliUtils.TryFindServerDir(out serverDir))
-            {
+            if(!CliUtils.TryFindServerDir(out serverDir)) {
                 Log.Warning($"Failed to start the Hot Reload Server. " +
                                  $"Unable to locate the 'Server' directory. " +
                                  $"Make sure the 'Server' directory is " +
@@ -82,14 +73,11 @@ namespace SingularityGroup.HotReload.Editor.Cli
                 args = null;
                 return false;
             }
-
+            
             Config config;
-            if (File.Exists(PackageConst.ConfigFileName))
-            {
+            if (File.Exists(PackageConst.ConfigFileName)) {
                 config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(PackageConst.ConfigFileName));
-            }
-            else
-            {
+            } else {
                 config = new Config();
             }
             var hotReloadTmpDir = CliUtils.GetHotReloadTempDir();
@@ -101,49 +89,38 @@ namespace SingularityGroup.HotReload.Editor.Cli
             var executableSourceDir = Path.Combine(serverDir, controller.PlatformName);
             var unityProjDir = Path.GetDirectoryName(dataPath);
             string slnPath;
-            if (config.useBuiltInProjectGeneration)
-            {
+            if (config.useBuiltInProjectGeneration) {
                 var info = new DirectoryInfo(Path.GetFullPath("."));
                 slnPath = Path.Combine(Path.GetFullPath("."), info.Name + ".sln");
-                if (!File.Exists(slnPath))
-                {
+                if (!File.Exists(slnPath)) {
                     Log.Warning($"Failed to start the Hot Reload Server. Cannot find solution file. Please disable \"useBuiltInProjectGeneration\" in settings to enable custom project generation.");
                     args = null;
                     return false;
                 }
                 Log.Info("Using default project generation. If you encounter any problem with Unity's default project generation consider disabling it to use custom project generation.");
-                try
-                {
+                try {
                     Directory.Delete(ProjectGeneration.ProjectGeneration.tempDir, true);
-                }
-                catch (Exception ex)
-                {
+                } catch(Exception ex) {
                     Log.Exception(ex);
                 }
-            }
-            else
-            {
+            } else {
                 slnPath = ProjectGeneration.ProjectGeneration.GetSolutionFilePath(dataPath);
             }
 
-            if (!File.Exists(slnPath))
-            {
+            if (!File.Exists(slnPath)) {
                 Log.Warning($"No .sln file found. Open any c# file to generate it so Hot Reload can work properly");
             }
-
+            
             var searchAssemblies = string.Join(";", CodePatcher.I.GetAssemblySearchPaths());
             var cliArguments = $@"-u ""{unityProjDir}"" -s ""{slnPath}"" -t ""{cliTempDir}"" -a ""{searchAssemblies}"" -ver ""{PackageConst.Version}"" -proc ""{Process.GetCurrentProcess().Id}"" -assets ""{allAssetChanges}""";
-            if (loginData != null)
-            {
+            if (loginData != null) {
                 cliArguments += $@" -email ""{loginData.email}"" -pass ""{loginData.password}""";
             }
-            if (exposeServerToNetwork)
-            {
+            if (exposeServerToNetwork) {
                 // server will listen on local network interface (default is localhost only)
                 cliArguments += " -e true";
             }
-            args = new StartArgs
-            {
+            args = new StartArgs {
                 hotreloadTempDir = hotReloadTmpDir,
                 cliTempDir = cliTempDir,
                 executableTargetDir = executableTargetDir,
@@ -154,37 +131,30 @@ namespace SingularityGroup.HotReload.Editor.Cli
             };
             return true;
         }
-
-        static async Task Prepare()
-        {
+        
+        static async Task Prepare() {
             await ThreadUtility.SwitchToMainThread();
-
+            
             var dataPath = UnityHelper.DataPath;
             await ProjectGeneration.ProjectGeneration.EnsureSlnAndCsprojFiles(dataPath);
             await PrepareBuildInfoAsync();
             PrepareSystemPathsFile();
         }
-
-        internal static async Task PrepareBuildInfoAsync()
-        {
+        
+        internal static async Task PrepareBuildInfoAsync() {
             await ThreadUtility.SwitchToMainThread();
             var buildInfoInput = await BuildInfoHelper.GetGenerateBuildInfoInput();
-            await Task.Run(() =>
-            {
-                try
-                {
+            await Task.Run(() => {
+                try {
                     var buildInfo = BuildInfoHelper.GenerateBuildInfoThreaded(buildInfoInput);
                     PrepareBuildInfo(buildInfo);
-                }
-                catch
-                {
+                } catch {
                     // ignore, we will warn when making a build
                 }
             });
         }
-
-        internal static void PrepareBuildInfo(BuildInfo buildInfo)
-        {
+        
+        internal static void PrepareBuildInfo(BuildInfo buildInfo) {
             // When starting server make sure it starts with correct player data state.
             // (this fixes issue where Unity is in background and not sending files state).
             // Always write player data because you can be on any build target and want to connect with a downloaded android build.
@@ -193,9 +163,8 @@ namespace SingularityGroup.HotReload.Editor.Cli
             Directory.CreateDirectory(cliTempDir);
             File.WriteAllText(Path.Combine(cliTempDir, "playerdata.json"), json);
         }
-
-        static void PrepareSystemPathsFile()
-        {
+        
+        static void PrepareSystemPathsFile() {
 #pragma warning disable CS0618 // obsolete since 2023
             var lvl = PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup);
 #pragma warning restore CS0618

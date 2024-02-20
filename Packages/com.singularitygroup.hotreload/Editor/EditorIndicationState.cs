@@ -1,14 +1,11 @@
-using SingularityGroup.HotReload.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SingularityGroup.HotReload.DTO;
 
-namespace SingularityGroup.HotReload.Editor
-{
-    internal static class EditorIndicationState
-    {
-        internal enum IndicationStatus
-        {
+namespace SingularityGroup.HotReload.Editor {
+    internal static class EditorIndicationState {
+        internal enum IndicationStatus {  
             Stopped,
             Started,
             Stopping,
@@ -49,12 +46,12 @@ namespace SingularityGroup.HotReload.Editor
             // red icon:
             { IndicationStatus.ActivationFailed, redIconPath },
         };
-
+        
         private static readonly IndicationStatus[] SpinnerIndications = IndicationIcon
             .Where(kvp => kvp.Value == Spinner.SpinnerIconPath)
             .Select(kvp => kvp.Key)
             .ToArray();
-
+        
         // NOTE: if you add longer text, make sure UI is wide enough for it
         public static readonly Dictionary<IndicationStatus, string> IndicationText = new Dictionary<IndicationStatus, string> {
             { IndicationStatus.FinishRegistration, "Finish Registration" },
@@ -77,47 +74,33 @@ namespace SingularityGroup.HotReload.Editor
         private static DateTime spinnerStartedAt;
         private static IndicationStatus latestStatus;
         private static bool SpinnerCompletedMinDuration => DateTime.UtcNow - spinnerStartedAt > TimeSpan.FromMilliseconds(MinSpinnerDuration);
-        private static IndicationStatus GetIndicationStatus()
-        {
+        private static IndicationStatus GetIndicationStatus() {
             var status = GetIndicationStatusCore();
             var newStatusIsSpinner = SpinnerIndications.Contains(status);
             var latestStatusIsSpinner = SpinnerIndications.Contains(latestStatus);
-            if (status == latestStatus)
-            {
+            if (status == latestStatus) {
                 return status;
-            }
-            else if (latestStatusIsSpinner)
-            {
-                if (newStatusIsSpinner)
-                {
+            } else if (latestStatusIsSpinner) {
+                if (newStatusIsSpinner) {
                     return status;
-                }
-                else if (SpinnerCompletedMinDuration)
-                {
+                } else if (SpinnerCompletedMinDuration) {
                     latestStatus = status;
                     return status;
-                }
-                else
-                {
+                } else {
                     return latestStatus;
                 }
-            }
-            else if (newStatusIsSpinner)
-            {
+            } else if (newStatusIsSpinner) {
                 spinnerStartedAt = DateTime.UtcNow;
                 latestStatus = status;
-                return status;
-            }
-            else
-            {
+                return status;    
+            } else {
                 spinnerStartedAt = DateTime.UtcNow;
                 latestStatus = IndicationStatus.Loading;
                 return status;
             }
         }
-
-        private static IndicationStatus GetIndicationStatusCore()
-        {
+        
+        private static IndicationStatus GetIndicationStatusCore() {
             if (RedeemLicenseHelper.I.RegistrationRequired)
                 return IndicationStatus.FinishRegistration;
             if (EditorCodePatcher.DownloadRequired && EditorCodePatcher.DownloadStarted || EditorCodePatcher.RequestingDownloadAndRun && !EditorCodePatcher.Starting && !EditorCodePatcher.Stopping)
@@ -136,54 +119,42 @@ namespace SingularityGroup.HotReload.Editor
                 return IndicationStatus.CompileErrors;
 
             // fallback on patch status
-            if (!EditorCodePatcher.Started && !EditorCodePatcher.Running)
-            {
+            if (!EditorCodePatcher.Started && !EditorCodePatcher.Running) {
                 return IndicationStatus.Stopped;
             }
-            switch (EditorCodePatcher.patchStatus)
-            {
+            switch (EditorCodePatcher.patchStatus) {
                 case PatchStatus.Idle:
-                    if (!EditorCodePatcher.Compiling && !EditorCodePatcher.firstPatchAttempted && !EditorCodePatcher.compileError)
-                    {
+                    if (!EditorCodePatcher.Compiling && !EditorCodePatcher.firstPatchAttempted && !EditorCodePatcher.compileError) {
                         return IndicationStatus.Started;
                     }
-                    if (EditorCodePatcher._applyingFailed)
-                    {
+                    if (EditorCodePatcher._applyingFailed) {
                         return IndicationStatus.Unsupported;
                     }
-                    if (EditorCodePatcher._appliedPartially)
-                    {
+                    if (EditorCodePatcher._appliedPartially) {
                         return IndicationStatus.PartiallySupported;
                     }
                     return IndicationStatus.Reloaded;
-                case PatchStatus.Patching: return IndicationStatus.Patching;
-                case PatchStatus.Unsupported: return IndicationStatus.Unsupported;
-                case PatchStatus.Compiling: return IndicationStatus.Compiling;
+                case PatchStatus.Patching:     return IndicationStatus.Patching;
+                case PatchStatus.Unsupported:  return IndicationStatus.Unsupported;
+                case PatchStatus.Compiling:    return IndicationStatus.Compiling;
                 case PatchStatus.CompileError: return IndicationStatus.CompileErrors;
                 case PatchStatus.None:
-                default: return IndicationStatus.Reloaded;
+                default:                       return IndicationStatus.Reloaded;
             }
         }
 
         internal static IndicationStatus CurrentIndicationStatus => GetIndicationStatus();
         internal static bool SpinnerActive => SpinnerIndications.Contains(CurrentIndicationStatus);
         internal static string IndicationIconPath => IndicationIcon[CurrentIndicationStatus];
-        internal static string IndicationStatusText
-        {
-            get
-            {
+        internal static string IndicationStatusText {
+            get {
                 var indicationStatus = CurrentIndicationStatus;
                 string txt;
-                if (indicationStatus == IndicationStatus.Starting && EditorCodePatcher.StartupProgress != null)
-                {
+                if (indicationStatus == IndicationStatus.Starting && EditorCodePatcher.StartupProgress != null) {
                     txt = EditorCodePatcher.StartupProgress.Item2;
-                }
-                else if (!IndicationText.TryGetValue(indicationStatus, out txt))
-                {
+                } else if (!IndicationText.TryGetValue(indicationStatus, out txt)) {
                     Log.Warning($"Indication text not found for status {indicationStatus}");
-                }
-                else
-                {
+                } else {
                     txt = IndicationText[indicationStatus];
                 }
                 return txt;

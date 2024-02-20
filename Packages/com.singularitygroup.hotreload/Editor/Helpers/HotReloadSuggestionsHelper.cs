@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
-namespace SingularityGroup.HotReload.Editor
-{
+namespace SingularityGroup.HotReload.Editor {
 
-    public enum HotReloadSuggestionKind
-    {
+    public enum HotReloadSuggestionKind {
         UnsupportedChanges,
         UnsupportedPackages,
         [Obsolete] SymbolicLinks,
@@ -20,74 +20,60 @@ namespace SingularityGroup.HotReload.Editor
         AutoRecompiledWhenPlaymodeStateChanges2022,
         MultidimensionalArrays,
     }
-
-    internal static class HotReloadSuggestionsHelper
-    {
-        internal static void SetSuggestionsShown(HotReloadSuggestionKind hotReloadSuggestionKind)
-        {
-            if (EditorPrefs.GetBool($"HotReloadWindow.SuggestionsShown.{hotReloadSuggestionKind}"))
-            {
+    
+	internal static class HotReloadSuggestionsHelper {
+        internal static void SetSuggestionsShown(HotReloadSuggestionKind hotReloadSuggestionKind) {
+            if (EditorPrefs.GetBool($"HotReloadWindow.SuggestionsShown.{hotReloadSuggestionKind}")) {
                 return;
             }
             EditorPrefs.SetBool($"HotReloadWindow.SuggestionsActive.{hotReloadSuggestionKind}", true);
             EditorPrefs.SetBool($"HotReloadWindow.SuggestionsShown.{hotReloadSuggestionKind}", true);
             AlertEntry entry;
-            if (suggestionMap.TryGetValue(hotReloadSuggestionKind, out entry) && !HotReloadTimelineHelper.Suggestions.Contains(entry))
-            {
+            if (suggestionMap.TryGetValue(hotReloadSuggestionKind, out entry) && !HotReloadTimelineHelper.Suggestions.Contains(entry)) {
                 HotReloadTimelineHelper.Suggestions.Insert(0, entry);
                 HotReloadState.ShowingRedDot = true;
             }
         }
-
-        internal static bool CheckSuggestionActive(HotReloadSuggestionKind hotReloadSuggestionKind)
-        {
+        
+        internal static bool CheckSuggestionActive(HotReloadSuggestionKind hotReloadSuggestionKind) {
             return EditorPrefs.GetBool($"HotReloadWindow.SuggestionsActive.{hotReloadSuggestionKind}");
         }
-
-        internal static void SetSuggestionInactive(HotReloadSuggestionKind hotReloadSuggestionKind)
-        {
+        
+        internal static void SetSuggestionInactive(HotReloadSuggestionKind hotReloadSuggestionKind) {
             EditorPrefs.SetBool($"HotReloadWindow.SuggestionsActive.{hotReloadSuggestionKind}", false);
             AlertEntry entry;
-            if (suggestionMap.TryGetValue(hotReloadSuggestionKind, out entry))
-            {
+            if (suggestionMap.TryGetValue(hotReloadSuggestionKind, out entry)) {
                 HotReloadTimelineHelper.Suggestions.Remove(entry);
             }
         }
-
-        internal static void InitSuggestions()
-        {
-            foreach (HotReloadSuggestionKind value in Enum.GetValues(typeof(HotReloadSuggestionKind)))
-            {
-                if (!CheckSuggestionActive(value))
-                {
+        
+        internal static void InitSuggestions() {
+            foreach (HotReloadSuggestionKind value in Enum.GetValues(typeof(HotReloadSuggestionKind))) {
+                if (!CheckSuggestionActive(value)) {
                     continue;
                 }
                 AlertEntry entry;
-                if (suggestionMap.TryGetValue(value, out entry) && !HotReloadTimelineHelper.Suggestions.Contains(entry))
-                {
+                if (suggestionMap.TryGetValue(value, out entry) && !HotReloadTimelineHelper.Suggestions.Contains(entry)) {
                     HotReloadTimelineHelper.Suggestions.Insert(0, entry);
                 }
             }
         }
-
-        internal static HotReloadSuggestionKind? FindSuggestionKind(AlertEntry targetEntry)
-        {
-            foreach (KeyValuePair<HotReloadSuggestionKind, AlertEntry> pair in suggestionMap)
-            {
-                if (pair.Value.Equals(targetEntry))
-                {
+        
+        internal static HotReloadSuggestionKind? FindSuggestionKind(AlertEntry targetEntry) {
+            foreach (KeyValuePair<HotReloadSuggestionKind, AlertEntry> pair in suggestionMap) {
+                if (pair.Value.Equals(targetEntry)) {
                     return pair.Key;
                 }
             }
             return null;
         }
-
+        
         internal static readonly OpenURLButton recompileTroubleshootingButton = new OpenURLButton("Documentation", Constants.RecompileTroubleshootingURL);
         internal static readonly OpenURLButton featuresDocumentationButton = new OpenURLButton("Documentation", Constants.FeaturesDocumentationURL);
         public static Dictionary<HotReloadSuggestionKind, AlertEntry> suggestionMap = new Dictionary<HotReloadSuggestionKind, AlertEntry> {
             { HotReloadSuggestionKind.UnityBestDevelopmentToolAward2023, new AlertEntry(
-                AlertType.Suggestion,
-                "Vote for the \"Best Development Tool\" Award!",
+                AlertType.Suggestion, 
+                "Vote for the \"Best Development Tool\" Award!", 
                 "Hot Reload was nominated for the \"Best Development Tool\" Award. Please consider voting. Thank you!",
                 actionData: () => {
                     GUILayout.Space(6f);
@@ -103,8 +89,8 @@ namespace SingularityGroup.HotReload.Editor
                 entryType: EntryType.Foldout
             )},
             { HotReloadSuggestionKind.UnsupportedChanges, new AlertEntry(
-                AlertType.Suggestion,
-                "Which changes does Hot Reload support?",
+                AlertType.Suggestion, 
+                "Which changes does Hot Reload support?", 
                 "Hot Reload supports most code changes, but there are some limitations. Generally, changes to the method definition and body are allowed. Non-method changes (like adding/editing classes and fields) are not supported. See the documentation for the list of current features and our current roadmap",
                 actionData: () => {
                     GUILayout.Space(10f);
@@ -117,7 +103,7 @@ namespace SingularityGroup.HotReload.Editor
                 entryType: EntryType.Foldout
             )},
             { HotReloadSuggestionKind.UnsupportedPackages, new AlertEntry(
-                AlertType.Suggestion,
+                AlertType.Suggestion, 
                 "Unsupported package detected",
                 "The following packages are only partially supported: ECS, Mirror, Fishnet, and Photon. Hot Reload will work in the project, but changes specific to those packages might not work. Contact us if these packages are a big part of your project",
                 iconType: AlertType.UnsupportedChange,
@@ -132,7 +118,7 @@ namespace SingularityGroup.HotReload.Editor
                 entryType: EntryType.Foldout
             )},
             { HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges, new AlertEntry(
-                AlertType.Suggestion,
+                AlertType.Suggestion, 
                 "Unity recompiles on enter/exit play mode?",
                 "If you have an issue with the Unity Editor recompiling when the Play Mode state changes, please consult the documentation, and don’t hesitate to reach out to us if you need assistance",
                 actionData: () => {
@@ -151,7 +137,7 @@ namespace SingularityGroup.HotReload.Editor
             )},
 #if UNITY_2022_1_OR_NEWER
             { HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges2022, new AlertEntry(
-                AlertType.Suggestion,
+                AlertType.Suggestion, 
                 "Unsupported setting detected",
                 "The 'Sprite Packer Mode' setting can cause unintended recompilations if set to 'Sprite Atlas V1 - Always Enabled'",
                 iconType: AlertType.UnsupportedChange,
@@ -167,7 +153,7 @@ namespace SingularityGroup.HotReload.Editor
                         if (GUILayout.Button(" Ignore suggestion ")) {
                             SetSuggestionInactive(HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges2022);
                         }
-
+                        
                         GUILayout.FlexibleSpace();
                     }
                 },
@@ -177,7 +163,7 @@ namespace SingularityGroup.HotReload.Editor
             )},
 #endif
             { HotReloadSuggestionKind.MultidimensionalArrays, new AlertEntry(
-                AlertType.Suggestion,
+                AlertType.Suggestion, 
                 "Multidimensional arrays are not supported. Use jagged arrays instead",
                 "Hot Reload doesn't support multidimensional ([,]) arrays. Jagged arrays ([][]) are a better alternative, and Microsoft recommends using them instead",
                 iconType: AlertType.UnsupportedChange,
@@ -194,7 +180,7 @@ namespace SingularityGroup.HotReload.Editor
                 entryType: EntryType.Foldout
             )},
         };
-
+        
         static ListRequest listRequest;
         static string[] unsupportedPackages = new[] {
             "com.unity.entities",
@@ -202,19 +188,15 @@ namespace SingularityGroup.HotReload.Editor
         };
         static List<string> unsupportedPackagesList;
         static DateTime lastPlaymodeChange;
-
-        public static void Init()
-        {
+        
+        public static void Init() {
             listRequest = Client.List(offlineMode: false, includeIndirectDependencies: true);
 
-            EditorApplication.playModeStateChanged += state =>
-            {
+            EditorApplication.playModeStateChanged += state => {
                 lastPlaymodeChange = DateTime.UtcNow;
             };
-            CompilationPipeline.compilationStarted += obj =>
-            {
-                if (DateTime.UtcNow - lastPlaymodeChange < TimeSpan.FromSeconds(1) && !HotReloadState.RecompiledUnsupportedChangesOnExitPlaymode)
-                {
+            CompilationPipeline.compilationStarted += obj => {
+                if (DateTime.UtcNow - lastPlaymodeChange < TimeSpan.FromSeconds(1) && !HotReloadState.RecompiledUnsupportedChangesOnExitPlaymode) {
                     SetSuggestionsShown(HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges);
                 }
                 HotReloadState.RecompiledUnsupportedChangesOnExitPlaymode = false;
@@ -222,36 +204,28 @@ namespace SingularityGroup.HotReload.Editor
             InitSuggestions();
         }
 
-        public static void Check()
-        {
-            if (listRequest.IsCompleted && unsupportedPackagesList == null)
-            {
+        public static void Check() {
+            if (listRequest.IsCompleted && unsupportedPackagesList == null) {
                 unsupportedPackagesList = new List<string>();
                 var packages = listRequest.Result;
-                foreach (var packageInfo in packages)
-                {
-                    if (unsupportedPackages.Contains(packageInfo.name))
-                    {
+                foreach (var packageInfo in packages) {
+                    if (unsupportedPackages.Contains(packageInfo.name)) {
                         unsupportedPackagesList.Add(packageInfo.name);
                     }
                 }
-                if (unsupportedPackagesList.Count > 0)
-                {
+                if (unsupportedPackagesList.Count > 0) {
                     SetSuggestionsShown(HotReloadSuggestionKind.UnsupportedPackages);
                 }
             }
 
 #if UNITY_2022_1_OR_NEWER
-            if (EditorSettings.spritePackerMode == SpritePackerMode.AlwaysOnAtlas)
-            {
+            if (EditorSettings.spritePackerMode == SpritePackerMode.AlwaysOnAtlas) {
                 SetSuggestionsShown(HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges2022);
-            }
-            else if (CheckSuggestionActive(HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges2022))
-            {
+            } else if (CheckSuggestionActive(HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges2022)) { 
                 SetSuggestionInactive(HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges2022);
                 EditorPrefs.SetBool($"HotReloadWindow.SuggestionsShown.{HotReloadSuggestionKind.AutoRecompiledWhenPlaymodeStateChanges2022}", false);
             }
 #endif
         }
-    }
+	}
 }

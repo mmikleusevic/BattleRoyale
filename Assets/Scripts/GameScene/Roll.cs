@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -73,14 +72,14 @@ public class Roll : MonoBehaviour, IRoll
             float rotationTimer = 0.0f;
 
             while (spinTimer > 0)
-            {               
+            {
                 spinTimer -= Time.deltaTime;
                 rotationTimer += Time.deltaTime;
 
                 Quaternion targetRotation = dice[i].transform.rotation * Quaternion.Euler(randomAxis * rotationSpeed * Time.deltaTime);
                 dice[i].transform.rotation = Quaternion.RotateTowards(dice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-                if(rotationTimer >= 0.25f)
+                if (rotationTimer >= 0.25f)
                 {
                     randomAxis = new Vector3(Random.value, Random.value, Random.value).normalized;
                     rotationTimer = 0.0f;
@@ -114,15 +113,19 @@ public class Roll : MonoBehaviour, IRoll
                 yield return null;
             }
 
-            if (RollType.rollTypeSelf == RollTypeEnum.Disadvantage && result < min)
+            if (result < min)
             {
                 min = result;
-                resultSum = min;
             }
         }
 
-        rollResults.SetRollResults(resultSum, RollType.rollTypeSelf);
-        SendToMessageUI(resultSum);          
+        if (RollType.rollType == RollTypeEnum.Disadvantage)
+        {
+            resultSum = min;
+        }
+
+        rollResults.SetRollResults(resultSum, RollType.rollType);
+        SendToMessageUI(resultSum);
     }
 
     private void SendToMessageUI(int result)

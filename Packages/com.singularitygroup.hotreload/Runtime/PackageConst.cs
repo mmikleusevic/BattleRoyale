@@ -1,13 +1,13 @@
 #if ENABLE_MONO && (DEVELOPMENT_BUILD || UNITY_EDITOR)
-namespace SingularityGroup.HotReload
-{
-    internal static class PackageConst
-    {
+using UnityEngine;
+
+namespace SingularityGroup.HotReload {
+    internal static class PackageConst {
         //CI changes this property to 'true' for asset store builds.
         //Don't touch unless you know what you are doing
         public static bool IsAssetStoreBuild => true;
 
-
+        
         public const string Version = "1.12.9";
         // Never higher than Version
         // Used for the download

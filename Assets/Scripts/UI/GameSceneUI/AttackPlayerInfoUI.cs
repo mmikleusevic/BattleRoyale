@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AttackPlayerInfoUI : MonoBehaviour
 {
-    public static event Action<OnAttackPlayerEventArgs> OnAttackPlayer;
-
-    public class OnAttackPlayerEventArgs : EventArgs
-    {
-        public Player player;
-        public string message;
-    }
+    public static event Action<NetworkObjectReference, NetworkObjectReference, string> OnAttackPlayer;
 
     private Player player;
 
@@ -28,26 +22,26 @@ public class AttackPlayerInfoUI : MonoBehaviour
         Hide();
     }
 
-    public void Instantiate(Player player)
+    public void Instantiate(Player enemyPlayer)
     {
-        this.player = player;
+        this.player = enemyPlayer;
 
-        backgroundImage.color = player.HexPlayerColor.HEXToColor();
-        playerNameText.text = player.PlayerName;
-        pointsText.text = "Points: " + player.Points.ToString();
+        backgroundImage.color = enemyPlayer.HexPlayerColor.HEXToColor();
+        playerNameText.text = enemyPlayer.PlayerName;
+        pointsText.text = "Points: " + enemyPlayer.Points.ToString();
 
         equippedCardsText.text += '\n';
 
-        if(player.EquippedCards.Count == 0)
+        if (enemyPlayer.EquippedCards.Count == 0)
         {
             equippedCardsText.text += "None";
         }
 
-        foreach (Card card in player.EquippedCards)
+        foreach (Card card in enemyPlayer.EquippedCards)
         {
             equippedCardsText.text += card.Name;
 
-            if(card != player.EquippedCards.LastOrDefault())
+            if (card != enemyPlayer.EquippedCards.LastOrDefault())
             {
                 equippedCardsText.text += '\n';
             }
@@ -55,13 +49,11 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
         attackPlayerButton.onClick.AddListener(() =>
         {
-            RollType.SetRollType(Player.LocalInstance, player);
-
-            OnAttackPlayer?.Invoke(new OnAttackPlayerEventArgs
-            {
-                player = this.player,
-                message = CreateMessageForMessageUI()
-            });
+            OnAttackPlayer?.Invoke(
+                Player.LocalInstance.NetworkObject,
+                enemyPlayer.NetworkObject,
+                CreateMessageForMessageUI()
+            );
         });
 
         Show();

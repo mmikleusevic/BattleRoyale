@@ -3,10 +3,8 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace SingularityGroup.HotReload
-{
-    class AppCallbackListener : MonoBehaviour
-    {
+namespace SingularityGroup.HotReload {
+    class AppCallbackListener : MonoBehaviour {
         /// <summary>
         /// Reliable on Android and in the editor.
         /// </summary>
@@ -15,46 +13,41 @@ namespace SingularityGroup.HotReload
         /// if the app has some background modes enabled in PlayerSettings -Troy.
         /// </remarks>
         public static event Action<bool> onApplicationPause;
-
+        
         /// <summary>
         /// Reliable on Android, iOS and in the editor.
         /// </summary>
         public static event Action<bool> onApplicationFocus;
-
+        
         static AppCallbackListener instance;
         public static AppCallbackListener I => instance;
-
+        
         // Must be called early from Unity main thread (before any usages of the singleton I).
-        public static AppCallbackListener Init()
-        {
-            if (instance) return instance;
-            var go = new GameObject("AppCallbackListener");
-            go.hideFlags |= HideFlags.HideInHierarchy;
-            DontDestroyOnLoad(go);
-            return instance = go.AddComponent<AppCallbackListener>();
+        public static AppCallbackListener Init() {
+             if(instance) return instance;
+             var go = new GameObject("AppCallbackListener");
+             go.hideFlags |= HideFlags.HideInHierarchy;
+             DontDestroyOnLoad(go);
+             return instance = go.AddComponent<AppCallbackListener>();
         }
-
+        
         public bool Paused { get; private set; } = false;
 
-        public void DelayedQuit(float seconds)
-        {
+        public void DelayedQuit(float seconds) {
             StartCoroutine(delayedQuitRoutine(seconds));
         }
-
-        IEnumerator delayedQuitRoutine(float seconds)
-        {
+        
+        IEnumerator delayedQuitRoutine(float seconds) {
             yield return new WaitForSeconds(seconds);
             Application.Quit();
         }
-
-        void OnApplicationPause(bool paused)
-        {
+        
+        void OnApplicationPause(bool paused) {
             Paused = paused;
             onApplicationPause?.Invoke(paused);
         }
-
-        void OnApplicationFocus(bool playing)
-        {
+        
+        void OnApplicationFocus(bool playing) {
             onApplicationFocus?.Invoke(playing);
         }
     }

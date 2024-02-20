@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
+using System.Linq;
+using System.IO;
 using Debug = UnityEngine.Debug;
 
 namespace ParrelSync
@@ -114,6 +114,24 @@ namespace ParrelSync
             ClonesManager.LinkFolders(sourceProject.projectSettingsPath, cloneProject.projectSettingsPath);
             ClonesManager.LinkFolders(sourceProject.autoBuildPath, cloneProject.autoBuildPath);
             ClonesManager.LinkFolders(sourceProject.localPackages, cloneProject.localPackages);
+            
+            //Optional Link Folders
+            var optionalLinkPaths = Preferences.OptionalSymbolicLinkFolders.GetStoredValue();
+            var projectSettings = ParrelSyncProjectSettings.GetSerializedSettings();
+            var projectSettingsProperty = projectSettings.FindProperty("m_OptionalSymbolicLinkFolders");
+            if (projectSettingsProperty is { isArray: true, arrayElementType: "string" })
+            {
+                for (var i = 0; i < projectSettingsProperty.arraySize; ++i)
+                {
+                    optionalLinkPaths.Add(projectSettingsProperty.GetArrayElementAtIndex(i).stringValue);
+                }
+            }
+            foreach (var path in optionalLinkPaths)
+            {
+                var sourceOptionalPath = sourceProjectPath + path;
+                var cloneOptionalPath = cloneProjectPath + path;
+                LinkFolders(sourceOptionalPath, cloneOptionalPath);
+            }
 
             ClonesManager.RegisterClone(cloneProject);
 
@@ -333,7 +351,7 @@ namespace ParrelSync
         {
             sourcePath = sourcePath.Replace(" ", "\\ ");
             destinationPath = destinationPath.Replace(" ", "\\ ");
-            var command = string.Format("ln -s {0} {1}", sourcePath, destinationPath);
+            var command = string.Format("ln -s {0} {1}", sourcePath, destinationPath);           
 
             Debug.Log("Linux Symlink " + command);
 
@@ -555,6 +573,12 @@ namespace ParrelSync
             /// Copy all files from the source.
             foreach (FileInfo file in source.GetFiles())
             {
+                // Ensure file exists before continuing.
+                if (!file.Exists)
+                {
+                    continue;
+                }
+
                 try
                 {
                     file.CopyTo(Path.Combine(destination.ToString(), file.Name), true);
@@ -600,7 +624,7 @@ namespace ParrelSync
                 "Scanning '" + directory.FullName + "'...", 0f);
 
             /// Calculate size of all files in directory.
-            long filesSize = directory.GetFiles().Sum((FileInfo file) => file.Length);
+            long filesSize = directory.GetFiles().Sum((FileInfo file) => file.Exists ? file.Length : 0);
 
             /// Calculate size of all nested directories.
             long directoriesSize = 0;

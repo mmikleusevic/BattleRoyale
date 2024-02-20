@@ -1,9 +1,7 @@
 using UnityEditor;
 
-namespace SingularityGroup.HotReload.Editor
-{
-    public interface IOption
-    {
+namespace SingularityGroup.HotReload.Editor {
+    public interface IOption {
         string ShortSummary { get; }
         string Summary { get; }
 
@@ -30,8 +28,7 @@ namespace SingularityGroup.HotReload.Editor
     /// <remarks>
     /// These options are intended to be shared with collaborators and used by Unity Player builds.
     /// </remarks>
-    public interface ISerializedProjectOption
-    {
+    public interface ISerializedProjectOption {
         string ObjectPropertyName { get; }
     }
 }

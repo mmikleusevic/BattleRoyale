@@ -46,7 +46,7 @@ public class Player : NetworkBehaviour
         UnequippedCards = new List<Card>();
 
         Movement = defaultMovement;
-        ActionPoints = defaultActionPoints;      
+        ActionPoints = defaultActionPoints;
     }
 
     public override void OnNetworkSpawn()
@@ -171,6 +171,15 @@ public class Player : NetworkBehaviour
         StopMoving();
     }
 
+    public static Player GetPlayerFromNetworkReference(NetworkObjectReference networkObjectReference)
+    {
+        networkObjectReference.TryGet(out NetworkObject networkObject);
+
+        if (networkObject == null) return null;
+
+        return networkObject.GetComponent<Player>();
+    }
+
     private void Move()
     {
         playerAnimator.MoveAnimation();
@@ -209,5 +218,5 @@ public class Player : NetworkBehaviour
         Movement = defaultMovement;
 
         OnPlayerTurnSet?.Invoke();
-    } 
+    }
 }

@@ -1,5 +1,3 @@
-using Unity.Netcode;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class ThreeDiceRollUI : MonoBehaviour

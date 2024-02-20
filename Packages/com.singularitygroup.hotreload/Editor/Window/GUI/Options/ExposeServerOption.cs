@@ -1,61 +1,48 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SingularityGroup.HotReload.Editor.Cli;
 using UnityEditor;
 
-namespace SingularityGroup.HotReload.Editor
-{
-    internal sealed class ExposeServerOption : ComputerOptionBase
-    {
+namespace SingularityGroup.HotReload.Editor {
+    internal sealed class ExposeServerOption : ComputerOptionBase {
 
         public override string ShortSummary => "Allow Devices to Connect";
         public override string Summary => "Allow Devices to Connect (WiFi)";
 
-        public override void InnerOnGUI()
-        {
+        public override void InnerOnGUI() {
             string description;
-            if (GetValue())
-            {
+            if (GetValue()) {
                 description = "The HotReload server is reachable from devices on the same Wifi network";
-            }
-            else
-            {
+            } else {
                 description = "The HotReload server is available to your computer only. Other devices cannot connect to it.";
             }
             EditorGUILayout.LabelField(description, HotReloadWindowStyles.WrapStyle);
         }
 
-        public override bool GetValue()
-        {
+        public override bool GetValue() {
             return HotReloadPrefs.ExposeServerToLocalNetwork;
         }
 
-        public override void SetValue(SerializedObject so, bool val)
-        {
+        public override void SetValue(SerializedObject so, bool val) {
             // AllowAndroidAppToMakeHttpRequestsOption
-            if (val == HotReloadPrefs.ExposeServerToLocalNetwork)
-            {
+            if (val == HotReloadPrefs.ExposeServerToLocalNetwork) {
                 return;
             }
 
             HotReloadPrefs.ExposeServerToLocalNetwork = val;
-            if (val)
-            {
+            if (val) {
                 // they allowed this one for mobile builds, so now we allow everything else needed for player build to work with HR
                 new AllowAndroidAppToMakeHttpRequestsOption().SetValue(so, true);
             }
-            RunTask(() =>
-            {
-                RunOnMainThreadSync(() =>
-                {
+            RunTask(() => {
+                RunOnMainThreadSync(() => {
                     var isRunningResult = ServerHealthCheck.I.IsServerHealthy;
-                    if (isRunningResult)
-                    {
+                    if (isRunningResult) {
                         var restartServer = EditorUtility.DisplayDialog("Hot Reload",
                             $"When changing '{Summary}', the Hot Reload server must be restarted for this to take effect." +
                             "\nDo you want to restart it now?",
                             "Restart server", "Don't restart");
-                        if (restartServer)
-                        {
+                        if (restartServer) {
                             CodePatcher.I.ClearPatchedMethods();
                             EditorCodePatcher.RestartCodePatcher().Forget();
                         }
@@ -64,42 +51,31 @@ namespace SingularityGroup.HotReload.Editor
             });
         }
 
-        void RunTask(Action action)
-        {
+        void RunTask(Action action) {
             var token = HotReloadWindow.Current.cancelToken;
-            Task.Run(() =>
-            {
+            Task.Run(() => {
                 if (token.IsCancellationRequested) return;
-                try
-                {
+                try {
                     action();
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     ThreadUtility.LogException(ex, token);
                 }
             }, token);
         }
-
-        void RunTask(Func<Task> action)
-        {
+        
+        void RunTask(Func<Task> action) {
             var token = HotReloadWindow.Current.cancelToken;
-            Task.Run(async () =>
-            {
+            Task.Run(async () => {
                 if (token.IsCancellationRequested) return;
-                try
-                {
+                try {
                     await action();
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     ThreadUtility.LogException(ex, token);
                 }
             }, token);
         }
 
-        void RunOnMainThreadSync(Action action)
-        {
+        void RunOnMainThreadSync(Action action) {
             ThreadUtility.RunOnMainThread(action, HotReloadWindow.Current.cancelToken);
         }
     }

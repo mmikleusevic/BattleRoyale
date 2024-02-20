@@ -8,7 +8,10 @@ using UnityEngine;
 
 public class RollResults : NetworkBehaviour, IRollResults
 {
+    public static event EventHandler OnPlayerBattleRoll;
+    public static event EventHandler OnPlayerBattleRollDisadvantage;
     public static event EventHandler OnReRoll;
+    public static event EventHandler OnBattlePrepared;
     public static event EventHandler<OnInitiativeRollOverEventArgs> OnInitiativeRollOver;
     public static event EventHandler<OnBattleRollOverEventArgs> OnBattleRollOver;
     public static event EventHandler<string> OnCardRollOver;
@@ -33,6 +36,11 @@ public class RollResults : NetworkBehaviour, IRollResults
     private List<List<ulong>> clientsToReRollList;
     private List<ulong> finalOrder;
 
+    private void Awake()
+    {
+        AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayerServerRpc;
+    }
+
     private void Start()
     {
         finalOrder = new List<ulong>();
@@ -47,6 +55,13 @@ public class RollResults : NetworkBehaviour, IRollResults
         clientsToReRollList = new List<List<ulong>>();
 
         SetClientIdToDictionary();
+    }
+
+    public override void OnDestroy()
+    {
+        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayerServerRpc;
+
+        base.OnDestroy();
     }
 
     public void SetRollResults(int result, RollTypeEnum rollType)
@@ -66,6 +81,69 @@ public class RollResults : NetworkBehaviour, IRollResults
                 break;
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AttackPlayerInfoUI_OnAttackPlayerServerRpc(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    {
+        Player player1 = Player.GetPlayerFromNetworkReference(arg1);
+        Player player2 = Player.GetPlayerFromNetworkReference(arg2);
+
+        SetPlayerBattle(player1, player2);
+    }
+
+    private void SetPlayerBattle(Player player, Player enemyPlayer)
+    {
+        ClientRpcParams clientRpcParamsPlayer1 = new ClientRpcParams()
+        {
+            Send = new ClientRpcSendParams()
+            {
+                TargetClientIds = new[] { player.ClientId.Value },
+            }
+        };
+
+        ClientRpcParams clientRpcParamsPlayer2 = new ClientRpcParams()
+        {
+            Send = new ClientRpcSendParams()
+            {
+                TargetClientIds = new[] { enemyPlayer.ClientId.Value },
+            }
+        };
+
+        if (player.EquippedCards.Count > 0 && enemyPlayer.EquippedCards.Count > 0 || player.EquippedCards.Count == 0 && enemyPlayer.EquippedCards.Count == 0)
+        {
+            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer1);
+            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer2);
+        }
+        else if (player.EquippedCards.Count == 0 && enemyPlayer.EquippedCards.Count > 0)
+        {
+            SetRollTypeForClientClientRpc(RollTypeEnum.Disadvantage, clientRpcParamsPlayer1);
+            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer2);
+        }
+        else
+        {
+            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer1);
+            SetRollTypeForClientClientRpc(RollTypeEnum.Disadvantage, clientRpcParamsPlayer2);
+        }
+
+        clientRolled[player.ClientId.Value] = false;
+        clientRolled[enemyPlayer.ClientId.Value] = false;
+    }
+
+    [ClientRpc]
+    private void SetRollTypeForClientClientRpc(RollTypeEnum rollType, ClientRpcParams clientRpcParams = default)
+    {
+        RollType.rollType = rollType;
+
+        if (rollType == RollTypeEnum.PlayerAttack)
+        {
+            OnPlayerBattleRoll?.Invoke(this, EventArgs.Empty);
+        }
+        else if (rollType == RollTypeEnum.Disadvantage)
+        {
+            OnPlayerBattleRollDisadvantage?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
 
     [ServerRpc(RequireOwnership = false)]
     private void SetInitiativeResultServerRpc(int result, ServerRpcParams serverRpcParams = default)

@@ -94,9 +94,9 @@ public class MessageUI : NetworkBehaviour
         SendMessageToEveryoneExceptMeServerRpc(e);
     }
 
-    private void AttackPlayerInfoUI_OnAttackPlayer(AttackPlayerInfoUI.OnAttackPlayerEventArgs obj)
+    private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
-        SendMessageToEveryoneServerRpc(obj.message);
+        SendMessageToEveryoneServerRpc(arg3);
     }
 
 

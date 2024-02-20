@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using SingularityGroup.HotReload;
 using SingularityGroup.HotReload.Editor.Util;
 using SingularityGroup.HotReload.Newtonsoft.Json;
 using UnityEditor;
@@ -19,26 +20,22 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 using System.Reflection;
 #endif
 
-namespace SingularityGroup.HotReload.Editor.ProjectGeneration
-{
-    class ProjectGeneration
-    {
-        private enum ScriptingLanguage
-        {
+namespace SingularityGroup.HotReload.Editor.ProjectGeneration {
+    class ProjectGeneration {
+        private enum ScriptingLanguage {
             None,
             CSharp
         }
 
         [Serializable]
-        class Config
-        {
+        class Config {
             public string projectExclusionRegex;
             public HashSet<string> projectBlacklist;
             public HashSet<string> polyfillSourceFiles;
             public bool excludeAllAnalyzers;
             public bool useBuiltInProjectGeneration;
         }
-
+        
         public static readonly string MSBuildNamespaceUri = "http://schemas.microsoft.com/developer/msbuild/2003";
 
         /// <summary>
@@ -118,35 +115,29 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
         public static string GetUnityProjectDirectory(string dataPath) => new DirectoryInfo(dataPath).Parent.FullName;
         public static string GetSolutionFilePath(string dataPath) => Path.Combine(tempDir, Path.GetFileName(GetUnityProjectDirectory(dataPath)) + ".sln");
 
-        public static Task GenerateSlnAndCsprojFiles(string dataPath)
-        {
-            if (!IsSyncing)
-            {
+        public static Task GenerateSlnAndCsprojFiles(string dataPath) {
+            if (!IsSyncing) {
                 return GenerateAsync(dataPath);
             }
             return Task.CompletedTask;
         }
 
-        public static Task EnsureSlnAndCsprojFiles(string dataPath)
-        {
-            if (File.Exists(GetSolutionFilePath(dataPath)))
-            {
+        public static Task EnsureSlnAndCsprojFiles(string dataPath) {
+            if (File.Exists(GetSolutionFilePath(dataPath))) {
                 return Task.CompletedTask;
             }
 
             return GenerateAsync(dataPath);
         }
 
-        private static Task GenerateAsync(string dataPath)
-        {
+        private static Task GenerateAsync(string dataPath) {
             Directory.CreateDirectory(tempDir);
             var gen = new ProjectGeneration(tempDir, GetUnityProjectDirectory(dataPath));
             return gen.Sync();
         }
 
 
-        public ProjectGeneration(string solutionDirectory, string unityProjectDirectory)
-        {
+        public ProjectGeneration(string solutionDirectory, string unityProjectDirectory) {
             m_ProjectDirectory = unityProjectDirectory;
             m_SolutionDirectory = solutionDirectory;
             m_ProjectName = Path.GetFileName(unityProjectDirectory);
@@ -154,19 +145,16 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             m_GUIDGenerator = new GUIDProvider();
         }
 
-        public async Task Sync()
-        {
+        public async Task Sync() {
             await ThreadUtility.SwitchToThreadPool();
             var config = LoadConfig();
-            if (config.useBuiltInProjectGeneration)
-            {
+            if (config.useBuiltInProjectGeneration) {
                 return;
             }
-
+            
             await ThreadUtility.SwitchToMainThread();
             await gate.WaitAsync();
-            try
-            {
+            try {
                 //Cache all data that is accessed via unity API on the unity main thread.
                 m_AllAssetPaths = AssetDatabase.GetAllAssetPaths();
                 m_ProjectSupportedExtensions = EditorSettings.projectGenerationUserExtensions;
@@ -187,41 +175,32 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
                     BuildPostProcessors()
                 );
                 await GenerateAndWriteSolutionAndProjects(config);
-            }
-            finally
-            {
+            } finally {
                 gate.Release();
             }
         }
 
-        private Config LoadConfig()
-        {
-            var configPath = Path.Combine(m_ProjectDirectory, PackageConst.ConfigFileName);
+        private Config LoadConfig() {
+            var configPath = Path.Combine(m_ProjectDirectory, PackageConst.ConfigFileName); 
             Config config;
-            if (File.Exists(configPath))
-            {
+            if(File.Exists(configPath)) {
                 config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configPath));
-            }
-            else
-            {
+            } else {
                 config = new Config();
             }
             return config;
         }
 
-        private bool ShouldFileBePartOfSolution(string file)
-        {
+        private bool ShouldFileBePartOfSolution(string file) {
             // Exclude files coming from packages except if they are internalized.
-            if (IsInternalizedPackagePath(file))
-            {
+            if (IsInternalizedPackagePath(file)) {
                 return false;
             }
 
             return HasValidExtension(file);
         }
 
-        public bool HasValidExtension(string file)
-        {
+        public bool HasValidExtension(string file) {
             var extension = Path.GetExtension(file);
 
             // Dll's are not scripts but still need to be included..
@@ -231,53 +210,48 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return IsSupportedExtension(extension);
         }
 
-        private bool IsSupportedExtension(string extension)
-        {
+        private bool IsSupportedExtension(string extension) {
             extension = extension.TrimStart('.');
             return k_BuiltinSupportedExtensions.ContainsKey(extension) || m_ProjectSupportedExtensions.Contains(extension);
         }
 
-        async Task GenerateAndWriteSolutionAndProjects(Config config)
-        {
+        async Task GenerateAndWriteSolutionAndProjects(Config config) {
             await ThreadUtility.SwitchToThreadPool();
-
+            
             var projectExclusionRegex = config.projectExclusionRegex != null ? new Regex(config.projectExclusionRegex, RegexOptions.Compiled | RegexOptions.Singleline) : null;
             var projectBlacklist = config.projectBlacklist ?? new HashSet<string>();
             var polyfillSourceFiles = config.polyfillSourceFiles ?? new HashSet<string>();
             var filteredProjects = new HashSet<string>();
             var runtimeDependenciesBuilder = new List<string>();
             runtimeDependenciesBuilder.Add(typeof(HarmonyLib.DetourApi).Assembly.Location);
-#if UNITY_2019_4_OR_NEWER
-            runtimeDependenciesBuilder.Add(typeof(Helper2019).Assembly.Location);
+#           if UNITY_2019_4_OR_NEWER
+                runtimeDependenciesBuilder.Add(typeof(Helper2019).Assembly.Location);
 #endif
-#if UNITY_2020_3_OR_NEWER
-            runtimeDependenciesBuilder.Add(typeof(Helper2020).Assembly.Location);
+#           if UNITY_2020_3_OR_NEWER
+                runtimeDependenciesBuilder.Add(typeof(Helper2020).Assembly.Location);
 #endif
-#if UNITY_2022_2_OR_NEWER
-            runtimeDependenciesBuilder.Add(typeof(Helper2022).Assembly.Location);
+#           if UNITY_2022_2_OR_NEWER
+                runtimeDependenciesBuilder.Add(typeof(Helper2022).Assembly.Location);
 #endif
             var runtimeDependencies = runtimeDependenciesBuilder.ToArray();
-
+            
             // Only synchronize islands that have associated source files and ones that we actually want in the project.
             // This also filters out DLLs coming from .asmdef files in packages.
             var assemblies = GetAssemblies(ShouldFileBePartOfSolution).ToArray();
             var projectParts = new List<ProjectPart>();
-            foreach (var assembly in assemblies)
-            {
-                if (projectExclusionRegex != null && projectExclusionRegex.IsMatch(assembly.name))
-                {
+            foreach (var assembly in assemblies) {
+                if(projectExclusionRegex != null && projectExclusionRegex.IsMatch(assembly.name)) {
                     filteredProjects.Add(assembly.name);
                     continue;
                 }
                 var part = new ProjectPart(assembly.name, assembly, "", m_FallbackRootNamespace, polyfillSourceFiles);
                 string projectPath;
-#if (UNITY_2021_3_OR_NEWER)
-                projectPath = Path.GetRelativePath(m_ProjectDirectory, ProjectFile(part)).Replace('\\', '/');
+#               if (UNITY_2021_3_OR_NEWER)
+                    projectPath = Path.GetRelativePath(m_ProjectDirectory, ProjectFile(part)).Replace('\\', '/');
 #               else
                     projectPath = ProjectFile(part).Replace('\\', '/').Replace(m_ProjectDirectory.Replace('\\', '/'), "");
 #endif
-                if (projectBlacklist.Contains(projectPath))
-                {
+                if(projectBlacklist.Contains(projectPath)) {
                     filteredProjects.Add(assembly.name);
                     continue;
                 }
@@ -288,53 +262,41 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
 
             await ThreadUtility.SwitchToMainThread();
             var responseFiles = new List<ResponseFileData>[projectParts.Count];
-            for (var i = 0; i < projectParts.Count; i++)
-            {
+            for (var i = 0; i < projectParts.Count; i++) {
                 responseFiles[i] = projectParts[i].ParseResponseFileData(m_ProjectDirectory).ToList();
             }
-
+            
             await ThreadUtility.SwitchToThreadPool();
-            for (var i = 0; i < projectParts.Count; i++)
-            {
+            for (var i = 0; i < projectParts.Count; i++) {
                 SyncProject(projectParts[i], responseFiles[i], filteredProjects, runtimeDependencies, config);
             }
 
-            foreach (var pp in m_PostProcessors)
-            {
-                try
-                {
+            foreach (var pp in m_PostProcessors) {
+                try {
                     pp.OnGeneratedCSProjectFilesThreaded();
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Log.Warning("Post processor '{0}' threw exception when calling OnGeneratedCSProjectFilesThreaded:\n{1}", pp, ex);
                 }
             }
         }
 
         private void SyncProject(
-            ProjectPart island,
+            ProjectPart island, 
             List<ResponseFileData> responseFileData,
-            HashSet<string> filteredProjects,
+            HashSet<string> filteredProjects, 
             string[] runtimeDependencies,
-            Config config)
-        {
-
+            Config config) {
+            
             SyncProjectFileIfNotChanged(
                 ProjectFile(island),
                 ProjectText(island, responseFileData, filteredProjects, runtimeDependencies, config));
         }
 
-        private void SyncProjectFileIfNotChanged(string path, string newContents)
-        {
-            foreach (var pp in m_PostProcessors)
-            {
-                try
-                {
+        private void SyncProjectFileIfNotChanged(string path, string newContents) {
+            foreach (var pp in m_PostProcessors) {
+                try {
                     newContents = pp.OnGeneratedCSProjectThreaded(path, newContents);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Log.Warning("Post processor '{0}' failed when processing project '{1}':\n{2}", pp, path, ex);
                 }
             }
@@ -342,16 +304,11 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             SyncFileIfNotChanged(path, newContents);
         }
 
-        private void SyncSolutionFileIfNotChanged(string path, string newContents)
-        {
-            foreach (var pp in m_PostProcessors)
-            {
-                try
-                {
+        private void SyncSolutionFileIfNotChanged(string path, string newContents) {
+            foreach (var pp in m_PostProcessors) {
+                try {
                     newContents = pp.OnGeneratedSlnSolutionThreaded(path, newContents);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Log.Warning("Post processor '{0}' failed when processing solution '{1}':\n{2}", pp, path, ex);
                 }
             }
@@ -360,29 +317,22 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
         }
 
 
-        private void SyncFileIfNotChanged(string path, string newContents)
-        {
-            try
-            {
-                if (m_FileIOProvider.Exists(path) && newContents == m_FileIOProvider.ReadAllText(path))
-                {
+        private void SyncFileIfNotChanged(string path, string newContents) {
+            try {
+                if (m_FileIOProvider.Exists(path) && newContents == m_FileIOProvider.ReadAllText(path)) {
                     return;
                 }
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 Log.Exception(exception);
             }
 
             m_FileIOProvider.WriteAllText(path, newContents);
         }
 
-        private string ProjectText(ProjectPart assembly, List<ResponseFileData> responseFilesData, HashSet<string> filteredProjects, string[] runtimeDependencies, Config config)
-        {
+        private string ProjectText(ProjectPart assembly, List<ResponseFileData> responseFilesData, HashSet<string> filteredProjects, string[] runtimeDependencies, Config config) {
             var projectBuilder = new StringBuilder(ProjectHeader(assembly, responseFilesData, config));
 
-            foreach (var file in assembly.SourceFiles)
-            {
+            foreach (var file in assembly.SourceFiles) {
                 var fullFile = m_FileIOProvider.EscapedRelativePathFor(file, m_SolutionDirectory);
                 projectBuilder.Append("     <Compile Include=\"").Append(fullFile).Append("\" />").Append(Environment.NewLine);
             }
@@ -397,22 +347,18 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
                     .Union(responseRefs)
                     .Union(internalAssemblyReferences).ToArray();
 
-            foreach (var reference in allReferences)
-            {
+            foreach (var reference in allReferences) {
                 var fullReference = Path.IsPathRooted(reference) ? reference : Path.Combine(m_ProjectDirectory, reference);
                 AppendReference(fullReference, projectBuilder);
             }
-            foreach (var path in runtimeDependencies)
-            {
+            foreach (var path in runtimeDependencies) {
                 AppendReference(path, projectBuilder);
             }
 
-            if (assembly.AssemblyReferences.Length > 0)
-            {
+            if (assembly.AssemblyReferences.Length > 0) {
                 projectBuilder.Append("  </ItemGroup>").Append(Environment.NewLine);
                 projectBuilder.Append("  <ItemGroup>").Append(Environment.NewLine);
-                foreach (var reference in assembly.AssemblyReferences.Where(i => !filteredProjects.Contains(i.name) && i.sourceFiles.Any(ShouldFileBePartOfSolution)))
-                {
+                foreach (var reference in assembly.AssemblyReferences.Where(i => !filteredProjects.Contains(i.name) && i.sourceFiles.Any(ShouldFileBePartOfSolution))) {
                     var name = GetProjectName(reference.name, reference.defines);
                     projectBuilder.Append("    <ProjectReference Include=\"").Append(name).Append(".csproj").Append("\">")
                         .Append(Environment.NewLine);
@@ -426,8 +372,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return projectBuilder.ToString();
         }
 
-        private static void AppendReference(string fullReference, StringBuilder projectBuilder)
-        {
+        private static void AppendReference(string fullReference, StringBuilder projectBuilder) {
             var escapedFullPath = SecurityElement.Escape(fullReference);
             escapedFullPath = escapedFullPath.NormalizePath();
             projectBuilder.Append("     <Reference Include=\"").Append(FileSystemUtil.FileNameWithoutExtension(escapedFullPath))
@@ -436,13 +381,11 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             projectBuilder.Append("     </Reference>").Append(Environment.NewLine);
         }
 
-        private string ProjectFile(ProjectPart projectPart)
-        {
+        private string ProjectFile(ProjectPart projectPart) {
             return Path.Combine(m_SolutionDirectory, $"{GetProjectName(projectPart.Name, projectPart.Defines)}.csproj");
         }
 
-        public string SolutionFile()
-        {
+        public string SolutionFile() {
             return Path.Combine(m_SolutionDirectory, $"{m_ProjectName}.sln");
         }
 
@@ -450,8 +393,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             ProjectPart assembly,
             List<ResponseFileData> responseFilesData,
             Config config
-        )
-        {
+        ) {
             var otherResponseFilesData = GetOtherArgumentsFromResponseFilesData(responseFilesData);
             var arguments = new object[] {
                 k_ToolsVersion,
@@ -479,43 +421,38 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
                 GenerateNullable(otherResponseFilesData["nullable"])
             };
 
-            try
-            {
+            try {
                 return string.Format(GetProjectHeaderTemplate(), arguments);
-            }
-            catch (Exception)
-            {
+            } catch (Exception) {
                 throw new NotSupportedException(
                     "Failed creating c# project because the c# project header did not have the correct amount of arguments, which is " +
                     arguments.Length);
             }
         }
 
-        string[] RetrieveRoslynAnalyzers(ProjectPart assembly, ILookup<string, string> otherResponseFilesData)
-        {
+        string[] RetrieveRoslynAnalyzers(ProjectPart assembly, ILookup<string, string> otherResponseFilesData) {
             var otherAnalyzers = otherResponseFilesData["a"] ?? Array.Empty<string>();
-#if UNITY_2020_2_OR_NEWER
-            return otherResponseFilesData["analyzer"].Concat(otherAnalyzers)
-              .SelectMany(x => x.Split(';'))
-              // #if !ROSLYN_ANALYZER_FIX
-              //         .Concat(GetRoslynAnalyzerPaths())
-              // #else
-              .Concat(assembly.CompilerOptions.RoslynAnalyzerDllPaths)
-              // #endif
-              .Select(MakeAbsolutePath)
-              .Distinct()
-              .ToArray();
-#else
+        #if UNITY_2020_2_OR_NEWER
+              return otherResponseFilesData["analyzer"].Concat(otherAnalyzers)
+                .SelectMany(x=>x.Split(';'))
+        // #if !ROSLYN_ANALYZER_FIX
+        //         .Concat(GetRoslynAnalyzerPaths())
+        // #else
+                .Concat(assembly.CompilerOptions.RoslynAnalyzerDllPaths)
+        // #endif
+                .Select(MakeAbsolutePath)
+                .Distinct()
+                .ToArray();
+        #else
               return otherResponseFilesData["analyzer"].Concat(otherAnalyzers)
                 .SelectMany(x=>x.Split(';'))
                 .Distinct()
                 .Select(MakeAbsolutePath)
                 .ToArray();
-#endif
+        #endif
         }
 
-        private static string GenerateAnalyserItemGroup(string[] paths)
-        {
+        private static string GenerateAnalyserItemGroup(string[] paths) {
             //   <ItemGroup>
             //      <Analyzer Include="..\packages\Comments_analyser.1.0.6626.21356\analyzers\dotnet\cs\Comments_analyser.dll" />
             //      <Analyzer Include="..\packages\UnityEngineAnalyzer.1.0.0.0\analyzers\dotnet\cs\UnityEngineAnalyzer.dll" />
@@ -525,8 +462,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
 
             var analyserBuilder = new StringBuilder();
             analyserBuilder.AppendLine("  <ItemGroup>");
-            foreach (var path in paths)
-            {
+            foreach (var path in paths) {
                 analyserBuilder.AppendLine($"    <Analyzer Include=\"{path.NormalizePath()}\" />");
             }
 
@@ -534,8 +470,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return analyserBuilder.ToString();
         }
 
-        private string GenerateRoslynAnalyzerRulesetPath(ProjectPart assembly, ILookup<string, string> otherResponseFilesData)
-        {
+        private string GenerateRoslynAnalyzerRulesetPath(ProjectPart assembly, ILookup<string, string> otherResponseFilesData) {
 #if UNITY_2020_2_OR_NEWER
             return GenerateAnalyserRuleSet(otherResponseFilesData["ruleset"].Append(assembly.CompilerOptions.RoslynAnalyzerRulesetPath)
                 .Where(a => !string.IsNullOrEmpty(a)).Distinct().Select(x => MakeAbsolutePath(x).NormalizePath()).ToArray());
@@ -544,8 +479,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
 #endif
         }
 
-        private static string GenerateAnalyserRuleSet(string[] paths)
-        {
+        private static string GenerateAnalyserRuleSet(string[] paths) {
             //<CodeAnalysisRuleSet>..\path\to\myrules.ruleset</CodeAnalysisRuleSet>
             if (!paths.Any())
                 return string.Empty;
@@ -554,13 +488,11 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
                 $"{Environment.NewLine}{string.Join(Environment.NewLine, paths.Select(a => $"    <CodeAnalysisRuleSet>{a}</CodeAnalysisRuleSet>"))}";
         }
 
-        private static string MakeAbsolutePath(string path)
-        {
+        private static string MakeAbsolutePath(string path) {
             return Path.IsPathRooted(path) ? path : Path.GetFullPath(path);
         }
 
-        private string GenerateNullable(IEnumerable<string> enumerable)
-        {
+        private string GenerateNullable(IEnumerable<string> enumerable) {
             var val = enumerable.FirstOrDefault();
             if (string.IsNullOrWhiteSpace(val))
                 return string.Empty;
@@ -568,26 +500,22 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return $"{Environment.NewLine}    <Nullable>{val}</Nullable>";
         }
 
-        private static string GenerateDocumentationFile(string[] paths)
-        {
+        private static string GenerateDocumentationFile(string[] paths) {
             if (!paths.Any())
                 return String.Empty;
 
             return $"{Environment.NewLine}{string.Join(Environment.NewLine, paths.Select(a => $"  <DocumentationFile>{a}</DocumentationFile>"))}";
         }
 
-        private static string GenerateWarningAsError(IEnumerable<string> args, IEnumerable<string> argsMinus, IEnumerable<string> argsPlus)
-        {
+        private static string GenerateWarningAsError(IEnumerable<string> args, IEnumerable<string> argsMinus, IEnumerable<string> argsPlus) {
             var returnValue = String.Empty;
             var allWarningsAsErrors = false;
             var warningIds = new List<string>();
 
-            foreach (var s in args)
-            {
+            foreach (var s in args) {
                 if (s == "+" || s == string.Empty) allWarningsAsErrors = true;
                 else if (s == "-") allWarningsAsErrors = false;
-                else
-                {
+                else {
                     warningIds.Add(s);
                 }
             }
@@ -595,8 +523,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             warningIds.AddRange(argsPlus);
 
             returnValue += $@"    <TreatWarningsAsErrors>{allWarningsAsErrors}</TreatWarningsAsErrors>";
-            if (warningIds.Any())
-            {
+            if (warningIds.Any()) {
                 returnValue += $"{Environment.NewLine}    <WarningsAsErrors>{string.Join(";", warningIds)}</WarningsAsErrors>";
             }
 
@@ -606,8 +533,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return $"{Environment.NewLine}{returnValue}";
         }
 
-        private static string GenerateWarningLevel(IEnumerable<string> warningLevel)
-        {
+        private static string GenerateWarningLevel(IEnumerable<string> warningLevel) {
             var level = warningLevel.FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(level))
                 return level;
@@ -615,8 +541,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return 4.ToString();
         }
 
-        private static string GetSolutionText()
-        {
+        private static string GetSolutionText() {
             return string.Join(Environment.NewLine,
                 @"",
                 @"Microsoft Visual Studio Solution File, Format Version {0}",
@@ -636,8 +561,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
                 @"").Replace("    ", "\t");
         }
 
-        private static string GetProjectFooterTemplate()
-        {
+        private static string GetProjectFooterTemplate() {
             return string.Join(Environment.NewLine,
                 @"  </ItemGroup>",
                 @"  <Import Project=""$(MSBuildToolsPath)\Microsoft.CSharp.targets"" />",
@@ -652,8 +576,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
                 @"");
         }
 
-        private static string GetProjectHeaderTemplate()
-        {
+        private static string GetProjectHeaderTemplate() {
             var header = new[] {
                 @"<?xml version=""1.0"" encoding=""utf-8""?>",
                 @"<Project ToolsVersion=""{0}"" DefaultTargets=""Build"" xmlns=""{6}"">",
@@ -710,13 +633,11 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return string.Join(Environment.NewLine, pieces);
         }
 
-        private void SyncSolution(ProjectPart[] islands)
-        {
+        private void SyncSolution(ProjectPart[] islands) {
             SyncSolutionFileIfNotChanged(SolutionFile(), SolutionText(islands));
         }
 
-        private string SolutionText(ProjectPart[] islands)
-        {
+        private string SolutionText(ProjectPart[] islands) {
             var fileversion = "11.00";
             var vsversion = "2010";
 
@@ -726,48 +647,41 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return string.Format(GetSolutionText(), fileversion, vsversion, projectEntries, projectConfigurations);
         }
 
-        private static ILookup<string, string> GetOtherArgumentsFromResponseFilesData(List<ResponseFileData> responseFilesData)
-        {
-            var paths = responseFilesData.SelectMany(x =>
-            {
-                return x.OtherArguments
-                    .Where(a => a.StartsWith("/", StringComparison.Ordinal) || a.StartsWith("-", StringComparison.Ordinal))
-                    .Select(b =>
-                    {
-                        var index = b.IndexOf(":", StringComparison.Ordinal);
-                        if (index > 0 && b.Length > index)
-                        {
-                            var key = b.Substring(1, index - 1);
-                            return new KeyValuePair<string, string>(key, b.Substring(index + 1));
-                        }
+        private static ILookup<string, string> GetOtherArgumentsFromResponseFilesData(List<ResponseFileData> responseFilesData) {
+            var paths = responseFilesData.SelectMany(x => {
+                    return x.OtherArguments
+                        .Where(a => a.StartsWith("/", StringComparison.Ordinal) || a.StartsWith("-", StringComparison.Ordinal))
+                        .Select(b => {
+                            var index = b.IndexOf(":", StringComparison.Ordinal);
+                            if (index > 0 && b.Length > index) {
+                                var key = b.Substring(1, index - 1);
+                                return new KeyValuePair<string, string>(key, b.Substring(index + 1));
+                            }
 
-                        const string warnaserror = "warnaserror";
-                        if (b.Substring(1).StartsWith(warnaserror, StringComparison.Ordinal))
-                        {
-                            return new KeyValuePair<string, string>(warnaserror, b.Substring(warnaserror.Length + 1));
-                        }
+                            const string warnaserror = "warnaserror";
+                            if (b.Substring(1).StartsWith(warnaserror, StringComparison.Ordinal)) {
+                                return new KeyValuePair<string, string>(warnaserror, b.Substring(warnaserror.Length + 1));
+                            }
 
-                        const string nullable = "nullable";
-                        if (b.Substring(1).StartsWith(nullable))
-                        {
-                            var res = b.Substring(nullable.Length + 1);
-                            if (string.IsNullOrWhiteSpace(res) || res.Equals("+"))
-                                res = "enable";
-                            else if (res.Equals("-"))
-                                res = "disable";
-                            return new KeyValuePair<string, string>(nullable, res);
-                        }
+                            const string nullable = "nullable";
+                            if (b.Substring(1).StartsWith(nullable)) {
+                                var res = b.Substring(nullable.Length + 1);
+                                if (string.IsNullOrWhiteSpace(res) || res.Equals("+"))
+                                    res = "enable";
+                                else if (res.Equals("-"))
+                                    res = "disable";
+                                return new KeyValuePair<string, string>(nullable, res);
+                            }
 
-                        return default(KeyValuePair<string, string>);
-                    });
-            })
+                            return default(KeyValuePair<string, string>);
+                        });
+                })
                 .Distinct()
                 .ToLookup(o => o.Key, pair => pair.Value);
             return paths;
         }
 
-        private string GenerateLangVersion(IEnumerable<string> langVersionList, ProjectPart assembly)
-        {
+        private string GenerateLangVersion(IEnumerable<string> langVersionList, ProjectPart assembly) {
             var langVersion = langVersionList.FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(langVersion))
                 return langVersion;
@@ -778,15 +692,13 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
 #endif
         }
 
-        private static string GenerateAnalyserAdditionalFiles(string[] paths)
-        {
+        private static string GenerateAnalyserAdditionalFiles(string[] paths) {
             if (!paths.Any())
                 return string.Empty;
 
             var analyserBuilder = new StringBuilder();
             analyserBuilder.AppendLine("  <ItemGroup>");
-            foreach (var path in paths)
-            {
+            foreach (var path in paths) {
                 analyserBuilder.AppendLine($"    <AdditionalFiles Include=\"{path}\" />");
             }
 
@@ -794,8 +706,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return analyserBuilder.ToString();
         }
 
-        public string GenerateNoWarn(List<string> codes)
-        {
+        public string GenerateNoWarn(List<string> codes) {
             if (m_SuppressCommonWarnings)
                 codes.AddRange(new[] { "0169", "0649" });
 
@@ -805,8 +716,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             return string.Join(",", codes.Distinct());
         }
 
-        private string GetProjectEntries(ProjectPart[] islands)
-        {
+        private string GetProjectEntries(ProjectPart[] islands) {
             var projectEntries = islands.Select(i => string.Format(
                 m_SolutionProjectEntryTemplate,
                 SolutionGuidGenerator.GuidForSolution(),
@@ -821,44 +731,36 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
         /// <summary>
         /// Generate the active configuration string for a given project guid
         /// </summary>
-        private string GetProjectActiveConfigurations(string projectGuid)
-        {
+        private string GetProjectActiveConfigurations(string projectGuid) {
             return string.Format(
                 m_SolutionProjectConfigurationTemplate,
                 projectGuid);
         }
 
-        private static string ProjectFooter()
-        {
+        private static string ProjectFooter() {
             return GetProjectFooterTemplate();
         }
 
 
-        private string ProjectGuid(string name)
-        {
+        private string ProjectGuid(string name) {
             return m_GUIDGenerator.ProjectGuid(m_ProjectName + name);
         }
 
         public ProjectGenerationFlag ProjectGenerationFlag => ProjectGenerationFlag.Local | ProjectGenerationFlag.Embedded;
 
-        public string GetAssemblyNameFromScriptPath(string path)
-        {
+        public string GetAssemblyNameFromScriptPath(string path) {
             return CompilationPipeline.GetAssemblyNameFromScriptPath(path);
         }
 
-        public IEnumerable<Assembly> GetAssemblies(Func<string, bool> shouldFileBePartOfSolution)
-        {
+        public IEnumerable<Assembly> GetAssemblies(Func<string, bool> shouldFileBePartOfSolution) {
             return m_AllEditorAssemblies.Where(a => a.sourceFiles.Any(shouldFileBePartOfSolution));
         }
 
-        private Task BuildEditorAssemblies()
-        {
+        private Task BuildEditorAssemblies() {
             var assemblies = CompilationPipeline.GetAssemblies(AssembliesType.Editor);
-            return Task.Run(() =>
-            {
+            return Task.Run(() => {
                 var result = new Assembly[assemblies.Length];
-                for (var i = 0; i < assemblies.Length; i++)
-                {
+                for (var i = 0; i < assemblies.Length; i++) {
                     var assembly = assemblies[i];
                     var outputPath = $@"Temp\Bin\Debug\{assembly.name}\";
                     result[i] = new Assembly(assembly.name, outputPath, assembly.sourceFiles,
@@ -875,72 +777,59 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
             });
         }
 
-        public string GetProjectName(string name, string[] defines)
-        {
+        public string GetProjectName(string name, string[] defines) {
             if (!ProjectGenerationFlag.HasFlag(ProjectGenerationFlag.PlayerAssemblies))
                 return name;
             return !defines.Contains("UNITY_EDITOR") ? name + ".Player" : name;
         }
 
-        private static string ResolvePotentialParentPackageAssetPath(string assetPath)
-        {
+        private static string ResolvePotentialParentPackageAssetPath(string assetPath) {
             const string packagesPrefix = "packages/";
-            if (!assetPath.StartsWith(packagesPrefix, StringComparison.OrdinalIgnoreCase))
-            {
+            if (!assetPath.StartsWith(packagesPrefix, StringComparison.OrdinalIgnoreCase)) {
                 return null;
             }
 
             var followupSeparator = assetPath.IndexOf('/', packagesPrefix.Length);
-            if (followupSeparator == -1)
-            {
+            if (followupSeparator == -1) {
                 return assetPath.ToLowerInvariant();
             }
 
             return assetPath.Substring(0, followupSeparator).ToLowerInvariant();
         }
 
-        public UnityEditor.PackageManager.PackageInfo FindForAssetPath(string assetPath)
-        {
+        public UnityEditor.PackageManager.PackageInfo FindForAssetPath(string assetPath) {
             var parentPackageAssetPath = ResolvePotentialParentPackageAssetPath(assetPath);
-            if (parentPackageAssetPath == null)
-            {
+            if (parentPackageAssetPath == null) {
                 return null;
             }
 
             PackageInfo cachedPackageInfo;
-            if (m_PackageInfoCache.TryGetValue(parentPackageAssetPath, out cachedPackageInfo))
-            {
+            if (m_PackageInfoCache.TryGetValue(parentPackageAssetPath, out cachedPackageInfo)) {
                 return cachedPackageInfo;
             }
 
             return null;
         }
 
-        async Task BuildPackageInfoCache()
-        {
+        async Task BuildPackageInfoCache() {
 #if UNITY_2019_4_OR_NEWER
             m_PackageInfoCache.Clear();
             var parentAssetPaths = new HashSet<string>();
-            await Task.Run(() =>
-            {
-                for (var i = 0; i < m_AllAssetPaths.Length; i++)
-                {
-                    if (string.IsNullOrWhiteSpace(m_AllAssetPaths[i]))
-                    {
+            await Task.Run(() => {
+                for (var i = 0; i < m_AllAssetPaths.Length; i++) {
+                    if (string.IsNullOrWhiteSpace(m_AllAssetPaths[i])) {
                         continue;
                     }
 
                     var parentPackageAssetPath = ResolvePotentialParentPackageAssetPath(m_AllAssetPaths[i]);
-                    if (parentPackageAssetPath == null)
-                    {
+                    if (parentPackageAssetPath == null) {
                         continue;
                     }
 
                     parentAssetPaths.Add(parentPackageAssetPath);
                 }
             });
-            foreach (var parentAssetPath in parentAssetPaths)
-            {
+            foreach (var parentAssetPath in parentAssetPaths) {
                 var result = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(parentAssetPath);
                 m_PackageInfoCache.Add(parentAssetPath, result);
             }
@@ -950,30 +839,20 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
 #endif
         }
 
-        async Task BuildPostProcessors()
-        {
+        async Task BuildPostProcessors() {
 #if UNITY_2019_1_OR_NEWER
             var types = TypeCache.GetTypesDerivedFrom<IHotReloadProjectGenerationPostProcessor>();
-            m_PostProcessors = await Task.Run(() =>
-            {
+            m_PostProcessors = await Task.Run(() => {
                 var postProcessors = new List<IHotReloadProjectGenerationPostProcessor>(types.Count);
-                foreach (var type in types)
-                {
-                    try
-                    {
+                foreach (var type in types) {
+                    try {
                         var instance = (IHotReloadProjectGenerationPostProcessor)Activator.CreateInstance(type);
                         postProcessors.Add(instance);
-                    }
-                    catch (MissingMethodException)
-                    {
+                    } catch (MissingMethodException) {
                         Log.Warning("The type '{0}' was expected to have a public default constructor but it didn't", type.FullName);
-                    }
-                    catch (TargetInvocationException ex)
-                    {
+                    } catch (TargetInvocationException ex) {
                         Log.Warning("Exception occurred when invoking default constructor of '{0}':\n{1}", type.FullName, ex.InnerException);
-                    }
-                    catch (Exception ex)
-                    {
+                    } catch (Exception ex) {
                         Log.Warning("Unknown exception encountered when trying to create post processor '{0}':\n{1}", type.FullName, ex);
                     }
                 }
@@ -981,8 +860,7 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
                 postProcessors.Sort((x, y) => x.CallbackOrder.CompareTo(y.CallbackOrder));
                 return postProcessors.ToArray();
             });
-            foreach (var postProcessor in m_PostProcessors)
-            {
+            foreach (var postProcessor in m_PostProcessors) {
                 postProcessor.InitializeOnMainThread();
             }
 #else
@@ -992,22 +870,18 @@ namespace SingularityGroup.HotReload.Editor.ProjectGeneration
 #endif
         }
 
-        public bool IsInternalizedPackagePath(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
+        public bool IsInternalizedPackagePath(string path) {
+            if (string.IsNullOrWhiteSpace(path)) {
                 return false;
             }
 
             var packageInfo = FindForAssetPath(path);
-            if (packageInfo == null)
-            {
+            if (packageInfo == null) {
                 return false;
             }
 
             var packageSource = packageInfo.source;
-            switch (packageSource)
-            {
+            switch (packageSource) {
                 case PackageSource.Embedded:
                 case PackageSource.Local:
                     return false;

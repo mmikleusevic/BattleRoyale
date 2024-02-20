@@ -13,46 +13,35 @@ using System;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace SingularityGroup.HotReload
-{
-    static class IpHelper
-    {
+namespace SingularityGroup.HotReload {
+    static class IpHelper {
         // get my local ip address
 
         static DateTime cachedAt;
         static string ipCached;
-        public static string GetIpAddressCached()
-        {
-            if (string.IsNullOrEmpty(ipCached) || DateTime.UtcNow - cachedAt > TimeSpan.FromSeconds(5))
-            {
+        public static string GetIpAddressCached() {
+            if (string.IsNullOrEmpty(ipCached) || DateTime.UtcNow - cachedAt > TimeSpan.FromSeconds(5)) {
                 ipCached = GetIpAddress();
                 cachedAt = DateTime.UtcNow;
             }
             return ipCached;
         }
-
-        public static string GetIpAddress()
-        {
+        
+        public static string GetIpAddress() {
             var ip = GetLocalIPv4(NetworkInterfaceType.Wireless80211);
-
-            if (string.IsNullOrEmpty(ip))
-            {
+            
+            if (string.IsNullOrEmpty(ip)) {
                 return GetLocalIPv4(NetworkInterfaceType.Ethernet);
             }
             return ip;
         }
-
-        private static string GetLocalIPv4(NetworkInterfaceType _type)
-        {
+        
+        private static string GetLocalIPv4(NetworkInterfaceType _type) {
             string output = "";
-            foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up)
-                {
-                    foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses)
-                    {
-                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork && IsLocalIp(ip.Address.MapToIPv4().GetAddressBytes()))
-                        {
+            foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces()) {
+                if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up) {
+                    foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses) {
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork && IsLocalIp(ip.Address.MapToIPv4().GetAddressBytes())) {
                             output = ip.Address.ToString();
                         }
                     }
@@ -62,8 +51,7 @@ namespace SingularityGroup.HotReload
         }
 
         // https://datatracker.ietf.org/doc/html/rfc1918#section-3
-        static bool IsLocalIp(byte[] ipAddress)
-        {
+        static bool IsLocalIp(byte[] ipAddress) {
             return ipAddress[0] == 10
                 || ipAddress[0] == 172
                 && ipAddress[1] >= 16

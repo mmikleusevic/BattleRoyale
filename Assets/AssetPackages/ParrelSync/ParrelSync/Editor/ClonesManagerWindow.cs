@@ -1,6 +1,6 @@
-﻿using System.IO;
+﻿using UnityEngine;
 using UnityEditor;
-using UnityEngine;
+using System.IO;
 
 namespace ParrelSync
 {

@@ -3,12 +3,10 @@ using System;
 using System.Runtime.InteropServices;
 
 
-namespace SingularityGroup.HotReload.Interop
-{
+namespace SingularityGroup.HotReload.Interop {
     //see _MonoMethod struct in class-internals.h
     [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Auto, Size = 8 + sizeof(long) * 3 + 4)]
-    internal unsafe struct MonoMethod64
-    {
+    internal unsafe struct MonoMethod64 {
         [FieldOffset(0)]
         public MethodAttributes flags;
         [FieldOffset(2)]
@@ -27,10 +25,9 @@ namespace SingularityGroup.HotReload.Interop
         [FieldOffset(8 + sizeof(long) * 3 + 2)]
         public short slot;
     }
-
+    
     [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Auto, Size = 8 + sizeof(int) * 3 + 4)]
-    internal unsafe struct MonoMethod32
-    {
+    internal unsafe struct MonoMethod32 {
         [FieldOffset(0)]
         public MethodAttributes flags;
         [FieldOffset(2)]
@@ -49,15 +46,14 @@ namespace SingularityGroup.HotReload.Interop
         [FieldOffset(8 + sizeof(int) * 3 + 2)]
         public short slot;
     }
-
+    
     //Corresponds to the bitflags of the _MonoMethod struct
     [Flags]
-    internal enum MonoMethodFlags : ushort
-    {
+    internal enum MonoMethodFlags : ushort {
         inline_info = 1 << 0,           //:1
         inline_failure = 1 << 1,        //:1
-        wrapper_type = 1 << 2,         //:5
-        string_ctor = 1 << 7,          //:1
+        wrapper_type =  1 << 2,         //:5
+        string_ctor =  1 << 7,          //:1
         save_lmf = 1 << 8,              //:1
         dynamic = 1 << 9,               //:1       /* created & destroyed during runtime */
         sre_method = 1 << 10,           //:1       /* created at runtime using Reflection.Emit */
@@ -69,8 +65,7 @@ namespace SingularityGroup.HotReload.Interop
 
 
     [Flags]
-    internal enum MethodImplAttributes : ushort
-    {
+    internal enum MethodImplAttributes : ushort {
         /// <summary><para>Specifies that the method implementation is in Microsoft intermediate language (MSIL).</para></summary>
         IL = 0,
 
@@ -124,8 +119,7 @@ namespace SingularityGroup.HotReload.Interop
 
     /// <summary><para>Specifies flags for method attributes. These flags are defined in the corhdr.h file.</para></summary>
     [Flags]
-    internal enum MethodAttributes : ushort
-    {
+    internal enum MethodAttributes : ushort {
         /// <summary><para>Retrieves accessibility information.</para></summary>
         MemberAccessMask = 7,
 

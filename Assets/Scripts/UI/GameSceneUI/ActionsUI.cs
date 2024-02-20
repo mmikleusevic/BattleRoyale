@@ -23,8 +23,7 @@ public class ActionsUI : MonoBehaviour
 
         attackCardButton.onClick.AddListener(() =>
         {
-            RollType.SetRollType();
-
+            RollType.rollType = RollTypeEnum.CardAttack;
             OnAttackCard?.Invoke(card);
         });
 

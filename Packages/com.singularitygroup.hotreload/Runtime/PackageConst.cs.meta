@@ -9,3 +9,10 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 254358
+  packageName: Hot Reload | Edit Code Without Compiling
+  packageVersion: 1.12.8
+  assetPath: Packages/com.singularitygroup.hotreload/Runtime/PackageConst.cs
+  uploadId: 632084
