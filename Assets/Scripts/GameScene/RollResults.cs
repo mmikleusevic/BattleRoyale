@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class RollResults : NetworkBehaviour, IRollResults
@@ -11,6 +13,7 @@ public class RollResults : NetworkBehaviour, IRollResults
     public static event EventHandler OnPlayerBattleRoll;
     public static event EventHandler OnPlayerBattleRollDisadvantage;
     public static event EventHandler OnReRoll;
+    public static event Action<string> OnBattleReRoll;
     public static event EventHandler OnBattlePrepared;
     public static event EventHandler<OnInitiativeRollOverEventArgs> OnInitiativeRollOver;
     public static event EventHandler<OnBattleRollOverEventArgs> OnBattleRollOver;
@@ -501,7 +504,7 @@ public class RollResults : NetworkBehaviour, IRollResults
         }
         else
         {
-            CallOnReRollClientRpc(clientRpcParams);
+            CallOnBattleReRollClientRpc(clientRpcParams);
         }
     }
 
@@ -517,7 +520,7 @@ public class RollResults : NetworkBehaviour, IRollResults
         }
         else
         {
-            CallOnReRollClientRpc(clientRpcParams);
+            CallOnBattleReRollClientRpc(clientRpcParams);
         }
     }
 
@@ -542,6 +545,29 @@ public class RollResults : NetworkBehaviour, IRollResults
         string playerColor = player.HexPlayerColor;
 
         return $"The winner of the battle is: <color=#{playerColor}>{playerName}</color>";
+    }
+
+    [ClientRpc]
+    private void CallOnBattleReRollClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        OnBattleReRoll?.Invoke(SendBattleBattleRerollMessageToMessageUI());
+    }
+
+    private string SendBattleBattleRerollMessageToMessageUI()
+    {
+        string message = "Current battle Result:'\n'";
+
+        foreach (KeyValuePair<ulong,int> item in battleResults)
+        {
+            Player player = PlayerManager.Instance.Players.Where(a => a.ClientId.Value == item.Key).FirstOrDefault();
+
+            string playerName = player.PlayerName;
+            string playerColor = player.HexPlayerColor;
+
+            message += $"<color=#{playerColor}>{playerName}</color>: {item.Value}";
+        }
+
+        return message;
     }
 
     [ClientRpc]
