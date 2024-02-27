@@ -10,6 +10,9 @@ public class RollResults : NetworkBehaviour, IRollResults
 {
     public static event EventHandler OnPlayerBattleRoll;
     public static event EventHandler OnPlayerBattleRollDisadvantage;
+    public static event Action OnPlayerCardRoll;
+    public static event Action OnPlayerCardWon;
+    public static event Action OnPlayerCardLost;
     public static event EventHandler OnReRoll;
     public static event Action<string> OnBattleReRoll;
     public static event EventHandler OnBattlePrepared;
@@ -29,6 +32,7 @@ public class RollResults : NetworkBehaviour, IRollResults
         public ulong winnerId;
     }
 
+    private Card card;
     private Dictionary<ulong, List<int>> battleRolls;
     private Dictionary<ulong, int> battleResults;
     private Dictionary<ulong, bool> clientRolled;
@@ -40,6 +44,7 @@ public class RollResults : NetworkBehaviour, IRollResults
     private void Awake()
     {
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayerServerRpc;
+        ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
     }
 
     private void Start()
@@ -61,6 +66,7 @@ public class RollResults : NetworkBehaviour, IRollResults
     public override void OnDestroy()
     {
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayerServerRpc;
+        ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
 
         base.OnDestroy();
     }
@@ -74,11 +80,10 @@ public class RollResults : NetworkBehaviour, IRollResults
                 break;
             case RollTypeEnum.PlayerAttack:
             case RollTypeEnum.Disadvantage:
-                //TODO finish
                 SetBattleResultServerRpc(result);
                 break;
             case RollTypeEnum.CardAttack:
-                // TODO
+                SetCardResultServerRpc(result);
                 break;
         }
     }
@@ -90,6 +95,22 @@ public class RollResults : NetworkBehaviour, IRollResults
         Player player2 = Player.GetPlayerFromNetworkReference(arg2);
 
         SetPlayerBattle(player1, player2);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ActionsUI_OnAttackCard(Card obj)
+    {
+        card = obj;
+
+        ClientRpcParams clientRpcParams = new ClientRpcParams()
+        {
+            Send = new ClientRpcSendParams()
+            {
+                TargetClientIds = new[] { PlayerManager.Instance.ActivePlayer.ClientId.Value },
+            }
+        };
+
+        SetRollTypeForClientClientRpc(RollTypeEnum.CardAttack, clientRpcParams);
     }
 
     private void SetPlayerBattle(Player player, Player enemyPlayer)
@@ -142,6 +163,10 @@ public class RollResults : NetworkBehaviour, IRollResults
         else if (rollType == RollTypeEnum.Disadvantage)
         {
             OnPlayerBattleRollDisadvantage?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            OnPlayerCardRoll?.Invoke();
         }
     }
 
@@ -431,6 +456,35 @@ public class RollResults : NetworkBehaviour, IRollResults
         SetBattleResultOrReroll(clientRpcParams);
 
         DetermineBattleWinnerOrReroll(clientRpcParams);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetCardResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
+    {
+        ClientRpcParams clientRpcParams = new ClientRpcParams()
+        {
+            Send = new ClientRpcSendParams()
+            {
+                TargetClientIds = new[] { PlayerManager.Instance.ActivePlayer.ClientId.Value },
+            }
+        };
+
+        SetCardResultClientRpc(result, clientRpcParams);
+    }
+
+    [ClientRpc]
+    private void SetCardResultClientRpc(int result, ClientRpcParams clientRpcParams = default)
+    {
+        if (result >= card.Value)
+        {
+            OnPlayerCardWon?.Invoke();
+        }
+        else
+        {
+            OnPlayerCardLost?.Invoke();
+        }
+
+        card = null;
     }
 
     private void SetBattleRollResult(int result, ServerRpcParams serverRpcParams)

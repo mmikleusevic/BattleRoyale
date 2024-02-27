@@ -3179,6 +3179,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!224 &603378208 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8734155479553445031, guid: da0fcede0a31e2347a0294d250dfceb9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1703677625}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &603378209 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4290820748300717741, guid: da0fcede0a31e2347a0294d250dfceb9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1703677625}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &712150890
 GameObject:
   m_ObjectHideFlags: 0
@@ -6341,6 +6353,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1703677625}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &1703677628 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4243809051605195515, guid: da0fcede0a31e2347a0294d250dfceb9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1703677625}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1703677629 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8466133817747789497, guid: da0fcede0a31e2347a0294d250dfceb9,
@@ -6395,6 +6413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ca8c55e508f0d4992c95353d3bbff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rollUIRectTransform: {fileID: 1703677628}
   backgroundImageGameObject: {fileID: 1703677631}
   rollButton: {fileID: 1703677630}
   dice:
@@ -6413,6 +6432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ca8c55e508f0d4992c95353d3bbff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rollUIRectTransform: {fileID: 603378208}
   backgroundImageGameObject: {fileID: 1703677631}
   rollButton: {fileID: 1703677633}
   dice:
@@ -6432,6 +6452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ca8c55e508f0d4992c95353d3bbff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rollUIRectTransform: {fileID: 603378209}
   backgroundImageGameObject: {fileID: 1703677631}
   rollButton: {fileID: 443695067}
   dice:

@@ -1,9 +1,12 @@
 using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AlcoholTypeUI : MonoBehaviour
 {
+    public static event Action OnAlcoholButtonPress;
+
     [SerializeField] private RectTransform alcoholTypeRectTransform;
     [SerializeField] private Button strongAlcoholButton;
     [SerializeField] private Button mediumAlcoholButton;
@@ -15,18 +18,21 @@ public class AlcoholTypeUI : MonoBehaviour
         {
             SendAcoholValue(1);
             HideWithAnimation();
+            OnAlcoholButtonPress?.Invoke();
         });
 
         mediumAlcoholButton.onClick.AddListener(() =>
         {
             SendAcoholValue(2);
             HideWithAnimation();
+            OnAlcoholButtonPress?.Invoke();
         });
 
         weakAlcoholButton.onClick.AddListener(() =>
         {
             SendAcoholValue(3);
             HideWithAnimation();
+            OnAlcoholButtonPress?.Invoke();
         });
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;

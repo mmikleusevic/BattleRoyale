@@ -5,13 +5,9 @@ public class DieRollUI : MonoBehaviour
 {
     [SerializeField] private RollUI rollUI;
 
-    private void Awake()
-    {
-        Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
-    }
-
     private void Start()
     {
+        AlcoholTypeUI.OnAlcoholButtonPress += AlcoholTypeUI_OnAlcoholButtonPress;
         RollResults.OnReRoll += RollResults_OnReRoll;
         RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
         RollResults.OnBattleRollOver += RollResults_OnBattleRollOver;
@@ -20,35 +16,35 @@ public class DieRollUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
+        AlcoholTypeUI.OnAlcoholButtonPress -= AlcoholTypeUI_OnAlcoholButtonPress;
         RollResults.OnReRoll -= RollResults_OnReRoll;
         RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
         RollResults.OnBattleRollOver -= RollResults_OnBattleRollOver;
         RollResults.OnPlayerBattleRoll -= RollResults_OnPlayerBattleRoll;
     }
 
-    private void Initiative_OnInitiativeStart(object sender, string e)
+    private void AlcoholTypeUI_OnAlcoholButtonPress()
     {
-        rollUI.Show();
+        rollUI.ShowWithAnimation();
     }
 
     private void RollResults_OnReRoll(object sender, EventArgs e)
     {
-        rollUI.Show();
+        rollUI.ShowWithAnimation();
     }
 
     private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
     {
-        rollUI.Hide();
+        rollUI.HideWithAnimation();
     }
 
     private void RollResults_OnBattleRollOver(object sender, RollResults.OnBattleRollOverEventArgs e)
     {
-        rollUI.Hide();
+        rollUI.HideWithAnimation();
     }
 
     private void RollResults_OnPlayerBattleRoll(object sender, EventArgs e)
     {
-        rollUI.Show();
+        rollUI.ShowWithAnimation();
     }
 }

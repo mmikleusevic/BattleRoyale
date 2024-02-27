@@ -1,9 +1,11 @@
+using DG.Tweening;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class RollUI : NetworkBehaviour
 {
+    [SerializeField] RectTransform rollUIRectTransform;
     [SerializeField] private GameObject backgroundImageGameObject;
     [SerializeField] private Button rollButton;
     [SerializeField] private GameObject[] dice;
@@ -23,6 +25,8 @@ public class RollUI : NetworkBehaviour
         cameraPosition = diceCamera.transform.position;
 
         AssignDicePosition();
+
+        HideInstant();
     }
 
     public override void OnDestroy()
@@ -30,11 +34,6 @@ public class RollUI : NetworkBehaviour
         rollButton.onClick.RemoveAllListeners();
 
         base.OnDestroy();
-    }
-
-    private void Start()
-    {
-        Hide();
     }
 
     private void AssignDicePosition()
@@ -49,17 +48,25 @@ public class RollUI : NetworkBehaviour
         }
     }
 
-    public void Show()
+    public void ShowWithAnimation()
     {
-        backgroundImageGameObject.SetActive(true);
         gameObject.SetActive(true);
+        rollUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
+        backgroundImageGameObject.SetActive(true);
         rollButton.gameObject.SetActive(true);
     }
 
-    public void Hide()
+    public void HideWithAnimation()
     {
+        rollUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
         backgroundImageGameObject.SetActive(false);
-        gameObject.SetActive(false);
+        rollButton.gameObject.SetActive(false);
+    }
+
+    public void HideInstant()
+    {
+        rollUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
+        backgroundImageGameObject.SetActive(false);
         rollButton.gameObject.SetActive(false);
     }
 }

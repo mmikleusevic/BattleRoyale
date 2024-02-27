@@ -16,6 +16,6 @@ public class TwoDiceRollUI : MonoBehaviour
 
     private void RollResults_OnPlayerBattleRollDisadvantage(object sender, System.EventArgs e)
     {
-        rollUI.Show();
+        rollUI.ShowWithAnimation();
     }
 }
