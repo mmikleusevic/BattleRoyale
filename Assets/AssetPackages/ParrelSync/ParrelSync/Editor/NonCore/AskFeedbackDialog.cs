@@ -13,7 +13,7 @@
     {
         const string InitializeOnLoadCountKey = "ParrelSync_InitOnLoadCount", StopShowingKey = "ParrelSync_StopShowFeedBack";
         static AskFeedbackDialog()
-        {            
+        {
             if (EditorPrefs.HasKey(StopShowingKey)) { return; }
 
             int InitializeOnLoadCount = EditorPrefs.GetInt(InitializeOnLoadCountKey, 0);

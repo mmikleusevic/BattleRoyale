@@ -2,22 +2,30 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
 
-namespace SingularityGroup.HotReload {
-    internal static class TaskExtensions {
-        public static async void Forget(this Task task, CancellationToken token = new CancellationToken()) {
-            try {
+namespace SingularityGroup.HotReload
+{
+    internal static class TaskExtensions
+    {
+        public static async void Forget(this Task task, CancellationToken token = new CancellationToken())
+        {
+            try
+            {
                 await task;
-                if(task.IsFaulted) {
+                if (task.IsFaulted)
+                {
                     throw task.Exception ?? new Exception("unknown exception " + task);
                 }
                 token.ThrowIfCancellationRequested();
-            } 
-            catch(OperationCanceledException) {
+            }
+            catch (OperationCanceledException)
+            {
                 // ignore
-            } catch(Exception ex) {
-                if(!token.IsCancellationRequested) {
+            }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                {
                     Log.Exception(ex);
                 }
             }
@@ -31,13 +39,16 @@ namespace SingularityGroup.HotReload {
         /// <param name="timeoutMs">The timeout in milliseconds.</param>
         /// <returns>True on condition became true, False if timeouted</returns>
         // credit: https://stackoverflow.com/a/52357854/5921285
-        public static async Task<bool> WaitUntil(Func<bool> condition, int timeoutMs = -1, int pollInterval = 33) {
-            var waitTask = Task.Run(async () => {
+        public static async Task<bool> WaitUntil(Func<bool> condition, int timeoutMs = -1, int pollInterval = 33)
+        {
+            var waitTask = Task.Run(async () =>
+            {
                 while (!condition()) await Task.Delay(pollInterval);
             });
 
             if (waitTask != await Task.WhenAny(waitTask,
-                    Task.Delay(timeoutMs))) {
+                    Task.Delay(timeoutMs)))
+            {
                 // timed out
                 return false;
             }

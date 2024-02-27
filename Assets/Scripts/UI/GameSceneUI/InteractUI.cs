@@ -11,8 +11,11 @@ public class InteractUI : MonoBehaviour
         ActionsUI.OnMove += ActionsUI_OnMove;
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
         ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
+    }
 
-        Hide();
+    private void Start()
+    {
+        HideWithAnimation();
     }
 
     private void OnDestroy()
@@ -45,7 +48,7 @@ public class InteractUI : MonoBehaviour
 
     public void ShowWithAnimation()
     {
-        gameObject.SetActive(true);
+        Show();
         interactUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
     }
 
@@ -54,7 +57,12 @@ public class InteractUI : MonoBehaviour
         interactUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
     }
 
-    public void Hide()
+    private void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    private void Hide()
     {
         gameObject.SetActive(false);
     }

@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class RollResults : NetworkBehaviour, IRollResults
@@ -557,7 +555,7 @@ public class RollResults : NetworkBehaviour, IRollResults
     {
         string message = "Current battle Result:'\n'";
 
-        foreach (KeyValuePair<ulong,int> item in battleResults)
+        foreach (KeyValuePair<ulong, int> item in battleResults)
         {
             Player player = PlayerManager.Instance.Players.Where(a => a.ClientId.Value == item.Key).FirstOrDefault();
 

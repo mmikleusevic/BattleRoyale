@@ -1,13 +1,15 @@
-using UnityEngine;
-using System.Reflection;
 using System;
 using System.Collections;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 [assembly: InternalsVisibleTo("SingularityGroup.HotReload.Demo")]
 
-namespace SingularityGroup.HotReload.Editor {
-    internal class UnitySettingsHelper {
+namespace SingularityGroup.HotReload.Editor
+{
+    internal class UnitySettingsHelper
+    {
         public static UnitySettingsHelper I = new UnitySettingsHelper();
 
         private bool initialized;
@@ -20,16 +22,20 @@ namespace SingularityGroup.HotReload.Editor {
 
         internal bool playmodeTintSupported => EditorCodePatcher.config.changePlaymodeTint && EnsureInitialized();
 
-        private UnitySettingsHelper() {
+        private UnitySettingsHelper()
+        {
             EnsureInitialized();
         }
-        
 
-        private bool EnsureInitialized() {
-            if (initialized) {
+
+        private bool EnsureInitialized()
+        {
+            if (initialized)
+            {
                 return true;
             }
-            try {
+            try
+            {
                 // cache members for performance
                 settingsType = settingsType ?? (settingsType = typeof(UnityEditor.Editor).Assembly.GetType($"UnityEditor.PrefSettings"));
                 prefColorType = prefColorType ?? (prefColorType = typeof(UnityEditor.Editor).Assembly.GetType($"UnityEditor.PrefColor"));
@@ -40,34 +46,42 @@ namespace SingularityGroup.HotReload.Editor {
                 if (prefColorProp == null
                     || pref == null
                     || setMethod == null
-                ) {
+                )
+                {
                     return false;
                 }
-                
+
                 // clear cache for performance
                 settingsType = null;
                 prefColorType = null;
 
                 initialized = true;
                 return true;
-            } catch {
+            }
+            catch
+            {
                 return false;
             }
         }
 
-        private static MethodInfo GetSetMethod(Type settingsType, Type prefColorType) {
+        private static MethodInfo GetSetMethod(Type settingsType, Type prefColorType)
+        {
             var setMethodBase = settingsType?.GetMethod("Set", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             return setMethodBase?.MakeGenericMethod(prefColorType);
         }
 
-        private static object GetPref(Type settingsType, Type prefColorType) {
+        private static object GetPref(Type settingsType, Type prefColorType)
+        {
             var prefsMethodBase = settingsType?.GetMethod("Prefs", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var prefsMethod = prefsMethodBase?.MakeGenericMethod(prefColorType);
             var prefs = (IEnumerable)prefsMethod?.Invoke(null, Array.Empty<object>());
-            if (prefs != null) {
-                foreach (object kvp in prefs) {
+            if (prefs != null)
+            {
+                foreach (object kvp in prefs)
+                {
                     var key = kvp.GetType().GetProperty("Key", BindingFlags.Instance | BindingFlags.Public)?.GetMethod.Invoke(kvp, Array.Empty<object>());
-                    if (key?.ToString() == currentPlaymodeTintPrefKey) {
+                    if (key?.ToString() == currentPlaymodeTintPrefKey)
+                    {
                         return kvp.GetType().GetProperty("Value", BindingFlags.Instance | BindingFlags.Public)?.GetMethod.Invoke(kvp, Array.Empty<object>());
                     }
 
@@ -76,15 +90,19 @@ namespace SingularityGroup.HotReload.Editor {
             return null;
         }
 
-        public Color? GetCurrentPlaymodeColor() {
-            if (!playmodeTintSupported) {
+        public Color? GetCurrentPlaymodeColor()
+        {
+            if (!playmodeTintSupported)
+            {
                 return null;
             }
             return (Color)prefColorProp.GetValue(pref);
         }
-        
-        public void SetPlaymodeTint(Color color) {
-            if (!playmodeTintSupported) {
+
+        public void SetPlaymodeTint(Color color)
+        {
+            if (!playmodeTintSupported)
+            {
                 return;
             }
             prefColorProp.SetValue(pref, color);

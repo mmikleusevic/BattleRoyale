@@ -2,16 +2,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SingularityGroup.HotReload {
-    class InstallQRDialog : MonoBehaviour {
+namespace SingularityGroup.HotReload
+{
+    class InstallQRDialog : MonoBehaviour
+    {
         public Button buttonGo;
         public Button buttonHide;
 
-        private void Start() {
+        private void Start()
+        {
             buttonHide.onClick.AddListener(Hide);
 
             // launch camera app that can scan QR-Code  https://singularitygroup.atlassian.net/browse/SG-29495
-            buttonGo.onClick.AddListener(() => {
+            buttonGo.onClick.AddListener(() =>
+            {
                 Hide();
                 var recommendedQrCodeApp = "com.scanteam.qrcodereader";
                 Application.OpenURL($"https://play.google.com/store/apps/details?id={recommendedQrCodeApp}");
@@ -19,7 +23,8 @@ namespace SingularityGroup.HotReload {
         }
 
         /// hide this dialog
-        void Hide() {
+        void Hide()
+        {
             gameObject.SetActive(false); // this should disable the Update loop?
         }
     }

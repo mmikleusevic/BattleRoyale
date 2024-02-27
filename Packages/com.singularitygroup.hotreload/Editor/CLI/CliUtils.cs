@@ -5,74 +5,95 @@ using UnityEngine;
 using System;
 #endif
 
-namespace SingularityGroup.HotReload.Editor.Cli {
-    internal static class CliUtils {
-        public static string GetTempDownloadFilePath(string osxFileName) {
-            if (UnityHelper.Platform == RuntimePlatform.OSXEditor) {
+namespace SingularityGroup.HotReload.Editor.Cli
+{
+    internal static class CliUtils
+    {
+        public static string GetTempDownloadFilePath(string osxFileName)
+        {
+            if (UnityHelper.Platform == RuntimePlatform.OSXEditor)
+            {
                 // project specific temp directory that is writeable on MacOS (Path.GetTempPath() wasn't when run through HotReload.app)
                 return Path.GetFullPath(PackageConst.LibraryCachePath + $"/HotReloadServerTemp/{osxFileName}");
-            } else {
+            }
+            else
+            {
                 return Path.GetTempFileName();
             }
         }
-        
-        public static string GetHotReloadTempDir() {
-            if (UnityHelper.Platform == RuntimePlatform.OSXEditor) {
+
+        public static string GetHotReloadTempDir()
+        {
+            if (UnityHelper.Platform == RuntimePlatform.OSXEditor)
+            {
                 // project specific temp directory that is writeable on MacOS (Path.GetTempPath() wasn't when run through HotReload.app)
                 return Path.GetFullPath(PackageConst.LibraryCachePath + "/HotReloadServerTemp");
-            } else {
+            }
+            else
+            {
                 return Path.Combine(Path.GetTempPath(), "HotReloadTemp");
             }
         }
-        
-        public static string GetAppDataPath() {
-#           if (UNITY_EDITOR_OSX)
+
+        public static string GetAppDataPath()
+        {
+#if (UNITY_EDITOR_OSX)
                 var baseDir = "/Users/Shared";
-#           elif (UNITY_EDITOR_LINUX)
+#elif (UNITY_EDITOR_LINUX)
                 var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-#           else
-                var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#else
+            var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 #endif
             return Path.Combine(baseDir, "singularitygroup-hotreload");
         }
-        
-        public static string GetExecutableTargetDir() {
-            if (PackageConst.IsAssetStoreBuild) {
+
+        public static string GetExecutableTargetDir()
+        {
+            if (PackageConst.IsAssetStoreBuild)
+            {
                 return Path.Combine(GetAppDataPath(), "asset-store", $"executables_{PackageConst.ServerVersion.Replace('.', '-')}");
             }
             return Path.Combine(GetAppDataPath(), $"executables_{PackageConst.ServerVersion.Replace('.', '-')}");
         }
-        
-        public static string GetCliTempDir() {
+
+        public static string GetCliTempDir()
+        {
             return Path.Combine(GetHotReloadTempDir(), "MethodPatches");
         }
-        
-        public static void Chmod(string targetFile, string flags = "+x") {
+
+        public static void Chmod(string targetFile, string flags = "+x")
+        {
             // ReSharper disable once PossibleNullReferenceException
-            Process.Start(new ProcessStartInfo("chmod", $"{flags} \"{targetFile}\"") {
+            Process.Start(new ProcessStartInfo("chmod", $"{flags} \"{targetFile}\"")
+            {
                 UseShellExecute = false,
             }).WaitForExit(2000);
         }
-        
-        public static bool TryFindServerDir(out string path) {
+
+        public static bool TryFindServerDir(out string path)
+        {
             const string serverBasePath = "Packages/com.singularitygroup.hotreload/Server";
-            if(Directory.Exists(serverBasePath)) {
+            if (Directory.Exists(serverBasePath))
+            {
                 path = Path.GetFullPath(serverBasePath);
                 return true;
             }
-            
+
             //Not found in packages. Try to find in assets folder.
             //fast path - this is the expected folder
             const string alternativeExecutablePath = "Assets/HotReload/Server";
-            if(Directory.Exists(alternativeExecutablePath)) {
+            if (Directory.Exists(alternativeExecutablePath))
+            {
                 path = Path.GetFullPath(alternativeExecutablePath);
                 return true;
             }
             //slow path - try to find the server directory somewhere in the assets folder
             var candidates = Directory.GetDirectories("Assets", "HotReload", SearchOption.AllDirectories);
-            foreach(var candidate in candidates) {
+            foreach (var candidate in candidates)
+            {
                 var serverDir = Path.Combine(candidate, "Server");
-                if(Directory.Exists(serverDir)) {
+                if (Directory.Exists(serverDir))
+                {
                     path = Path.GetFullPath(serverDir);
                     return true;
                 }
@@ -80,18 +101,22 @@ namespace SingularityGroup.HotReload.Editor.Cli {
             path = null;
             return false;
         }
-        
-        public static string GetPidFilePath(string hotreloadTempDir) {
+
+        public static string GetPidFilePath(string hotreloadTempDir)
+        {
             return Path.GetFullPath(Path.Combine(hotreloadTempDir, "server.pid"));
         }
-        
-        public static void KillLastKnownHotReloadProcess() {
+
+        public static void KillLastKnownHotReloadProcess()
+        {
             var pidPath = GetPidFilePath(GetHotReloadTempDir());
-            try {
+            try
+            {
                 var pid = int.Parse(File.ReadAllText(pidPath));
                 Process.GetProcessById(pid).Kill();
             }
-            catch {
+            catch
+            {
                 //ignore
             }
             File.Delete(pidPath);

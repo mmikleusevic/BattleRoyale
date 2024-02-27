@@ -2,14 +2,20 @@
 using System;
 using System.Reflection;
 
-namespace SingularityGroup.HotReload {
-    static class MethodUtils {
+namespace SingularityGroup.HotReload
+{
+    static class MethodUtils
+    {
 #if ENABLE_MONO
-        public static unsafe void DisableVisibilityChecks(MethodBase method) {
-            if(IntPtr.Size == sizeof(long)) {
+        public static unsafe void DisableVisibilityChecks(MethodBase method)
+        {
+            if (IntPtr.Size == sizeof(long))
+            {
                 var ptr = (Interop.MonoMethod64*)method.MethodHandle.Value.ToPointer();
                 ptr->monoMethodFlags |= Interop.MonoMethodFlags.skip_visibility;
-            } else {
+            }
+            else
+            {
                 var ptr = (Interop.MonoMethod32*)method.MethodHandle.Value.ToPointer();
                 ptr->monoMethodFlags |= Interop.MonoMethodFlags.skip_visibility;
             }

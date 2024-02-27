@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace ParrelSync
 {
@@ -46,8 +46,8 @@ namespace ParrelSync
             valueCache = null;
         }
     }
-    
-    
+
+
     /// <summary>
     /// To add value caching for <see cref="EditorPrefs"/> functions
     /// </summary>
@@ -78,7 +78,7 @@ namespace ParrelSync
             {
                 if (item.Contains(serializationToken))
                 {
-                    Debug.LogError("Unable to serialize this value ["+item+"], it contains the serialization token ["+serializationToken+"]");
+                    Debug.LogError("Unable to serialize this value [" + item + "], it contains the serialization token [" + serializationToken + "]");
                     continue;
                 }
 
@@ -119,7 +119,7 @@ namespace ParrelSync
         /// eg. Wwise project data
         /// </summary>
         public static ListOfStringsPreference OptionalSymbolicLinkFolders = new ListOfStringsPreference("ParrelSync_OptionalSymbolicLinkFolders");
-        
+
         private void OnGUI()
         {
             if (ClonesManager.IsClone())
@@ -160,7 +160,7 @@ namespace ParrelSync
             // cache the current value
             List<string> optionalFolderPaths = OptionalSymbolicLinkFolders.GetStoredValue();
             bool optionalFolderPathsAreDirty = false;
-            
+
             // append a new row if full
             if (optionalFolderPaths.Last() != "")
             {
@@ -177,10 +177,10 @@ namespace ParrelSync
                     var result = EditorUtility.OpenFolderPanel("Select Folder to Symbolically Link...", "", "");
                     if (result.Contains(projectPath))
                     {
-                        optionalFolderPaths[i] = result.Replace(projectPath,"");
+                        optionalFolderPaths[i] = result.Replace(projectPath, "");
                         optionalFolderPathsAreDirty = true;
                     }
-                    else if( result != "")
+                    else if (result != "")
                     {
                         Debug.LogWarning("Symbolic Link folder must be within the project directory");
                     }
@@ -196,12 +196,12 @@ namespace ParrelSync
             // only set the preference if the value is marked dirty
             if (optionalFolderPathsAreDirty)
             {
-                optionalFolderPaths.RemoveAll(str=> str == "");
+                optionalFolderPaths.RemoveAll(str => str == "");
                 OptionalSymbolicLinkFolders.SetStoredValue(optionalFolderPaths);
             }
-            
+
             GUILayout.EndVertical();
-            
+
             if (GUILayout.Button("Reset to default"))
             {
                 AssetModPref.ClearValue();

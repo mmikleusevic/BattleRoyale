@@ -32,11 +32,9 @@ public class RollUI : NetworkBehaviour
         base.OnDestroy();
     }
 
-    public override void OnNetworkSpawn()
+    private void Start()
     {
         Hide();
-
-        base.OnNetworkSpawn();
     }
 
     private void AssignDicePosition()
