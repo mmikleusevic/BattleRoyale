@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -9,6 +8,7 @@ using UnityEngine.EventSystems;
 public class Card : NetworkBehaviour, IPointerDownHandler
 {
     public static event EventHandler<Player> OnCardPressed;
+    public static event Action OnCardClosed;
 
     [SerializeField] private GameObject highlight;
     [SerializeField] private PlayerCardPosition[] playerCardPositions;
@@ -51,6 +51,13 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     {
         CloseCardServerRpc();
 
+        OnCardClosed?.Invoke();
+    }
+
+
+    [ClientRpc]
+    private void SetDefaultSpriteClientRpc()
+    {
         Sprite = defaultSprite;
     }
 
@@ -171,7 +178,9 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     private void CloseCardServerRpc(ServerRpcParams serverRpcParams = default)
     {
         isClosed.Value = true;
-        CloseCard();
+
+        SetDefaultSpriteClientRpc();
+        CloseCard();       
     }
 
     private void CloseCard()

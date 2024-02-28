@@ -26,6 +26,8 @@ public class MessageUI : NetworkBehaviour
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn += OnCallbackSetMessages;
         RollResults.OnBattleReRoll += OnCallbackSetMessages;
+        RollResults.OnPlayerCardWon += RollResults_OnPlayerCardWon;
+        RollResults.OnPlayerCardLost += RollResults_OnPlayerCardLost;
     }
 
     public override void OnNetworkDespawn()
@@ -43,6 +45,8 @@ public class MessageUI : NetworkBehaviour
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
         RollResults.OnBattleReRoll -= OnCallbackSetMessages;
+        RollResults.OnPlayerCardWon -= RollResults_OnPlayerCardWon;
+        RollResults.OnPlayerCardLost -= RollResults_OnPlayerCardLost;
 
         base.OnNetworkDespawn();
     }
@@ -99,6 +103,16 @@ public class MessageUI : NetworkBehaviour
     private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
         SendMessageToEveryoneServerRpc(arg3);
+    }
+
+    private void RollResults_OnPlayerCardWon(RollResults.OnCardWonEventArgs obj)
+    {
+        OnCallbackSetMessages(obj.message);
+    }
+
+    private void RollResults_OnPlayerCardLost(string obj)
+    {
+        OnCallbackSetMessages(obj);
     }
 
 

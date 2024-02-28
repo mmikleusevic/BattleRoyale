@@ -11,14 +11,20 @@ public class RollResults : NetworkBehaviour, IRollResults
     public static event EventHandler OnPlayerBattleRoll;
     public static event EventHandler OnPlayerBattleRollDisadvantage;
     public static event Action OnPlayerCardRoll;
-    public static event Action<Card> OnPlayerCardWon;
-    public static event Action OnPlayerCardLost;
+    public static event Action<OnCardWonEventArgs> OnPlayerCardWon;
+    public static event Action<string> OnPlayerCardLost;
     public static event EventHandler OnReRoll;
     public static event Action<string> OnBattleReRoll;
     public static event EventHandler OnBattlePrepared;
     public static event EventHandler<OnInitiativeRollOverEventArgs> OnInitiativeRollOver;
     public static event EventHandler<OnBattleRollOverEventArgs> OnBattleRollOver;
     public static event EventHandler<string> OnCardRollOver;
+
+    public class OnCardWonEventArgs : EventArgs
+    {
+        public string message;
+        public Card card;
+    }
 
     public class OnInitiativeRollOverEventArgs : EventArgs
     {
@@ -461,11 +467,15 @@ public class RollResults : NetworkBehaviour, IRollResults
         if (sum >= card.Value || isThreeOfAKind)
         {
             card.DisableCard();
-            OnPlayerCardWon?.Invoke(card);
+            OnPlayerCardWon?.Invoke(new OnCardWonEventArgs
+            {
+                card = card,
+                message = SendCardWonMessageToMessageUI(),
+            });
         }
         else
         {
-            OnPlayerCardLost?.Invoke();
+            OnPlayerCardLost?.Invoke(SendCardLostMessageToMessageUI());
         }
 
         cardRolls.Clear();
@@ -572,6 +582,26 @@ public class RollResults : NetworkBehaviour, IRollResults
         string message = SendBattleWinnerMessageToMessageUI(winnerId);
 
         CallOnBattleRollOverClientRpc(winnerId, message, clientRpcParams);
+    }
+
+    private string SendCardWonMessageToMessageUI()
+    {
+        Player player = Player.LocalInstance;
+
+        string playerName = player.PlayerName;
+        string playerColor = player.HexPlayerColor;
+
+        return $"<color=#{playerColor}>{playerName}</color> won {card.Name}";
+    }
+
+    private string SendCardLostMessageToMessageUI()
+    {
+        Player player = Player.LocalInstance;
+
+        string playerName = player.PlayerName;
+        string playerColor = player.HexPlayerColor;
+
+        return $"<color=#{playerColor}>{playerName}</color> has failed a card roll and died.";
     }
 
     private string SendBattleWinnerMessageToMessageUI(ulong clientId)

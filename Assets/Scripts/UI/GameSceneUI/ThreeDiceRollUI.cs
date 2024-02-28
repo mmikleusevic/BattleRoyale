@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class ThreeDiceRollUI : MonoBehaviour
@@ -23,12 +22,12 @@ public class ThreeDiceRollUI : MonoBehaviour
     {
         rollUI.ShowWithAnimation();
     }
-    private void RollResults_OnPlayerCardLost()
+    private void RollResults_OnPlayerCardLost(string message)
     {
         rollUI.HideWithAnimation();
     }
 
-    private void RollResults_OnPlayerCardWon(Card obj)
+    private void RollResults_OnPlayerCardWon(RollResults.OnCardWonEventArgs obj)
     {
         rollUI.HideWithAnimation();
     }

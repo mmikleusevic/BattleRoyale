@@ -71,7 +71,7 @@ public class RollUI : NetworkBehaviour
 
     private IEnumerator Delay()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
         rollUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
         backgroundImageGameObject.SetActive(false);
         rollButton.gameObject.SetActive(false);

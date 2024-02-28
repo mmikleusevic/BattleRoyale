@@ -129,9 +129,9 @@ public class Player : NetworkBehaviour
         ResetActionsAndMovement();
     }
 
-    private void RollResults_OnPlayerCardWon(Card card)
+    private void RollResults_OnPlayerCardWon(RollResults.OnCardWonEventArgs obj)
     {
-        UnequippedCards.Add(card);
+        UnequippedCards.Add(obj.card);
     }
 
     private void ActionsUI_OnAttackCard(Card obj)
