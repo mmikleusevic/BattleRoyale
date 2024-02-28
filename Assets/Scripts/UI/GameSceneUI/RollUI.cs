@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -58,14 +59,20 @@ public class RollUI : NetworkBehaviour
 
     public void HideWithAnimation()
     {
-        rollUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
-        backgroundImageGameObject.SetActive(false);
-        rollButton.gameObject.SetActive(false);
+        StartCoroutine(Delay());     
     }
 
     public void HideInstant()
     {
         rollUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
+        backgroundImageGameObject.SetActive(false);
+        rollButton.gameObject.SetActive(false);
+    }
+
+    private IEnumerator Delay()
+    {
+        yield return new WaitForSeconds(1f);
+        rollUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
         backgroundImageGameObject.SetActive(false);
         rollButton.gameObject.SetActive(false);
     }

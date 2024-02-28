@@ -61,7 +61,7 @@ public class ActionsUI : MonoBehaviour
                 HideMoveButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0)
+            if (isPlayerOnCard && player.ActionPoints > 0 && !card.isClosed.Value)
             {
                 ShowAttackCardButton();
             }
@@ -70,7 +70,7 @@ public class ActionsUI : MonoBehaviour
                 HideAttackCardButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0 && card.AreMultiplePeopleOnTheCard())
+            if (isPlayerOnCard && player.ActionPoints > 0 && card.AreMultiplePeopleOnTheCard() && !card.isClosed.Value)
             {
                 ShowAttackPlayerButton();
             }

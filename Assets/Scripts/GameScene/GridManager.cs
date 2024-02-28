@@ -35,6 +35,7 @@ public class GridManager : NetworkBehaviour
         PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
+        RollResults.OnPlayerCardWon += RollResults_OnPlayerCardWon;
     }
 
     public override void OnNetworkDespawn()
@@ -43,6 +44,7 @@ public class GridManager : NetworkBehaviour
         PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
+        RollResults.OnPlayerCardWon -= RollResults_OnPlayerCardWon;
 
         base.OnNetworkDespawn();
     }
@@ -65,6 +67,13 @@ public class GridManager : NetworkBehaviour
     }
 
     private void Player_OnPlayerMoved(object sender, string e)
+    {
+        DisableCards();
+
+        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+    }
+
+    private void RollResults_OnPlayerCardWon(Card obj)
     {
         DisableCards();
 
@@ -249,8 +258,11 @@ public class GridManager : NetworkBehaviour
                 {
                     Card card = gridCards[position];
 
-                    card.Enable();
-                    card.ShowHighlight();
+                    if (!card.isClosed.Value)
+                    {
+                        card.Enable();
+                        card.ShowHighlight();
+                    }
                 }
             }
         }

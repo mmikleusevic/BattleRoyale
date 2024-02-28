@@ -15,6 +15,7 @@ public class PlayerInfoUI : MonoBehaviour
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
+        Player.OnPlayerActionUsed += Player_OnPlayerActionUsed;
 
         Hide();
     }
@@ -24,6 +25,7 @@ public class PlayerInfoUI : MonoBehaviour
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
+        Player.OnPlayerActionUsed -= Player_OnPlayerActionUsed;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -48,6 +50,12 @@ public class PlayerInfoUI : MonoBehaviour
     private void Player_OnPlayerMoved(object sender, string e)
     {
         SetMovementsText();
+        SetActionsText();
+        SetIsDeadText();
+    }
+
+    private void Player_OnPlayerActionUsed()
+    {
         SetActionsText();
         SetIsDeadText();
     }

@@ -11,6 +11,7 @@ public class Player : NetworkBehaviour
 
     public static event Action OnPlayerTurnSet;
     public static event EventHandler<string> OnPlayerMoved;
+    public static event Action OnPlayerActionUsed;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -56,6 +57,9 @@ public class Player : NetworkBehaviour
             LocalInstance = this;
             ClientId.Value = NetworkObject.OwnerClientId;
             PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+            RollResults.OnPlayerCardWon += RollResults_OnPlayerCardWon;
+            ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
+            ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
         }
 
         InitializePlayerClientRpc();
@@ -66,6 +70,9 @@ public class Player : NetworkBehaviour
     public override void OnDestroy()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
+        RollResults.OnPlayerCardWon -= RollResults_OnPlayerCardWon;
+        ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
+        ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
 
         base.OnDestroy();
     }
@@ -120,6 +127,21 @@ public class Player : NetworkBehaviour
     private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
     {
         ResetActionsAndMovement();
+    }
+
+    private void RollResults_OnPlayerCardWon(Card card)
+    {
+        UnequippedCards.Add(card);
+    }
+
+    private void ActionsUI_OnAttackCard(Card obj)
+    {
+        SubtractActionPoints();
+    }
+
+    private void ActionsUI_OnAttackPlayer(Card obj)
+    {
+        SubtractActionPoints();
     }
 
     public void SetPlayersPosition(Card card)
@@ -210,6 +232,8 @@ public class Player : NetworkBehaviour
     public void SubtractActionPoints()
     {
         ActionPoints--;
+
+        OnPlayerActionUsed?.Invoke();
     }
 
     private void ResetActionsAndMovement()

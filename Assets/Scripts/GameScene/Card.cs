@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -11,10 +12,11 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
     [SerializeField] private GameObject highlight;
     [SerializeField] private PlayerCardPosition[] playerCardPositions;
+    [SerializeField] private Sprite defaultSprite;
 
     private CardAnimator cardAnimator;
 
-    private NetworkVariable<bool> isClosed = new NetworkVariable<bool>(false);
+    public NetworkVariable<bool> isClosed = new NetworkVariable<bool>(false); 
     public NetworkVariable<bool> isOccupiedOnPlacing { get; private set; }
 
     public bool Interactable { get; private set; } = false;
@@ -43,6 +45,13 @@ public class Card : NetworkBehaviour, IPointerDownHandler
         Sprite = cardSO.cardSprite;
         Name = cardSO.name;
         Value = cardSO.cost;
+    }
+
+    public void DisableCard()
+    {
+        CloseCardServerRpc();
+
+        Sprite = defaultSprite;
     }
 
     public PlayerCardPosition GetPlayerCardSpot(Player player)
@@ -162,12 +171,6 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     private void CloseCardServerRpc(ServerRpcParams serverRpcParams = default)
     {
         isClosed.Value = true;
-        CloseCardClientRpc();
-    }
-
-    [ClientRpc]
-    private void CloseCardClientRpc(ClientRpcParams clientRpcParams = default)
-    {
         CloseCard();
     }
 

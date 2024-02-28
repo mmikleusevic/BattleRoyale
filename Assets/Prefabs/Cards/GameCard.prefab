@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1249534169
+  GlobalObjectIdHash: 951099334
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SyncPositionX: 0
+  SyncPositionX: 1
   SyncPositionY: 0
   SyncPositionZ: 0
   SyncRotAngleX: 1
@@ -345,6 +345,9 @@ MonoBehaviour:
   - position: {x: -1.07, y: 0, z: 0}
   - position: {x: 1.07, y: -2.15, z: 0}
   - position: {x: -1.07, y: -2.15, z: 0}
+  defaultSprite: {fileID: 540946325, guid: 0bade29aaef0c854aa6f74f8e309fbcc, type: 3}
+  isClosed:
+    m_InternalValue: 0
 --- !u!65 &249220833855394490
 BoxCollider:
   m_ObjectHideFlags: 0

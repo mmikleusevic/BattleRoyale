@@ -1,5 +1,8 @@
+using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -60,58 +63,61 @@ public class Roll : MonoBehaviour, IRoll
 
     public IEnumerator RotateDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
     {
+        List<int> resultList = new List<int>();
         int resultSum = 0;
         int min = int.MaxValue;
 
-        for (int i = 0; i < dice.Length; i++)
+        Vector3[] randomAxes = new Vector3[dice.Length];
+
+        for (int i = 0; i < randomAxes.Length; i++)
         {
+            randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
             dice[i].transform.rotation = Random.rotationUniform;
+        }                   
 
-            Vector3 randomAxis = new Vector3(Random.value, Random.value, Random.value).normalized;
-            float spinTimer = rotationTime;
-            float rotationTimer = 0.0f;
+        float spinTimer = rotationTime;
+        float rotationTimer = 0.0f;
 
-            while (spinTimer > 0)
+        while (spinTimer > 0)
+        {
+            spinTimer -= Time.deltaTime;
+            rotationTimer += Time.deltaTime;
+
+            for (int i = 0; i < dice.Length; i++)
             {
-                spinTimer -= Time.deltaTime;
-                rotationTimer += Time.deltaTime;
-
-                Quaternion targetRotation = dice[i].transform.rotation * Quaternion.Euler(randomAxis * rotationSpeed * Time.deltaTime);
+                Quaternion targetRotation = dice[i].transform.rotation * Quaternion.Euler(randomAxes[i] * rotationSpeed * Time.deltaTime);
                 dice[i].transform.rotation = Quaternion.RotateTowards(dice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-                if (rotationTimer >= 0.25f)
-                {
-                    randomAxis = new Vector3(Random.value, Random.value, Random.value).normalized;
-                    rotationTimer = 0.0f;
-                }
-
-                yield return null;
             }
 
-            // ---------------------------------
+            if (rotationTimer >= 0.25f)
+            {
+                for (int i = 0; i < dice.Length; i++)
+                {
+                    randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
+                }
 
+                rotationTimer = 0.0f;
+            }
+
+            yield return null;
+        }
+
+        for (int i = 0; i < dice.Length; i++)
+        {
             Vector3 direction = dicePositions[i] - cameraPosition;
 
             int result = GetResult(direction, cameraPosition);
+
+            if (RollType.rollType == RollTypeEnum.CardAttack)
+            {
+                resultList.Add(result);
+            }
 
             resultSum += result;
 
             Vector3 side = GetSide(result);
 
-            float timer = 1f;
-            float speed = 10f * Time.deltaTime;
-
-            // Rotate sides face towards camera
-
-            while (timer > 0)
-            {
-                timer -= Time.deltaTime;
-
-                Quaternion rotation = Quaternion.LookRotation(side);
-
-                dice[i].transform.rotation = Quaternion.Slerp(dice[i].transform.rotation, rotation, speed);
-                yield return null;
-            }
+            StartCoroutine(RotateToFace(side, dice[i]));
 
             if (result < min)
             {
@@ -124,13 +130,57 @@ public class Roll : MonoBehaviour, IRoll
             resultSum = min;
         }
 
-        rollResults.SetRollResults(resultSum, RollType.rollType);
+        if (RollType.rollType == RollTypeEnum.CardAttack)
+        {
+            rollResults.SetRollResults(resultList);
+
+            bool isThreeOfAKind = resultList.Distinct().Count() == 1;
+
+            if (isThreeOfAKind)
+            {
+                SendThreeOfAKindMessageToMessageUI(resultSum);
+            }
+        }
+        else
+        {
+            rollResults.SetRollResults(resultSum, RollType.rollType);
+        }
+
         SendToMessageUI(resultSum);
+    }
+
+    private IEnumerator RotateToFace(Vector3 side, GameObject die)
+    {
+        float timer = 1f;
+        float speed = 10f * Time.deltaTime;
+
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+
+            Quaternion rotation = Quaternion.LookRotation(side);
+
+            die.transform.rotation = Quaternion.Slerp(die.transform.rotation, rotation, speed);
+            yield return null;
+        }
     }
 
     private void SendToMessageUI(int result)
     {
         string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>";
+
+        OnRollEventArgs eventArgs = new OnRollEventArgs
+        {
+            message = message,
+            rollValue = result
+        };
+
+        OnRoll?.Invoke(this, eventArgs);
+    }
+
+    private void SendThreeOfAKindMessageToMessageUI(int result)
+    {
+        string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND";
 
         OnRollEventArgs eventArgs = new OnRollEventArgs
         {

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class ThreeDiceRollUI : MonoBehaviour
@@ -7,15 +8,28 @@ public class ThreeDiceRollUI : MonoBehaviour
     private void Awake()
     {
         RollResults.OnPlayerCardRoll += RollResults_OnPlayerCardRoll;
+        RollResults.OnPlayerCardWon += RollResults_OnPlayerCardWon;
+        RollResults.OnPlayerCardLost += RollResults_OnPlayerCardLost;
     }
 
     private void OnDestroy()
     {
         RollResults.OnPlayerCardRoll -= RollResults_OnPlayerCardRoll;
+        RollResults.OnPlayerCardWon -= RollResults_OnPlayerCardWon;
+        RollResults.OnPlayerCardLost -= RollResults_OnPlayerCardLost;
     }
 
     private void RollResults_OnPlayerCardRoll()
     {
         rollUI.ShowWithAnimation();
+    }
+    private void RollResults_OnPlayerCardLost()
+    {
+        rollUI.HideWithAnimation();
+    }
+
+    private void RollResults_OnPlayerCardWon(Card obj)
+    {
+        rollUI.HideWithAnimation();
     }
 }
