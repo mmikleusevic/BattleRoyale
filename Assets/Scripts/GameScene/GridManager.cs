@@ -223,7 +223,7 @@ public class GridManager : NetworkBehaviour
 
                     Card card = gridCards[tile];
 
-                    if (!card.isOccupiedOnPlacing.Value)
+                    if (!card.IsOccupiedOnPlacing.Value)
                     {
                         card.Enable();
                         card.ShowHighlight();
@@ -259,7 +259,7 @@ public class GridManager : NetworkBehaviour
                 {
                     Card card = gridCards[position];
 
-                    if (!card.isClosed.Value)
+                    if (!card.IsClosed)
                     {
                         card.Enable();
                         card.ShowHighlight();

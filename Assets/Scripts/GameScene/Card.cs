@@ -16,11 +16,9 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
     private CardAnimator cardAnimator;
 
-    public NetworkVariable<bool> isClosed = new NetworkVariable<bool>(false); 
-    public NetworkVariable<bool> isOccupiedOnPlacing { get; private set; }
-
+    public NetworkVariable<bool> IsOccupiedOnPlacing { get; private set; }
+    public bool IsClosed { get; private set; } = false;
     public bool Interactable { get; private set; } = false;
-
     public Vector2 GridPosition { get; private set; }
     public string Name { get; private set; }
     public Sprite Sprite { get; private set; }
@@ -28,7 +26,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
     private void Awake()
     {
-        isOccupiedOnPlacing = new NetworkVariable<bool>(false);
+        IsOccupiedOnPlacing = new NetworkVariable<bool>(false);
     }
 
     private void Start()
@@ -50,15 +48,19 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     public void DisableCard()
     {
         CloseCardServerRpc();
-
-        OnCardClosed?.Invoke();
     }
 
 
     [ClientRpc]
-    private void SetDefaultSpriteClientRpc()
+    private void SetCardClosedClientRpc(ClientRpcParams clientRpcParams = default)
     {
+        IsClosed = true;
         Sprite = defaultSprite;
+
+        if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer)
+        {
+            OnCardClosed?.Invoke();
+        }
     }
 
     public PlayerCardPosition GetPlayerCardSpot(Player player)
@@ -165,7 +167,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     [ServerRpc(RequireOwnership = false)]
     public void OccupyCardOnPlaceOnGridServerRpc()
     {
-        isOccupiedOnPlacing.Value = true;
+        IsOccupiedOnPlacing.Value = true;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -177,9 +179,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     [ServerRpc(RequireOwnership = false)]
     private void CloseCardServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        isClosed.Value = true;
-
-        SetDefaultSpriteClientRpc();
+        SetCardClosedClientRpc();
         CloseCard();       
     }
 

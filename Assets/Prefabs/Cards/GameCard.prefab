@@ -346,8 +346,6 @@ MonoBehaviour:
   - position: {x: 1.07, y: -2.15, z: 0}
   - position: {x: -1.07, y: -2.15, z: 0}
   defaultSprite: {fileID: 540946325, guid: 0bade29aaef0c854aa6f74f8e309fbcc, type: 3}
-  isClosed:
-    m_InternalValue: 0
 --- !u!65 &249220833855394490
 BoxCollider:
   m_ObjectHideFlags: 0
