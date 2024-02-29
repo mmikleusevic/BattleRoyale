@@ -180,7 +180,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
     private void CloseCardServerRpc(ServerRpcParams serverRpcParams = default)
     {
         SetCardClosedClientRpc();
-        CloseCard();       
+        CloseCard();
     }
 
     private void CloseCard()

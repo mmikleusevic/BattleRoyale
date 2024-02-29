@@ -57,7 +57,7 @@ public class Player : NetworkBehaviour
             LocalInstance = this;
             ClientId.Value = NetworkObject.OwnerClientId;
             PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
-            RollResults.OnPlayerCardWon += RollResults_OnPlayerCardWon;
+            CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
             ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
             ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
         }
@@ -70,7 +70,7 @@ public class Player : NetworkBehaviour
     public override void OnDestroy()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
-        RollResults.OnPlayerCardWon -= RollResults_OnPlayerCardWon;
+        CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
 
@@ -129,7 +129,7 @@ public class Player : NetworkBehaviour
         ResetActionsAndMovement();
     }
 
-    private void RollResults_OnPlayerCardWon(RollResults.OnCardWonEventArgs obj)
+    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
     {
         UnequippedCards.Add(obj.card);
     }

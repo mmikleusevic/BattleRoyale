@@ -59,7 +59,7 @@ public class RollUI : NetworkBehaviour
 
     public void HideWithAnimation()
     {
-        StartCoroutine(Delay());     
+        StartCoroutine(Delay());
     }
 
     public void HideInstant()

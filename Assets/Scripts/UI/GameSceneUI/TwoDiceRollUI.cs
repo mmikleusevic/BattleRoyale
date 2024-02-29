@@ -6,15 +6,15 @@ public class TwoDiceRollUI : MonoBehaviour
 
     private void Start()
     {
-        RollResults.OnPlayerBattleRollDisadvantage += RollResults_OnPlayerBattleRollDisadvantage;
+        PlayerBattleResults.OnPlayerBattleRollDisadvantage += PlayerBattleResults_OnPlayerBattleRollDisadvantage;
     }
 
     private void OnDestroy()
     {
-        RollResults.OnPlayerBattleRollDisadvantage -= RollResults_OnPlayerBattleRollDisadvantage;
+        PlayerBattleResults.OnPlayerBattleRollDisadvantage -= PlayerBattleResults_OnPlayerBattleRollDisadvantage;
     }
 
-    private void RollResults_OnPlayerBattleRollDisadvantage(object sender, System.EventArgs e)
+    private void PlayerBattleResults_OnPlayerBattleRollDisadvantage(object sender, System.EventArgs e)
     {
         rollUI.ShowWithAnimation();
     }

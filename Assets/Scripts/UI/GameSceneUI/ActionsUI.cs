@@ -61,7 +61,7 @@ public class ActionsUI : MonoBehaviour
                 HideMoveButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0 && !card.IsClosed)
+            if (isPlayerOnCard && player.ActionPoints > 0 && !card.AreMultiplePeopleOnTheCard() && !card.IsClosed)
             {
                 ShowAttackCardButton();
             }

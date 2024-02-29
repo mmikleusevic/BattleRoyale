@@ -259,11 +259,13 @@ public class GridManager : NetworkBehaviour
                 {
                     Card card = gridCards[position];
 
-                    if (!card.IsClosed)
+                    if (player.GridPosition == card.GridPosition && card.IsClosed)
                     {
-                        card.Enable();
-                        card.ShowHighlight();
+                        continue;
                     }
+
+                    card.Enable();
+                    card.ShowHighlight();
                 }
             }
         }

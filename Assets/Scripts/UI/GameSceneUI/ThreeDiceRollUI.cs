@@ -6,28 +6,29 @@ public class ThreeDiceRollUI : MonoBehaviour
 
     private void Awake()
     {
-        RollResults.OnPlayerCardRoll += RollResults_OnPlayerCardRoll;
-        RollResults.OnPlayerCardWon += RollResults_OnPlayerCardWon;
-        RollResults.OnPlayerCardLost += RollResults_OnPlayerCardLost;
+        CardBattleResults.OnCardRoll += CardBattleResults_OnCardRoll;
+        CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
+        CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
     }
 
     private void OnDestroy()
     {
-        RollResults.OnPlayerCardRoll -= RollResults_OnPlayerCardRoll;
-        RollResults.OnPlayerCardWon -= RollResults_OnPlayerCardWon;
-        RollResults.OnPlayerCardLost -= RollResults_OnPlayerCardLost;
+        CardBattleResults.OnCardRoll -= CardBattleResults_OnCardRoll;
+        CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
+        CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
     }
 
-    private void RollResults_OnPlayerCardRoll()
+    private void CardBattleResults_OnCardRoll()
     {
         rollUI.ShowWithAnimation();
     }
-    private void RollResults_OnPlayerCardLost(string message)
+
+    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
     {
         rollUI.HideWithAnimation();
     }
 
-    private void RollResults_OnPlayerCardWon(RollResults.OnCardWonEventArgs obj)
+    private void CardBattleResults_OnCardLost(string obj)
     {
         rollUI.HideWithAnimation();
     }

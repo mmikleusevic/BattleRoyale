@@ -8,19 +8,19 @@ public class DieRollUI : MonoBehaviour
     private void Start()
     {
         AlcoholTypeUI.OnAlcoholButtonPress += AlcoholTypeUI_OnAlcoholButtonPress;
-        RollResults.OnReRoll += RollResults_OnReRoll;
-        RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
-        RollResults.OnBattleRollOver += RollResults_OnBattleRollOver;
-        RollResults.OnPlayerBattleRoll += RollResults_OnPlayerBattleRoll;
+        InitiativeResults.OnReRoll += InitiativeResults_OnReRoll;
+        InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
+        PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
+        PlayerBattleResults.OnPlayerBattleRoll += PlayerBattleResults_OnPlayerBattleRoll;
     }
 
     private void OnDestroy()
     {
         AlcoholTypeUI.OnAlcoholButtonPress -= AlcoholTypeUI_OnAlcoholButtonPress;
-        RollResults.OnReRoll -= RollResults_OnReRoll;
-        RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
-        RollResults.OnBattleRollOver -= RollResults_OnBattleRollOver;
-        RollResults.OnPlayerBattleRoll -= RollResults_OnPlayerBattleRoll;
+        InitiativeResults.OnReRoll -= InitiativeResults_OnReRoll;
+        InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
+        PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
+        PlayerBattleResults.OnPlayerBattleRoll -= PlayerBattleResults_OnPlayerBattleRoll;
     }
 
     private void AlcoholTypeUI_OnAlcoholButtonPress()
@@ -28,22 +28,22 @@ public class DieRollUI : MonoBehaviour
         rollUI.ShowWithAnimation();
     }
 
-    private void RollResults_OnReRoll(object sender, EventArgs e)
+    private void InitiativeResults_OnReRoll(object sender, EventArgs e)
     {
         rollUI.ShowWithAnimation();
     }
 
-    private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
+    private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
     {
         rollUI.HideWithAnimation();
     }
 
-    private void RollResults_OnBattleRollOver(object sender, RollResults.OnBattleRollOverEventArgs e)
+    private void PlayerBattleResults_OnPlayerBattleRollOver(object sender, PlayerBattleResults.OnBattleRollOverEventArgs e)
     {
         rollUI.HideWithAnimation();
     }
 
-    private void RollResults_OnPlayerBattleRoll(object sender, EventArgs e)
+    private void PlayerBattleResults_OnPlayerBattleRoll(object sender, EventArgs e)
     {
         rollUI.ShowWithAnimation();
     }

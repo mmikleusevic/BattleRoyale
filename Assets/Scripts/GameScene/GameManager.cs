@@ -35,14 +35,14 @@ public class GameManager : NetworkBehaviour
         StateManager.Instance.SetState(StateEnum.WaitingForPlayers);
 
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
-        RollResults.OnInitiativeRollOver += RollResults_OnInitiativeRollOver;
+        InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
     }
 
     public override void OnNetworkDespawn()
     {
         isGamePaused.OnValueChanged -= IsGamePaused_OnValueChanged;
-        RollResults.OnInitiativeRollOver -= RollResults_OnInitiativeRollOver;
+        InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
 
         if (NetworkManager.Singleton != null)
         {
@@ -80,7 +80,7 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    private void RollResults_OnInitiativeRollOver(object sender, RollResults.OnInitiativeRollOverEventArgs e)
+    private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
     {
         SetPlayerToPlayersList(e.playerOrder);
     }

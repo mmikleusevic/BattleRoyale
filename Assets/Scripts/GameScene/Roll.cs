@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -73,7 +72,7 @@ public class Roll : MonoBehaviour, IRoll
         {
             randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
             dice[i].transform.rotation = Random.rotationUniform;
-        }                   
+        }
 
         float spinTimer = rotationTime;
         float rotationTimer = 0.0f;
