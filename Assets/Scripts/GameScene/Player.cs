@@ -181,7 +181,7 @@ public class Player : NetworkBehaviour
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)
     {
-        Move();
+        MoveAnimation();
 
         while (targetPosition != transform.position)
         {
@@ -190,7 +190,7 @@ public class Player : NetworkBehaviour
             yield return null;
         }
 
-        StopMoving();
+        StopMovingAnimation();
     }
 
     public static Player GetPlayerFromNetworkReference(NetworkObjectReference networkObjectReference)
@@ -202,14 +202,24 @@ public class Player : NetworkBehaviour
         return networkObject.GetComponent<Player>();
     }
 
-    private void Move()
+    private void MoveAnimation()
     {
         playerAnimator.MoveAnimation();
     }
 
-    private void StopMoving()
+    private void StopMovingAnimation()
     {
         playerAnimator.StopMovingAnimation();
+    }
+
+    private void DeathAnimation()
+    {
+        playerAnimator.DieAnimation();
+    }
+
+    private void AliveAnimation()
+    {
+        playerAnimator.AliveAnimation();
     }
 
     public void ShowParticleCircle()
