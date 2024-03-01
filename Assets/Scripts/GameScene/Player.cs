@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,9 @@ public class Player : NetworkBehaviour
     public static event Action OnPlayerTurnSet;
     public static event EventHandler<string> OnPlayerMoved;
     public static event Action OnPlayerActionUsed;
+    public static event Action OnPlayerDiedCardBattle;
+    public static event Action OnPlayerSelectedPlaceToDie;
+    public static event Action<string[]> OnPlayerResurrected;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -60,6 +64,8 @@ public class Player : NetworkBehaviour
             CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
             ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
             ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
+            CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
+            ResurrectUI.OnResurrectPressed += ResurrectUI_OnResurrectPressed;
         }
 
         InitializePlayerClientRpc();
@@ -73,6 +79,8 @@ public class Player : NetworkBehaviour
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
+        CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
+        ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
 
         base.OnDestroy();
     }
@@ -103,16 +111,29 @@ public class Player : NetworkBehaviour
 
         StartCoroutine(PlayWalkingAnimation(targetPosition));
 
-        if (Movement > 0)
+        string message = string.Empty;
+
+        if (!Dead)
         {
-            SubtractMovement();
+            if (Movement > 0)
+            {
+                SubtractMovement();
+            }
+            else
+            {
+                SubtractActionPoints();
+            }
+
+            message = CreateOnPlayerMovedMessage(card);
         }
         else
         {
-            SubtractActionPoints();
-        }
+            message = CreateOnPlayerDiedMoveMessage(card);
 
-        string message = CreateOnPlayerMovedMessage(card);
+            DeathAnimation();
+
+            OnPlayerSelectedPlaceToDie?.Invoke();
+        }
 
         GridPosition = card.GridPosition;
 
@@ -131,7 +152,14 @@ public class Player : NetworkBehaviour
 
     private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
     {
-        UnequippedCards.Add(obj.card);
+        if (EquippedCards.Count < 3)
+        {
+            EquippedCards.Add(obj.card);
+        }
+        else
+        {
+            UnequippedCards.Add(obj.card);
+        }
     }
 
     private void ActionsUI_OnAttackCard(Card obj)
@@ -142,6 +170,34 @@ public class Player : NetworkBehaviour
     private void ActionsUI_OnAttackPlayer(Card obj)
     {
         SubtractActionPoints();
+    }
+
+    private void CardBattleResults_OnCardLost(string[] obj)
+    {
+        SendPlayerDeadStatusToAllClientsClientRpc(true);
+
+        DeathAnimation();
+
+        OnPlayerDiedCardBattle?.Invoke();
+    }
+
+    private void ResurrectUI_OnResurrectPressed()
+    {
+        SendPlayerDeadStatusToAllClientsClientRpc(false);
+
+        AliveAnimation();
+
+        SubtractActionPoints();
+
+        AddSips();
+
+        OnPlayerResurrected?.Invoke(CreateOnPlayerResurrectedMessage());
+    }
+
+    [ClientRpc]
+    private void SendPlayerDeadStatusToAllClientsClientRpc(bool isDead, ClientRpcParams clientRpcParams = default)
+    {
+        Dead = isDead;
     }
 
     public void SetPlayersPosition(Card card)
@@ -159,6 +215,20 @@ public class Player : NetworkBehaviour
         return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {card.Name}";
     }
 
+    private string CreateOnPlayerDiedMoveMessage(Card card)
+    {
+        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"chose to die on {card.Name}";
+    }
+
+    private string[] CreateOnPlayerResurrectedMessage()
+    {
+        return new string[]
+        {
+            "YOU RESURRECTED",
+            $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"has resurrected"
+        };
+    }
+
     public void SetSipValue(int value)
     {
         SipValue = value;
@@ -169,14 +239,9 @@ public class Player : NetworkBehaviour
         Points += Points + cardValue;
     }
 
-    public void SetIsDead(bool isDead)
+    public void AddSips()
     {
-        Dead = isDead;
-    }
-
-    public void SetSipCounter(int sips)
-    {
-        SipCounter += sips;
+        SipCounter += SipValue;
     }
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)

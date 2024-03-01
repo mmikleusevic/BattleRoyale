@@ -28,6 +28,7 @@ public class MessageUI : NetworkBehaviour
         PlayerBattleResults.OnPlayerBattleReRoll += OnCallbackSetMessages;
         CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
+        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
     }
 
     public override void OnNetworkDespawn()
@@ -47,6 +48,7 @@ public class MessageUI : NetworkBehaviour
         PlayerBattleResults.OnPlayerBattleReRoll -= OnCallbackSetMessages;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
+        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
 
         base.OnNetworkDespawn();
     }
@@ -62,6 +64,13 @@ public class MessageUI : NetworkBehaviour
     }
 
     private void OnCallbackSetMessages(object sender, string[] e)
+    {
+        SetMessage(e[0]);
+
+        SendMessageToEveryoneExceptMeServerRpc(e[1]);
+    }
+
+    private void OnCallbackSetMessages(string[] e)
     {
         SetMessage(e[0]);
 
@@ -110,7 +119,12 @@ public class MessageUI : NetworkBehaviour
         OnCallbackSetMessages(obj.message);
     }
 
-    private void CardBattleResults_OnCardLost(string obj)
+    private void CardBattleResults_OnCardLost(string[] obj)
+    {
+        OnCallbackSetMessages(obj);
+    }
+
+    private void Player_OnPlayerResurrected(string[] obj)
     {
         OnCallbackSetMessages(obj);
     }

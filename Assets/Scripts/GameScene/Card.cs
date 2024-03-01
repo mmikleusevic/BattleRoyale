@@ -95,7 +95,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
                 playerCardPosition.Player = player;
                 playerCardPosition.IsOccupied = true;
 
-                if (player.ClientId.Value == Player.LocalInstance.ClientId.Value)
+                if (player == Player.LocalInstance)
                 {
                     Player.LocalInstance.MovePlayerPosition(this);
                 }

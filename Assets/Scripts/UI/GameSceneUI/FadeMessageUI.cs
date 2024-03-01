@@ -17,6 +17,8 @@ public class FadeMessageUI : MonoBehaviour
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
+        CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
     }
 
     private void Start()
@@ -31,6 +33,8 @@ public class FadeMessageUI : MonoBehaviour
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
+        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
+        CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -46,6 +50,16 @@ public class FadeMessageUI : MonoBehaviour
     private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
     {
         StartFadeMessage(e[0]);
+    }
+
+    private void Player_OnPlayerResurrected(string[] obj)
+    {
+        StartFadeMessage(obj[0]);
+    }
+
+    private void CardBattleResults_OnCardLost(string[] obj)
+    {
+        StartFadeMessage(obj[0]);
     }
 
     public void StartFadeMessage(string message)

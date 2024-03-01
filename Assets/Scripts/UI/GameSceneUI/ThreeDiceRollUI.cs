@@ -28,7 +28,7 @@ public class ThreeDiceRollUI : MonoBehaviour
         rollUI.HideWithAnimation();
     }
 
-    private void CardBattleResults_OnCardLost(string obj)
+    private void CardBattleResults_OnCardLost(string[] obj)
     {
         rollUI.HideWithAnimation();
     }

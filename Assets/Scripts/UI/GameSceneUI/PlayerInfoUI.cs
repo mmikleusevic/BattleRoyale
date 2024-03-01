@@ -16,6 +16,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
         Player.OnPlayerActionUsed += Player_OnPlayerActionUsed;
+        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
 
         Hide();
     }
@@ -26,6 +27,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
         Player.OnPlayerActionUsed -= Player_OnPlayerActionUsed;
+        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -58,6 +60,13 @@ public class PlayerInfoUI : MonoBehaviour
     {
         SetActionsText();
         SetIsDeadText();
+    }
+
+    private void Player_OnPlayerResurrected(string obj)
+    {
+        SetActionsText();
+        SetIsDeadText();
+        SetSipCounter();
     }
 
     private void SetMovementsText()

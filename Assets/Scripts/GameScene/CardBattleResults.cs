@@ -7,7 +7,7 @@ public class CardBattleResults : NetworkBehaviour
 {
     public static event Action OnCardRoll;
     public static event Action<OnCardWonEventArgs> OnCardWon;
-    public static event Action<string> OnCardLost;
+    public static event Action<string[]> OnCardLost;
     public static event EventHandler<string> OnCardRollOver;
 
     public class OnCardWonEventArgs : EventArgs
@@ -76,13 +76,16 @@ public class CardBattleResults : NetworkBehaviour
         return $"<color=#{playerColor}>{playerName}</color> won {card.Name}";
     }
 
-    private string SendCardLostMessageToMessageUI()
+    private string[] SendCardLostMessageToMessageUI()
     {
         Player player = Player.LocalInstance;
 
         string playerName = player.PlayerName;
         string playerColor = player.HexPlayerColor;
 
-        return $"<color=#{playerColor}>{playerName}</color> has failed a card roll and died.";
+        return new string[] {
+            "YOU DIED",
+            $"<color=#{playerColor}>{playerName}</color> has failed a card roll and died."
+        };
     }
 }

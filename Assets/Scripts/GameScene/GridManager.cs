@@ -36,6 +36,8 @@ public class GridManager : NetworkBehaviour
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
         Card.OnCardClosed += Card_OnCardClosed;
+        Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
+        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
     }
 
     public override void OnNetworkDespawn()
@@ -45,6 +47,8 @@ public class GridManager : NetworkBehaviour
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
         Card.OnCardClosed -= Card_OnCardClosed;
+        Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
+        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
 
         base.OnNetworkDespawn();
     }
@@ -75,10 +79,28 @@ public class GridManager : NetworkBehaviour
 
     private void Card_OnCardClosed()
     {
-        //TODO check the problem on client
         DisableCards();
 
         EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+    }
+
+    private void Player_OnPlayerDiedCardBattle()
+    {
+        DisableCards();
+    }
+
+    private void Player_OnPlayerResurrected(string[] messages)
+    {
+        DisableCards();
+
+        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+    }
+
+    private void Player_OnPlayerDiedPlayerBattle()
+    {
+        DisableCards();
+
+        EnableGridPositionsWherePlayerCanGoDie(Player.LocalInstance);
     }
 
     private void SetMovementVectors()
@@ -244,6 +266,33 @@ public class GridManager : NetworkBehaviour
         }
     }
 
+    public void EnableGridPositionsWherePlayerCanGoDie(Player player)
+    {
+        int lengthX = movementVectors.GetLength(0);
+        int lengthY = movementVectors.GetLength(1);
+
+        for (int i = 0; i < lengthX; i++)
+        {
+            for (int j = 0; j < lengthY; j++)
+            {
+                Vector2 position = player.GridPosition - movementVectors[i, j];
+
+                if (gridCards.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
+                {
+                    Card card = gridCards[position];
+
+                    if (player.GridPosition == card.GridPosition)
+                    {
+                        continue;
+                    }
+
+                    card.Enable();
+                    card.ShowHighlight();
+                }
+            }
+        }
+    }
+
     public void EnableGridPositionsWherePlayerCanInteract(Player player)
     {
         int lengthX = movementVectors.GetLength(0);
@@ -264,8 +313,11 @@ public class GridManager : NetworkBehaviour
                         continue;
                     }
 
-                    card.Enable();
-                    card.ShowHighlight();
+                    if (!player.Dead)
+                    {
+                        card.Enable();
+                        card.ShowHighlight();
+                    }
                 }
             }
         }

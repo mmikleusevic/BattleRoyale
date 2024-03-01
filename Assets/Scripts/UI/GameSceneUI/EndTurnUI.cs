@@ -18,6 +18,7 @@ public class EndTurnUI : MonoBehaviour
         });
 
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+        Player.OnPlayerSelectedPlaceToDie += Player_OnPlayerSelectedPlaceToDie;
 
         Hide();
     }
@@ -29,6 +30,11 @@ public class EndTurnUI : MonoBehaviour
     }
 
     private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
+    {
+        Show();
+    }
+
+    private void Player_OnPlayerSelectedPlaceToDie()
     {
         Show();
     }
