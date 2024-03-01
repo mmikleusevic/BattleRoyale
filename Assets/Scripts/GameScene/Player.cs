@@ -162,7 +162,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private void ActionsUI_OnAttackCard(Card obj)
+    private void ActionsUI_OnAttackCard(Card obj, string[] messages)
     {
         SubtractActionPoints();
     }

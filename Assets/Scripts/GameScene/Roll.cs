@@ -11,7 +11,7 @@ public class Roll : MonoBehaviour, IRoll
 
     public class OnRollEventArgs : EventArgs
     {
-        public string message;
+        public string[] messages;
         public int rollValue;
     }
 
@@ -166,11 +166,14 @@ public class Roll : MonoBehaviour, IRoll
 
     private void SendToMessageUI(int result)
     {
-        string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>";
+        string[] messages = new string[] {
+            $"YOU ROLLED {result}",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>"
+        };
 
         OnRollEventArgs eventArgs = new OnRollEventArgs
         {
-            message = message,
+            messages = messages,
             rollValue = result
         };
 
@@ -179,11 +182,14 @@ public class Roll : MonoBehaviour, IRoll
 
     private void SendThreeOfAKindMessageToMessageUI(int result)
     {
-        string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND";
+        string[] messages = new string[] {
+            $"YOU ROLLED THREE OF A KIND",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND"
+        };
 
         OnRollEventArgs eventArgs = new OnRollEventArgs
         {
-            message = message,
+            messages = messages,
             rollValue = result
         };
 

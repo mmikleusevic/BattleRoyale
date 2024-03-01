@@ -29,6 +29,7 @@ public class MessageUI : NetworkBehaviour
         CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
+        ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
     }
 
     public override void OnNetworkDespawn()
@@ -49,13 +50,14 @@ public class MessageUI : NetworkBehaviour
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
+        ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
 
         base.OnNetworkDespawn();
     }
 
-    private void PlaceOnGrid_OnPlayerPlaced(object sender, string e)
+    private void PlaceOnGrid_OnPlayerPlaced(object sender, string[] e)
     {
-        SendMessageToEveryoneServerRpc(e);
+        OnCallbackSetMessages(e);
     }
 
     private void OnCallbackSetMessage(object sender, string e)
@@ -86,7 +88,7 @@ public class MessageUI : NetworkBehaviour
 
     private void Roll_OnRollResult(object sender, Roll.OnRollEventArgs e)
     {
-        SendMessageToEveryoneServerRpc(e.message);
+        OnCallbackSetMessages(e.messages);
     }
 
     private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
@@ -111,12 +113,12 @@ public class MessageUI : NetworkBehaviour
 
     private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
-        SendMessageToEveryoneServerRpc(arg3);
+        OnCallbackSetMessages(arg3);
     }
 
     private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
     {
-        OnCallbackSetMessages(obj.message);
+        OnCallbackSetMessages(obj.messages);
     }
 
     private void CardBattleResults_OnCardLost(string[] obj)
@@ -127,6 +129,11 @@ public class MessageUI : NetworkBehaviour
     private void Player_OnPlayerResurrected(string[] obj)
     {
         OnCallbackSetMessages(obj);
+    }
+
+    private void ActionsUI_OnAttackCard(Card arg1, string[] arg2)
+    {
+        OnCallbackSetMessages(arg2);
     }
 
     [ServerRpc(RequireOwnership = false)]

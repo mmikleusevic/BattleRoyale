@@ -41,7 +41,7 @@ public class Card : NetworkBehaviour, IPointerDownHandler
 
         GridPosition = gridPosition;
         Sprite = cardSO.cardSprite;
-        Name = cardSO.name;
+        Name = cardSO.name.ToUpper();
         Value = cardSO.cost;
     }
 

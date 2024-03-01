@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class ActionsUI : MonoBehaviour
 {
     public static event Action<Card> OnMove;
-    public static event Action<Card> OnAttackCard;
+    public static event Action<Card, string[]> OnAttackCard;
     public static event Action<Card> OnAttackPlayer;
 
     [SerializeField] private Button moveButton;
@@ -24,7 +24,7 @@ public class ActionsUI : MonoBehaviour
         attackCardButton.onClick.AddListener(() =>
         {
             RollType.rollType = RollTypeEnum.CardAttack;
-            OnAttackCard?.Invoke(card);
+            OnAttackCard?.Invoke(card, SendAttackingCardMessage());
         });
 
         attackPlayerButton.onClick.AddListener(() =>
@@ -70,7 +70,7 @@ public class ActionsUI : MonoBehaviour
                 HideAttackCardButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0 && card.AreMultiplePeopleOnTheCard() && !card.IsClosed)
+            if (isPlayerOnCard && player.ActionPoints > 0 && card.AreMultiplePeopleOnTheCard())
             {
                 ShowAttackPlayerButton();
             }
@@ -120,5 +120,13 @@ public class ActionsUI : MonoBehaviour
     private void HideAttackPlayerButton()
     {
         attackPlayerButton.gameObject.SetActive(false);
+    }
+
+    private string[] SendAttackingCardMessage()
+    {
+        return new string[] {
+            $"YOU'RE ATTACKING {card.Name}",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"attacking {card.Name}"
+        };
     }
 }

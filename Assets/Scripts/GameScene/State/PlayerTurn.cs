@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerTurn : State
 {
     public static event EventHandler<string[]> OnPlayerTurn;
+    public static event Action OnPlayerTurnOver;
 
     public override async Task Start()
     {
@@ -35,6 +36,8 @@ public class PlayerTurn : State
 
     public async override Task End()
     {
+        OnPlayerTurnOver?.Invoke();
+
         ActionsUI.OnMove -= ActionsUI_OnMove;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
 
@@ -49,7 +52,7 @@ public class PlayerTurn : State
         await Move(obj);
     }
 
-    private async void ActionsUI_OnAttackCard(Card card)
+    private async void ActionsUI_OnAttackCard(Card card, string[] messages)
     {
         await AttackCard();
     }

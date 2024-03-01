@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 public class PlaceOnGrid : State
 {
     public static event EventHandler<string[]> OnPlaceOnGrid;
-    public static event EventHandler<string> OnPlayerPlaced;
+    public static event EventHandler<string[]> OnPlayerPlaced;
     public override async Task Start()
     {
         await base.Start();
@@ -49,8 +49,11 @@ public class PlaceOnGrid : State
         };
     }
 
-    private string CreateOnPlayerPlacedMessage(Card card)
+    private string[] CreateOnPlayerPlacedMessage(Card card)
     {
-        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"placed on {card.Name}";
+        return new string[] {
+            $"YOU PLACED ON {card.Name}",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"placed on {card.Name}"
+        };
     }
 }

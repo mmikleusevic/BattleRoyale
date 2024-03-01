@@ -36,7 +36,7 @@ public class InteractUI : MonoBehaviour
         HideWithAnimation();
     }
 
-    private void ActionsUI_OnAttackCard(Card card)
+    private void ActionsUI_OnAttackCard(Card card, string[] messages)
     {
         HideWithAnimation();
     }

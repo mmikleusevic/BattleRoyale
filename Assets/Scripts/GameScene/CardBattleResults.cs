@@ -12,7 +12,7 @@ public class CardBattleResults : NetworkBehaviour
 
     public class OnCardWonEventArgs : EventArgs
     {
-        public string message;
+        public string[] messages;
         public Card card;
     }
 
@@ -31,7 +31,7 @@ public class CardBattleResults : NetworkBehaviour
         base.OnDestroy();
     }
 
-    private void ActionsUI_OnAttackCard(Card card)
+    private void ActionsUI_OnAttackCard(Card card, string[] messages)
     {
         this.card = card;
 
@@ -54,7 +54,7 @@ public class CardBattleResults : NetworkBehaviour
             OnCardWon?.Invoke(new OnCardWonEventArgs
             {
                 card = card,
-                message = SendCardWonMessageToMessageUI(),
+                messages = SendCardWonMessageToMessageUI(),
             });
         }
         else
@@ -66,14 +66,17 @@ public class CardBattleResults : NetworkBehaviour
         card = null;
     }
 
-    private string SendCardWonMessageToMessageUI()
+    private string[] SendCardWonMessageToMessageUI()
     {
         Player player = Player.LocalInstance;
 
         string playerName = player.PlayerName;
         string playerColor = player.HexPlayerColor;
 
-        return $"<color=#{playerColor}>{playerName}</color> won {card.Name}";
+        return new string[] {
+            $"YOU WON {card.Name}",
+            $"<color=#{playerColor}>{playerName}</color> won {card.Name}"
+        };
     }
 
     private string[] SendCardLostMessageToMessageUI()
