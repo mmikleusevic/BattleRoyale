@@ -62,7 +62,7 @@ public class PlayerInfoUI : MonoBehaviour
         SetIsDeadText();
     }
 
-    private void Player_OnPlayerResurrected(string obj)
+    private void Player_OnPlayerResurrected(string[] obj)
     {
         SetActionsText();
         SetIsDeadText();
