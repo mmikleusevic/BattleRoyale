@@ -18,17 +18,17 @@ public class MessageUI : NetworkBehaviour
         Roll.OnRoll += Roll_OnRollResult;
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
         PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessages;
-        PlaceOnGrid.OnPlayerPlaced += PlaceOnGrid_OnPlayerPlaced;
+        PlaceOnGrid.OnPlayerPlaced += OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
-        Player.OnPlayerMoved += Player_OnPlayerMoved;
+        Player.OnPlayerMoved += OnCallbackSetMessage;
         PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
-        CardBattleResults.OnCardRollOver += CardBattleResults_OnCardRollOver;
+        CardBattleResults.OnCardRollOver += OnCallbackSetMessage;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn += OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleReRoll += OnCallbackSetMessages;
         CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
-        CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
-        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
+        CardBattleResults.OnCardLost += OnCallbackSetMessages;
+        Player.OnPlayerResurrected += OnCallbackSetMessages;
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
     }
 
@@ -39,25 +39,20 @@ public class MessageUI : NetworkBehaviour
         Roll.OnRoll -= Roll_OnRollResult;
         InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
         PlaceOnGrid.OnPlaceOnGrid -= OnCallbackSetMessages;
-        PlaceOnGrid.OnPlayerPlaced -= PlaceOnGrid_OnPlayerPlaced;
+        PlaceOnGrid.OnPlayerPlaced -= OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
-        Player.OnPlayerMoved -= Player_OnPlayerMoved;
+        Player.OnPlayerMoved -= OnCallbackSetMessage;
         PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
-        CardBattleResults.OnCardRollOver -= CardBattleResults_OnCardRollOver;
+        CardBattleResults.OnCardRollOver -= OnCallbackSetMessage;
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleReRoll -= OnCallbackSetMessages;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
-        CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
-        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
+        CardBattleResults.OnCardLost -= OnCallbackSetMessages;
+        Player.OnPlayerResurrected -= OnCallbackSetMessages;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
 
         base.OnNetworkDespawn();
-    }
-
-    private void PlaceOnGrid_OnPlayerPlaced(object sender, string[] e)
-    {
-        OnCallbackSetMessages(e);
     }
 
     private void OnCallbackSetMessage(object sender, string e)
@@ -96,19 +91,9 @@ public class MessageUI : NetworkBehaviour
         SetMessage(e.message);
     }
 
-    private void Player_OnPlayerMoved(object sender, string e)
-    {
-        SendMessageToEveryoneServerRpc(e);
-    }
-
     private void PlayerBattleResults_OnPlayerBattleRollOver(object sender, PlayerBattleResults.OnBattleRollOverEventArgs e)
     {
         OnCallbackSetMessages(e.message);
-    }
-
-    private void CardBattleResults_OnCardRollOver(object sender, string e)
-    {
-        SendMessageToEveryoneExceptMeServerRpc(e);
     }
 
     private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
@@ -121,31 +106,9 @@ public class MessageUI : NetworkBehaviour
         OnCallbackSetMessages(obj.messages);
     }
 
-    private void CardBattleResults_OnCardLost(string[] obj)
-    {
-        OnCallbackSetMessages(obj);
-    }
-
-    private void Player_OnPlayerResurrected(string[] obj)
-    {
-        OnCallbackSetMessages(obj);
-    }
-
     private void ActionsUI_OnAttackCard(Tile arg1, string[] arg2)
     {
         OnCallbackSetMessages(arg2);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SendMessageToEveryoneServerRpc(string message, ServerRpcParams serverRpcParams = default)
-    {
-        SendMessageToEveryoneClientRpc(message);
-    }
-
-    [ClientRpc]
-    private void SendMessageToEveryoneClientRpc(string message, ClientRpcParams clientRpcParams = default)
-    {
-        SetMessage(message);
     }
 
     [ServerRpc(RequireOwnership = false)]

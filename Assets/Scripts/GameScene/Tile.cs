@@ -17,16 +17,15 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     private TileAnimator tileAnimator;
 
     public NetworkVariable<bool> IsOccupiedOnPlacing { get; private set; }
-    public NetworkVariable<bool> IsClosed { get; private set; }
     public Card Card { get; private set; }
     public Sprite Sprite { get; private set; }
     public Vector2 GridPosition { get; private set; }
+    public bool IsClosed { get; private set; }
     public bool Interactable { get; private set; }
 
     private void Awake()
     {
         IsOccupiedOnPlacing = new NetworkVariable<bool>(false);
-        IsClosed = new NetworkVariable<bool>(false);
         Card = GetComponent<Card>();
     }
 
@@ -153,14 +152,28 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void OccupyCardOnPlaceOnGridServerRpc()
+    public void SetIsOccupiedOnPlacingServerRpc()
     {
         IsOccupiedOnPlacing.Value = true;
     }
 
     public void DisableCard()
     {
+        SetIsClosedTileServerRpc();
+
         CloseCardServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetIsClosedTileServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        SetIsClosedTileClientRpc();
+    }
+
+    [ClientRpc]
+    private void SetIsClosedTileClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        IsClosed = true;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -188,8 +201,6 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     [ServerRpc(RequireOwnership = false)]
     private void CloseCardServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        IsClosed.Value = true;
-
         SetCardClosedClientRpc();
 
         CloseCard();

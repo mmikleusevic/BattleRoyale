@@ -32,7 +32,7 @@ public class PlaceOnGrid : State
     {
         ActionsUI.OnMove -= ActionsUI_OnMove;
 
-        tile.OccupyCardOnPlaceOnGridServerRpc();
+        tile.SetIsOccupiedOnPlacingServerRpc();
 
         Player.LocalInstance.SetPlayersPosition(tile);
 

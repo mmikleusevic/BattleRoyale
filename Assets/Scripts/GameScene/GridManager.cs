@@ -311,7 +311,7 @@ public class GridManager : NetworkBehaviour
                 {
                     Tile tile = gridTiles[position];
 
-                    if (player.GridPosition == tile.GridPosition && tile.IsClosed.Value)
+                    if (player.GridPosition == tile.GridPosition && tile.IsClosed)
                     {
                         continue;
                     }
