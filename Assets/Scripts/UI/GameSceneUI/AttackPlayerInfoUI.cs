@@ -24,7 +24,7 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
     public void Instantiate(Player enemyPlayer)
     {
-        this.player = enemyPlayer;
+        player = enemyPlayer;
 
         backgroundImage.color = enemyPlayer.HexPlayerColor.HEXToColor();
         playerNameText.text = enemyPlayer.PlayerName;
@@ -66,7 +66,7 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
     private string CreateMessageForMessageUI()
     {
-        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> is ATTACKING <color=#{player.HexPlayerColor}>{player.PlayerName}</color>";      
+        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> is ATTACKING <color=#{player.HexPlayerColor}>{player.PlayerName}</color>";
     }
 
     private void Show()

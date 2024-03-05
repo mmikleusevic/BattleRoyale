@@ -27,9 +27,9 @@ public class PlayerTurn : State
         await Awaitable.NextFrameAsync();
     }
 
-    public async Task Move(Card card)
+    public async Task Move(Tile tile)
     {
-        Player.LocalInstance.SetPlayersPosition(card);
+        Player.LocalInstance.SetPlayersPosition(tile);
 
         await Awaitable.WaitForSecondsAsync(1);
     }
@@ -47,12 +47,12 @@ public class PlayerTurn : State
         StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerTurn);
     }
 
-    private async void ActionsUI_OnMove(Card obj)
+    private async void ActionsUI_OnMove(Tile obj)
     {
         await Move(obj);
     }
 
-    private async void ActionsUI_OnAttackCard(Card card, string[] messages)
+    private async void ActionsUI_OnAttackCard(Tile tile, string[] messages)
     {
         await AttackCard();
     }

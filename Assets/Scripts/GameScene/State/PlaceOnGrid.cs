@@ -28,15 +28,15 @@ public class PlaceOnGrid : State
         await base.End();
     }
 
-    private async void ActionsUI_OnMove(Card card)
+    private async void ActionsUI_OnMove(Tile tile)
     {
         ActionsUI.OnMove -= ActionsUI_OnMove;
 
-        card.OccupyCardOnPlaceOnGridServerRpc();
+        tile.OccupyCardOnPlaceOnGridServerRpc();
 
-        Player.LocalInstance.SetPlayersPosition(card);
+        Player.LocalInstance.SetPlayersPosition(tile);
 
-        OnPlayerPlaced?.Invoke(this, CreateOnPlayerPlacedMessage(card));
+        OnPlayerPlaced?.Invoke(this, CreateOnPlayerPlacedMessage(tile));
 
         await End();
     }
@@ -49,11 +49,11 @@ public class PlaceOnGrid : State
         };
     }
 
-    private string[] CreateOnPlayerPlacedMessage(Card card)
+    private string[] CreateOnPlayerPlacedMessage(Tile tile)
     {
         return new string[] {
-            $"YOU PLACED ON {card.Name}",
-            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"placed on {card.Name}"
+            $"YOU PLACED ON {tile.Card.Name}",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"placed on {tile.Card.Name}"
         };
     }
 }

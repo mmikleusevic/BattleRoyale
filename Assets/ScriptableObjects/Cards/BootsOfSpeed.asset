@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: BootsOfSpeed
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8081502571001001650, guid: 9ad3cf862f70a014c825111a7920f743, type: 3}
+  prefab: {fileID: 6566666292166280089, guid: 9ad3cf862f70a014c825111a7920f743, type: 3}
   cardSprite: {fileID: -275899543, guid: 92588f38822c72f43b81317eeeb6d0a2, type: 3}
   name: Boots Of Speed
   cost: 11

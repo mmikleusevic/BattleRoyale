@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class CardSO : ScriptableObject
 {
-    public Card prefab;
+    public Tile prefab;
     public Sprite cardSprite;
     public new string name;
     public int cost;

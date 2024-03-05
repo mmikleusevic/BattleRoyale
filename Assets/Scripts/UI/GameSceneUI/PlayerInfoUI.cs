@@ -16,6 +16,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
         Player.OnPlayerActionUsed += Player_OnPlayerActionUsed;
+        Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
 
         Hide();
@@ -27,6 +28,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
         Player.OnPlayerActionUsed -= Player_OnPlayerActionUsed;
+        Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
     }
 
@@ -62,6 +64,11 @@ public class PlayerInfoUI : MonoBehaviour
         SetIsDeadText();
     }
 
+    private void Player_OnPlayerDiedCardBattle()
+    {
+        SetIsDeadText();
+    }
+
     private void Player_OnPlayerResurrected(string[] obj)
     {
         SetActionsText();
@@ -92,7 +99,7 @@ public class PlayerInfoUI : MonoBehaviour
 
     private void SetIsDeadText()
     {
-        if (Player.LocalInstance.Dead)
+        if (Player.LocalInstance.IsDead.Value)
         {
             deadText.text = "Dead: Yes";
         }

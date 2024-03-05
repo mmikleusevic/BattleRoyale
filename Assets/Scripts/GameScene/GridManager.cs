@@ -11,11 +11,11 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private int height;
     [SerializeField] private Transform Camera;
     [SerializeField] private List<Vector2> tilesToInitialize;
-    [SerializeField] private Card cardTemplate;
+    [SerializeField] private Tile tileTemplate;
     [SerializeField] private List<CardSO> cardSOs;
 
     private Dictionary<int, int> randomCardNumberCountChecker;
-    private Dictionary<Vector2, Card> gridCards;
+    private Dictionary<Vector2, Tile> gridTiles;
     private List<int> randomNumberList;
 
     private Vector2[,] movementVectors;
@@ -28,14 +28,14 @@ public class GridManager : NetworkBehaviour
         Instance = this;
 
         randomNumberList = new List<int>();
-        gridCards = new Dictionary<Vector2, Card>();
+        gridTiles = new Dictionary<Vector2, Tile>();
         SetMovementVectors();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
-        Card.OnCardClosed += Card_OnCardClosed;
+        Tile.OnTileClosed += Tile_OnTileClosed;
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
     }
@@ -46,7 +46,7 @@ public class GridManager : NetworkBehaviour
         PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
-        Card.OnCardClosed -= Card_OnCardClosed;
+        Tile.OnTileClosed -= Tile_OnTileClosed;
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
 
@@ -77,7 +77,7 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
     }
 
-    private void Card_OnCardClosed()
+    private void Tile_OnTileClosed()
     {
         DisableCards();
 
@@ -96,6 +96,7 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
     }
 
+    //TODO will use on player battle loss
     private void Player_OnPlayerDiedPlayerBattle()
     {
         DisableCards();
@@ -123,7 +124,7 @@ public class GridManager : NetworkBehaviour
 
     private void GetCardDimensions()
     {
-        Vector3 cardDimensions = cardTemplate.GetComponent<BoxCollider>().size;
+        Vector3 cardDimensions = tileTemplate.GetComponent<BoxCollider>().size;
         this.cardDimensions.x = cardDimensions.x;
         this.cardDimensions.y = cardDimensions.y;
     }
@@ -166,11 +167,13 @@ public class GridManager : NetworkBehaviour
             Vector2 position = new Vector3((gridPosition.x * cardDimensions.x) + gridPosition.x * spacing, (gridPosition.y * cardDimensions.y) + gridPosition.y * spacing);
 
             Transform cardTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"{cardSO.name}");
+            Tile tile = cardTransform.GetComponent<Tile>();
             Card card = cardTransform.GetComponent<Card>();
-            card.InitializeClientRpc(index, gridPosition);
-            NetworkObject cardNetworkObject = card.NetworkObject;
+            card.InitializeClientRpc(index);
+            tile.InitializeClientRpc(gridPosition, index);
+            NetworkObject tileNetworkObject = tile.NetworkObject;
 
-            AddCardToSpawnedCardsOnClientServerRpc(gridPosition, cardNetworkObject);
+            AddCardToSpawnedCardsOnClientServerRpc(gridPosition, tileNetworkObject);
         }
     }
 
@@ -213,19 +216,19 @@ public class GridManager : NetworkBehaviour
     [ServerRpc]
     private void AddCardToSpawnedCardsOnClientServerRpc(Vector2 position, NetworkObjectReference networkObjectReference, ServerRpcParams serverRpcParams = default)
     {
-        AddCardToSpawnedCardsOnClientClientRpc(position, networkObjectReference);
+        AddTileToSpawnedTilesOnClientsClientRpc(position, networkObjectReference);
     }
 
     [ClientRpc]
-    private void AddCardToSpawnedCardsOnClientClientRpc(Vector2 position, NetworkObjectReference networkObjectReference, ClientRpcParams clientRpcParams = default)
+    private void AddTileToSpawnedTilesOnClientsClientRpc(Vector2 position, NetworkObjectReference networkObjectReference, ClientRpcParams clientRpcParams = default)
     {
         networkObjectReference.TryGet(out NetworkObject networkObject);
 
         if (networkObject == null) return;
 
-        Card card = networkObject.GetComponent<Card>();
+        Tile tile = networkObject.GetComponent<Tile>();
 
-        gridCards[position] = card;
+        gridTiles[position] = tile;
     }
 
     //Mental note --- Next time make a normal grid...
@@ -241,14 +244,14 @@ public class GridManager : NetworkBehaviour
             {
                 if (j == startHeight || j == maxHeight - 1)
                 {
-                    Vector3 tile = tilesToInitialize.Where(a => a.x == i && a.y == j).FirstOrDefault();
+                    Vector3 tilePosition = tilesToInitialize.Where(a => a.x == i && a.y == j).FirstOrDefault();
 
-                    Card card = gridCards[tile];
+                    Tile tile = gridTiles[tilePosition];
 
-                    if (!card.IsOccupiedOnPlacing.Value)
+                    if (!tile.IsOccupiedOnPlacing.Value)
                     {
-                        card.Enable();
-                        card.ShowHighlight();
+                        tile.Enable();
+                        tile.ShowHighlight();
                     }
                 }
             }
@@ -277,17 +280,17 @@ public class GridManager : NetworkBehaviour
             {
                 Vector2 position = player.GridPosition - movementVectors[i, j];
 
-                if (gridCards.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
+                if (gridTiles.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
                 {
-                    Card card = gridCards[position];
+                    Tile tile = gridTiles[position];
 
-                    if (player.GridPosition == card.GridPosition)
+                    if (player.GridPosition == tile.GridPosition)
                     {
                         continue;
                     }
 
-                    card.Enable();
-                    card.ShowHighlight();
+                    tile.Enable();
+                    tile.ShowHighlight();
                 }
             }
         }
@@ -304,19 +307,19 @@ public class GridManager : NetworkBehaviour
             {
                 Vector2 position = player.GridPosition - movementVectors[i, j];
 
-                if (gridCards.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
+                if (gridTiles.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
                 {
-                    Card card = gridCards[position];
+                    Tile tile = gridTiles[position];
 
-                    if (player.GridPosition == card.GridPosition && card.IsClosed)
+                    if (player.GridPosition == tile.GridPosition && tile.IsClosed.Value)
                     {
                         continue;
                     }
 
-                    if (!player.Dead)
+                    if (!player.IsDead.Value)
                     {
-                        card.Enable();
-                        card.ShowHighlight();
+                        tile.Enable();
+                        tile.ShowHighlight();
                     }
                 }
             }
@@ -325,12 +328,12 @@ public class GridManager : NetworkBehaviour
 
     public void DisableCards()
     {
-        foreach (var item in gridCards)
+        foreach (var item in gridTiles)
         {
-            Card card = item.Value;
+            Tile tile = item.Value;
 
-            card.Disable();
-            card.HideHighlight();
+            tile.Disable();
+            tile.HideHighlight();
         }
     }
 

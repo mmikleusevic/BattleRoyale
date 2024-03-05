@@ -131,7 +131,7 @@ public class MessageUI : NetworkBehaviour
         OnCallbackSetMessages(obj);
     }
 
-    private void ActionsUI_OnAttackCard(Card arg1, string[] arg2)
+    private void ActionsUI_OnAttackCard(Tile arg1, string[] arg2)
     {
         OnCallbackSetMessages(arg2);
     }

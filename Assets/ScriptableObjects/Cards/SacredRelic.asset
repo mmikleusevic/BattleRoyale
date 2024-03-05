@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: SacredRelic
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8288654774295084031, guid: 8f1ff48d04c17f541b104629fe12dc26, type: 3}
+  prefab: {fileID: 6341359010855636692, guid: 8f1ff48d04c17f541b104629fe12dc26, type: 3}
   cardSprite: {fileID: 1576409482, guid: 7555c081adab8cf46b8b00ea19c73201, type: 3}
   name: Sacred Relic
   cost: 9

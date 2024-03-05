@@ -1,6 +1,5 @@
-using System;
 using DG.Tweening;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,8 +25,6 @@ public class ResurrectUI : MonoBehaviour
         HideWithAnimation();
     }
 
-
-
     private void OnDestroy()
     {
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
@@ -46,7 +43,7 @@ public class ResurrectUI : MonoBehaviour
 
     private void Player_OnPlayerTurnSet()
     {
-        if (Player.LocalInstance.Dead)
+        if (Player.LocalInstance.IsDead.Value)
         {
             ShowWithAnimation();
         }

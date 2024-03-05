@@ -247,10 +247,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: -6492155576876294069}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 249220833855394490}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
         type: 3}
@@ -268,6 +264,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 31067010397311777}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1072143754334721376}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 258eb5ae21b57ea4aba85945ec8d7856,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7298975601540038396}
   m_SourcePrefab: {fileID: 100100000, guid: 258eb5ae21b57ea4aba85945ec8d7856, type: 3}
 --- !u!1 &4932685657585325972 stripped
 GameObject:
@@ -325,27 +329,6 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &-6492155576876294069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4932685657585325972}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 865f13d16057a8c4a85e7ac6ec0b6c92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlight: {fileID: 4481677006727412933}
-  playerCardPositions:
-  - position: {x: 1.07, y: 2.15, z: 0}
-  - position: {x: -1.07, y: 2.15, z: 0}
-  - position: {x: 1.07, y: 0, z: 0}
-  - position: {x: -1.07, y: 0, z: 0}
-  - position: {x: 1.07, y: -2.15, z: 0}
-  - position: {x: -1.07, y: -2.15, z: 0}
-  defaultSprite: {fileID: 540946325, guid: 0bade29aaef0c854aa6f74f8e309fbcc, type: 3}
 --- !u!65 &249220833855394490
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -445,6 +428,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: -3139323575394393357}
+--- !u!114 &1072143754334721376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4932685657585325972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 117521a4c6236404c97dd122adba4b36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardPositions:
+  - position: {x: 1.07, y: 2.15, z: 0}
+  - position: {x: -1.07, y: 2.15, z: 0}
+  - position: {x: 1.07, y: 0, z: 0}
+  - position: {x: -1.07, y: 0, z: 0}
+  - position: {x: 1.07, y: -2.15, z: 0}
+  - position: {x: -1.07, y: -2.15, z: 0}
+  highlight: {fileID: 4481677006727412933}
+  defaultSprite: {fileID: 540946325, guid: 0bade29aaef0c854aa6f74f8e309fbcc, type: 3}
+--- !u!114 &7298975601540038396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4932685657585325972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 865f13d16057a8c4a85e7ac6ec0b6c92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5710489371799047470 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 258eb5ae21b57ea4aba85945ec8d7856,

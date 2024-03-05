@@ -5031,23 +5031,54 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerVisual
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3386498073547250991, guid: b99930163ef15804c8e4dcde88e6c875, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9147352611112382855, guid: b99930163ef15804c8e4dcde88e6c875,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 587190111268664113}
   m_SourcePrefab: {fileID: 100100000, guid: b99930163ef15804c8e4dcde88e6c875, type: 3}
+--- !u!95 &4181632496200454545 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3479026926302249828, guid: b99930163ef15804c8e4dcde88e6c875,
+    type: 3}
+  m_PrefabInstance: {fileID: 743050057221264117}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6176863607520815035 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6915128444109010254, guid: b99930163ef15804c8e4dcde88e6c875,
     type: 3}
   m_PrefabInstance: {fileID: 743050057221264117}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8412219064018641778}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f7127db42ff2df4c820e7a28bb95ec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8412219064018641778 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9147352611112382855, guid: b99930163ef15804c8e4dcde88e6c875,
+    type: 3}
+  m_PrefabInstance: {fileID: 743050057221264117}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &587190111268664113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8412219064018641778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 4181632496200454545}
 --- !u!4 &9220526533530745288 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8483158890578979645, guid: b99930163ef15804c8e4dcde88e6c875,

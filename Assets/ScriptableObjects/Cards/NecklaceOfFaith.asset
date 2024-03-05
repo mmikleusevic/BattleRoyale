@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: NecklaceOfFaith
   m_EditorClassIdentifier: 
-  prefab: {fileID: 7605625244071433324, guid: 73f2be3338a2fa046a259ad94255c0e1, type: 3}
+  prefab: {fileID: 4794825256997937479, guid: 73f2be3338a2fa046a259ad94255c0e1, type: 3}
   cardSprite: {fileID: -1017067240, guid: aabda1cb43d967b47b77ef5138eb3738, type: 3}
   name: Necklace Of Faith
   cost: 12

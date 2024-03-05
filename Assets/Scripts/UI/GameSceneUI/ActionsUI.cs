@@ -4,52 +4,52 @@ using UnityEngine.UI;
 
 public class ActionsUI : MonoBehaviour
 {
-    public static event Action<Card> OnMove;
-    public static event Action<Card, string[]> OnAttackCard;
-    public static event Action<Card> OnAttackPlayer;
+    public static event Action<Tile> OnMove;
+    public static event Action<Tile, string[]> OnAttackCard;
+    public static event Action<Tile> OnAttackPlayer;
 
     [SerializeField] private Button moveButton;
     [SerializeField] private Button attackCardButton;
     [SerializeField] private Button attackPlayerButton;
 
-    private Card card;
+    private Tile tile;
 
     private void Awake()
     {
         moveButton.onClick.AddListener(() =>
         {
-            OnMove?.Invoke(card);
+            OnMove?.Invoke(tile);
         });
 
         attackCardButton.onClick.AddListener(() =>
         {
             RollType.rollType = RollTypeEnum.CardAttack;
-            OnAttackCard?.Invoke(card, SendAttackingCardMessage());
+            OnAttackCard?.Invoke(tile, SendAttackingCardMessage());
         });
 
         attackPlayerButton.onClick.AddListener(() =>
         {
-            OnAttackPlayer?.Invoke(card);
+            OnAttackPlayer?.Invoke(tile);
         });
 
-        Card.OnCardPressed += Card_OnCardPressed;
+        Tile.OnTilePressed += Tile_OnTilePressed;
     }
 
     private void OnDestroy()
     {
-        Card.OnCardPressed -= Card_OnCardPressed;
+        Tile.OnTilePressed -= Tile_OnTilePressed;
         moveButton.onClick.RemoveAllListeners();
         attackCardButton.onClick.RemoveAllListeners();
         attackPlayerButton.onClick.RemoveAllListeners();
     }
 
-    private void Card_OnCardPressed(object sender, Player player)
+    private void Tile_OnTilePressed(object sender, Player player)
     {
-        card = sender as Card;
+        tile = sender as Tile;
 
-        if (card != null && card.Interactable)
+        if (tile != null && tile.Interactable)
         {
-            bool isPlayerOnCard = player.GridPosition == card.GridPosition;
+            bool isPlayerOnCard = player.GridPosition == tile.GridPosition;
             bool canMoveOrUseAction = player.Movement > 0 || player.ActionPoints > 0;
 
             if (!isPlayerOnCard && canMoveOrUseAction)
@@ -61,7 +61,7 @@ public class ActionsUI : MonoBehaviour
                 HideMoveButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0 && !card.AreMultiplePeopleOnTheCard() && !card.IsClosed)
+            if (isPlayerOnCard && player.ActionPoints > 0 && !tile.AreMultipleAlivePeopleOnTheCard() && !tile.IsClosed.Value)
             {
                 ShowAttackCardButton();
             }
@@ -70,7 +70,7 @@ public class ActionsUI : MonoBehaviour
                 HideAttackCardButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0 && card.AreMultiplePeopleOnTheCard())
+            if (isPlayerOnCard && player.ActionPoints > 0 && tile.AreMultipleAlivePeopleOnTheCard())
             {
                 ShowAttackPlayerButton();
             }
@@ -125,8 +125,8 @@ public class ActionsUI : MonoBehaviour
     private string[] SendAttackingCardMessage()
     {
         return new string[] {
-            $"YOU'RE ATTACKING {card.Name}",
-            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"attacking {card.Name}"
+            $"YOU'RE ATTACKING {tile.Card.Name}",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"attacking {tile.Card.Name}"
         };
     }
 }

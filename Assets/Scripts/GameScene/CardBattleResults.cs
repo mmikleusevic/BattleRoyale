@@ -16,7 +16,7 @@ public class CardBattleResults : NetworkBehaviour
         public Card card;
     }
 
-    private Card card;
+    private Tile tile;
     private List<int> cardRolls;
 
     private void Awake()
@@ -31,9 +31,9 @@ public class CardBattleResults : NetworkBehaviour
         base.OnDestroy();
     }
 
-    private void ActionsUI_OnAttackCard(Card card, string[] messages)
+    private void ActionsUI_OnAttackCard(Tile tile, string[] messages)
     {
-        this.card = card;
+        this.tile = tile;
 
         RollType.rollType = RollTypeEnum.CardAttack;
 
@@ -48,22 +48,27 @@ public class CardBattleResults : NetworkBehaviour
 
         bool isThreeOfAKind = cardRolls.Distinct().Count() == 1;
 
-        if (sum >= card.Value || isThreeOfAKind)
+        string[] message = null;
+
+        if (sum >= tile.Card.Value || isThreeOfAKind)
         {
-            card.DisableCard();
+            tile.DisableCard();
+            message = SendCardWonMessageToMessageUI();
+
             OnCardWon?.Invoke(new OnCardWonEventArgs
             {
-                card = card,
-                messages = SendCardWonMessageToMessageUI(),
+                card = tile.Card,
+                messages = message,
             });
         }
         else
         {
-            OnCardLost?.Invoke(SendCardLostMessageToMessageUI());
+            message = SendCardLostMessageToMessageUI();
+            OnCardLost?.Invoke(message);
         }
 
         cardRolls.Clear();
-        card = null;
+        tile = null;
     }
 
     private string[] SendCardWonMessageToMessageUI()
@@ -74,8 +79,8 @@ public class CardBattleResults : NetworkBehaviour
         string playerColor = player.HexPlayerColor;
 
         return new string[] {
-            $"YOU WON {card.Name}",
-            $"<color=#{playerColor}>{playerName}</color> won {card.Name}"
+            $"YOU WON {tile.Card.Name}",
+            $"<color=#{playerColor}>{playerName}</color> won {tile.Card.Name}"
         };
     }
 

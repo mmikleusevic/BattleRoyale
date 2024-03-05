@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CardAnimator : MonoBehaviour
+public class TileAnimator : MonoBehaviour
 {
     private static string IS_CLOSED = "IsClosed";
 
@@ -11,7 +11,7 @@ public class CardAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void CloseCardAnimation()
+    public void CloseTileAnimation()
     {
         Animate(IS_CLOSED, true);
     }

@@ -72,6 +72,10 @@ public class FadeMessageUI : MonoBehaviour
     public void StartFadeMessage(string message)
     {
         StopAllCoroutines();
+
+        alphaValue = maxAlphaValue;
+        fadeTime = maxFadeTime;
+
         StartCoroutine(FadeMessage(message));
     }
 

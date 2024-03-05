@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class PlayerCardPosition
+public class CardPosition
 {
     [SerializeField] private Vector3 position;
 

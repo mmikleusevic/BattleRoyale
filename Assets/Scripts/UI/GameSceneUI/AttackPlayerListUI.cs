@@ -27,11 +27,11 @@ public class AttackPlayerListUI : MonoBehaviour
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
     }
 
-    private void ActionsUI_OnAttackPlayer(Card card)
+    private void ActionsUI_OnAttackPlayer(Tile tile)
     {
         Show();
 
-        List<Player> players = card.GetPlayersOnCard();
+        List<Player> players = tile.GetPlayersOnCard();
 
         foreach (Player player in players)
         {

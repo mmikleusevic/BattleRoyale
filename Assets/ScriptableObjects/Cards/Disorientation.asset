@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3df88c9e0e73be4a98a9306e8c8b2c7, type: 3}
   m_Name: Disorientation
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4641746760013013388, guid: 560a3c3e9d1f35442860281af36cb1bb, type: 3}
+  prefab: {fileID: 7740830019904378023, guid: 560a3c3e9d1f35442860281af36cb1bb, type: 3}
   cardSprite: {fileID: -46902056, guid: 2a906df6781ad9d42b8116e1a0f2ac7b, type: 3}
   name: Disorientation
   cost: 8

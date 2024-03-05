@@ -1,4 +1,3 @@
-using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,11 +22,12 @@ public class Player : NetworkBehaviour
     ParticleSystem playerParticleSystem;
     PlayerAnimator playerAnimator;
 
+    private int maxEquipableCards = 3;
     private int defaultMovement = 0;
     private int defaultActionPoints = 2;
     private float moveSpeed = 20f;
 
-    public Card CurrentCard { get; private set; }
+    public Tile CurrentTile { get; private set; }
     public List<Card> EquippedCards { get; private set; }
     public List<Card> UnequippedCards { get; private set; }
     public NetworkVariable<ulong> ClientId { get; private set; }
@@ -40,8 +40,7 @@ public class Player : NetworkBehaviour
     public int Points { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
-    public bool Dead { get; private set; }
-
+    
     private void Awake()
     {
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -101,19 +100,19 @@ public class Player : NetworkBehaviour
         playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
     }
 
-    public void MovePlayerPosition(Card card)
+    public void MovePlayerPosition(Tile tile)
     {
-        PlayerCardPosition playerCardSpot = card.GetPlayerCardSpot(this);
+        CardPosition cardPosition = tile.GetCardPosition(this);
 
-        if (playerCardSpot == null) return;
+        if (cardPosition == null) return;
 
-        Vector3 targetPosition = card.transform.position + playerCardSpot.Position;
+        Vector3 targetPosition = tile.transform.position + cardPosition.Position;
 
         StartCoroutine(PlayWalkingAnimation(targetPosition));
 
         string message = string.Empty;
 
-        if (!Dead)
+        if (!IsDead.Value)
         {
             if (Movement > 0)
             {
@@ -124,25 +123,25 @@ public class Player : NetworkBehaviour
                 SubtractActionPoints();
             }
 
-            message = CreateOnPlayerMovedMessage(card);
+            message = CreateOnPlayerMovedMessage(tile);
         }
         else
         {
-            message = CreateOnPlayerDiedMoveMessage(card);
+            message = CreateOnPlayerDiedMoveMessage(tile);
 
-            DeathAnimation();
+            DeathAnimationServerRpc();
 
             OnPlayerSelectedPlaceToDie?.Invoke();
         }
 
-        GridPosition = card.GridPosition;
+        GridPosition = tile.GridPosition;
 
-        if (CurrentCard != null)
+        if (CurrentTile != null)
         {
             OnPlayerMoved?.Invoke(this, message);
         }
 
-        CurrentCard = card;
+        CurrentTile = tile;
     }
 
     private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
@@ -152,40 +151,62 @@ public class Player : NetworkBehaviour
 
     private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
     {
-        if (EquippedCards.Count < 3)
+        SaveWonCardServerRpc(obj.card.NetworkObject, NetworkObject);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SaveWonCardServerRpc(NetworkObjectReference networkObjectReferenceCard, NetworkObjectReference networkObjectReferencePlayer, ServerRpcParams serverRpcParams = default)
+    {
+        SaveWonCardClientRpc(networkObjectReferenceCard, networkObjectReferencePlayer);
+    }
+
+    [ClientRpc]
+    private void SaveWonCardClientRpc(NetworkObjectReference networkObjectReferenceCard, NetworkObjectReference networkObjectReferencePlayer, ClientRpcParams clientRpcParams = default)
+    {
+        networkObjectReferenceCard.TryGet(out NetworkObject networkObjectCard);
+
+        if (networkObjectCard == null) return;
+
+        Tile tile = networkObjectCard.GetComponent<Tile>();
+
+        Player player = GetPlayerFromNetworkReference(networkObjectReferencePlayer);
+
+        if (EquippedCards.Count < maxEquipableCards)
         {
-            EquippedCards.Add(obj.card);
+            player.EquippedCards.Add(tile.Card);
         }
         else
         {
-            UnequippedCards.Add(obj.card);
+            player.UnequippedCards.Add(tile.Card);
         }
+
+        tile.RemoveCardServerRpc();
     }
 
-    private void ActionsUI_OnAttackCard(Card obj, string[] messages)
+    private void ActionsUI_OnAttackCard(Tile obj, string[] messages)
     {
         SubtractActionPoints();
     }
 
-    private void ActionsUI_OnAttackPlayer(Card obj)
+    private void ActionsUI_OnAttackPlayer(Tile obj)
     {
         SubtractActionPoints();
     }
 
     private void CardBattleResults_OnCardLost(string[] obj)
     {
-        SendPlayerDeadStatusToAllClientsClientRpc(true);
+        IsDead.Value = true;
 
-        DeathAnimation();
+        DeathAnimationServerRpc();
 
         OnPlayerDiedCardBattle?.Invoke();
     }
 
     private void ResurrectUI_OnResurrectPressed()
     {
-        SendPlayerDeadStatusToAllClientsClientRpc(false);
+        IsDead.Value = false;
 
-        AliveAnimation();
+        AliveAnimationServerRpc();
 
         SubtractActionPoints();
 
@@ -194,30 +215,24 @@ public class Player : NetworkBehaviour
         OnPlayerResurrected?.Invoke(CreateOnPlayerResurrectedMessage());
     }
 
-    [ClientRpc]
-    private void SendPlayerDeadStatusToAllClientsClientRpc(bool isDead, ClientRpcParams clientRpcParams = default)
+    public void SetPlayersPosition(Tile tile)
     {
-        Dead = isDead;
-    }
-
-    public void SetPlayersPosition(Card card)
-    {
-        if (CurrentCard != null)
+        if (CurrentTile != null)
         {
-            CurrentCard.OnMoveResetPlayerPosition(NetworkObject);
+            CurrentTile.OnMoveResetPlayerPosition(NetworkObject);
         }
 
-        card.SetEmptyPlayerCardSpot(this);
+        tile.SetEmptyCardPosition(this);
     }
 
-    private string CreateOnPlayerMovedMessage(Card card)
+    private string CreateOnPlayerMovedMessage(Tile tile)
     {
-        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {card.Name}";
+        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {tile.Card.Name}";
     }
 
-    private string CreateOnPlayerDiedMoveMessage(Card card)
+    private string CreateOnPlayerDiedMoveMessage(Tile tile)
     {
-        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"chose to die on {card.Name}";
+        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"chose to die on {tile.Card.Name}";
     }
 
     private string[] CreateOnPlayerResurrectedMessage()
@@ -246,7 +261,7 @@ public class Player : NetworkBehaviour
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)
     {
-        MoveAnimation();
+        MoveAnimationServerRpc();
 
         while (targetPosition != transform.position)
         {
@@ -255,7 +270,7 @@ public class Player : NetworkBehaviour
             yield return null;
         }
 
-        StopMovingAnimation();
+        StopMovingAnimationServerRpc();
     }
 
     public static Player GetPlayerFromNetworkReference(NetworkObjectReference networkObjectReference)
@@ -267,9 +282,33 @@ public class Player : NetworkBehaviour
         return networkObject.GetComponent<Player>();
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void MoveAnimationServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        MoveAnimationClientRpc();
+    }
+
+    [ClientRpc]
+    private void MoveAnimationClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        MoveAnimation();
+    }
+
     private void MoveAnimation()
     {
         playerAnimator.MoveAnimation();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void StopMovingAnimationServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        StopMovingAnimationClientRpc();
+    }
+
+    [ClientRpc]
+    private void StopMovingAnimationClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        StopMovingAnimation();
     }
 
     private void StopMovingAnimation()
@@ -277,9 +316,33 @@ public class Player : NetworkBehaviour
         playerAnimator.StopMovingAnimation();
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void DeathAnimationServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        DeathAnimationClientRpc();
+    }
+
+    [ClientRpc]
+    private void DeathAnimationClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        DeathAnimation();
+    }
+
     private void DeathAnimation()
     {
         playerAnimator.DieAnimation();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AliveAnimationServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        AliveAnimationClientRpc();
+    }
+
+    [ClientRpc]
+    private void AliveAnimationClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        AliveAnimation();
     }
 
     private void AliveAnimation()

@@ -7,7 +7,7 @@ public class InteractUI : MonoBehaviour
 
     private void Awake()
     {
-        Card.OnCardPressed += Card_OnCardPressed;
+        Tile.OnTilePressed += Tile_OnTilePressed;
         ActionsUI.OnMove += ActionsUI_OnMove;
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
         ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
@@ -20,28 +20,28 @@ public class InteractUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        Card.OnCardPressed -= Card_OnCardPressed;
+        Tile.OnTilePressed -= Tile_OnTilePressed;
         ActionsUI.OnMove -= ActionsUI_OnMove;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
     }
 
-    private void Card_OnCardPressed(object sender, Player player)
+    private void Tile_OnTilePressed(object sender, Player player)
     {
         ShowWithAnimation();
     }
 
-    private void ActionsUI_OnMove(Card card)
+    private void ActionsUI_OnMove(Tile tile)
     {
         HideWithAnimation();
     }
 
-    private void ActionsUI_OnAttackCard(Card card, string[] messages)
+    private void ActionsUI_OnAttackCard(Tile tile, string[] messages)
     {
         HideWithAnimation();
     }
 
-    private void ActionsUI_OnAttackPlayer(Card card)
+    private void ActionsUI_OnAttackPlayer(Tile tile)
     {
         HideWithAnimation();
     }
