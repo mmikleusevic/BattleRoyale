@@ -73,10 +73,10 @@ public class LobbyServiceHandler : IDisposable
             return null;
         }
 
-        OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
-
         try
         {
+            OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
+
             Allocation allocation = await relayServiceHandler.AllocateRelay();
 
             string relayJoinCode = await relayServiceHandler.GetRelayJoinCode(allocation);
