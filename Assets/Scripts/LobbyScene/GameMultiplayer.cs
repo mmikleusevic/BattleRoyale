@@ -261,11 +261,6 @@ public class GameMultiplayer : NetworkBehaviour
         PlayerPrefs.SetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, playerName);
     }
 
-    public void DisconnectPlayer(ulong clientId)
-    {
-        NetworkManager.Singleton.DisconnectClient(clientId);
-    }
-
     [ClientRpc]
     public void SetNameClientRpc(NetworkObjectReference networkObject, string newName)
     {
@@ -273,27 +268,5 @@ public class GameMultiplayer : NetworkBehaviour
         if (gameObject == null) return;
 
         gameObject.name = newName;
-    }
-
-    public void DisconnectClientsFromGame()
-    {
-        DisconnectClientsFromGameServerRpc();
-    }
-
-    [ServerRpc]
-    public void DisconnectClientsFromGameServerRpc(ServerRpcParams serverRpcParams = default)
-    {
-        DisconnectClientsFromGameClientRpc();
-    }
-
-    [ClientRpc]
-    public void DisconnectClientsFromGameClientRpc(ClientRpcParams clientRpcParams = default)
-    {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            GameLobby.Instance.SetLobbyToNull();
-        }
-
-        NetworkManager.Singleton.Shutdown();
     }
 }

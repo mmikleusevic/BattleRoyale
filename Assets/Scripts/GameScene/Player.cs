@@ -40,7 +40,7 @@ public class Player : NetworkBehaviour
     public int Points { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
-    
+
     private void Awake()
     {
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);

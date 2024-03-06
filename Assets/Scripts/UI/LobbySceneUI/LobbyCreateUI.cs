@@ -35,19 +35,20 @@ public class LobbyCreateUI : MonoBehaviour
     {
         Hide();
 
-        GameLobby.Instance.OnCreateLobbyStarted += GameLobby_OnCreateLobbyStarted;
+        LobbyServiceHandler.OnCreateLobbyStarted += LobbyServiceHandler_OnCreateLobbyStarted;
     }
+
 
     private void OnDestroy()
     {
-        GameLobby.Instance.OnCreateLobbyStarted -= GameLobby_OnCreateLobbyStarted;
+        LobbyServiceHandler.OnCreateLobbyStarted -= LobbyServiceHandler_OnCreateLobbyStarted;
 
         createPublicButton.onClick.RemoveAllListeners();
         createPrivateButton.onClick.RemoveAllListeners();
         closeButton.onClick.RemoveAllListeners();
     }
 
-    private void GameLobby_OnCreateLobbyStarted(object sender, System.EventArgs e)
+    private void LobbyServiceHandler_OnCreateLobbyStarted(object sender, System.EventArgs e)
     {
         Hide();
     }

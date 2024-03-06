@@ -78,12 +78,12 @@ public class LobbyUI : MonoBehaviour
 
     private void OnEnable()
     {
-        GameLobby.Instance.OnLobbyListChanged += GameLobby_OnLobbyListChanged;
+        LobbyServiceHandler.OnLobbyListChanged += LobbyServiceHandler_OnLobbyListChanged;
     }
 
     private void OnDestroy()
     {
-        GameLobby.Instance.OnLobbyListChanged -= GameLobby_OnLobbyListChanged;
+        LobbyServiceHandler.OnLobbyListChanged -= LobbyServiceHandler_OnLobbyListChanged;
 
         mainMenuButton.onClick.RemoveAllListeners();
         createLobbyButton.onClick.RemoveAllListeners();
@@ -94,7 +94,7 @@ public class LobbyUI : MonoBehaviour
         findLobbyInputField.onValueChanged.RemoveAllListeners();
     }
 
-    private void GameLobby_OnLobbyListChanged(object sender, GameLobby.OnLobbyListChangdEventArgs e)
+    private void LobbyServiceHandler_OnLobbyListChanged(object sender, LobbyServiceHandler.OnLobbyListChangdEventArgs e)
     {
         UpdateLobbyList(e.lobbyList);
     }
