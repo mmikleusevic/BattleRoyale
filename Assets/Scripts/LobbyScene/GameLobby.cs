@@ -1,4 +1,5 @@
 using ParrelSync;
+using System;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Authentication;
@@ -16,15 +17,16 @@ public class GameLobby : NetworkBehaviour
 
     public static GameLobby Instance { get; private set; }
 
-    private Lobby joinedLobby;
     private RelayServiceHandler relayServiceHandler;
     private LobbyServiceHandler lobbyServiceHandler;
+    private Lobby joinedLobby;
 
     private float heartbeatTimer;
     private float heartbeatTimerMax = 15f;
     private float listLobbiesTimer;
     private float listLobbiesTimerMax = 3f;
     private string lobbyName = "";
+    private bool disconnected = false;
 
     private void Awake()
     {
@@ -98,18 +100,6 @@ public class GameLobby : NetworkBehaviour
         return joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
     }
 
-    private async void ListLobbies()
-    {
-        try
-        {
-            await lobbyServiceHandler.ListLobbies(lobbyName);
-        }
-        catch (LobbyServiceException ex)
-        {
-            Debug.LogError(ex.Message);
-        }
-    }
-
     private void ListLobbiesPeriodicallyAfterTimer()
     {
         if (joinedLobby == null)
@@ -121,6 +111,18 @@ public class GameLobby : NetworkBehaviour
                 listLobbiesTimer = listLobbiesTimerMax;
                 ListLobbies();
             }
+        }
+    }
+
+    private async void ListLobbies()
+    {
+        try
+        {
+            await lobbyServiceHandler.ListLobbies(lobbyName);
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogError(ex.Message);
         }
     }
 
@@ -209,7 +211,12 @@ public class GameLobby : NetworkBehaviour
     {
         try
         {
-            await lobbyServiceHandler.DeleteLobby(joinedLobby);
+            if (!disconnected)
+            {
+                disconnected = true;
+
+                await lobbyServiceHandler.DeleteLobby(joinedLobby);
+            }
         }
         catch (LobbyServiceException ex)
         {
@@ -221,11 +228,12 @@ public class GameLobby : NetworkBehaviour
     {
         try
         {
-            bool lobbyExists = await lobbyServiceHandler.LobbyExists(joinedLobby);
+            if (!disconnected)
+            {
+                disconnected = true;
 
-            if (!lobbyExists) return;
-
-            await lobbyServiceHandler.LeaveLobby(joinedLobby);
+                await lobbyServiceHandler.LeaveLobby(joinedLobby);
+            }
         }
         catch (LobbyServiceException ex)
         {
@@ -235,15 +243,22 @@ public class GameLobby : NetworkBehaviour
 
     public async Task LeaveLobbyOrDelete()
     {
-        if (IsLobbyHost())
+        try
         {
-            DisconnectClientsFromGame();
-            await DeleteLobby();
+            if (IsLobbyHost())
+            {
+                DisconnectClientsFromGame();
+                await DeleteLobby();
+            }
+            else
+            {
+                NetworkManager.Singleton.Shutdown();
+                await LeaveLobby();
+            }          
         }
-        else
+        catch (LobbyServiceException ex)
         {
-            NetworkManager.Singleton.Shutdown();
-            await LeaveLobby();
+            Debug.LogError(ex.Message);
         }
     }
 
@@ -269,7 +284,6 @@ public class GameLobby : NetworkBehaviour
         NetworkManager.Singleton.Shutdown();
     }
 
-
     public void SetLobbyToNull()
     {
         joinedLobby = null;
@@ -280,7 +294,7 @@ public class GameLobby : NetworkBehaviour
         return joinedLobby;
     }
 
-    public void DisconnectPlayer(ulong clientId)
+    public void DisconnectClient(ulong clientId)
     {
         NetworkManager.Singleton.DisconnectClient(clientId);
     }

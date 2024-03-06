@@ -81,6 +81,9 @@ public class CharacterSceneUI : MonoBehaviour
     private void UpdateLobbyData()
     {
         Lobby lobby = GameLobby.Instance.GetLobby();
+
+        if (lobby == null) return;
+
         lobbyNameText.text = "Lobby Name: " + lobby.Name;
         lobbyCodeText.text = "Lobby Code: " + lobby.LobbyCode;
 

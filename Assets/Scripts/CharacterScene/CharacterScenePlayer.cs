@@ -80,7 +80,7 @@ public class CharacterScenePlayer : MonoBehaviour
     private void KickPlayer()
     {
         PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
-        GameLobby.Instance.DisconnectPlayer(playerData.clientId);
+        GameLobby.Instance.DisconnectClient(playerData.clientId);
 
         OnPlayerKicked?.Invoke(this, EventArgs.Empty);
     }

@@ -61,7 +61,7 @@ public class LobbyServiceHandler : IDisposable
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            throw;
+            return;
         }
     }
 
@@ -77,6 +77,14 @@ public class LobbyServiceHandler : IDisposable
 
         try
         {
+            Allocation allocation = await relayServiceHandler.AllocateRelay();
+
+            string relayJoinCode = await relayServiceHandler.GetRelayJoinCode(allocation);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
+
+            GameMultiplayer.Instance.StartHost();
+
             Lobby joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName.ToUpper(), GameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions
             {
                 IsPrivate = isPrivate,
@@ -87,10 +95,6 @@ public class LobbyServiceHandler : IDisposable
                 }
             });
 
-            Allocation allocation = await relayServiceHandler.AllocateRelay();
-
-            string relayJoinCode = await relayServiceHandler.GetRelayJoinCode(allocation);
-
             await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>
@@ -98,10 +102,6 @@ public class LobbyServiceHandler : IDisposable
                     { KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
                 }
             });
-
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
-
-            GameMultiplayer.Instance.StartHost();
 
             LevelManager.Instance.LoadNetwork(Scene.CharacterScene);
 
@@ -111,7 +111,7 @@ public class LobbyServiceHandler : IDisposable
         {
             Debug.LogError(ex.Message);
             OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
-            throw;
+            return null;
         }
     }
 
@@ -130,7 +130,7 @@ public class LobbyServiceHandler : IDisposable
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            throw;
+            return;
         }
     }
 
@@ -152,13 +152,17 @@ public class LobbyServiceHandler : IDisposable
 
             OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
             await Instance.LeaveLobby();
-            throw;
+            return null;
         }
     }
 
     public async Task<Lobby> JoinWithId(string lobbyId)
     {
-        if (string.IsNullOrEmpty(lobbyId)) return null;
+        if (string.IsNullOrEmpty(lobbyId))
+        {
+            OnJoinFailed?.Invoke(this, EventArgs.Empty);
+            return null;
+        }
 
         try
         {
@@ -174,13 +178,17 @@ public class LobbyServiceHandler : IDisposable
         {
             Debug.LogError(ex.Message);
             OnJoinFailed?.Invoke(this, EventArgs.Empty);
-            throw;
+            return null;
         }
     }
 
     public async Task<Lobby> JoinWithCode(string lobbyCode)
     {
-        if (string.IsNullOrEmpty(lobbyCode)) return null;
+        if (string.IsNullOrEmpty(lobbyCode))
+        {
+            OnJoinFailed?.Invoke(this, EventArgs.Empty);
+            return null;
+        }
 
         try
         {
@@ -196,7 +204,7 @@ public class LobbyServiceHandler : IDisposable
         {
             Debug.LogError(ex.Message);
             OnJoinFailed?.Invoke(this, EventArgs.Empty);
-            throw;
+            return null;
         }
     }
 
@@ -208,7 +216,7 @@ public class LobbyServiceHandler : IDisposable
 
             string playerId = AuthenticationService.Instance.PlayerId;
 
-            if(playerId == null) return;
+            if (playerId == null) return;
 
             await LobbyService.Instance.RemovePlayerAsync(joinedLobby?.Id, playerId);
         }
@@ -218,33 +226,13 @@ public class LobbyServiceHandler : IDisposable
         }
     }
 
-    public async Task<bool> LobbyExists(Lobby joinedLobby)
-    {
-        try
-        {
-            if (joinedLobby != null)
-            {
-                joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby?.Id);
-            }
-
-            return joinedLobby != null;
-        }
-        catch (LobbyServiceException ex)
-        {
-            Debug.LogError(ex.Message);
-            return false;
-        }
-    }
-
     public async Task DeleteLobby(Lobby joinedLobby)
     {
         try
         {
-            bool lobbyExists = await LobbyExists(joinedLobby);
+            if (joinedLobby == null) return;
 
-            if (!lobbyExists) return;
-
-            await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+            await LobbyService.Instance.DeleteLobbyAsync(joinedLobby?.Id);
         }
         catch (LobbyServiceException ex)
         {

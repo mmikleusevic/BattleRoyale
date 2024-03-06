@@ -46,7 +46,7 @@ public class GameMultiplayer : NetworkBehaviour
         if (!NetworkManager.Singleton.ShutdownInProgress) NetworkManager.Singleton.Shutdown();
 
         if (GameLobby.Instance.IsLobbyHost())
-        {
+        {          
             NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
             NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Server_OnClientDisconnectCallback;
@@ -80,9 +80,14 @@ public class GameMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.StartClient();
     }
 
-    private void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
+    private async void NetworkManager_Server_OnClientDisconnectCallback(ulong clientId)
     {
-        if (!NetworkManager.IsConnectedClient) return;
+        if (!NetworkManager.IsConnectedClient)
+        {
+            await GameLobby.Instance.DeleteLobby();
+
+            return;
+        }
 
         for (int i = 0; i < playerDataNetworkList.Count; i++)
         {
