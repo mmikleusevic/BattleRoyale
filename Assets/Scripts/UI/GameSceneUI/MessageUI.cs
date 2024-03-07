@@ -14,6 +14,7 @@ public class MessageUI : NetworkBehaviour
         SetMessage("GAME STARTED");
 
         WaitingForPlayers.OnWaitingForPlayers += OnCallbackSetMessage;
+        Player.OnPlayerConnected += OnCallbackSetMessage;
         Initiative.OnInitiativeStart += OnCallbackSetMessage;
         Roll.OnRoll += Roll_OnRollResult;
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
@@ -27,7 +28,7 @@ public class MessageUI : NetworkBehaviour
         EndTurnUI.OnEndTurn += OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleReRoll += OnCallbackSetMessages;
         CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
-        CardBattleResults.OnCardLost += OnCallbackSetMessages;
+        CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected += OnCallbackSetMessages;
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
     }
@@ -35,6 +36,7 @@ public class MessageUI : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         WaitingForPlayers.OnWaitingForPlayers -= OnCallbackSetMessage;
+        Player.OnPlayerConnected -= OnCallbackSetMessage;
         Initiative.OnInitiativeStart -= OnCallbackSetMessage;
         Roll.OnRoll -= Roll_OnRollResult;
         InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
@@ -48,7 +50,7 @@ public class MessageUI : NetworkBehaviour
         EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleReRoll -= OnCallbackSetMessages;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
-        CardBattleResults.OnCardLost -= OnCallbackSetMessages;
+        CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected -= OnCallbackSetMessages;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
 
@@ -101,7 +103,12 @@ public class MessageUI : NetworkBehaviour
         OnCallbackSetMessages(arg3);
     }
 
-    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
+    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardBattleEventArgs obj)
+    {
+        OnCallbackSetMessages(obj.messages);
+    }
+
+    private void CardBattleResults_OnCardLost(CardBattleResults.OnCardBattleEventArgs obj)
     {
         OnCallbackSetMessages(obj.messages);
     }

@@ -18,6 +18,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerActionUsed += Player_OnPlayerActionUsed;
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
+        Player.OnPlayerPointsChanged += Player_OnPlayerPointsChanged;
 
         Hide();
     }
@@ -30,6 +31,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerActionUsed -= Player_OnPlayerActionUsed;
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
+        Player.OnPlayerPointsChanged -= Player_OnPlayerPointsChanged;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -76,6 +78,11 @@ public class PlayerInfoUI : MonoBehaviour
         SetSipCounter();
     }
 
+    private void Player_OnPlayerPointsChanged()
+    {
+        SetPointsText();
+    }
+
     private void SetMovementsText()
     {
         movementsText.text = $"Movements: {Player.LocalInstance.Movement}";
@@ -88,7 +95,7 @@ public class PlayerInfoUI : MonoBehaviour
 
     private void SetPointsText()
     {
-        pointsText.text = $"Points: {Player.LocalInstance.Points}";
+        pointsText.text = $"Points: {Player.LocalInstance.Points.Value}";
     }
 
     private void SetPlayerNameText()
@@ -101,11 +108,11 @@ public class PlayerInfoUI : MonoBehaviour
     {
         if (Player.LocalInstance.IsDead.Value)
         {
-            deadText.text = "Dead: Yes";
+            deadText.text = "Dead: <color=red>Yes</color>";
         }
         else
         {
-            deadText.text = "Dead: No";
+            deadText.text = "Dead: <color=green>No</color>";
         }
     }
 

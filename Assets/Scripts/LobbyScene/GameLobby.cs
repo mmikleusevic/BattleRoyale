@@ -1,5 +1,4 @@
 using ParrelSync;
-using System;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Authentication;
@@ -254,7 +253,7 @@ public class GameLobby : NetworkBehaviour
             {
                 NetworkManager.Singleton.Shutdown();
                 await LeaveLobby();
-            }          
+            }
         }
         catch (LobbyServiceException ex)
         {

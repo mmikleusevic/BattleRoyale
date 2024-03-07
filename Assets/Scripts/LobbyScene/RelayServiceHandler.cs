@@ -6,6 +6,7 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using static GameLobby;
 
 public class RelayServiceHandler
 {
@@ -55,7 +56,7 @@ public class RelayServiceHandler
     {
         try
         {
-            string relayJoinCode = joinedLobby.Data[GameLobby.KEY_RELAY_JOIN_CODE].Value;
+            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
 
             JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
 

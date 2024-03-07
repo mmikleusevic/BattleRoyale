@@ -9,8 +9,10 @@ public class Player : NetworkBehaviour
 {
     public static Player LocalInstance { get; private set; }
 
+    public static event EventHandler<string> OnPlayerConnected;
     public static event Action OnPlayerTurnSet;
     public static event EventHandler<string> OnPlayerMoved;
+    public static event Action OnPlayerPointsChanged;
     public static event Action OnPlayerActionUsed;
     public static event Action OnPlayerDiedCardBattle;
     public static event Action OnPlayerSelectedPlaceToDie;
@@ -31,13 +33,13 @@ public class Player : NetworkBehaviour
     public List<Card> EquippedCards { get; private set; }
     public List<Card> UnequippedCards { get; private set; }
     public NetworkVariable<ulong> ClientId { get; private set; }
-    public NetworkVariable<bool> IsDead { get; set; }
+    public NetworkVariable<bool> IsDead { get; private set; }
+    public NetworkVariable<int> Points { get; private set; }
     public Vector2 GridPosition { get; private set; }
     public int Movement { get; private set; }
     public int ActionPoints { get; private set; }
     public int SipValue { get; private set; }
     public int SipCounter { get; private set; }
-    public int Points { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
 
@@ -45,6 +47,7 @@ public class Player : NetworkBehaviour
     {
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         IsDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        Points = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         playerParticleSystem = particleCircle.GetComponent<ParticleSystem>();
         EquippedCards = new List<Card>();
         UnequippedCards = new List<Card>();
@@ -98,6 +101,13 @@ public class Player : NetworkBehaviour
         playerVisual.SetColor(color);
 
         playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
+
+        OnPlayerConnected?.Invoke(this, PlayerConnectedMessage());
+    }
+
+    private string PlayerConnectedMessage()
+    {
+        return $"<color=#{HexPlayerColor}>{PlayerName} </color> successfully connected";
     }
 
     public void MovePlayerPosition(Tile tile)
@@ -149,8 +159,10 @@ public class Player : NetworkBehaviour
         ResetActionsAndMovement();
     }
 
-    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
+    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardBattleEventArgs obj)
     {
+        AddOrSubtractPoints(obj.card.Value);
+
         SaveWonCardServerRpc(obj.card.NetworkObject, NetworkObject);
     }
 
@@ -193,7 +205,7 @@ public class Player : NetworkBehaviour
         SubtractActionPoints();
     }
 
-    private void CardBattleResults_OnCardLost(string[] obj)
+    private void CardBattleResults_OnCardLost(CardBattleResults.OnCardBattleEventArgs obj)
     {
         IsDead.Value = true;
 
@@ -247,11 +259,6 @@ public class Player : NetworkBehaviour
     public void SetSipValue(int value)
     {
         SipValue = value;
-    }
-
-    public void SetPlayerPoints(int cardValue)
-    {
-        Points += Points + cardValue;
     }
 
     public void AddSips()
@@ -372,6 +379,13 @@ public class Player : NetworkBehaviour
         ActionPoints--;
 
         OnPlayerActionUsed?.Invoke();
+    }
+
+    public void AddOrSubtractPoints(int value)
+    {
+        Points.Value += value;
+
+        OnPlayerPointsChanged?.Invoke();
     }
 
     private void ResetActionsAndMovement()

@@ -80,16 +80,16 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
-    {
-        SetPlayerToPlayersList(e.playerOrder);
-    }
-
     private void NetworkManager_OnClientDisconnectCallback(ulong obj)
     {
         Time.timeScale = 1;
 
         GameLobby.Instance.DisconnectClientsOnServerLeaving(obj);
+    }
+
+    private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
+    {
+        SetPlayerToPlayersList(e.playerOrder);
     }
 
     [ServerRpc]

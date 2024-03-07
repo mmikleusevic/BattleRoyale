@@ -59,12 +59,12 @@ public class FadeMessageUI : MonoBehaviour
         StartFadeMessage(obj[0]);
     }
 
-    private void CardBattleResults_OnCardLost(string[] obj)
+    private void CardBattleResults_OnCardLost(CardBattleResults.OnCardBattleEventArgs obj)
     {
-        StartFadeMessage(obj[0]);
+        StartFadeMessage(obj.messages[0]);
     }
 
-    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardWonEventArgs obj)
+    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardBattleEventArgs obj)
     {
         StartFadeMessage(obj.messages[0]);
     }

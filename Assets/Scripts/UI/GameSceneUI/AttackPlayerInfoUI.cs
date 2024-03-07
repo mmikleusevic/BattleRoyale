@@ -28,9 +28,9 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
         backgroundImage.color = enemyPlayer.HexPlayerColor.HEXToColor();
         playerNameText.text = enemyPlayer.PlayerName;
-        pointsText.text = "Points: " + enemyPlayer.Points.ToString();
+        pointsText.text = "Points: " + enemyPlayer.Points.Value.ToString();
 
-        equippedCardsText.text += '\n';
+        equippedCardsText.text = "<size=70px>Equipped cards: \n";
 
         if (enemyPlayer.EquippedCards.Count == 0)
         {
@@ -39,7 +39,7 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
         foreach (Card card in enemyPlayer.EquippedCards)
         {
-            equippedCardsText.text += card.Name;
+            equippedCardsText.text += "<size=65px>" + card.Name;
 
             if (card != enemyPlayer.EquippedCards.LastOrDefault())
             {

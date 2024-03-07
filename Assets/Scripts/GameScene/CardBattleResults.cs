@@ -6,11 +6,11 @@ using Unity.Netcode;
 public class CardBattleResults : NetworkBehaviour
 {
     public static event Action OnCardRoll;
-    public static event Action<OnCardWonEventArgs> OnCardWon;
-    public static event Action<string[]> OnCardLost;
+    public static event Action<OnCardBattleEventArgs> OnCardWon;
+    public static event Action<OnCardBattleEventArgs> OnCardLost;
     public static event EventHandler<string> OnCardRollOver;
 
-    public class OnCardWonEventArgs : EventArgs
+    public class OnCardBattleEventArgs : EventArgs
     {
         public string[] messages;
         public Card card;
@@ -55,7 +55,7 @@ public class CardBattleResults : NetworkBehaviour
             tile.DisableCard();
             message = SendCardWonMessageToMessageUI();
 
-            OnCardWon?.Invoke(new OnCardWonEventArgs
+            OnCardWon?.Invoke(new OnCardBattleEventArgs
             {
                 card = tile.Card,
                 messages = message,
@@ -64,7 +64,11 @@ public class CardBattleResults : NetworkBehaviour
         else
         {
             message = SendCardLostMessageToMessageUI();
-            OnCardLost?.Invoke(message);
+            OnCardLost?.Invoke(new OnCardBattleEventArgs
+            {
+                card = tile.Card,
+                messages = message,
+            });
         }
 
         cardRolls.Clear();

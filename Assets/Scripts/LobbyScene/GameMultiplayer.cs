@@ -46,7 +46,7 @@ public class GameMultiplayer : NetworkBehaviour
         if (!NetworkManager.Singleton.ShutdownInProgress) NetworkManager.Singleton.Shutdown();
 
         if (GameLobby.Instance.IsLobbyHost())
-        {          
+        {
             NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
             NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_Server_OnClientDisconnectCallback;
