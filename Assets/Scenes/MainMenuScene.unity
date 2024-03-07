@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2353,6 +2353,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363698636}
   m_CullTransparentMesh: 1
+--- !u!114 &1408780108 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7045911847455620942, guid: 59d6cccb20c20f842b42947c90f02ebe,
+    type: 3}
+  m_PrefabInstance: {fileID: 1684370210628619864}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1415496534
 GameObject:
   m_ObjectHideFlags: 0
@@ -3486,6 +3498,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888799930}
   m_Enabled: 1
+--- !u!114 &1928563660 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5037145649009330426, guid: 59d6cccb20c20f842b42947c90f02ebe,
+    type: 3}
+  m_PrefabInstance: {fileID: 1684370210628619864}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1945198457
 GameObject:
   m_ObjectHideFlags: 0
@@ -4352,6 +4376,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MusicButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4859676583876235396, guid: 59d6cccb20c20f842b42947c90f02ebe,
+        type: 3}
+      propertyPath: musicButton
+      value: 
+      objectReference: {fileID: 1408780108}
+    - target: {fileID: 4859676583876235396, guid: 59d6cccb20c20f842b42947c90f02ebe,
+        type: 3}
+      propertyPath: musicButtonText
+      value: 
+      objectReference: {fileID: 1928563660}
+    - target: {fileID: 7045911847455620942, guid: 59d6cccb20c20f842b42947c90f02ebe,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

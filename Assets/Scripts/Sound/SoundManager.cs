@@ -23,6 +23,11 @@ public class SoundManager : MonoBehaviour
         musicSource.mute = result;
     }
 
+    public bool GetIsMusicEnabled()
+    {
+        return !musicSource.mute;
+    }
+
     public void ToggleMusic()
     {
         musicSource.mute = !musicSource.mute;
