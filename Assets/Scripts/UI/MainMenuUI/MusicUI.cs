@@ -32,7 +32,7 @@ public class MusicUI : MonoBehaviour
     public void Toggle()
     {
         SoundManager.Instance.ToggleMusic();
-        isEnabled = SoundManager.Instance.GetIsMusicEnabled();
+        isEnabled = !isEnabled;
 
         SetButtonText();
     }

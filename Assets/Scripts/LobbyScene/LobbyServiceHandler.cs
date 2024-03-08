@@ -149,9 +149,7 @@ public class LobbyServiceHandler : IDisposable
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-
             OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
-            await Instance.LeaveLobby();
             return null;
         }
     }

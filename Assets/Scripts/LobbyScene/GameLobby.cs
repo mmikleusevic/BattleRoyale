@@ -1,4 +1,5 @@
 using ParrelSync;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Authentication;
@@ -187,8 +188,6 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-
-            await LeaveLobby();
         }
     }
 
@@ -201,8 +200,6 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-
-            await LeaveLobby();
         }
     }
 
@@ -269,7 +266,25 @@ public class GameLobby : NetworkBehaviour
     [ServerRpc]
     public void DisconnectClientsFromGameServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        DisconnectClientsFromGameClientRpc();
+        ulong[] clientIds = new ulong[NetworkManager.ConnectedClientsIds.Count];
+        int i = 0;
+
+        foreach (ulong clientId in NetworkManager.ConnectedClientsIds.Reverse())
+        {
+            clientIds[i] = clientId;
+
+            i++;
+        }
+
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = clientIds
+            }
+        };
+
+        DisconnectClientsFromGameClientRpc(clientRpcParams);
     }
 
     [ClientRpc]
@@ -302,15 +317,9 @@ public class GameLobby : NetworkBehaviour
     {
         if (clientId == NetworkManager.ServerClientId && NetworkManager.Singleton.IsConnectedClient)
         {
-            await LeaveLobbyOrDelete();
-
             await Awaitable.NextFrameAsync();
 
             LevelManager.Instance.LoadScene(Scene.MainMenuScene);
-        }
-        else if (clientId == NetworkManager.ServerClientId)
-        {
-            await LeaveLobbyOrDelete();
         }
     }
 }
