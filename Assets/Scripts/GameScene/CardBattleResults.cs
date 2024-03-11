@@ -17,7 +17,6 @@ public class CardBattleResults : NetworkBehaviour
     }
 
     private Tile tile;
-    private List<int> cardRolls;
 
     private void Awake()
     {
@@ -42,11 +41,9 @@ public class CardBattleResults : NetworkBehaviour
 
     public void SetCardResult(List<int> results)
     {
-        cardRolls = results;
+        int sum = results.Sum();
 
-        int sum = cardRolls.Sum();
-
-        bool isThreeOfAKind = cardRolls.Distinct().Count() == 1;
+        bool isThreeOfAKind = results.Distinct().Count() == 1;
 
         string[] message = null;
 
@@ -71,7 +68,6 @@ public class CardBattleResults : NetworkBehaviour
             });
         }
 
-        cardRolls.Clear();
         tile = null;
     }
 
@@ -83,8 +79,8 @@ public class CardBattleResults : NetworkBehaviour
         string playerColor = player.HexPlayerColor;
 
         return new string[] {
-            $"YOU WON {tile.Card.Name}",
-            $"<color=#{playerColor}>{playerName}</color> won {tile.Card.Name}"
+            $"YOU WON {tile.GetCardOrTileName()}",
+            $"<color=#{playerColor}>{playerName}</color> won {tile.GetCardOrTileName()}"
         };
     }
 

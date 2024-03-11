@@ -15,12 +15,12 @@ public class RollUI : NetworkBehaviour
     private Vector3 cameraPosition;
     private Vector3[] dicePositions;
 
-    public virtual void Awake()
+    public void Awake()
     {
         rollButton.onClick.AddListener(() =>
         {
             rollButton.gameObject.SetActive(false);
-            StartCoroutine(roll.RotateDice(dice, dicePositions, cameraPosition));
+            roll.RotateDice(dice, dicePositions, cameraPosition);
         });
 
         cameraPosition = diceCamera.transform.position;

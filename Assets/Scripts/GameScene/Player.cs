@@ -239,12 +239,12 @@ public class Player : NetworkBehaviour
 
     private string CreateOnPlayerMovedMessage(Tile tile)
     {
-        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {tile.Card.Name}";
+        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {tile.GetCardOrTileName()}";
     }
 
     private string CreateOnPlayerDiedMoveMessage(Tile tile)
     {
-        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"chose to die on {tile.Card.Name}";
+        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"chose to die on {tile.GetCardOrTileName()}";
     }
 
     private string[] CreateOnPlayerResurrectedMessage()

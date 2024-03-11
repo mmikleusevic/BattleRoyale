@@ -16,6 +16,8 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
     private TileAnimator tileAnimator;
 
+    private string tileName;
+
     public NetworkVariable<bool> IsOccupiedOnPlacing { get; private set; }
     public Card Card { get; private set; }
     public Sprite Sprite { get; private set; }
@@ -50,6 +52,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     {
         CardSO cardSO = GridManager.Instance.GetCardSOAtPosition(index);
 
+        tileName = "TILE " + index;
         Sprite = cardSO.cardSprite;
         GridPosition = gridPosition;
     }
@@ -123,6 +126,18 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         }
 
         return players;
+    }
+
+    public string GetCardOrTileName()
+    {
+        if (Card != null)
+        {
+            return Card.Name;
+        }
+        else
+        {
+            return tileName;
+        }
     }
 
     public void OnMoveResetPlayerPosition(NetworkObjectReference networkObjectReference)

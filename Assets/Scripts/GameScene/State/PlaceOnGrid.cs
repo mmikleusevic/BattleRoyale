@@ -52,8 +52,8 @@ public class PlaceOnGrid : State
     private string[] CreateOnPlayerPlacedMessage(Tile tile)
     {
         return new string[] {
-            $"YOU PLACED ON {tile.Card.Name}",
-            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"placed on {tile.Card.Name}"
+            $"YOU PLACED ON {tile.GetCardOrTileName()}",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"placed on {tile.GetCardOrTileName()}"
         };
     }
 }

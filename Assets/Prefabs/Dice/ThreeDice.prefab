@@ -154,6 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rollResults: {fileID: 0}
+  cardBattle: 1
 --- !u!1 &1469211460511884319
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Roll : MonoBehaviour, IRoll
+public class Roll : MonoBehaviour
 {
     public static event EventHandler<OnRollEventArgs> OnRoll;
 
@@ -16,6 +16,7 @@ public class Roll : MonoBehaviour, IRoll
     }
 
     [SerializeField] private RollResults rollResults;
+    [SerializeField] private bool cardBattle = false;
 
     private readonly float interactDistance = 0.51f;
 
@@ -59,13 +60,92 @@ public class Roll : MonoBehaviour, IRoll
 
         return side;
     }
+    public void RotateDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
+    {
+        if (cardBattle)
+        {
+            StartCoroutine(RotateCardBattleDice(dice, dicePositions, cameraPosition));
+        }
+        else
+        {
+            StartCoroutine(RotateOtherDice(dice, dicePositions, cameraPosition));
+        }
+    }
 
-    public IEnumerator RotateDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
+    private IEnumerator RotateCardBattleDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
     {
         List<int> resultList = new List<int>();
         int resultSum = 0;
+
+        yield return StartCoroutine(Rotate(dice));
+
+        for (int i = 0; i < dice.Length; i++)
+        {
+            Vector3 direction = dicePositions[i] - cameraPosition;
+
+            int result = GetResult(direction, cameraPosition);
+
+            if (RollType.rollType == RollTypeEnum.CardAttack)
+            {
+                resultList.Add(result);
+            }
+
+            resultSum += result;
+
+            Vector3 side = GetSide(result);
+
+            StartCoroutine(RotateToFace(side, dice[i]));
+        }
+
+        rollResults.SetRollResults(resultList);
+
+        bool isThreeOfAKind = resultList.Distinct().Count() == 1;
+
+        if (isThreeOfAKind)
+        {
+            SendThreeOfAKindMessageToMessageUI(resultSum);
+        }
+
+        SendToMessageUI(resultSum);
+    }
+
+    private IEnumerator RotateOtherDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
+    {
+        int resultSum = 0;
         int min = int.MaxValue;
 
+        yield return StartCoroutine(Rotate(dice));
+
+        for (int i = 0; i < dice.Length; i++)
+        {
+            Vector3 direction = dicePositions[i] - cameraPosition;
+
+            int result = GetResult(direction, cameraPosition);
+
+            resultSum += result;
+
+            Vector3 side = GetSide(result);
+
+            StartCoroutine(RotateToFace(side, dice[i]));
+
+            if (result < min)
+            {
+                min = result;
+            }
+        }
+
+        if (RollType.rollType == RollTypeEnum.Disadvantage)
+        {
+            resultSum = min;
+        }
+
+        rollResults.SetRollResults(resultSum, RollType.rollType);
+
+        SendToMessageUI(resultSum);
+    }
+
+    private IEnumerator Rotate(GameObject[] dice)
+    {
         Vector3[] randomAxes = new Vector3[dice.Length];
 
         for (int i = 0; i < randomAxes.Length; i++)
@@ -100,52 +180,6 @@ public class Roll : MonoBehaviour, IRoll
 
             yield return null;
         }
-
-        for (int i = 0; i < dice.Length; i++)
-        {
-            Vector3 direction = dicePositions[i] - cameraPosition;
-
-            int result = GetResult(direction, cameraPosition);
-
-            if (RollType.rollType == RollTypeEnum.CardAttack)
-            {
-                resultList.Add(result);
-            }
-
-            resultSum += result;
-
-            Vector3 side = GetSide(result);
-
-            StartCoroutine(RotateToFace(side, dice[i]));
-
-            if (result < min)
-            {
-                min = result;
-            }
-        }
-
-        if (RollType.rollType == RollTypeEnum.Disadvantage)
-        {
-            resultSum = min;
-        }
-
-        if (RollType.rollType == RollTypeEnum.CardAttack)
-        {
-            rollResults.SetRollResults(resultList);
-
-            bool isThreeOfAKind = resultList.Distinct().Count() == 1;
-
-            if (isThreeOfAKind)
-            {
-                SendThreeOfAKindMessageToMessageUI(resultSum);
-            }
-        }
-        else
-        {
-            rollResults.SetRollResults(resultSum, RollType.rollType);
-        }
-
-        SendToMessageUI(resultSum);
     }
 
     private IEnumerator RotateToFace(Vector3 side, GameObject die)
