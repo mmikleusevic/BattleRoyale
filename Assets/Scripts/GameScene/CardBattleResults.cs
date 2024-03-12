@@ -8,7 +8,6 @@ public class CardBattleResults : NetworkBehaviour
     public static event Action OnCardRoll;
     public static event Action<OnCardBattleEventArgs> OnCardWon;
     public static event Action<OnCardBattleEventArgs> OnCardLost;
-    public static event EventHandler<string> OnCardRollOver;
 
     public class OnCardBattleEventArgs : EventArgs
     {

@@ -26,6 +26,7 @@ public class Player : NetworkBehaviour
 
     private int maxEquipableCards = 3;
     private int defaultMovement = 0;
+    private int gamesNeededForDefeat = 3;
     private int defaultActionPoints = 2;
     private float moveSpeed = 20f;
 
@@ -42,6 +43,7 @@ public class Player : NetworkBehaviour
     public int SipCounter { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
+    public int EnemyRollWinsToLose { get; private set; }
 
     private void Awake()
     {
@@ -52,6 +54,7 @@ public class Player : NetworkBehaviour
         EquippedCards = new List<Card>();
         UnequippedCards = new List<Card>();
 
+        EnemyRollWinsToLose = gamesNeededForDefeat;
         Movement = defaultMovement;
         ActionPoints = defaultActionPoints;
     }

@@ -67,21 +67,19 @@ public class GridManager : NetworkBehaviour
 
     private void Player_OnPlayerTurnSet()
     {
-        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+        EnableGridPositionsWherePlayerCanInteract();
     }
 
     private void Player_OnPlayerMoved(object sender, string e)
     {
         DisableCards();
-
-        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+        EnableGridPositionsWherePlayerCanInteract();
     }
 
     private void Tile_OnTileClosed()
     {
         DisableCards();
-
-        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+        EnableGridPositionsWherePlayerCanInteract();
     }
 
     private void Player_OnPlayerDiedCardBattle()
@@ -92,16 +90,14 @@ public class GridManager : NetworkBehaviour
     private void Player_OnPlayerResurrected(string[] messages)
     {
         DisableCards();
-
-        EnableGridPositionsWherePlayerCanInteract(Player.LocalInstance);
+        EnableGridPositionsWherePlayerCanInteract();
     }
 
     //TODO will use on player battle loss
     private void Player_OnPlayerDiedPlayerBattle()
     {
         DisableCards();
-
-        EnableGridPositionsWherePlayerCanGoDie(Player.LocalInstance);
+        EnableGridPositionsWherePlayerCanGoDie();
     }
 
     private void SetMovementVectors()
@@ -166,9 +162,9 @@ public class GridManager : NetworkBehaviour
 
             Vector2 position = new Vector3((gridPosition.x * cardDimensions.x) + gridPosition.x * spacing, (gridPosition.y * cardDimensions.y) + gridPosition.y * spacing);
 
-            Transform cardTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"{cardSO.name}");
-            Tile tile = cardTransform.GetComponent<Tile>();
-            Card card = cardTransform.GetComponent<Card>();
+            Transform tileTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"TILE{index}({cardSO.name})");
+            Tile tile = tileTransform.GetComponent<Tile>();
+            Card card = tileTransform.GetComponent<Card>();
             card.InitializeClientRpc(index);
             tile.InitializeClientRpc(gridPosition, index);
             NetworkObject tileNetworkObject = tile.NetworkObject;
@@ -269,10 +265,12 @@ public class GridManager : NetworkBehaviour
         }
     }
 
-    public void EnableGridPositionsWherePlayerCanGoDie(Player player)
+    public void EnableGridPositionsWherePlayerCanGoDie()
     {
         int lengthX = movementVectors.GetLength(0);
         int lengthY = movementVectors.GetLength(1);
+
+        Player player = Player.LocalInstance;
 
         for (int i = 0; i < lengthX; i++)
         {
@@ -296,10 +294,12 @@ public class GridManager : NetworkBehaviour
         }
     }
 
-    public void EnableGridPositionsWherePlayerCanInteract(Player player)
+    public void EnableGridPositionsWherePlayerCanInteract()
     {
         int lengthX = movementVectors.GetLength(0);
         int lengthY = movementVectors.GetLength(1);
+
+        Player player = Player.LocalInstance;
 
         for (int i = 0; i < lengthX; i++)
         {
@@ -311,7 +311,7 @@ public class GridManager : NetworkBehaviour
                 {
                     Tile tile = gridTiles[position];
 
-                    if (player.GridPosition == tile.GridPosition && tile.IsClosed)
+                    if (player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePeopleOnTheCard() != true)
                     {
                         continue;
                     }

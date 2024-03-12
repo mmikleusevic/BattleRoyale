@@ -52,7 +52,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     {
         CardSO cardSO = GridManager.Instance.GetCardSOAtPosition(index);
 
-        tileName = "TILE " + index;
+        tileName = "TILE" + index;
         Sprite = cardSO.cardSprite;
         GridPosition = gridPosition;
     }

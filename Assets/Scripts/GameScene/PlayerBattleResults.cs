@@ -5,11 +5,12 @@ using Unity.Netcode;
 
 public class PlayerBattleResults : NetworkBehaviour
 {
-    public static event EventHandler OnPlayerBattleRoll;
-    public static event EventHandler OnPlayerBattleRollDisadvantage;
-    public static event Action<string> OnPlayerBattleReRoll;
-    public static event EventHandler OnPlayerBattlePrepared;
-    public static event EventHandler<OnBattleRollOverEventArgs> OnPlayerBattleRollOver;
+    public static event Action OnPlayerBattleRollDie;
+    public static event Action OnPlayerBattleRollDieOver;
+    public static event Action OnPlayerBattleRollDisadvantage;
+    public static event Action OnPlayerBattleRollDisadvantageRollOver;
+    public static event Action<string> OnPlayerBattleShowUI;
+    public static event Action<OnBattleRollOverEventArgs> OnPlayerBattleRollOver;
 
     public class OnBattleRollOverEventArgs : EventArgs
     {
@@ -19,7 +20,21 @@ public class PlayerBattleResults : NetworkBehaviour
 
     private Dictionary<ulong, bool> clientRolled;
     private Dictionary<ulong, List<int>> battleRolls;
-    private Dictionary<ulong, int> battleResults;
+    private Player player1;
+    private Player player2;
+
+    private ClientRpcParams clientRpcParamsBattle;
+    private ClientRpcParams clientRpcParamsOther;
+    private ClientRpcParams clientRpcParamsPlayer1;
+    private ClientRpcParams clientRpcParamsPlayer2;
+
+    private RollTypeEnum rollTypePlayer1;
+    private RollTypeEnum rollTypePlayer2;
+
+    private int player1BattlesNeeded = 0;
+    private int player2BattlesNeeded = 0;
+    private int player1Wins = 0;
+    private int player2Wins = 0;
 
     private void Awake()
     {
@@ -32,7 +47,6 @@ public class PlayerBattleResults : NetworkBehaviour
 
         clientRolled = new Dictionary<ulong, bool>();
         battleRolls = new Dictionary<ulong, List<int>>();
-        battleResults = new Dictionary<ulong, int>();
     }
 
     public override void OnDestroy()
@@ -53,7 +67,10 @@ public class PlayerBattleResults : NetworkBehaviour
 
     private void SetPlayerBattle(Player player, Player enemyPlayer)
     {
-        ClientRpcParams clientRpcParamsPlayer1 = new ClientRpcParams()
+        player1 = player;
+        player2 = enemyPlayer;
+
+        clientRpcParamsPlayer1 = new ClientRpcParams()
         {
             Send = new ClientRpcSendParams()
             {
@@ -61,7 +78,7 @@ public class PlayerBattleResults : NetworkBehaviour
             }
         };
 
-        ClientRpcParams clientRpcParamsPlayer2 = new ClientRpcParams()
+        clientRpcParamsPlayer2 = new ClientRpcParams()
         {
             Send = new ClientRpcSendParams()
             {
@@ -69,24 +86,89 @@ public class PlayerBattleResults : NetworkBehaviour
             }
         };
 
-        if (player.EquippedCards.Count > 0 && enemyPlayer.EquippedCards.Count > 0 || player.EquippedCards.Count == 0 && enemyPlayer.EquippedCards.Count == 0)
-        {
-            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer1);
-            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer2);
-        }
-        else if (player.EquippedCards.Count == 0 && enemyPlayer.EquippedCards.Count > 0)
-        {
-            SetRollTypeForClientClientRpc(RollTypeEnum.Disadvantage, clientRpcParamsPlayer1);
-            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer2);
-        }
-        else
-        {
-            SetRollTypeForClientClientRpc(RollTypeEnum.PlayerAttack, clientRpcParamsPlayer1);
-            SetRollTypeForClientClientRpc(RollTypeEnum.Disadvantage, clientRpcParamsPlayer2);
-        }
+        player1BattlesNeeded = enemyPlayer.EnemyRollWinsToLose;
+        player2BattlesNeeded = player.EnemyRollWinsToLose;
+
+        clientRolled.Clear();
+        battleRolls.Clear();
+        player1Wins = 0;
+        player2Wins = 0;
 
         clientRolled[player.ClientId.Value] = false;
         clientRolled[enemyPlayer.ClientId.Value] = false;
+
+        string message = SendCurrentBattleResultMessage(player1, player1Wins, string.Empty);
+        SetClientRpcParamsForBattle();
+        SetBattleResultInfoClientRpc(message);
+
+        if (player.EquippedCards.Count > 0 && enemyPlayer.EquippedCards.Count > 0 || player.EquippedCards.Count == 0 && enemyPlayer.EquippedCards.Count == 0)
+        {
+            rollTypePlayer1 = RollTypeEnum.PlayerAttack;
+            rollTypePlayer2 = RollTypeEnum.PlayerAttack;
+
+            SetRollTypeForClientClientRpc(rollTypePlayer1, clientRpcParamsPlayer1);
+            SetRollTypeForClientClientRpc(rollTypePlayer2, clientRpcParamsPlayer2);
+        }
+        else if (player.EquippedCards.Count == 0 && enemyPlayer.EquippedCards.Count > 0)
+        {
+            rollTypePlayer1 = RollTypeEnum.Disadvantage;
+            rollTypePlayer2 = RollTypeEnum.PlayerAttack;
+
+            SetRollTypeForClientClientRpc(rollTypePlayer1, clientRpcParamsPlayer1);
+            SetRollTypeForClientClientRpc(rollTypePlayer2, clientRpcParamsPlayer2);
+        }
+        else
+        {
+            rollTypePlayer1 = RollTypeEnum.PlayerAttack;
+            rollTypePlayer2 = RollTypeEnum.Disadvantage;
+
+            SetRollTypeForClientClientRpc(rollTypePlayer1, clientRpcParamsPlayer1);
+            SetRollTypeForClientClientRpc(rollTypePlayer2, clientRpcParamsPlayer2);
+        }
+    }
+
+    private void SetClientRpcParamsForBattle()
+    {
+        ulong[] clientIdsBattle = new ulong[clientRolled.Count];
+        ulong[] clientIdsOther = new ulong[NetworkManager.ConnectedClientsIds.Count - clientRolled.Count];
+        int i = 0;
+        int j = 0;
+
+        foreach (var item in NetworkManager.ConnectedClientsIds)
+        {
+            if (clientRolled.Keys.Contains(item))
+            {
+                clientIdsBattle[i] = item;
+                i++;
+            }
+            else
+            {
+                clientIdsOther[j] = item;
+                j++;
+            }
+        }
+
+        clientRpcParamsBattle = new ClientRpcParams()
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = clientIdsBattle
+            }
+        };
+
+        clientRpcParamsOther = new ClientRpcParams()
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = clientIdsOther
+            }
+        };       
+    }
+
+    [ClientRpc]
+    private void SetBattleResultInfoClientRpc(string message, ClientRpcParams clientRpcParams = default)
+    {
+        OnPlayerBattleShowUI?.Invoke(message);
     }
 
     [ClientRpc]
@@ -96,11 +178,11 @@ public class PlayerBattleResults : NetworkBehaviour
 
         if (rollType == RollTypeEnum.PlayerAttack)
         {
-            OnPlayerBattleRoll?.Invoke(this, EventArgs.Empty);
+            OnPlayerBattleRollDie?.Invoke();
         }
         else if (rollType == RollTypeEnum.Disadvantage)
         {
-            OnPlayerBattleRollDisadvantage?.Invoke(this, EventArgs.Empty);
+            OnPlayerBattleRollDisadvantage?.Invoke();
         }
     }
 
@@ -115,11 +197,11 @@ public class PlayerBattleResults : NetworkBehaviour
 
         ResetClientRolledValues();
 
-        ClientRpcParams clientRpcParams = SetClientRpcParamsForBattle();
+        bool canContinue = SetBattleResultOrReroll();
 
-        SetBattleResultOrReroll(clientRpcParams);
-
-        DetermineBattleWinnerOrReroll(clientRpcParams);
+        if (!canContinue) return;
+        
+        DetermineBattleWinnerOrReroll();
     }
 
     private void SetBattleRollResult(int result, ServerRpcParams serverRpcParams)
@@ -156,95 +238,129 @@ public class PlayerBattleResults : NetworkBehaviour
         }
     }
 
-    private ClientRpcParams SetClientRpcParamsForBattle()
+    private bool SetBattleResultOrReroll()
     {
-        ulong[] clientIdsForReRoll = new ulong[battleResults.Count];
-        int i = 0;
+        KeyValuePair<ulong, List<int>> client1Entries = battleRolls.FirstOrDefault();
+        KeyValuePair<ulong, List<int>> client2Entries = battleRolls.LastOrDefault();
 
-        foreach (var item in battleResults)
-        {
-            clientIdsForReRoll[i] = item.Key;
-            i++;
-        }
-
-        return new ClientRpcParams()
-        {
-            Send = new ClientRpcSendParams
-            {
-                TargetClientIds = clientIdsForReRoll
-            }
-        };
-    }
-
-    private void SetBattleResultOrReroll(ClientRpcParams clientRpcParams)
-    {
-        int client1Result = battleRolls.FirstOrDefault().Value.LastOrDefault();
-        int client2Result = battleRolls.LastOrDefault().Value.LastOrDefault();
+        int client1Result = client1Entries.Value.LastOrDefault();
+        int client2Result = client2Entries.Value.LastOrDefault();
 
         if (client1Result < client2Result)
         {
-            battleResults[battleResults.LastOrDefault().Key] = battleResults.LastOrDefault().Value + 1;
+            player2Wins++;
         }
         else if (client1Result > client2Result)
         {
-            battleResults[battleResults.FirstOrDefault().Key] = battleResults.FirstOrDefault().Value + 1;
+            player1Wins++;
         }
         else
         {
-            CallOnBattleReRollClientRpc(clientRpcParams);
+            CallOnBattleReRollServerRpc();
+            return false;
         }
+
+        return true;
     }
 
-    private void DetermineBattleWinnerOrReroll(ClientRpcParams clientRpcParams)
+    private void DetermineBattleWinnerOrReroll()
     {
-        //check how to implement shield
-        if (battleResults.Any(a => a.Value == 3))
+        if (player1Wins == player1BattlesNeeded || player2Wins == player2BattlesNeeded)
         {
-            clientRolled.Clear();
+            ulong winnerId = 0;
 
-            ulong winnerId = battleResults.FirstOrDefault(a => a.Value == 3).Key;
-            SetBattleResultClientRpc(winnerId, clientRpcParams);
+            if (player1Wins == player1BattlesNeeded)
+            {
+                winnerId = battleRolls.FirstOrDefault().Key;
+            }
+            else if (player2Wins == player2BattlesNeeded)
+            {
+                winnerId = battleRolls.LastOrDefault().Key;
+            }
+
+            SetRollTypeForClientBattleOverClientRpc(rollTypePlayer1, clientRpcParamsPlayer1);
+            SetRollTypeForClientBattleOverClientRpc(rollTypePlayer2, clientRpcParamsPlayer2);
+
+            CallOnPlayerBattleRollOver(winnerId);
         }
         else
         {
-            CallOnBattleReRollClientRpc(clientRpcParams);
+            CallOnBattleReRollServerRpc();
         }
     }
 
     [ClientRpc]
-    private void CallOnBattleReRollClientRpc(ClientRpcParams clientRpcParams = default)
+    private void SetRollTypeForClientBattleOverClientRpc(RollTypeEnum rollType, ClientRpcParams clientRpcParams = default)
     {
-        OnPlayerBattleReRoll?.Invoke(SendBattleBattleRerollMessageToMessageUI());
+        if (rollType == RollTypeEnum.PlayerAttack)
+        {
+            OnPlayerBattleRollDieOver?.Invoke();
+        }
+        else if (rollType == RollTypeEnum.Disadvantage)
+        {
+            OnPlayerBattleRollDisadvantageRollOver?.Invoke();
+        }
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    private void CallOnBattleReRollServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        string message = SendCurrentBattleResultMessage(player1, player1Wins, string.Empty);
+        CallOnBattleReRoll(message);
+        CallOnBattleShowUIClientRpc(message, clientRpcParamsOther);
+    }
+
+    private void CallOnBattleReRoll(string message)
+    {
+        CallOnBattleShowUIClientRpc(message, clientRpcParamsBattle);
+
+        SetRollTypeForClientClientRpc(rollTypePlayer1, clientRpcParamsPlayer1);
+        SetRollTypeForClientClientRpc(rollTypePlayer2, clientRpcParamsPlayer2);
     }
 
     [ClientRpc]
-    private void SetBattleResultClientRpc(ulong winnerId, ClientRpcParams clientRpcParams = default)
+    private void CallOnBattleShowUIClientRpc(string message, ClientRpcParams clientRpcParams = default)
     {
-        CallOnBattleRollOver(winnerId, clientRpcParams);
+        OnPlayerBattleShowUI?.Invoke(message);
     }
 
-    private string SendBattleBattleRerollMessageToMessageUI()
+    private string SendCurrentBattleResultMessage(Player player, int winCount, string message)
     {
-        string message = "Current battle Result:'\n'";
-
-        foreach (KeyValuePair<ulong, int> item in battleResults)
+        if (message == string.Empty)
         {
-            Player player = PlayerManager.Instance.Players.Where(a => a.ClientId.Value == item.Key).FirstOrDefault();
-
-            string playerName = player.PlayerName;
-            string playerColor = player.HexPlayerColor;
-
-            message += $"<color=#{playerColor}>{playerName}</color>: {item.Value}";
+            message = "Current battle result:\n";
         }
 
-        return message;
+        string playerName = player.PlayerName;
+        string playerColor = player.HexPlayerColor;
+
+        message += $"<color=#{playerColor}>{playerName}</color>: {winCount}";
+
+        if (player == player2) return message;
+
+        message += "\n";
+
+        return SendCurrentBattleResultMessage(player2, player2Wins, message);
     }
 
-    private void CallOnBattleRollOver(ulong winnerId, ClientRpcParams clientRpcParams = default)
+    private void CallOnPlayerBattleRollOver(ulong winnerId, ClientRpcParams clientRpcParams = default)
     {
         string message = SendBattleWinnerMessageToMessageUI(winnerId);
 
-        CallOnBattleRollOverClientRpc(winnerId, message, clientRpcParams);
+        CallOnPlayerBattleRollOverClientRpc(message, winnerId);
+    }
+
+    [ClientRpc]
+    private void CallOnPlayerBattleRollOverClientRpc(string message, ulong winnerId, ClientRpcParams clientRpcParams = default)
+    {
+        OnBattleRollOverEventArgs eventArgs = new OnBattleRollOverEventArgs
+        {
+            message = message,
+            winnerId = winnerId
+        };
+
+        OnPlayerBattleRollOver?.Invoke(eventArgs);
     }
 
     private string SendBattleWinnerMessageToMessageUI(ulong clientId)
@@ -254,18 +370,6 @@ public class PlayerBattleResults : NetworkBehaviour
         string playerName = player.PlayerName;
         string playerColor = player.HexPlayerColor;
 
-        return $"The winner of the battle is: <color=#{playerColor}>{playerName}</color>";
-    }
-
-    [ClientRpc]
-    private void CallOnBattleRollOverClientRpc(ulong winnerId, string message, ClientRpcParams clientRpcParams = default)
-    {
-        OnBattleRollOverEventArgs eventArgs = new OnBattleRollOverEventArgs
-        {
-            message = message,
-            winnerId = winnerId
-        };
-
-        OnPlayerBattleRollOver?.Invoke(this, eventArgs);
+        return $"<color=#{playerColor}>{playerName}</color> wins the battle";
     }
 }

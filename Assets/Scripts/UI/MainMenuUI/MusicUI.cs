@@ -10,7 +10,7 @@ public class MusicUI : MonoBehaviour
     private bool isEnabled;
 
     private void Awake()
-    {     
+    {
         musicButton.onClick.AddListener(() =>
         {
             Toggle();

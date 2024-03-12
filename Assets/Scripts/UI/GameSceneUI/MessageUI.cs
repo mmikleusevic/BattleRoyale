@@ -23,10 +23,8 @@ public class MessageUI : NetworkBehaviour
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
         Player.OnPlayerMoved += OnCallbackSetMessage;
         PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
-        CardBattleResults.OnCardRollOver += OnCallbackSetMessage;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn += OnCallbackSetMessages;
-        PlayerBattleResults.OnPlayerBattleReRoll += OnCallbackSetMessages;
         CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected += OnCallbackSetMessages;
@@ -45,10 +43,8 @@ public class MessageUI : NetworkBehaviour
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
         Player.OnPlayerMoved -= OnCallbackSetMessage;
         PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
-        CardBattleResults.OnCardRollOver -= OnCallbackSetMessage;
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
-        PlayerBattleResults.OnPlayerBattleReRoll -= OnCallbackSetMessages;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected -= OnCallbackSetMessages;
@@ -93,7 +89,7 @@ public class MessageUI : NetworkBehaviour
         SetMessage(e.message);
     }
 
-    private void PlayerBattleResults_OnPlayerBattleRollOver(object sender, PlayerBattleResults.OnBattleRollOverEventArgs e)
+    private void PlayerBattleResults_OnPlayerBattleRollOver(PlayerBattleResults.OnBattleRollOverEventArgs e)
     {
         OnCallbackSetMessages(e.message);
     }

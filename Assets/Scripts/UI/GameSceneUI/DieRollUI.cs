@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class DieRollUI : MonoBehaviour
@@ -10,8 +11,8 @@ public class DieRollUI : MonoBehaviour
         AlcoholTypeUI.OnAlcoholButtonPress += AlcoholTypeUI_OnAlcoholButtonPress;
         InitiativeResults.OnReRoll += InitiativeResults_OnReRoll;
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
-        PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
-        PlayerBattleResults.OnPlayerBattleRoll += PlayerBattleResults_OnPlayerBattleRoll;
+        PlayerBattleResults.OnPlayerBattleRollDie += PlayerBattleResults_OnPlayerBattleRoll;
+        PlayerBattleResults.OnPlayerBattleRollDieOver += PlayerBattleResults_OnPlayerBattleRollDieOver;
     }
 
     private void OnDestroy()
@@ -19,8 +20,8 @@ public class DieRollUI : MonoBehaviour
         AlcoholTypeUI.OnAlcoholButtonPress -= AlcoholTypeUI_OnAlcoholButtonPress;
         InitiativeResults.OnReRoll -= InitiativeResults_OnReRoll;
         InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
-        PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
-        PlayerBattleResults.OnPlayerBattleRoll -= PlayerBattleResults_OnPlayerBattleRoll;
+        PlayerBattleResults.OnPlayerBattleRollDie -= PlayerBattleResults_OnPlayerBattleRoll;
+        PlayerBattleResults.OnPlayerBattleRollDieOver -= PlayerBattleResults_OnPlayerBattleRollDieOver;
     }
 
     private void AlcoholTypeUI_OnAlcoholButtonPress()
@@ -38,12 +39,12 @@ public class DieRollUI : MonoBehaviour
         rollUI.HideWithAnimation();
     }
 
-    private void PlayerBattleResults_OnPlayerBattleRollOver(object sender, PlayerBattleResults.OnBattleRollOverEventArgs e)
+    private void PlayerBattleResults_OnPlayerBattleRollDieOver()
     {
         rollUI.HideWithAnimation();
     }
 
-    private void PlayerBattleResults_OnPlayerBattleRoll(object sender, EventArgs e)
+    private void PlayerBattleResults_OnPlayerBattleRoll()
     {
         rollUI.ShowWithAnimation();
     }
