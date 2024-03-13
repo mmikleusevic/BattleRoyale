@@ -28,7 +28,7 @@ public class StateManager : NetworkBehaviour, IStateManager
                 break;
             case StateEnum.PlayerPreturn:
                 this.state = new PlayerPreturn();
-                break;         
+                break;
             case StateEnum.PlayerTurn:
                 this.state = new PlayerTurn();
                 break;

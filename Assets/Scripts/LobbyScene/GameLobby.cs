@@ -1,4 +1,5 @@
 using ParrelSync;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -176,8 +177,6 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            string playerId = AuthenticationService.Instance.PlayerId;
-            await RemovePlayer(playerId);
         }
     }
 
@@ -190,8 +189,6 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            string playerId = AuthenticationService.Instance.PlayerId;
-            await RemovePlayer(playerId);
         }
     }
 
@@ -204,8 +201,6 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            string playerId = AuthenticationService.Instance.PlayerId;
-            await RemovePlayer(playerId);
         }
     }
 
@@ -226,18 +221,11 @@ public class GameLobby : NetworkBehaviour
         }
     }
 
-    public async Task LeaveLobby()
+    public async Task ClearJoinedLobbiesOnJoinFailed()
     {
         try
         {
-            if (!disconnected)
-            {
-                disconnected = true;
-
-                string playerId = AuthenticationService.Instance.PlayerId;
-
-                await lobbyServiceHandler.RemovePlayer(joinedLobby, playerId);
-            }
+            await lobbyServiceHandler.ClearJoinedLobbiesOnJoinFailed();
         }
         catch (LobbyServiceException ex)
         {
@@ -245,11 +233,16 @@ public class GameLobby : NetworkBehaviour
         }
     }
 
-    public async Task RemovePlayer(string playerId)
+    public async Task RemovePlayer()
     {
         try
         {
-            await lobbyServiceHandler.RemovePlayer(joinedLobby, playerId);
+            if (!disconnected)
+            {
+                disconnected = true;
+
+                await lobbyServiceHandler.RemovePlayer(joinedLobby.Id);
+            }
         }
         catch (LobbyServiceException ex)
         {
@@ -269,8 +262,7 @@ public class GameLobby : NetworkBehaviour
             else
             {
                 NetworkManager.Singleton.Shutdown();
-
-                await LeaveLobby();
+                await RemovePlayer();
             }
         }
         catch (LobbyServiceException ex)

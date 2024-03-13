@@ -162,7 +162,7 @@ public class PlayerBattleResults : NetworkBehaviour
             {
                 TargetClientIds = clientIdsOther
             }
-        };       
+        };
     }
 
     [ClientRpc]
@@ -200,7 +200,7 @@ public class PlayerBattleResults : NetworkBehaviour
         bool canContinue = SetBattleResultOrReroll();
 
         if (!canContinue) return;
-        
+
         DetermineBattleWinnerOrReroll();
     }
 

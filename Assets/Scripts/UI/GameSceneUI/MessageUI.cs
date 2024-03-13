@@ -9,7 +9,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
 {
     [SerializeField] private TextMeshProUGUI messageText;
     [SerializeField] private ScrollRect scrollRect;
-    public bool IsTouched {  get; private set; }
+    public bool IsTouched { get; private set; }
 
     public void Awake()
     {
