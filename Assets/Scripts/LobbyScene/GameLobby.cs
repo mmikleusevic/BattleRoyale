@@ -176,6 +176,8 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
+            string playerId = AuthenticationService.Instance.PlayerId;
+            await RemovePlayer(playerId);
         }
     }
 
@@ -188,6 +190,8 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
+            string playerId = AuthenticationService.Instance.PlayerId;
+            await RemovePlayer(playerId);
         }
     }
 
@@ -200,6 +204,8 @@ public class GameLobby : NetworkBehaviour
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
+            string playerId = AuthenticationService.Instance.PlayerId;
+            await RemovePlayer(playerId);
         }
     }
 

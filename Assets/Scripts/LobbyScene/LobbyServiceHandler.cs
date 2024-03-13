@@ -136,11 +136,13 @@ public class LobbyServiceHandler : IDisposable
 
     public async Task<Lobby> QuickJoin()
     {
+        Lobby joinedLobby = null;
+
         try
         {
             OnJoinStarted?.Invoke(this, EventArgs.Empty);
 
-            Lobby joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
+            joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
 
             await relayServiceHandler.LobbyJoinRelayStartClient(joinedLobby);
 
@@ -150,7 +152,7 @@ public class LobbyServiceHandler : IDisposable
         {
             Debug.LogError(ex.Message);
             OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
-            return null;
+            return joinedLobby;
         }
     }
 
@@ -162,11 +164,13 @@ public class LobbyServiceHandler : IDisposable
             return null;
         }
 
+        Lobby joinedLobby = null;
+
         try
         {
             OnJoinStarted?.Invoke(this, EventArgs.Empty);
 
-            Lobby joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
+            joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
 
             await relayServiceHandler.LobbyJoinRelayStartClient(joinedLobby);
 
@@ -176,7 +180,7 @@ public class LobbyServiceHandler : IDisposable
         {
             Debug.LogError(ex.Message);
             OnJoinFailed?.Invoke(this, EventArgs.Empty);
-            return null;
+            return joinedLobby;
         }
     }
 
@@ -188,11 +192,13 @@ public class LobbyServiceHandler : IDisposable
             return null;
         }
 
+        Lobby joinedLobby = null;
+
         try
         {
             OnJoinStarted?.Invoke(this, EventArgs.Empty);
 
-            Lobby joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
+            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
 
             await relayServiceHandler.LobbyJoinRelayStartClient(joinedLobby);
 
@@ -202,7 +208,7 @@ public class LobbyServiceHandler : IDisposable
         {
             Debug.LogError(ex.Message);
             OnJoinFailed?.Invoke(this, EventArgs.Empty);
-            return null;
+            return joinedLobby;
         }
     }
 
