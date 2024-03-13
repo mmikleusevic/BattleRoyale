@@ -228,8 +228,22 @@ public class GameLobby : NetworkBehaviour
             {
                 disconnected = true;
 
-                await lobbyServiceHandler.LeaveLobby(joinedLobby);
+                string playerId = AuthenticationService.Instance.PlayerId;
+
+                await lobbyServiceHandler.RemovePlayer(joinedLobby, playerId);
             }
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogError(ex.Message);
+        }
+    }
+
+    public async Task RemovePlayer(string playerId)
+    {
+        try
+        {
+            await lobbyServiceHandler.RemovePlayer(joinedLobby, playerId);
         }
         catch (LobbyServiceException ex)
         {
@@ -249,6 +263,7 @@ public class GameLobby : NetworkBehaviour
             else
             {
                 NetworkManager.Singleton.Shutdown();
+
                 await LeaveLobby();
             }
         }

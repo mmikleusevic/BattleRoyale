@@ -206,17 +206,15 @@ public class LobbyServiceHandler : IDisposable
         }
     }
 
-    public async Task LeaveLobby(Lobby joinedLobby)
+    public async Task RemovePlayer(Lobby lobby, string playerId)
     {
         try
         {
-            if (joinedLobby == null) return;
-
-            string playerId = AuthenticationService.Instance.PlayerId;
+            if (lobby == null) return;
 
             if (playerId == null) return;
 
-            await LobbyService.Instance.RemovePlayerAsync(joinedLobby?.Id, playerId);
+            await LobbyService.Instance.RemovePlayerAsync(lobby.Id, playerId);
         }
         catch (LobbyServiceException ex)
         {

@@ -94,6 +94,9 @@ public class GameMultiplayer : NetworkBehaviour
             PlayerData playerData = playerDataNetworkList[i];
             if (playerData.clientId == clientId)
             {
+                string playerId = playerData.playerId.ToString();
+                await GameLobby.Instance.RemovePlayer(playerId);
+
                 playerDataNetworkList.RemoveAt(i);
             }
         }
@@ -162,7 +165,6 @@ public class GameMultiplayer : NetworkBehaviour
 
     private async void NetworkManager_Client_OnClientDisconnectCallback(ulong clientId)
     {
-        await GameLobby.Instance.LeaveLobby();
         OnFailedToJoinGame?.Invoke(this, EventArgs.Empty);
     }
 
