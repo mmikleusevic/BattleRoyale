@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class AttackPlayerInfoUI : MonoBehaviour
 {
     public static event Action<NetworkObjectReference, NetworkObjectReference, string> OnAttackPlayer;
+    public static event Action<Player> OnShowPlayerEquippedCards;
 
     private Player player;
 
@@ -15,10 +16,16 @@ public class AttackPlayerInfoUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerNameText;
     [SerializeField] private TextMeshProUGUI pointsText;
     [SerializeField] private TextMeshProUGUI equippedCardsText;
+    [SerializeField] private Button showEquippedCardsButton;
     [SerializeField] private Button attackPlayerButton;
 
     private void Awake()
     {
+        showEquippedCardsButton.onClick.AddListener(() =>
+        {
+            OnShowPlayerEquippedCards?.Invoke(player);
+        });
+
         Hide();
     }
 
@@ -30,21 +37,18 @@ public class AttackPlayerInfoUI : MonoBehaviour
         playerNameText.text = enemyPlayer.PlayerName;
         pointsText.text = "Points: " + enemyPlayer.Points.Value.ToString();
 
-        equippedCardsText.text = "<size=70px>Equipped cards: \n";
-
         if (enemyPlayer.EquippedCards.Count == 0)
         {
             equippedCardsText.text += "None";
         }
 
-        foreach (Card card in enemyPlayer.EquippedCards)
+        if (enemyPlayer.EquippedCards.Count > 0)
         {
-            equippedCardsText.text += "<size=65px>" + card.Name;
-
-            if (card != enemyPlayer.EquippedCards.LastOrDefault())
-            {
-                equippedCardsText.text += '\n';
-            }
+            showEquippedCardsButton.interactable = true;
+        }
+        else
+        {
+            showEquippedCardsButton.interactable = false;
         }
 
         attackPlayerButton.onClick.AddListener(() =>

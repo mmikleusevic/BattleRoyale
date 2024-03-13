@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Unity.Netcode;
 
@@ -25,14 +26,17 @@ public class StateManager : NetworkBehaviour, IStateManager
             case StateEnum.PlaceOnGrid:
                 this.state = new PlaceOnGrid();
                 break;
-            case StateEnum.Lost:
-                this.state = new Lost();
-                break;
+            case StateEnum.PlayerPreturn:
+                this.state = new PlayerPreturn();
+                break;         
             case StateEnum.PlayerTurn:
                 this.state = new PlayerTurn();
                 break;
             case StateEnum.EnemyTurn:
                 this.state = new EnemyTurn();
+                break;
+            case StateEnum.Lost:
+                this.state = new Lost();
                 break;
             case StateEnum.Won:
                 this.state = new Won();
@@ -40,6 +44,44 @@ public class StateManager : NetworkBehaviour, IStateManager
         }
 
         await this.state.Start();
+    }
+
+    public StateEnum GetState()
+    {
+        Type stateType = state.GetType();
+
+        if (stateType == typeof(WaitingForPlayers))
+        {
+            return StateEnum.WaitingForPlayers;
+        }
+        else if (stateType == typeof(Initiative))
+        {
+            return StateEnum.Initiative;
+        }
+        else if (stateType == typeof(PlaceOnGrid))
+        {
+            return StateEnum.PlaceOnGrid;
+        }
+        else if (stateType == typeof(PlayerPreturn))
+        {
+            return StateEnum.PlayerPreturn;
+        }
+        else if (stateType == typeof(PlayerTurn))
+        {
+            return StateEnum.PlayerTurn;
+        }
+        else if (stateType == typeof(EnemyTurn))
+        {
+            return StateEnum.EnemyTurn;
+        }
+        else if (stateType == typeof(Lost))
+        {
+            return StateEnum.Lost;
+        }
+        else
+        {
+            return StateEnum.Won;
+        }
     }
 
     public async Task EndState()
@@ -87,6 +129,7 @@ public enum StateEnum
     WaitingForPlayers,
     Initiative,
     PlaceOnGrid,
+    PlayerPreturn,
     PlayerTurn,
     EnemyTurn,
     Lost,

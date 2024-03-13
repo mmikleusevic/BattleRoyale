@@ -140,6 +140,18 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         }
     }
 
+    public Sprite GetCardOrTileSprite()
+    {
+        if (Card != null)
+        {
+            return Card.Sprite;
+        }
+        else
+        {
+            return Sprite;
+        }
+    }
+
     public void OnMoveResetPlayerPosition(NetworkObjectReference networkObjectReference)
     {
         OnMoveResetPlayerPositionServerRpc(networkObjectReference);

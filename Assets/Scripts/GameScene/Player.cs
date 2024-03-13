@@ -68,7 +68,7 @@ public class Player : NetworkBehaviour
             PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
             CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
             ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
-            ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
+            AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
             CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
             ResurrectUI.OnResurrectPressed += ResurrectUI_OnResurrectPressed;
         }
@@ -83,7 +83,7 @@ public class Player : NetworkBehaviour
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
-        ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
+        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
 
@@ -203,7 +203,7 @@ public class Player : NetworkBehaviour
         SubtractActionPoints();
     }
 
-    private void ActionsUI_OnAttackPlayer(Tile obj)
+    private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
         SubtractActionPoints();
     }

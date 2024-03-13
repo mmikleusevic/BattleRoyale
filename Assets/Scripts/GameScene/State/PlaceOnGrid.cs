@@ -18,7 +18,7 @@ public class PlaceOnGrid : State
     {
         if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
         {
-            StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerTurn);
+            StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerPreturn);
         }
         else
         {

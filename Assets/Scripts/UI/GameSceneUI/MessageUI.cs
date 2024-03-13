@@ -20,6 +20,7 @@ public class MessageUI : NetworkBehaviour
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
         PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessages;
         PlaceOnGrid.OnPlayerPlaced += OnCallbackSetMessages;
+        PlayerPreturn.OnPlayerPreturn += OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
         Player.OnPlayerMoved += OnCallbackSetMessage;
         PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
@@ -40,6 +41,7 @@ public class MessageUI : NetworkBehaviour
         InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
         PlaceOnGrid.OnPlaceOnGrid -= OnCallbackSetMessages;
         PlaceOnGrid.OnPlayerPlaced -= OnCallbackSetMessages;
+        PlayerPreturn.OnPlayerPreturn -= OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
         Player.OnPlayerMoved -= OnCallbackSetMessage;
         PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;

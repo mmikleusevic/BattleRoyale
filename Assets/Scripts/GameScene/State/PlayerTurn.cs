@@ -44,7 +44,7 @@ public class PlayerTurn : State
         await base.End();
 
         StateManager.Instance.SetState(StateEnum.EnemyTurn);
-        StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerTurn);
+        StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerPreturn);
     }
 
     private async void ActionsUI_OnMove(Tile obj)

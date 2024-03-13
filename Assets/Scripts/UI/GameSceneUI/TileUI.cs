@@ -15,7 +15,7 @@ public class TileUI : MonoBehaviour
     private void Tile_OnTilePressed(object sender, Player e)
     {
         Tile tile = sender as Tile;
-        image.sprite = tile.Sprite;
+        image.sprite = tile.GetCardOrTileSprite();
     }
 
     private void OnDestroy()

@@ -8,6 +8,7 @@ public class AttackPlayerListUI : MonoBehaviour
     [SerializeField] private Transform container;
     [SerializeField] private Transform template;
     [SerializeField] private Button closeButton;
+    private int originalSiblingIndex;
 
     private void Awake()
     {
@@ -15,6 +16,10 @@ public class AttackPlayerListUI : MonoBehaviour
 
         ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
+        AttackPlayerInfoUI.OnShowPlayerEquippedCards += AttackPlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerCardsUI.OnPlayerCardsUIClosed += PlayerCardsUI_OnPlayerCardsUIClosed;
+
+        originalSiblingIndex = transform.GetSiblingIndex();
 
         Hide();
     }
@@ -25,10 +30,14 @@ public class AttackPlayerListUI : MonoBehaviour
 
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
+        AttackPlayerInfoUI.OnShowPlayerEquippedCards -= AttackPlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerCardsUI.OnPlayerCardsUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
     }
 
     private void ActionsUI_OnAttackPlayer(Tile tile)
     {
+        RestoreOriginalOrder();
+
         Show();
 
         List<Player> players = tile.GetPlayersOnCard();
@@ -49,11 +58,32 @@ public class AttackPlayerListUI : MonoBehaviour
 
     private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
+        RestoreOriginalOrder();
+
         Hide();
+    }
+
+    private void AttackPlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
+    {
+        RestoreOriginalOrder();
+    }
+
+    private void PlayerCardsUI_OnPlayerCardsUIClosed()
+    {
+        if (gameObject.activeInHierarchy)
+        {
+            transform.SetAsLastSibling();
+        }
+    }
+
+    public void RestoreOriginalOrder()
+    {
+        transform.SetSiblingIndex(originalSiblingIndex);
     }
 
     private void Show()
     {
+        transform.SetAsLastSibling();
         gameObject.SetActive(true);
         container.gameObject.SetActive(true);
     }
