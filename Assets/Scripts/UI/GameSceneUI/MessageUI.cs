@@ -2,27 +2,29 @@ using System.Collections;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class MessageUI : NetworkBehaviour
+public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] private TextMeshProUGUI messageText;
     [SerializeField] private ScrollRect scrollRect;
+    public bool IsTouched {  get; private set; }
 
     public void Awake()
     {
         SetMessage("GAME STARTED");
 
-        WaitingForPlayers.OnWaitingForPlayers += OnCallbackSetMessage;
-        Player.OnPlayerConnected += OnCallbackSetMessage;
-        Initiative.OnInitiativeStart += OnCallbackSetMessage;
+        WaitingForPlayers.OnWaitingForPlayers += OnCallbackSetMessageToMyself;
+        Player.OnPlayerConnected += OnCallbackSetMessageToMyself;
+        Initiative.OnInitiativeStart += OnCallbackSetMessageToMyself;
         Roll.OnRoll += Roll_OnRollResult;
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
         PlaceOnGrid.OnPlaceOnGrid += OnCallbackSetMessages;
         PlaceOnGrid.OnPlayerPlaced += OnCallbackSetMessages;
         PlayerPreturn.OnPlayerPreturn += OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
-        Player.OnPlayerMoved += OnCallbackSetMessage;
+        Player.OnPlayerMoved += OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn += OnCallbackSetMessages;
@@ -34,16 +36,16 @@ public class MessageUI : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        WaitingForPlayers.OnWaitingForPlayers -= OnCallbackSetMessage;
-        Player.OnPlayerConnected -= OnCallbackSetMessage;
-        Initiative.OnInitiativeStart -= OnCallbackSetMessage;
+        WaitingForPlayers.OnWaitingForPlayers -= OnCallbackSetMessageToMyself;
+        Player.OnPlayerConnected -= OnCallbackSetMessageToMyself;
+        Initiative.OnInitiativeStart -= OnCallbackSetMessageToMyself;
         Roll.OnRoll -= Roll_OnRollResult;
         InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
         PlaceOnGrid.OnPlaceOnGrid -= OnCallbackSetMessages;
         PlaceOnGrid.OnPlayerPlaced -= OnCallbackSetMessages;
         PlayerPreturn.OnPlayerPreturn -= OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
-        Player.OnPlayerMoved -= OnCallbackSetMessage;
+        Player.OnPlayerMoved -= OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
@@ -55,7 +57,25 @@ public class MessageUI : NetworkBehaviour
         base.OnNetworkDespawn();
     }
 
-    private void OnCallbackSetMessage(object sender, string e)
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        IsTouched = true;
+        Debug.Log(IsTouched);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        IsTouched = true;
+        Debug.Log(IsTouched);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        IsTouched = false;
+        Debug.Log(IsTouched);
+    }
+
+    private void OnCallbackSetMessageToMyself(object sender, string e)
     {
         SetMessage(e);
     }
@@ -65,6 +85,13 @@ public class MessageUI : NetworkBehaviour
         SetMessage(e[0]);
 
         SendMessageToEveryoneExceptMeServerRpc(e[1]);
+    }
+
+    private void OnCallbackSetMessages(object sender, string e)
+    {
+        SetMessage(e);
+
+        SendMessageToEveryoneExceptMeServerRpc(e);
     }
 
     private void OnCallbackSetMessages(string[] e)
@@ -158,7 +185,10 @@ public class MessageUI : NetworkBehaviour
 
     private IEnumerator ScrollToEnd()
     {
-        yield return new WaitForEndOfFrame();
-        scrollRect.verticalNormalizedPosition = 0;
+        if (!IsTouched)
+        {
+            yield return new WaitForEndOfFrame();
+            scrollRect.verticalNormalizedPosition = 0;
+        }
     }
 }
