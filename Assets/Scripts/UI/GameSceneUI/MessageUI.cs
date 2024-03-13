@@ -60,19 +60,16 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public void OnBeginDrag(PointerEventData eventData)
     {
         IsTouched = true;
-        Debug.Log(IsTouched);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         IsTouched = true;
-        Debug.Log(IsTouched);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         IsTouched = false;
-        Debug.Log(IsTouched);
     }
 
     private void OnCallbackSetMessageToMyself(object sender, string e)

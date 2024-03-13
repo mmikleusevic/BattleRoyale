@@ -160,8 +160,9 @@ public class GameMultiplayer : NetworkBehaviour
         playerDataNetworkList[playerDataIndex] = playerData;
     }
 
-    private void NetworkManager_Client_OnClientDisconnectCallback(ulong clientId)
+    private async void NetworkManager_Client_OnClientDisconnectCallback(ulong clientId)
     {
+        await GameLobby.Instance.LeaveLobby();
         OnFailedToJoinGame?.Invoke(this, EventArgs.Empty);
     }
 
