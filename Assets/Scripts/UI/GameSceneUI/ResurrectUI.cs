@@ -45,7 +45,7 @@ public class ResurrectUI : MonoBehaviour
 
     private void Player_OnPlayerDiedPlayerBattle(string[] obj)
     {
-        if (Player.LocalInstance.ActionPoints > 0)
+        if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer && Player.LocalInstance.ActionPoints > 0)
         {
             ShowWithAnimation();
         }
