@@ -69,7 +69,7 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
     private string CreateMessageForMessageUI()
     {
-        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> is ATTACKING <color=#{player.HexPlayerColor}>{player.PlayerName}</color>";
+        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color>'s ATTACKING <color=#{player.HexPlayerColor}>{player.PlayerName}</color>";
     }
 
     private void Show()

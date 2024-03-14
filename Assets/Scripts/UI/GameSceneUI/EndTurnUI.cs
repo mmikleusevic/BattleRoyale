@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class EndTurnUI : MonoBehaviour
 {
-    public static event Action<string> OnEndTurn;
+    public static event Action<string[]> OnEndTurn;
 
     [SerializeField] private Button endTurnButton;
 
@@ -18,7 +18,8 @@ public class EndTurnUI : MonoBehaviour
         });
 
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
-        Player.OnPlayerSelectedPlaceToDie += Player_OnPlayerSelectedPlaceToDie;
+        PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
+        PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
 
         Hide();
     }
@@ -26,6 +27,8 @@ public class EndTurnUI : MonoBehaviour
     public void OnDestroy()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
+        PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
+        PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
         endTurnButton.onClick.RemoveAllListeners();
     }
 
@@ -34,14 +37,23 @@ public class EndTurnUI : MonoBehaviour
         Show();
     }
 
-    private void Player_OnPlayerSelectedPlaceToDie()
+    private void PlayerBattleResults_OnPlayerBattleRollOver(string obj)
+    {
+        Hide();
+    }
+
+    private void PlayerBattleResults_OnAfterBattleResolved()
     {
         Show();
     }
 
-    private string SendToMessageUI()
+    private string[] SendToMessageUI()
     {
-        return $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> has ended his turn.";
+        return new string[]
+        {
+            $"YOU ENDED YOUR TURN",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> has ended his turn."
+        };
     }
 
     private void Show()

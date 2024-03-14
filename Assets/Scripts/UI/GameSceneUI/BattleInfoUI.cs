@@ -26,7 +26,7 @@ public class BattleInfoUI : MonoBehaviour
         Show();
     }
 
-    private void PlayerBattleResults_OnPlayerBattleRollOver(PlayerBattleResults.OnBattleRollOverEventArgs e)
+    private void PlayerBattleResults_OnPlayerBattleRollOver(string e)
     {
         battleResultText.text = string.Empty;
         HideWithDelay();

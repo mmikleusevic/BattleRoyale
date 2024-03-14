@@ -18,6 +18,7 @@ public class LobbyServiceHandler : IDisposable
     public static event EventHandler OnCreateLobbyStarted;
     public static event EventHandler OnCreateLobbyFailed;
     public static event EventHandler OnJoinStarted;
+    public static event EventHandler OnRemovingJoinedLobbies;
     public static event EventHandler<OnLobbyListChangdEventArgs> OnLobbyListChanged;
 
     public class OnLobbyListChangdEventArgs : EventArgs
@@ -259,6 +260,8 @@ public class LobbyServiceHandler : IDisposable
     {
         try
         {
+            OnRemovingJoinedLobbies?.Invoke(this, EventArgs.Empty);
+
             List<string> lobbyIds = await LobbyService.Instance.GetJoinedLobbiesAsync();
 
             if (lobbyIds == null || lobbyIds.Count == 0) return;

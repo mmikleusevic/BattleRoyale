@@ -5,14 +5,17 @@ public class PlayerCardUI : MonoBehaviour
 {
     [SerializeField] private Image cardImage;
 
+    public int index = -1;
+
     private void Awake()
     {
         Hide();
     }
 
-    public void Instantiate(Card card)
+    public void Instantiate(Card card, int index)
     {
         cardImage.sprite = card.Sprite;
+        this.index = index;
 
         Show();
     }

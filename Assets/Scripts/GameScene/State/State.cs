@@ -12,6 +12,6 @@ public abstract class State
     {
         GridManager.Instance.DisableCards();
 
-        await Awaitable.WaitForSecondsAsync(1f);
+        await Awaitable.WaitForSecondsAsync(.5f);
     }
 }

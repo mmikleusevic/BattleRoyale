@@ -11,12 +11,16 @@ public class Player : NetworkBehaviour
 
     public static event EventHandler<string> OnPlayerConnected;
     public static event Action OnPlayerTurnSet;
-    public static event EventHandler<string> OnPlayerMoved;
+    public static event EventHandler<string[]> OnPlayerMoved;
     public static event Action OnPlayerPointsChanged;
     public static event Action OnPlayerActionUsed;
     public static event Action OnPlayerDiedCardBattle;
-    public static event Action OnPlayerSelectedPlaceToDie;
+    public static event Action<string[]> OnPlayerDiedPlayerBattle;
+    public static event Action<ulong> OnPlayerSelectedPlaceToDie;
     public static event Action<string[]> OnPlayerResurrected;
+    public static event Action<string[]> OnPlayerTookCard;
+    public static event Action<string> OnPlayerEquippedCard;
+    public static event Action<string> OnPlayerRemovedCard;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -44,6 +48,7 @@ public class Player : NetworkBehaviour
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
     public int EnemyRollWinsToLose { get; private set; }
+    public bool PickPlaceToDie { get; private set; }
 
     private void Awake()
     {
@@ -71,6 +76,7 @@ public class Player : NetworkBehaviour
             AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
             CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
             ResurrectUI.OnResurrectPressed += ResurrectUI_OnResurrectPressed;
+            PlayerBattleResults.OnBattleLost += PlayerBattleResults_OnBattleLost;
         }
 
         InitializePlayerClientRpc();
@@ -86,6 +92,7 @@ public class Player : NetworkBehaviour
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
+        PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
 
         base.OnDestroy();
     }
@@ -123,7 +130,7 @@ public class Player : NetworkBehaviour
 
         StartCoroutine(PlayWalkingAnimation(targetPosition));
 
-        string message = string.Empty;
+        string[] messages = null;
 
         if (!IsDead.Value)
         {
@@ -136,22 +143,24 @@ public class Player : NetworkBehaviour
                 SubtractActionPoints();
             }
 
-            message = CreateOnPlayerMovedMessage(tile);
+            messages = CreateOnPlayerMovedMessage(tile);
         }
         else
         {
-            message = CreateOnPlayerDiedMoveMessage(tile);
+            messages = CreateOnPlayerDiedMoveMessage(tile);
 
             DeathAnimationServerRpc();
 
-            OnPlayerSelectedPlaceToDie?.Invoke();
+            PickPlaceToDie = false;
+
+            OnPlayerSelectedPlaceToDie?.Invoke(ClientId.Value);
         }
 
         GridPosition = tile.GridPosition;
 
         if (CurrentTile != null)
         {
-            OnPlayerMoved?.Invoke(this, message);
+            OnPlayerMoved?.Invoke(this, messages);
         }
 
         CurrentTile = tile;
@@ -184,18 +193,34 @@ public class Player : NetworkBehaviour
 
         Tile tile = networkObjectCard.GetComponent<Tile>();
 
+        Card card = tile.Card;
+
         Player player = GetPlayerFromNetworkReference(networkObjectReferencePlayer);
 
-        if (EquippedCards.Count < maxEquipableCards)
+        SaveCardToWinner(player, card);
+
+        tile.RemoveCardServerRpc();
+    }
+
+    private void SaveCardToWinner(Player player, Card card)
+    {
+        if (player.EquippedCards.Count < player.maxEquipableCards)
         {
-            player.EquippedCards.Add(tile.Card);
+            player.EquippedCards.Add(card);
+
+            OnPlayerEquippedCard?.Invoke(CreateOnPlayerEquippedCardMessage(player, card));
         }
         else
         {
-            player.UnequippedCards.Add(tile.Card);
+            player.UnequippedCards.Add(card);
         }
+    }
 
-        tile.RemoveCardServerRpc();
+    private void RemoveCardFromLoser(Player loser, Card card)
+    {
+        loser.EquippedCards.Remove(card);
+
+        OnPlayerRemovedCard?.Invoke(CreateOnPlayerRemovedCardMessage(loser, card));
     }
 
     private void ActionsUI_OnAttackCard(Tile obj, string[] messages)
@@ -215,6 +240,47 @@ public class Player : NetworkBehaviour
         DeathAnimationServerRpc();
 
         OnPlayerDiedCardBattle?.Invoke();
+    }
+
+    private void PlayerBattleResults_OnBattleLost()
+    {
+        IsDead.Value = true;
+
+        PickPlaceToDie = true;
+
+        OnPlayerDiedPlayerBattle?.Invoke(CreateOnPlayerNeedsToPickAPlaceToDieMessage());
+    }
+
+    public void OnBattleWon(Card card, Player enemy)
+    {
+        OnBattleWonServerRpc(card.NetworkObject, NetworkObject, enemy.NetworkObject);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void OnBattleWonServerRpc(NetworkObjectReference cardNetworkObjectReference, NetworkObjectReference playerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ServerRpcParams serverRpcParams = default)
+    {
+        Player winner = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+
+        Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
+
+        Card card = Card.GetCardFromNetworkReference(cardNetworkObjectReference);
+
+        OnPlayerTookCard?.Invoke(CreateOnPlayerTakenCardMessage(card, loser, winner));
+
+        OnBattleWonClientRpc(cardNetworkObjectReference, playerNetworkObjectReference, loserNetworkObjectReference);
+    }
+
+    [ClientRpc]
+    private void OnBattleWonClientRpc(NetworkObjectReference cardNetworkObjectReference, NetworkObjectReference playerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        Player winner = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+
+        Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
+
+        Card card = Card.GetCardFromNetworkReference(cardNetworkObjectReference);
+
+        SaveCardToWinner(winner, card);
+        RemoveCardFromLoser(loser, card);
     }
 
     private void ResurrectUI_OnResurrectPressed()
@@ -240,14 +306,55 @@ public class Player : NetworkBehaviour
         tile.SetEmptyCardPosition(this);
     }
 
-    private string CreateOnPlayerMovedMessage(Tile tile)
+    private string[] CreateOnPlayerNeedsToPickAPlaceToDieMessage()
     {
-        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {tile.GetCardOrTileName()}";
+        return new string[]
+        {
+            $"PICK A PLACE TO DIE",
+            $"<color=#{HexPlayerColor}>{PlayerName} </color>needs to pick a place to die"
+        };
     }
 
-    private string CreateOnPlayerDiedMoveMessage(Tile tile)
+    private string[] CreateOnPlayerMovedMessage(Tile tile)
     {
-        return $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"chose to die on {tile.GetCardOrTileName()}";
+        return new string[]
+        {
+            $"YOU MOVED TO {tile.GetCardOrTileName()}",
+            $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"moved to {tile.GetCardOrTileName()}"
+        };
+    }
+
+    private string[] CreateOnPlayerDiedMoveMessage(Tile tile)
+    {
+        return new string[]
+        {
+            $"YOU DIED ON {tile.GetCardOrTileName()}",
+            $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"chose to die on {tile.GetCardOrTileName()}"
+        };
+    }
+
+    private string CreateOnPlayerEquippedCardMessage(Player player, Card card)
+    {
+        if (player == LocalInstance)
+        {
+            return $"YOU EQUIPPED {card.Name}";
+        }
+        else
+        {
+            return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>equipped {card.Name}";
+        }
+    }
+
+    private string CreateOnPlayerRemovedCardMessage(Player player, Card card)
+    {
+        if (player == LocalInstance)
+        {
+            return $"YOUR {card.Name} GOT REMOVED";
+        }
+        else
+        {
+            return $"<color=#{player.HexPlayerColor}>{player.PlayerName}'s </color>{card.Name} got removed";
+        }
     }
 
     private string[] CreateOnPlayerResurrectedMessage()
@@ -256,6 +363,15 @@ public class Player : NetworkBehaviour
         {
             "YOU RESURRECTED",
             $"<color=#{HexPlayerColor}>{PlayerName} </color>" + $"has resurrected"
+        };
+    }
+
+    private string[] CreateOnPlayerTakenCardMessage(Card card, Player winner, Player loser)
+    {
+        return new string[]
+        {
+            $"YOU TOOK {card.Name}",
+            $"<color=#{winner.HexPlayerColor}>{winner.PlayerName} </color> took {card.Name} from <color=#{loser.HexPlayerColor}>{loser.PlayerName}</color>"
         };
     }
 

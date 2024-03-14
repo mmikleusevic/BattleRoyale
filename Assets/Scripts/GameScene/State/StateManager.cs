@@ -15,6 +15,8 @@ public class StateManager : NetworkBehaviour, IStateManager
 
     public async void SetState(StateEnum state)
     {
+        if (GetState() == StateEnum.EnemyTurn) await this.state.End();
+
         switch (state)
         {
             case StateEnum.WaitingForPlayers:
@@ -48,6 +50,8 @@ public class StateManager : NetworkBehaviour, IStateManager
 
     public StateEnum GetState()
     {
+        if (state == null) return StateEnum.WaitingForPlayers;
+
         Type stateType = state.GetType();
 
         if (stateType == typeof(WaitingForPlayers))

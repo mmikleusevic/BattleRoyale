@@ -19,6 +19,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
         Player.OnPlayerPointsChanged += Player_OnPlayerPointsChanged;
+        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
 
         Hide();
     }
@@ -32,6 +33,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
         Player.OnPlayerPointsChanged -= Player_OnPlayerPointsChanged;
+        Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -53,7 +55,7 @@ public class PlayerInfoUI : MonoBehaviour
         SetSipCounter();
     }
 
-    private void Player_OnPlayerMoved(object sender, string e)
+    private void Player_OnPlayerMoved(object sender, string[] e)
     {
         SetMovementsText();
         SetActionsText();
@@ -80,7 +82,12 @@ public class PlayerInfoUI : MonoBehaviour
 
     private void Player_OnPlayerPointsChanged()
     {
-        SetPointsText();
+        SetIsDeadText();
+    }
+
+    private void Player_OnPlayerDiedPlayerBattle(string[] messages)
+    {
+        SetIsDeadText();
     }
 
     private void SetMovementsText()

@@ -17,4 +17,13 @@ public class Card : NetworkBehaviour
         Name = cardSO.name.ToUpper();
         Value = cardSO.cost;
     }
+
+    public static Card GetCardFromNetworkReference(NetworkObjectReference networkObjectReference)
+    {
+        networkObjectReference.TryGet(out NetworkObject networkObject);
+
+        if (networkObject == null) return null;
+
+        return networkObject.GetComponent<Card>();
+    }
 }

@@ -52,7 +52,7 @@ public class ActionsUI : MonoBehaviour
             bool isPlayerOnCard = player.GridPosition == tile.GridPosition;
             bool canMoveOrUseAction = player.Movement > 0 || player.ActionPoints > 0;
 
-            if (!isPlayerOnCard && canMoveOrUseAction)
+            if (!isPlayerOnCard && canMoveOrUseAction || player.PickPlaceToDie)
             {
                 ShowMoveButton();
             }

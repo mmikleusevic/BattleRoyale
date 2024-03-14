@@ -19,6 +19,7 @@ public class ResurrectUI : MonoBehaviour
         });
 
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
+        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         PlayerTurn.OnPlayerTurnOver += PlayerTurn_OnPlayerTurnOver;
 
@@ -28,12 +29,21 @@ public class ResurrectUI : MonoBehaviour
     private void OnDestroy()
     {
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
+        Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         PlayerTurn.OnPlayerTurnOver -= PlayerTurn_OnPlayerTurnOver;
         resurrectButton.onClick.RemoveAllListeners();
     }
 
     private void Player_OnPlayerDiedCardBattle()
+    {
+        if (Player.LocalInstance.ActionPoints > 0)
+        {
+            ShowWithAnimation();
+        }
+    }
+
+    private void Player_OnPlayerDiedPlayerBattle(string[] obj)
     {
         if (Player.LocalInstance.ActionPoints > 0)
         {

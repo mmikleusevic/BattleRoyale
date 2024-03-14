@@ -1,12 +1,15 @@
 using DG.Tweening;
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class PlayerCardsUI : MonoBehaviour
 {
     public static event Action OnPlayerCardsUIClosed;
+    public static event Action<ulong> OnWonEquippedCard;
 
     [SerializeField] private RectTransform PlayerCardsUIRectTransform;
     [SerializeField] private TextMeshProUGUI titleText;
@@ -40,11 +43,12 @@ public class PlayerCardsUI : MonoBehaviour
 
         takeCardButton.onClick.AddListener(() =>
         {
-            //TODO
+            StartCoroutine(TakeCard());
         });
 
         PlayerPreturn.OnPlayerPreturn += PlayerPreturn_OnPlayerPreturn;
         AttackPlayerInfoUI.OnShowPlayerEquippedCards += AttackPlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
 
         takeCardButton.gameObject.SetActive(false);
 
@@ -58,6 +62,7 @@ public class PlayerCardsUI : MonoBehaviour
         takeCardButton.onClick.RemoveAllListeners();
         PlayerPreturn.OnPlayerPreturn -= PlayerPreturn_OnPlayerPreturn;
         AttackPlayerInfoUI.OnShowPlayerEquippedCards -= AttackPlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerBattleResults.OnBattleWin -= PlayerBattleResults_OnAfterBattle;
     }
 
     private void PlayerPreturn_OnPlayerPreturn(object sender, string[] e)
@@ -75,13 +80,26 @@ public class PlayerCardsUI : MonoBehaviour
 
     private void AttackPlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
     {
-        titleText.text = $"<color=#{obj.HexPlayerColor}>{obj.PlayerName}'s </color> equipped cards:";
+        titleText.text = $"<color=#{obj.HexPlayerColor}>{obj.PlayerName}'s </color>equipped cards:";
 
         ShowWithAnimation();
 
         player = obj;
 
         ShowOrHideUnequippedCardsButton();
+
+        InstantiateCards();
+    }
+
+    private void PlayerBattleResults_OnAfterBattle(Player loser)
+    {
+        closeButton.gameObject.SetActive(false);
+        showUneqippedCardsButton.gameObject.SetActive(false);
+        takeCardButton.gameObject.SetActive(true);
+
+        player = loser;
+
+        ShowWithAnimation();
 
         InstantiateCards();
     }
@@ -100,16 +118,46 @@ public class PlayerCardsUI : MonoBehaviour
 
     private void InstantiateCards()
     {
+        int i = 0;
+
         foreach (Card card in player.EquippedCards)
         {
             Transform cardUITransform = Instantiate(template, container);
 
             cardUITransform.gameObject.SetActive(true);
 
-            PlayerCardUI cardUI = cardUITransform.GetComponent<PlayerCardUI>();
+            PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
 
-            cardUI.Instantiate(card);
+            playerCardUI.Instantiate(card, i);
+
+            i++;
         }
+    }
+
+    private IEnumerator TakeCard()
+    {
+        takeCardButton.gameObject.SetActive(false);
+
+        int randomCardNumber = Random.Range(0, player.EquippedCards.Count + 1);
+
+        Card card = player.EquippedCards[randomCardNumber];
+
+        titleText.text = $"YOU TOOK {card.Name} FROM <color=#{player.HexPlayerColor}>{player.PlayerName}</color>";
+
+        foreach (Transform child in container)
+        {
+            PlayerCardUI playerCardUI = child.GetComponent<PlayerCardUI>();
+            if (child == template || playerCardUI.index == randomCardNumber) continue;
+            Destroy(child.gameObject);
+        }
+
+        Player.LocalInstance.OnBattleWon(card, player);
+
+        OnWonEquippedCard?.Invoke(Player.LocalInstance.ClientId.Value);
+
+        yield return new WaitForSeconds(2f);
+
+        HideWithAnimation();
     }
 
     private void Show()

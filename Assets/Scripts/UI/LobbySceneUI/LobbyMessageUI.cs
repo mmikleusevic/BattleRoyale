@@ -23,16 +23,7 @@ public class LobbyMessageUI : MonoBehaviour
         LobbyServiceHandler.OnJoinStarted += LobbyServiceHandler_OnJoinStarted;
         LobbyServiceHandler.OnJoinFailed += LobbyServiceHandler_OnJoinFailed;
         LobbyServiceHandler.OnQuickJoinFailed += LobbyServiceHandler_OnQuickJoinFailed;
-    }
-
-    private void GameLobby_OnReconnectFailed(object sender, System.EventArgs e)
-    {
-        ShowMessage("Attempting to reconnect...");
-    }
-
-    private void GameLobby_OnReconnectStarted(object sender, System.EventArgs e)
-    {
-        ShowMessage("Reconnect failed!");
+        LobbyServiceHandler.OnRemovingJoinedLobbies += LobbyServiceHandler_OnRemovingJoinedLobbies;
     }
 
     private void OnDestroy()
@@ -43,8 +34,19 @@ public class LobbyMessageUI : MonoBehaviour
         LobbyServiceHandler.OnJoinStarted -= LobbyServiceHandler_OnJoinStarted;
         LobbyServiceHandler.OnJoinFailed -= LobbyServiceHandler_OnJoinFailed;
         LobbyServiceHandler.OnQuickJoinFailed -= LobbyServiceHandler_OnQuickJoinFailed;
+        LobbyServiceHandler.OnRemovingJoinedLobbies -= LobbyServiceHandler_OnRemovingJoinedLobbies;
 
         closeButton.onClick.RemoveAllListeners();
+    }
+
+    private void GameLobby_OnReconnectFailed(object sender, System.EventArgs e)
+    {
+        ShowMessage("Attempting to reconnect...");
+    }
+
+    private void GameLobby_OnReconnectStarted(object sender, System.EventArgs e)
+    {
+        ShowMessage("Reconnect failed!");
     }
 
     private void LobbyServiceHandler_OnQuickJoinFailed(object sender, System.EventArgs e)
@@ -82,6 +84,11 @@ public class LobbyMessageUI : MonoBehaviour
         {
             ShowMessage(NetworkManager.Singleton.DisconnectReason);
         }
+    }
+
+    private void LobbyServiceHandler_OnRemovingJoinedLobbies(object sender, System.EventArgs e)
+    {
+        ShowMessage("Removing you from all joined lobbies");
     }
 
     private void ShowMessage(string message)

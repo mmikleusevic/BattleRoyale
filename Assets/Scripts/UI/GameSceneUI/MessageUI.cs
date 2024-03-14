@@ -25,13 +25,17 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         PlayerPreturn.OnPlayerPreturn += OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
         Player.OnPlayerMoved += OnCallbackSetMessages;
-        PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
+        PlayerBattleResults.OnPlayerBattleRollOver += OnCallbackSetMessageToMyself;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn += OnCallbackSetMessages;
         CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected += OnCallbackSetMessages;
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
+        Player.OnPlayerEquippedCard += OnCallbackSetMessageToMyself;
+        Player.OnPlayerRemovedCard += OnCallbackSetMessageToMyself;
+        Player.OnPlayerTookCard += OnCallbackSetMessages;
+        Player.OnPlayerDiedPlayerBattle += OnCallbackSetMessages;
     }
 
     public override void OnNetworkDespawn()
@@ -46,13 +50,17 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         PlayerPreturn.OnPlayerPreturn -= OnCallbackSetMessages;
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
         Player.OnPlayerMoved -= OnCallbackSetMessages;
-        PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
+        PlayerBattleResults.OnPlayerBattleRollOver -= OnCallbackSetMessageToMyself;
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected -= OnCallbackSetMessages;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
+        Player.OnPlayerEquippedCard -= OnCallbackSetMessageToMyself;
+        Player.OnPlayerRemovedCard -= OnCallbackSetMessageToMyself;
+        Player.OnPlayerTookCard -= OnCallbackSetMessages;
+        Player.OnPlayerDiedPlayerBattle -= OnCallbackSetMessages;
 
         base.OnNetworkDespawn();
     }
@@ -77,18 +85,16 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         SetMessage(e);
     }
 
+    private void OnCallbackSetMessageToMyself(string e)
+    {
+        SetMessage(e);
+    }
+
     private void OnCallbackSetMessages(object sender, string[] e)
     {
         SetMessage(e[0]);
 
         SendMessageToEveryoneExceptMeServerRpc(e[1]);
-    }
-
-    private void OnCallbackSetMessages(object sender, string e)
-    {
-        SetMessage(e);
-
-        SendMessageToEveryoneExceptMeServerRpc(e);
     }
 
     private void OnCallbackSetMessages(string[] e)
@@ -113,11 +119,6 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
     private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
     {
         SetMessage(e.message);
-    }
-
-    private void PlayerBattleResults_OnPlayerBattleRollOver(PlayerBattleResults.OnBattleRollOverEventArgs e)
-    {
-        OnCallbackSetMessages(e.message);
     }
 
     private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)

@@ -15,6 +15,7 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private List<CardSO> cardSOs;
 
     private Dictionary<int, int> randomCardNumberCountChecker;
+    private Vector2[] placementTiles;
     private Dictionary<Vector2, Tile> gridTiles;
     private List<int> randomNumberList;
 
@@ -38,6 +39,9 @@ public class GridManager : NetworkBehaviour
         Tile.OnTileClosed += Tile_OnTileClosed;
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
+        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
+        AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
+        PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
     }
 
     public override void OnNetworkDespawn()
@@ -49,12 +53,16 @@ public class GridManager : NetworkBehaviour
         Tile.OnTileClosed -= Tile_OnTileClosed;
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
+        Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
+        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
+        PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
 
         base.OnNetworkDespawn();
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
     {
+        InitializePlaceOnGridTiles();
         GetCardDimensions();
         PositionCamera();
         GenerateRandomCardNumbers();
@@ -70,7 +78,7 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsWherePlayerCanInteract();
     }
 
-    private void Player_OnPlayerMoved(object sender, string e)
+    private void Player_OnPlayerMoved(object sender, string[] e)
     {
         DisableCards();
         EnableGridPositionsWherePlayerCanInteract();
@@ -93,11 +101,20 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsWherePlayerCanInteract();
     }
 
-    //TODO will use on player battle loss
-    private void Player_OnPlayerDiedPlayerBattle()
+    private void Player_OnPlayerDiedPlayerBattle(string[] messages)
     {
         DisableCards();
         EnableGridPositionsWherePlayerCanGoDie();
+    }
+
+    private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    {
+        DisableCards();
+    }
+
+    private void PlayerBattleResults_OnAfterBattleResolved()
+    {
+        EnableGridPositionsWherePlayerCanInteract();
     }
 
     private void SetMovementVectors()
@@ -115,6 +132,38 @@ public class GridManager : NetworkBehaviour
             }
             l = 0;
             k++;
+        }
+    }
+
+    private void InitializePlaceOnGridTiles()
+    {
+        placementTiles = new Vector2[GameMultiplayer.MAX_PLAYER_AMOUNT];
+
+        int halfHeight = height / 2;
+        int mod = height % 2;
+        int smallAdd = halfHeight - mod;
+        int bigAdd = halfHeight + mod;
+        int maxHeight = height - mod;
+        int x = mod;
+        int y = halfHeight - mod;
+
+        for (int i = 0; i < placementTiles.Length; i++)
+        {
+            placementTiles[i] = new Vector2(x, y);
+
+            if (x < halfHeight && y > halfHeight || ((x == halfHeight) && (y == maxHeight)))
+            {
+                x += smallAdd;
+                y -= bigAdd;
+            }
+            else if (x == halfHeight && y == 0)
+            {
+                y += maxHeight;
+            }
+            else
+            {
+                y += smallAdd;
+            }
         }
     }
 
@@ -227,42 +276,18 @@ public class GridManager : NetworkBehaviour
         gridTiles[position] = tile;
     }
 
-    //Mental note --- Next time make a normal grid...
     public void HighlightAllUnoccupiedCards()
     {
-        int startHeight = height / 2;
-        int mod = height % 2;
-        int maxHeight = startHeight + mod;
-
-        for (int i = 0; i < width; i++)
+        foreach (Vector2 tileVectors in placementTiles)
         {
-            for (int j = startHeight; j < maxHeight; j++)
-            {
-                if (j == startHeight || j == maxHeight - 1)
-                {
-                    Vector3 tilePosition = tilesToInitialize.Where(a => a.x == i && a.y == j).FirstOrDefault();
+            Tile tile = gridTiles[tileVectors];
 
-                    Tile tile = gridTiles[tilePosition];
-
-                    if (!tile.IsOccupiedOnPlacing.Value)
-                    {
-                        tile.Enable();
-                        tile.ShowHighlight();
-                    }
-                }
-            }
-
-            if (i < width / 2)
+            if (!tile.IsOccupiedOnPlacing.Value)
             {
-                startHeight--;
-                maxHeight++;
+                tile.Enable();
+                tile.ShowHighlight();
             }
-            else
-            {
-                startHeight++;
-                maxHeight--;
-            }
-        }
+        }       
     }
 
     public void EnableGridPositionsWherePlayerCanGoDie()
@@ -278,7 +303,7 @@ public class GridManager : NetworkBehaviour
             {
                 Vector2 position = player.GridPosition - movementVectors[i, j];
 
-                if (gridTiles.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
+                if (gridTiles.ContainsKey(position))
                 {
                     Tile tile = gridTiles[position];
 
