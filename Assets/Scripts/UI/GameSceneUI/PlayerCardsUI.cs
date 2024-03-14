@@ -138,7 +138,7 @@ public class PlayerCardsUI : MonoBehaviour
     {
         takeCardButton.gameObject.SetActive(false);
 
-        int randomCardNumber = Random.Range(0, player.EquippedCards.Count + 1);
+        int randomCardNumber = Random.Range(0, player.EquippedCards.Count);
 
         Card card = player.EquippedCards[randomCardNumber];
 
