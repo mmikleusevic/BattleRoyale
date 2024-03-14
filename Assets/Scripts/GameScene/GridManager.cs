@@ -13,9 +13,9 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private List<Vector2> tilesToInitialize;
     [SerializeField] private Tile tileTemplate;
     [SerializeField] private List<CardSO> cardSOs;
+    [SerializeField] private Vector2[] placementTiles;
 
-    private Dictionary<int, int> randomCardNumberCountChecker;
-    private Vector2[] placementTiles;
+    private Dictionary<int, int> randomCardNumberCountChecker; 
     private Dictionary<Vector2, Tile> gridTiles;
     private List<int> randomNumberList;
 
@@ -61,8 +61,7 @@ public class GridManager : NetworkBehaviour
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
-    {
-        InitializePlaceOnGridTiles();
+    {   
         GetCardDimensions();
         PositionCamera();
         GenerateRandomCardNumbers();
@@ -132,38 +131,6 @@ public class GridManager : NetworkBehaviour
             }
             l = 0;
             k++;
-        }
-    }
-
-    private void InitializePlaceOnGridTiles()
-    {
-        placementTiles = new Vector2[GameMultiplayer.MAX_PLAYER_AMOUNT];
-
-        int halfHeight = height / 2;
-        int mod = height % 2;
-        int smallAdd = halfHeight - mod;
-        int bigAdd = halfHeight + mod;
-        int maxHeight = height - mod;
-        int x = mod;
-        int y = halfHeight - mod;
-
-        for (int i = 0; i < placementTiles.Length; i++)
-        {
-            placementTiles[i] = new Vector2(x, y);
-
-            if (x < halfHeight && y > halfHeight || ((x == halfHeight) && (y == maxHeight)))
-            {
-                x += smallAdd;
-                y -= bigAdd;
-            }
-            else if (x == halfHeight && y == 0)
-            {
-                y += maxHeight;
-            }
-            else
-            {
-                y += smallAdd;
-            }
         }
     }
 
