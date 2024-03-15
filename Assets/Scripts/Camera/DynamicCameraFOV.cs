@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CameraFollow : MonoBehaviour
+public class DynamicCameraFOV : MonoBehaviour
 {
     [SerializeField] private Transform[] targets;
     private Camera cam;
