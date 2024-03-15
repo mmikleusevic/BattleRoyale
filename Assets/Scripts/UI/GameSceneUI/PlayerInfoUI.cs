@@ -9,6 +9,7 @@ public class PlayerInfoUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI pointsText;
     [SerializeField] private TextMeshProUGUI deadText;
     [SerializeField] private TextMeshProUGUI sipCounterText;
+    [SerializeField] private TextMeshProUGUI currentActivePlayerText;
 
     private void Awake()
     {
@@ -19,9 +20,14 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
         Player.OnPlayerPointsChanged += Player_OnPlayerPointsChanged;
-        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
+        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;        
 
         Hide();
+    }
+
+    private void Start()
+    {
+        PlayerManager.Instance.OnActivePlayerChanged += Instance_OnActivePlayerChanged;
     }
 
     private void OnDestroy()
@@ -34,6 +40,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
         Player.OnPlayerPointsChanged -= Player_OnPlayerPointsChanged;
         Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
+        PlayerManager.Instance.OnActivePlayerChanged -= Instance_OnActivePlayerChanged;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -90,6 +97,11 @@ public class PlayerInfoUI : MonoBehaviour
         SetIsDeadText();
     }
 
+    private void Instance_OnActivePlayerChanged(Player obj)
+    {
+        SetActivePlayerText(obj);
+    }
+
     private void SetMovementsText()
     {
         movementsText.text = $"Movements: {Player.LocalInstance.Movement}";
@@ -109,6 +121,12 @@ public class PlayerInfoUI : MonoBehaviour
     {
         playerNameText.text = "Player Name: ";
         playerNameText.text += $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color>";
+    }
+
+    private void SetActivePlayerText(Player player)
+    {
+        currentActivePlayerText.text = "Active player: ";
+        currentActivePlayerText.text += $"<color=#{player.HexPlayerColor}>{player.PlayerName}</color>";
     }
 
     private void SetIsDeadText()

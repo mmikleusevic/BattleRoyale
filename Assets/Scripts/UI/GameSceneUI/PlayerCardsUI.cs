@@ -67,7 +67,9 @@ public class PlayerCardsUI : MonoBehaviour
 
     private void PlayerPreturn_OnPlayerPreturn(object sender, string[] e)
     {
-        titleText.text = "PRETURN\nEquipped cards:";
+        titleText.text = "PRETURN\nEQUIPPED CARDS:";
+
+        closeButton.gameObject.SetActive(true);
 
         ShowWithAnimation();
 
@@ -80,7 +82,7 @@ public class PlayerCardsUI : MonoBehaviour
 
     private void AttackPlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
     {
-        titleText.text = $"<color=#{obj.HexPlayerColor}>{obj.PlayerName}'s </color>equipped cards:";
+        titleText.text = $"<color=#{obj.HexPlayerColor}>{obj.PlayerName}'s </color>EQUIPPED CARDS:";
 
         ShowWithAnimation();
 

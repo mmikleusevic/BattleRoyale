@@ -15,6 +15,7 @@ public class TileUI : MonoBehaviour
     private void Tile_OnTilePressed(object sender, Player e)
     {
         Tile tile = sender as Tile;
+        image.preserveAspect = true;
         image.sprite = tile.GetCardOrTileSprite();
     }
 

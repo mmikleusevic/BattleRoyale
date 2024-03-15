@@ -34,20 +34,16 @@ public class AttackPlayerInfoUI : MonoBehaviour
 
         backgroundImage.color = enemyPlayer.HexPlayerColor.HEXToColor();
         playerNameText.text = enemyPlayer.PlayerName;
-        pointsText.text = "Points: " + enemyPlayer.Points.Value.ToString();
+        pointsText.text = "POINTS: " + enemyPlayer.Points.Value.ToString();
 
-        if (enemyPlayer.EquippedCards.Count == 0)
+        if (enemyPlayer.EquippedCards.Count <= 0)
         {
-            equippedCardsText.text += "None";
-        }
-
-        if (enemyPlayer.EquippedCards.Count > 0)
-        {
-            showEquippedCardsButton.interactable = true;
+            equippedCardsText.text = "EQUIPPED CARDS: NONE";
+            showEquippedCardsButton.gameObject.SetActive(false);
         }
         else
         {
-            showEquippedCardsButton.interactable = false;
+            showEquippedCardsButton.gameObject.SetActive(true);
         }
 
         attackPlayerButton.onClick.AddListener(() =>

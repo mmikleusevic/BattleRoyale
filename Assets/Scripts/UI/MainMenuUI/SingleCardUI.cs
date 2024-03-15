@@ -65,14 +65,21 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 
     public void SetSprite(Transform cardTransform, Sprite sprite)
     {
+        Image image;
+
         if (!this.sprite)
         {
-            cardTransform.GetComponentInChildren<Image>().sprite = sprite;
+            image = cardTransform.GetComponentInChildren<Image>();
+            image.preserveAspect = true;
+            image.sprite = sprite;
+
             this.sprite = sprite;
 
             return;
         }
 
-        cardTransform.GetComponentInChildren<Image>().sprite = this.sprite;
+        image = cardTransform.GetComponentInChildren<Image>();
+        image.preserveAspect = true;
+        image.sprite = this.sprite;
     }
 }

@@ -106,7 +106,7 @@ public class Player : NetworkBehaviour
         Color color = GameMultiplayer.Instance.GetPlayerColor(playerData.colorId);
 
         HexPlayerColor = color.ToHexString();
-        PlayerName = playerData.playerName.ToString();
+        PlayerName = playerData.playerName.ToString().ToUpper();
 
         playerVisual.SetColor(color);
 

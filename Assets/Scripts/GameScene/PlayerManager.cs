@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 
 public class PlayerManager : NetworkBehaviour
 {
+    public event Action<Player> OnActivePlayerChanged;
     public static PlayerManager Instance { get; private set; }
 
     private Dictionary<ulong, bool> clientsReady;
@@ -51,6 +53,8 @@ public class PlayerManager : NetworkBehaviour
         activeIndex = (activeIndex + 1) % Players.Count;
 
         ActivePlayer = Players[activeIndex];
+
+        OnActivePlayerChanged?.Invoke(ActivePlayer);
 
         ActivePlayer.ShowParticleCircle();
     }

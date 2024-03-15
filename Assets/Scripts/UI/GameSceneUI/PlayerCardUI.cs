@@ -15,6 +15,7 @@ public class PlayerCardUI : MonoBehaviour
     public void Instantiate(Card card, int index)
     {
         cardImage.sprite = card.Sprite;
+        cardImage.preserveAspect = true;
         this.index = index;
 
         Show();
