@@ -30,6 +30,8 @@ public class LobbyUI : MonoBehaviour
     {
         Instance = this;
 
+        playerNameInputField.characterLimit = 10;
+
         mainMenuButton.onClick.AddListener(() =>
         {
             LevelManager.Instance.LoadScene(Scene.MainMenuScene);
