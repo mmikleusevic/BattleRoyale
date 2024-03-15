@@ -15,6 +15,8 @@ public class LobbyCreateUI : MonoBehaviour
     {
         Instance = this;
 
+        lobbyNameInputField.characterLimit = 10;
+
         createPublicButton.onClick.AddListener(() =>
         {
             GameLobby.Instance.CreateLobby(lobbyNameInputField.text, false);
