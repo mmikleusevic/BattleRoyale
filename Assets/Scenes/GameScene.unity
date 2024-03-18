@@ -4627,7 +4627,7 @@ PrefabInstance:
     - target: {fileID: 1334047394115451891, guid: 7e803956f0b63944eb0f81212558c5af,
         type: 3}
       propertyPath: field of view
-      value: 35
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 6497845399323827164, guid: 7e803956f0b63944eb0f81212558c5af,
         type: 3}
@@ -4822,10 +4822,10 @@ RectTransform:
   - {fileID: 504738674}
   m_Father: {fileID: 579523744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 900, y: -461.15002}
-  m_SizeDelta: {x: 1800, y: 543.54004}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 900, y: 0}
+  m_SizeDelta: {x: 1800, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &801646435
 MonoBehaviour:
@@ -5356,12 +5356,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerCardsUIRectTransform: {fileID: 985872659}
   titleText: {fileID: 1338725108}
-  verticalGridContainer: {fileID: 0}
   container: {fileID: 1185400110}
   template: {fileID: 958925554}
   closeButton: {fileID: 286257347}
   showUneqippedCardsButton: {fileID: 192014914}
   takeCardButton: {fileID: 1799783746}
+  background: {fileID: 0}
 --- !u!1001 &986311555
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6865,7 +6865,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -7068,7 +7068,7 @@ PrefabInstance:
     - target: {fileID: 7531282628506778753, guid: d9ec6b55a6bbfd848bbf3d00a8003c3b,
         type: 3}
       propertyPath: field of view
-      value: 35
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 7531282628506778753, guid: d9ec6b55a6bbfd848bbf3d00a8003c3b,
         type: 3}
@@ -9202,7 +9202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10851,7 +10851,7 @@ PrefabInstance:
     - target: {fileID: 2717567064112867445, guid: 12ebb3bc065c18b44b127fdf4097415b,
         type: 3}
       propertyPath: field of view
-      value: 35
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 2717567064112867445, guid: 12ebb3bc065c18b44b127fdf4097415b,
         type: 3}

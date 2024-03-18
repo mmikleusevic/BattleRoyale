@@ -24,6 +24,7 @@ public class LobbyMessageUI : MonoBehaviour
         LobbyServiceHandler.OnJoinFailed += LobbyServiceHandler_OnJoinFailed;
         LobbyServiceHandler.OnQuickJoinFailed += LobbyServiceHandler_OnQuickJoinFailed;
         LobbyServiceHandler.OnRemovingJoinedLobbies += LobbyServiceHandler_OnRemovingJoinedLobbies;
+        LobbyServiceHandler.OnRemovingJoinedLobbiesOver += LobbyServiceHandler_OnRemovingJoinedLobbiesOver;
     }
 
     private void OnDestroy()
@@ -35,6 +36,7 @@ public class LobbyMessageUI : MonoBehaviour
         LobbyServiceHandler.OnJoinFailed -= LobbyServiceHandler_OnJoinFailed;
         LobbyServiceHandler.OnQuickJoinFailed -= LobbyServiceHandler_OnQuickJoinFailed;
         LobbyServiceHandler.OnRemovingJoinedLobbies -= LobbyServiceHandler_OnRemovingJoinedLobbies;
+        LobbyServiceHandler.OnRemovingJoinedLobbiesOver -= LobbyServiceHandler_OnRemovingJoinedLobbiesOver;
 
         closeButton.onClick.RemoveAllListeners();
     }
@@ -89,6 +91,11 @@ public class LobbyMessageUI : MonoBehaviour
     private void LobbyServiceHandler_OnRemovingJoinedLobbies(object sender, System.EventArgs e)
     {
         ShowMessage("Removing you from all joined lobbies");
+    }
+
+    private void LobbyServiceHandler_OnRemovingJoinedLobbiesOver(object sender, System.EventArgs e)
+    {
+        Hide();
     }
 
     private void ShowMessage(string message)

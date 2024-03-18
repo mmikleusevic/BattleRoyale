@@ -20,7 +20,7 @@ public class PlayerInfoUI : MonoBehaviour
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
         Player.OnPlayerPointsChanged += Player_OnPlayerPointsChanged;
-        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;        
+        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
 
         Hide();
     }

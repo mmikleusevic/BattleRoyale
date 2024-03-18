@@ -30,6 +30,8 @@ public class LobbyUI : MonoBehaviour
     {
         Instance = this;
 
+        joinCodeInputField.characterLimit = 10;
+        findLobbyInputField.characterLimit = 10;
         playerNameInputField.characterLimit = 10;
 
         mainMenuButton.onClick.AddListener(() =>

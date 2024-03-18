@@ -21,6 +21,7 @@ public class ResurrectUI : MonoBehaviour
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
+        Player.OnPlayerSelectedPlaceToDie += Player_OnPlayerSelectedPlaceToDie;
         PlayerTurn.OnPlayerTurnOver += PlayerTurn_OnPlayerTurnOver;
 
         HideWithAnimation();
@@ -31,6 +32,7 @@ public class ResurrectUI : MonoBehaviour
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
         Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
+        Player.OnPlayerSelectedPlaceToDie -= Player_OnPlayerSelectedPlaceToDie;
         PlayerTurn.OnPlayerTurnOver -= PlayerTurn_OnPlayerTurnOver;
         resurrectButton.onClick.RemoveAllListeners();
     }
@@ -45,7 +47,7 @@ public class ResurrectUI : MonoBehaviour
 
     private void Player_OnPlayerDiedPlayerBattle(string[] obj)
     {
-        if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer && Player.LocalInstance.ActionPoints > 0)
+        if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer && Player.LocalInstance.ActionPoints > 0 && !Player.LocalInstance.PickPlaceToDie)
         {
             ShowWithAnimation();
         }
@@ -54,6 +56,14 @@ public class ResurrectUI : MonoBehaviour
     private void Player_OnPlayerTurnSet()
     {
         if (Player.LocalInstance.IsDead.Value)
+        {
+            ShowWithAnimation();
+        }
+    }
+
+    private void Player_OnPlayerSelectedPlaceToDie(ulong obj)
+    {
+        if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer && Player.LocalInstance.ActionPoints > 0)
         {
             ShowWithAnimation();
         }

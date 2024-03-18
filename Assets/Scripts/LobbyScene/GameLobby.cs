@@ -1,4 +1,6 @@
+#if UNITY_EDITOR
 using ParrelSync;
+#endif
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private List<CardSO> cardSOs;
     [SerializeField] private Vector2[] placementTiles;
 
-    private Dictionary<int, int> randomCardNumberCountChecker; 
+    private Dictionary<int, int> randomCardNumberCountChecker;
     private Dictionary<Vector2, Tile> gridTiles;
     private List<int> randomNumberList;
 
@@ -61,7 +60,7 @@ public class GridManager : NetworkBehaviour
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
-    {   
+    {
         GetCardDimensions();
         PositionCamera();
         GenerateRandomCardNumbers();
@@ -254,7 +253,7 @@ public class GridManager : NetworkBehaviour
                 tile.Enable();
                 tile.ShowHighlight();
             }
-        }       
+        }
     }
 
     public void EnableGridPositionsWherePlayerCanGoDie()

@@ -19,6 +19,7 @@ public class LobbyServiceHandler : IDisposable
     public static event EventHandler OnCreateLobbyFailed;
     public static event EventHandler OnJoinStarted;
     public static event EventHandler OnRemovingJoinedLobbies;
+    public static event EventHandler OnRemovingJoinedLobbiesOver;
     public static event EventHandler<OnLobbyListChangdEventArgs> OnLobbyListChanged;
 
     public class OnLobbyListChangdEventArgs : EventArgs
@@ -270,6 +271,8 @@ public class LobbyServiceHandler : IDisposable
             {
                 await RemovePlayer(item);
             }
+
+            OnRemovingJoinedLobbiesOver?.Invoke(this, EventArgs.Empty);
         }
         catch (LobbyServiceException ex)
         {

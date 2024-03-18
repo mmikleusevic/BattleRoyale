@@ -4,6 +4,9 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
+using Image = UnityEngine.UI.Image;
 using Random = UnityEngine.Random;
 
 public class PlayerCardsUI : MonoBehaviour
@@ -18,6 +21,7 @@ public class PlayerCardsUI : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button showUneqippedCardsButton;
     [SerializeField] private Button takeCardButton;
+    [SerializeField] private Image background;
 
     private Player player;
 
@@ -70,9 +74,11 @@ public class PlayerCardsUI : MonoBehaviour
 
         closeButton.gameObject.SetActive(true);
 
-        ShowWithAnimation();
-
         player = Player.LocalInstance;
+
+        background.color = player.HexPlayerColor.HEXToColor();
+
+        ShowWithAnimation();
 
         ShowOrHideUnequippedCardsButton();
 
@@ -81,11 +87,13 @@ public class PlayerCardsUI : MonoBehaviour
 
     private void AttackPlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
     {
-        titleText.text = $"<color=#{obj.HexPlayerColor}>{obj.PlayerName}'s </color>EQUIPPED CARDS:";
-
-        ShowWithAnimation();
+        titleText.text = $"{obj.PlayerName}'s </color>EQUIPPED CARDS:";
 
         player = obj;
+
+        background.color = player.HexPlayerColor.HEXToColor();
+
+        ShowWithAnimation();
 
         ShowOrHideUnequippedCardsButton();
 
@@ -99,6 +107,8 @@ public class PlayerCardsUI : MonoBehaviour
         takeCardButton.gameObject.SetActive(true);
 
         player = loser;
+
+        background.color = player.HexPlayerColor.HEXToColor();
 
         ShowWithAnimation();
 
@@ -143,7 +153,7 @@ public class PlayerCardsUI : MonoBehaviour
 
         Card card = player.EquippedCards[randomCardNumber];
 
-        titleText.text = $"YOU TOOK {card.Name} FROM <color=#{player.HexPlayerColor}>{player.PlayerName}</color>";
+        titleText.text = $"YOU TOOK {card.Name} FROM {player.PlayerName}";
 
         foreach (Transform child in container)
         {

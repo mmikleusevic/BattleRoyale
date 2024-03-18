@@ -27,7 +27,7 @@ public class GameMultiplayer : NetworkBehaviour
 
         DontDestroyOnLoad(gameObject);
 
-        playerName = PlayerPrefs.GetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, "PlayerName" + UnityEngine.Random.Range(100, 1000));
+        playerName = PlayerPrefs.GetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER, "Player" + UnityEngine.Random.Range(1000, 10000));
 
         playerDataNetworkList = new NetworkList<PlayerData>();
     }
