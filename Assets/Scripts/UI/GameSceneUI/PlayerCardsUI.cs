@@ -13,7 +13,6 @@ public class PlayerCardsUI : MonoBehaviour
 
     [SerializeField] private RectTransform PlayerCardsUIRectTransform;
     [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private Transform verticalGridContainer;
     [SerializeField] private Transform container;
     [SerializeField] private Transform template;
     [SerializeField] private Button closeButton;
