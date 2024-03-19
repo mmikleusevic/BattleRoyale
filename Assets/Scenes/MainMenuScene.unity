@@ -2498,7 +2498,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
+  m_CellSize: {x: 1013.5, y: 960}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -2515,6 +2515,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   container: {fileID: 1418659776}
+  containerRectTransform: {fileID: 1418659777}
+  containerGridLayoutGroup: {fileID: 1418659779}
 --- !u!1 &1491888343
 GameObject:
   m_ObjectHideFlags: 0

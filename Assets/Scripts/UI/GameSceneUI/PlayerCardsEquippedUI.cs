@@ -160,7 +160,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         foreach (Transform child in container)
         {
             PlayerCardUI playerCardUI = child.GetComponent<PlayerCardUI>();
-            if (child == template || playerCardUI.index == randomCardNumber) continue;
+            if (child == template || playerCardUI.Index == randomCardNumber) continue;
             Destroy(child.gameObject);
         }
 
@@ -179,7 +179,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         container.gameObject.SetActive(true);
     }
 
-    public void Hide()
+    private void Hide()
     {
         gameObject.SetActive(false);
         container.gameObject.SetActive(false);
@@ -191,18 +191,18 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         }
     }
 
-    public void ShowWithAnimation()
+    private void ShowWithAnimation()
     {
         Show();
         PlayerCardsUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
     }
 
-    public void HideWithAnimation()
+    private void HideWithAnimation()
     {
         PlayerCardsUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
 
-    public void HideInstantly()
+    private void HideInstantly()
     {
         PlayerCardsUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }

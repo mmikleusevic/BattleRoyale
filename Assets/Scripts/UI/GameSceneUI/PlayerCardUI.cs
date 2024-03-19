@@ -4,8 +4,7 @@ using UnityEngine.UI;
 public class PlayerCardUI : MonoBehaviour
 {
     [SerializeField] private Image cardImage;
-
-    public int index = -1;
+    public int Index { get; private set; } = -1;
 
     private void Awake()
     {
@@ -16,7 +15,7 @@ public class PlayerCardUI : MonoBehaviour
     {
         cardImage.sprite = card.Sprite;
         cardImage.preserveAspect = true;
-        this.index = index;
+        Index = index;
 
         Show();
     }

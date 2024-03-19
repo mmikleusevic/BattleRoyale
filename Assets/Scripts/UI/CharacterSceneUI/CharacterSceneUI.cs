@@ -91,7 +91,6 @@ public class CharacterSceneUI : MonoBehaviour
         ToggleReadyButton();
 
         CharacterSceneReady.Instance.GetPlayerReadyValuesForClient();
-
     }
 
     private void UpdateReadyButton()
