@@ -17,7 +17,7 @@ public class AttackPlayerListUI : MonoBehaviour
         ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
         AttackPlayerInfoUI.OnShowPlayerEquippedCards += AttackPlayerInfoUI_OnShowPlayerEquippedCards;
-        PlayerCardsUI.OnPlayerCardsUIClosed += PlayerCardsUI_OnPlayerCardsUIClosed;
+        PlayerCardsEquippedUI.OnPlayerCardsUIClosed += PlayerCardsUI_OnPlayerCardsUIClosed;
 
         originalSiblingIndex = transform.GetSiblingIndex();
 
@@ -31,7 +31,7 @@ public class AttackPlayerListUI : MonoBehaviour
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
         AttackPlayerInfoUI.OnShowPlayerEquippedCards -= AttackPlayerInfoUI_OnShowPlayerEquippedCards;
-        PlayerCardsUI.OnPlayerCardsUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
+        PlayerCardsEquippedUI.OnPlayerCardsUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
     }
 
     private void ActionsUI_OnAttackPlayer(Tile tile)

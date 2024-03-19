@@ -42,7 +42,7 @@ public class PlayerBattleResults : NetworkBehaviour
     private void Awake()
     {
         AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayerServerRpc;
-        PlayerCardsUI.OnWonEquippedCard += ResolvePlayerBattleServerRpc;
+        PlayerCardsEquippedUI.OnWonEquippedCard += ResolvePlayerBattleServerRpc;
         Player.OnPlayerSelectedPlaceToDie += ResolvePlayerBattleServerRpc;
     }
 
@@ -58,7 +58,7 @@ public class PlayerBattleResults : NetworkBehaviour
     public override void OnDestroy()
     {
         AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayerServerRpc;
-        PlayerCardsUI.OnWonEquippedCard -= ResolvePlayerBattleServerRpc;
+        PlayerCardsEquippedUI.OnWonEquippedCard -= ResolvePlayerBattleServerRpc;
         Player.OnPlayerSelectedPlaceToDie -= ResolvePlayerBattleServerRpc;
 
         base.OnDestroy();

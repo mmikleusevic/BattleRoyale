@@ -32,7 +32,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected += OnCallbackSetMessages;
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
-        Player.OnPlayerEquippedCard += OnCallbackSetMessageToMyself;
+        Player.OnPlayerEquippedCardAdded += OnCallbackSetMessageToMyself;
         Player.OnPlayerRemovedCard += OnCallbackSetMessageToMyself;
         Player.OnPlayerTookCard += OnCallbackSetMessages;
         Player.OnPlayerDiedPlayerBattle += OnCallbackSetMessages;
@@ -58,7 +58,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         Player.OnPlayerResurrected -= OnCallbackSetMessages;
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
-        Player.OnPlayerEquippedCard -= OnCallbackSetMessageToMyself;
+        Player.OnPlayerEquippedCardAdded -= OnCallbackSetMessageToMyself;
         Player.OnPlayerRemovedCard -= OnCallbackSetMessageToMyself;
         Player.OnPlayerTookCard -= OnCallbackSetMessages;
         Player.OnPlayerDiedPlayerBattle -= OnCallbackSetMessages;

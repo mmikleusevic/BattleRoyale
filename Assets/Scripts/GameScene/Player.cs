@@ -19,7 +19,8 @@ public class Player : NetworkBehaviour
     public static event Action<ulong> OnPlayerSelectedPlaceToDie;
     public static event Action<string[]> OnPlayerResurrected;
     public static event Action<string[]> OnPlayerTookCard;
-    public static event Action<string> OnPlayerEquippedCard;
+    public static event Action<string> OnPlayerEquippedCardAdded;
+    public static event Action<Card> OnPlayerUnequippedCardAdded;
     public static event Action<string> OnPlayerRemovedCard;
 
     [SerializeField] private SetVisual playerVisual;
@@ -208,10 +209,12 @@ public class Player : NetworkBehaviour
         {
             player.EquippedCards.Add(card);
 
-            OnPlayerEquippedCard?.Invoke(CreateOnPlayerEquippedCardMessage(player, card));
+            OnPlayerEquippedCardAdded?.Invoke(CreateOnPlayerEquippedCardMessage(player, card));
         }
         else
         {
+            OnPlayerUnequippedCardAdded?.Invoke(card);
+
             player.UnequippedCards.Add(card);
         }
     }
