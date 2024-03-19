@@ -137,8 +137,6 @@ public class GameLobby : NetworkBehaviour
 #if UNITY_EDITOR
             //ParralelSync fix when joining from different editors on the same computer
             initializationOptions.SetProfile(ClonesManager.IsClone() ? ClonesManager.GetArgument() : "Primary");
-#else
-            initializationOptions.SetProfile(GameMultiplayer.Instance.GetPlayerName());
 #endif
             await UnityServices.InitializeAsync(initializationOptions);
 
