@@ -52,10 +52,16 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerPreturn.OnPlayerPreturn += PlayerPreturn_OnPlayerPreturn;
         AttackPlayerInfoUI.OnShowPlayerEquippedCards += AttackPlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
+        PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
 
         takeCardButton.gameObject.SetActive(false);
 
         HideInstantly();
+    }
+
+    private void OnDisable()
+    {
+        player = null;
     }
 
     private void OnDestroy()
@@ -67,16 +73,17 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerPreturn.OnPlayerPreturn -= PlayerPreturn_OnPlayerPreturn;
         AttackPlayerInfoUI.OnShowPlayerEquippedCards -= AttackPlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin -= PlayerBattleResults_OnAfterBattle;
+        PlayerPreturn.OnPlayerPreturnOver -= PlayerPreturn_OnPlayerPreturnOver;
     }
 
     private void PlayerPreturn_OnPlayerPreturn(object sender, string[] e)
     {
         titleText.text = "PRETURN(PRESS CARD TO SWAP IT)\nEQUIPPED CARDS:";
 
+        player = Player.LocalInstance;
+
         closeButton.gameObject.SetActive(true);
         ShowOrHideUnequippedCardsButton();
-
-        player = Player.LocalInstance;
 
         background.color = player.HexPlayerColor.HEXToColor();
 
@@ -91,9 +98,9 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     {
         titleText.text = $"{obj.PlayerName}'s </color>EQUIPPED CARDS:";
 
-        ShowOrHideUnequippedCardsButton();
-
         player = obj;
+
+        ShowOrHideUnequippedCardsButton();
 
         background.color = player.HexPlayerColor.HEXToColor();
 
@@ -104,17 +111,22 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
     private void PlayerBattleResults_OnAfterBattle(Player loser)
     {
+        player = loser;
+
         closeButton.gameObject.SetActive(false);
         ShowOrHideUnequippedCardsButton();
         takeCardButton.gameObject.SetActive(true);
-
-        player = loser;
 
         background.color = player.HexPlayerColor.HEXToColor();
 
         ShowWithAnimation();
 
         InstantiateCards();
+    }
+
+    private void PlayerPreturn_OnPlayerPreturnOver(object sender, EventArgs e)
+    {
+        showUneqippedCardsButton.gameObject.SetActive(false);
     }
 
     private void ShowOrHideUnequippedCardsButton()
@@ -135,7 +147,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         {
             Transform cardUITransform = Instantiate(template, container);
 
-            cardUITransform.gameObject.SetActive(true);
+            cardUITransform.gameObject.SetActive(true);       
 
             PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
 

@@ -80,7 +80,6 @@ public class Player : NetworkBehaviour
             CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
             ResurrectUI.OnResurrectPressed += ResurrectUI_OnResurrectPressed;
             PlayerBattleResults.OnBattleLost += PlayerBattleResults_OnBattleLost;
-            ConfirmSwapCardDialogUI.OnYesPressed += ConfirmSwapCardDialogUI_OnYesPressed;
         }
 
         InitializePlayerClientRpc();
@@ -97,7 +96,6 @@ public class Player : NetworkBehaviour
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
         PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
-        ConfirmSwapCardDialogUI.OnYesPressed -= ConfirmSwapCardDialogUI_OnYesPressed;
 
         base.OnDestroy();
     }
@@ -239,12 +237,18 @@ public class Player : NetworkBehaviour
     {
         Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
 
-        Card equippedCard = player.EquippedCards[equippedCardIndex];
+        Card equippedCard = null;
+
+        if (equippedCardIndex < player.EquippedCards.Count)
+        {
+            equippedCard = player.EquippedCards[equippedCardIndex];
+        }
+
         Card unequippedCard = player.UnequippedCards[unequippedCardIndex];
 
         if (equippedCard == null)
         {
-            player.UnequippedCards.RemoveAt(unequippedCardIndex);
+            player.UnequippedCards.Remove(unequippedCard);
             player.EquippedCards.Insert(equippedCardIndex, unequippedCard);
         }
         else
@@ -297,11 +301,6 @@ public class Player : NetworkBehaviour
         OnPlayerDiedPlayerBattle?.Invoke(CreateOnPlayerNeedsToPickAPlaceToDieMessage());
     }
 
-    private void ConfirmSwapCardDialogUI_OnYesPressed(PlayerCardUI arg1, PlayerCardUI arg2)
-    {
-        SwapCardPreturn(arg1.Index, arg2.Index);
-    }
-
     public void OnBattleWon(Card card, Player enemy)
     {
         OnBattleWonServerRpc(card.NetworkObject, NetworkObject, enemy.NetworkObject);
@@ -316,7 +315,7 @@ public class Player : NetworkBehaviour
 
         Card card = Card.GetCardFromNetworkReference(cardNetworkObjectReference);
 
-        OnPlayerTookCard?.Invoke(CreateOnPlayerTakenCardMessage(card, loser, winner));
+        OnPlayerTookCard?.Invoke(CreateOnPlayerTakenCardMessage(card, winner, loser));
 
         OnBattleWonClientRpc(cardNetworkObjectReference, playerNetworkObjectReference, loserNetworkObjectReference);
     }

@@ -2,7 +2,6 @@ using DG.Tweening;
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayerCardsUnequippedUI : MonoBehaviour
@@ -25,7 +24,6 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
             HideWithAnimation();
         });
 
-        Player.OnPlayerUnequippedCardAdded += Player_OnPlayerUnequippedCardAdded;
         PlayerCardsEquippedUI.OnShowUnequippedCards += PlayerCardsEquippedUI_OnShowUnequippedCards;
         PlayerCardUI.OnEquippedCardPress += PlayerCardUI_OnEquippedCardPress;
         ConfirmSwapCardDialogUI.OnYesPressed += ConfirmSwapDialogUI_OnYesPressed;
@@ -37,37 +35,26 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
     {
         closeButton.onClick.RemoveAllListeners();
 
-        Player.OnPlayerUnequippedCardAdded -= Player_OnPlayerUnequippedCardAdded;
         PlayerCardsEquippedUI.OnShowUnequippedCards -= PlayerCardsEquippedUI_OnShowUnequippedCards;
         PlayerCardUI.OnEquippedCardPress -= PlayerCardUI_OnEquippedCardPress;
         ConfirmSwapCardDialogUI.OnYesPressed -= ConfirmSwapDialogUI_OnYesPressed;
-    }
-
-    private void Player_OnPlayerUnequippedCardAdded(Card card)
-    {
-        Transform lastChild = container.GetChild(container.childCount - 1);
-        PlayerCardUI lastPlayerCardUI = lastChild.GetComponent<PlayerCardUI>();
-
-        int newLastPlayerIndex = lastPlayerCardUI.Index + 1;
-
-        Transform cardUITransform = Instantiate(template, container);
-
-        cardUITransform.gameObject.SetActive(true);
-
-        PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
-
-        playerCardUI.Instantiate(card, newLastPlayerIndex);
     }
 
     private void PlayerCardsEquippedUI_OnShowUnequippedCards()
     {
         titleText.text = "Unequipped cards:";
 
+        InstantiateCards();
+
         ShowWithAnimation();
     }
 
     private void PlayerCardUI_OnEquippedCardPress(PlayerCardUI obj)
     {
+        titleText.text = $"Swapping cards";
+
+        InstantiateCards();
+
         ShowWithAnimation();
 
         foreach (Transform child in container)
@@ -75,7 +62,8 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
             if (child == template) continue;
 
             PlayerCardUI playerCardUI = child.GetComponent<PlayerCardUI>();
-            playerCardUI.EnableTrigger();
+
+            playerCardUI.GetButton(true);
         }
     }
 
@@ -84,19 +72,6 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         if (arg1.isEmpty)
         {
             arg1.GetComponent<Image>().sprite = arg2.GetComponent<Image>().sprite;
-
-            int index = arg2.Index + 1;
-
-            Destroy(arg2.gameObject);
-
-            for (int i = index; i < container.childCount; i++)
-            {
-                Transform playerCardUITransform = container.GetChild(i);
-
-                PlayerCardUI playerCardUI = playerCardUITransform.GetComponent<PlayerCardUI>();
-
-                playerCardUI.Index = playerCardUI.Index - 1;
-            }
         }
         else
         {
@@ -124,9 +99,31 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         }
     }
 
+    private void InstantiateCards()
+    {
+        for (int i = 0; i < Player.LocalInstance.UnequippedCards.Count; i++)
+        {
+            Transform cardUITransform = Instantiate(template, container);
+
+            cardUITransform.gameObject.SetActive(true);
+
+            PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
+
+            Card card = Player.LocalInstance.UnequippedCards[i];
+
+            playerCardUI.Instantiate(card, i);
+        }
+    }
+
     public void Hide()
     {
         gameObject.SetActive(false);
+
+        foreach (Transform child in container)
+        {
+            if (child == template) continue;
+            Destroy(child.gameObject);
+        }
     }
 
     private void ShowWithAnimation()

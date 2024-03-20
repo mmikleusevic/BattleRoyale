@@ -25,6 +25,8 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
         {
             OnYesPressed?.Invoke(equippedPlayerCardUI, unequippedPlayerCardUI);
 
+            Player.LocalInstance.SwapCardPreturn(equippedPlayerCardUI.Index, unequippedPlayerCardUI.Index);
+
             equippedPlayerCardUI = null;
             unequippedPlayerCardUI = null;
             equippedCard = null;
@@ -73,7 +75,15 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
 
     private void PlayerCardUI_OnEquippedCardPress(PlayerCardUI obj)
     {
-        equippedCard = Player.LocalInstance.EquippedCards[obj.Index];
+        if (obj.Index < Player.LocalInstance.EquippedCards.Count)
+        {
+            equippedCard = Player.LocalInstance.EquippedCards[obj.Index];       
+        }
+        else
+        {
+            equippedCard = null;
+        }
+
         equippedPlayerCardUI = obj;
 
         OnConditionMet();

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayerCardUI : MonoBehaviour
@@ -11,8 +10,9 @@ public class PlayerCardUI : MonoBehaviour
     [SerializeField] private Image cardImage;
     [SerializeField] private Sprite defaultSprite;
 
-    private EventTrigger eventTrigger;
     public int Index { get; set; } = -1;
+
+    private Button button;
 
     public bool isEmpty = true;
 
@@ -34,32 +34,31 @@ public class PlayerCardUI : MonoBehaviour
 
     private void PlayerCardsEquippedUI_OnPreturnCardsInstantiated()
     {
-        if (eventTrigger != null && Player.LocalInstance.UnequippedCards.Count > 0)
+        if (button != null && Player.LocalInstance.UnequippedCards.Count > 0)
         {
-            EnableTrigger();
+            button.interactable = true;
         }
     }
 
     private void PlayerPreturn_OnPlayerPreturnOver(object sender, EventArgs e)
     {
-        if (eventTrigger == null) return;
+        if (button == null) return;
 
-        eventTrigger.enabled = false;
+        button.interactable = false;
     }
 
     private void ConfirmSwapDialogUI_OnYesPressed(PlayerCardUI arg1, PlayerCardUI arg2)
     {
-        if (eventTrigger == null) return;
+        if (button == null) return;
 
-        eventTrigger.enabled = false;
+        button.interactable = false;
     }
 
     public void Instantiate(Card card, int index)
     {
         Show();
 
-        eventTrigger = GetComponent<EventTrigger>();
-        eventTrigger.enabled = false;
+        GetButton(false);
 
         cardImage.sprite = card.Sprite;
         cardImage.preserveAspect = true;
@@ -71,12 +70,17 @@ public class PlayerCardUI : MonoBehaviour
     {
         Show();
 
-        eventTrigger = GetComponent<EventTrigger>();
-        eventTrigger.enabled = false;
+        GetButton(false);
 
         cardImage.sprite = defaultSprite;
         cardImage.preserveAspect = true;
         Index = index;
+    }
+
+    public void GetButton(bool value)
+    {
+        button = GetComponent<Button>();
+        button.interactable = value;
     }
 
     private void Show()
@@ -89,12 +93,7 @@ public class PlayerCardUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void EnableTrigger()
-    {
-        eventTrigger.enabled = true;
-    }
-
-    public void OnPointerDownEquippedCards()
+    public void OnButtonPressEquippedCards()
     {
         if (Player.LocalInstance.UnequippedCards.Count > 0)
         {
@@ -102,7 +101,7 @@ public class PlayerCardUI : MonoBehaviour
         }
     }
 
-    public void OnPointerDownUnequippedCards()
+    public void OnButtonPressUnequippedCards()
     {
         OnUnquippedCardPress?.Invoke(this);
     }

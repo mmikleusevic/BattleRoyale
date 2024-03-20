@@ -317,7 +317,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
                 if (player1.EquippedCards.Count > 0)
                 {
-                    CallOnBattleWinResolveClientRpc(player2.NetworkObject, clientRpcParamsPlayer2);
+                    CallOnBattleWinResolveClientRpc(player1.NetworkObject, clientRpcParamsPlayer2);
                     afterBattleResolved[player1.ClientId.Value] = false;
                     afterBattleResolved[player2.ClientId.Value] = false;
                 }
