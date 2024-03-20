@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 public class PlayerPreturn : State
 {
     public static event EventHandler<string[]> OnPlayerPreturn;
+    public static event EventHandler OnPlayerPreturnOver;
 
     public override async Task Start()
     {
@@ -21,6 +22,8 @@ public class PlayerPreturn : State
     public override async Task End()
     {
         StateManager.Instance.SetState(StateEnum.PlayerTurn);
+
+        OnPlayerPreturnOver?.Invoke(this, EventArgs.Empty);
 
         await Task.CompletedTask;
     }

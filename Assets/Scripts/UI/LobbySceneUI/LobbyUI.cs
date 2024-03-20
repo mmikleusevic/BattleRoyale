@@ -30,7 +30,7 @@ public class LobbyUI : MonoBehaviour
     {
         Instance = this;
 
-        joinCodeInputField.characterLimit = 10;
+        joinCodeInputField.characterLimit = 6;
         findLobbyInputField.characterLimit = 10;
         playerNameInputField.characterLimit = 10;
 

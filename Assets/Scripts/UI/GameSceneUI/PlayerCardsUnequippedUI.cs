@@ -1,30 +1,34 @@
 using DG.Tweening;
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayerCardsUnequippedUI : MonoBehaviour
 {
+    public static event Action OnPlayerCardsUnequippedUIClosed;
+
     [SerializeField] private RectTransform PlayerCardsUnequippedUIRectTransform;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private Transform container;
     [SerializeField] private Transform template;
     [SerializeField] private Button closeButton;
     [SerializeField] private Image background;
-    [SerializeField] private ConfirmDialogUI confirmDialogUI;
 
     private void Awake()
     {
         closeButton.onClick.AddListener(() =>
         {
+            OnPlayerCardsUnequippedUIClosed?.Invoke();
+
             HideWithAnimation();
         });
 
         Player.OnPlayerUnequippedCardAdded += Player_OnPlayerUnequippedCardAdded;
         PlayerCardsEquippedUI.OnShowUnequippedCards += PlayerCardsEquippedUI_OnShowUnequippedCards;
-
-        confirmDialogUI.gameObject.SetActive(false);
-        template.gameObject.SetActive(false);
+        PlayerCardUI.OnEquippedCardPress += PlayerCardUI_OnEquippedCardPress;
+        ConfirmSwapCardDialogUI.OnYesPressed += ConfirmSwapDialogUI_OnYesPressed;
 
         HideInstantly();
     }
@@ -35,6 +39,8 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
 
         Player.OnPlayerUnequippedCardAdded -= Player_OnPlayerUnequippedCardAdded;
         PlayerCardsEquippedUI.OnShowUnequippedCards -= PlayerCardsEquippedUI_OnShowUnequippedCards;
+        PlayerCardUI.OnEquippedCardPress -= PlayerCardUI_OnEquippedCardPress;
+        ConfirmSwapCardDialogUI.OnYesPressed -= ConfirmSwapDialogUI_OnYesPressed;
     }
 
     private void Player_OnPlayerUnequippedCardAdded(Card card)
@@ -60,27 +66,66 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         ShowWithAnimation();
     }
 
+    private void PlayerCardUI_OnEquippedCardPress(PlayerCardUI obj)
+    {
+        ShowWithAnimation();
+
+        foreach (Transform child in container)
+        {
+            if (child == template) continue;
+
+            PlayerCardUI playerCardUI = child.GetComponent<PlayerCardUI>();
+            playerCardUI.EnableTrigger();
+        }
+    }
+
+    private void ConfirmSwapDialogUI_OnYesPressed(PlayerCardUI arg1, PlayerCardUI arg2)
+    {
+        if (arg1.isEmpty)
+        {
+            arg1.GetComponent<Image>().sprite = arg2.GetComponent<Image>().sprite;
+
+            int index = arg2.Index + 1;
+
+            Destroy(arg2.gameObject);
+
+            for (int i = index; i < container.childCount; i++)
+            {
+                Transform playerCardUITransform = container.GetChild(i);
+
+                PlayerCardUI playerCardUI = playerCardUITransform.GetComponent<PlayerCardUI>();
+
+                playerCardUI.Index = playerCardUI.Index - 1;
+            }
+        }
+        else
+        {
+            Sprite tempSprite = arg1.GetComponent<Image>().sprite;
+            arg1.GetComponent<Image>().sprite = arg2.GetComponent<Image>().sprite;
+            arg2.GetComponent<Image>().sprite = tempSprite;
+        }
+
+        HideWithAnimation();
+    }
+
     private void Show()
     {
+        gameObject.SetActive(true);
+
         foreach (Transform item in container)
         {
-            if (item == template) continue;
+            if (item == template)
+            {
+                item.gameObject.SetActive(false);
+                continue;
+            }
 
             item.gameObject.SetActive(true);
         }
-
-        gameObject.SetActive(true);
     }
 
     public void Hide()
     {
-        foreach (Transform item in container)
-        {
-            if (item == template) continue;
-
-            item.gameObject.SetActive(false);
-        }
-
         gameObject.SetActive(false);
     }
 

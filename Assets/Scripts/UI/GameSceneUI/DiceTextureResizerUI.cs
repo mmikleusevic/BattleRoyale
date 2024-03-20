@@ -8,7 +8,7 @@ public class DiceTextureResizerUI : MonoBehaviour
 
     Vector2 lastCanvasSize = Vector2.zero;
 
-    private void Awake()
+    private void Start()
     {
         ResizeRenderTexture();
     }
@@ -20,12 +20,12 @@ public class DiceTextureResizerUI : MonoBehaviour
 
     private void ResizeRenderTexture()
     {
-        Vector2 canvasSize = new Vector2(Screen.width, Screen.height);
+        Vector2 canvasSize = new Vector2(canvasRectTransform.rect.width, canvasRectTransform.rect.height);
 
         if (lastCanvasSize == canvasSize) return;
 
-        int canvasWidth = Screen.width;
-        int canvasHeight = Screen.height;
+        int canvasWidth = (int)canvasRectTransform.rect.width;
+        int canvasHeight = (int)canvasRectTransform.rect.height;
 
         lastCanvasSize.x = canvasWidth;
         lastCanvasSize.y = canvasHeight;

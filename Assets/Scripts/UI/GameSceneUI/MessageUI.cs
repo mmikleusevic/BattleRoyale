@@ -37,6 +37,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         Player.OnPlayerTookCard += OnCallbackSetMessages;
         Player.OnPlayerDiedPlayerBattle += OnCallbackSetMessages;
         DrinkReminderUI.OnPlayerDrank += OnCallbackSetMessages;
+        Player.OnCardsSwapped += OnCallbackSetMessages;
     }
 
     public override void OnNetworkDespawn()
@@ -63,6 +64,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         Player.OnPlayerTookCard -= OnCallbackSetMessages;
         Player.OnPlayerDiedPlayerBattle -= OnCallbackSetMessages;
         DrinkReminderUI.OnPlayerDrank -= OnCallbackSetMessages;
+        Player.OnCardsSwapped -= OnCallbackSetMessages;
 
         base.OnNetworkDespawn();
     }

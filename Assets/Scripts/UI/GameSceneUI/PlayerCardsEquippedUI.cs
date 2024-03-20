@@ -9,7 +9,8 @@ using Random = UnityEngine.Random;
 
 public class PlayerCardsEquippedUI : MonoBehaviour
 {
-    public static event Action OnPlayerCardsUIClosed;
+    public static event Action OnPreturnCardsInstantiated;
+    public static event Action OnPlayerCardsEquippedUIClosed;
     public static event Action OnShowUnequippedCards;
     public static event Action<ulong> OnWonEquippedCard;
 
@@ -22,8 +23,6 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     [SerializeField] private Button takeCardButton;
     [SerializeField] private Image background;
 
-    private bool cardChanged = false;
-
     private Player player;
 
     private void Awake()
@@ -33,13 +32,11 @@ public class PlayerCardsEquippedUI : MonoBehaviour
             if (StateManager.Instance.GetState() == StateEnum.PlayerPreturn)
             {
                 await StateManager.Instance.EndState();
-
-                cardChanged = false;
             }
 
             HideWithAnimation();
 
-            OnPlayerCardsUIClosed?.Invoke();
+            OnPlayerCardsEquippedUIClosed?.Invoke();
         });
 
         showUneqippedCardsButton.onClick.AddListener(() =>
@@ -66,6 +63,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         closeButton.onClick.RemoveAllListeners();
         showUneqippedCardsButton.onClick.RemoveAllListeners();
         takeCardButton.onClick.RemoveAllListeners();
+
         PlayerPreturn.OnPlayerPreturn -= PlayerPreturn_OnPlayerPreturn;
         AttackPlayerInfoUI.OnShowPlayerEquippedCards -= AttackPlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin -= PlayerBattleResults_OnAfterBattle;
@@ -73,7 +71,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
     private void PlayerPreturn_OnPlayerPreturn(object sender, string[] e)
     {
-        titleText.text = "PRETURN\nEQUIPPED CARDS:";
+        titleText.text = "PRETURN(PRESS CARD TO SWAP IT)\nEQUIPPED CARDS:";
 
         closeButton.gameObject.SetActive(true);
         ShowOrHideUnequippedCardsButton();
@@ -85,6 +83,8 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         ShowWithAnimation();
 
         InstantiateCards();
+
+        OnPreturnCardsInstantiated?.Invoke();
     }
 
     private void AttackPlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
@@ -131,9 +131,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
     private void InstantiateCards()
     {
-        int i = 0;
-
-        foreach (Card card in player.EquippedCards)
+        for (int i = 0; i < player.MaxEquippableCards; i++)
         {
             Transform cardUITransform = Instantiate(template, container);
 
@@ -141,9 +139,16 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
             PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
 
-            playerCardUI.Instantiate(card, i);
+            if (player.EquippedCards.Count >= i+1)
+            {
+                Card card = player.EquippedCards[i];
 
-            i++;
+                playerCardUI.Instantiate(card, i);
+            }
+            else
+            {
+                playerCardUI.Instantiate(i);
+            }
         }
     }
 
@@ -176,13 +181,22 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     private void Show()
     {
         gameObject.SetActive(true);
-        container.gameObject.SetActive(true);
+
+        foreach (Transform child in container)
+        {
+            if (child == template)
+            {
+                child.gameObject.SetActive(false);
+                continue;
+            }
+
+            child.gameObject.SetActive(true);
+        }
     }
 
     private void Hide()
     {
         gameObject.SetActive(false);
-        container.gameObject.SetActive(false);
 
         foreach (Transform child in container)
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class Player : NetworkBehaviour
 {
     public static Player LocalInstance { get; private set; }
 
+    public static event Action<string[]> OnCardsSwapped;
     public static event EventHandler<string> OnPlayerConnected;
     public static event Action OnPlayerTurnSet;
     public static event EventHandler<string[]> OnPlayerMoved;
@@ -29,12 +31,12 @@ public class Player : NetworkBehaviour
     ParticleSystem playerParticleSystem;
     PlayerAnimator playerAnimator;
 
-    private int maxEquipableCards = 3;
     private int defaultMovement = 0;
     private int gamesNeededForDefeat = 3;
     private int defaultActionPoints = 2;
     private float moveSpeed = 20f;
 
+    public int MaxEquippableCards { get; private set; } = 3;
     public Tile CurrentTile { get; private set; }
     public List<Card> EquippedCards { get; private set; }
     public List<Card> UnequippedCards { get; private set; }
@@ -78,6 +80,7 @@ public class Player : NetworkBehaviour
             CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
             ResurrectUI.OnResurrectPressed += ResurrectUI_OnResurrectPressed;
             PlayerBattleResults.OnBattleLost += PlayerBattleResults_OnBattleLost;
+            ConfirmSwapCardDialogUI.OnYesPressed += ConfirmSwapCardDialogUI_OnYesPressed;
         }
 
         InitializePlayerClientRpc();
@@ -94,6 +97,7 @@ public class Player : NetworkBehaviour
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
         PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
+        ConfirmSwapCardDialogUI.OnYesPressed -= ConfirmSwapCardDialogUI_OnYesPressed;
 
         base.OnDestroy();
     }
@@ -205,7 +209,7 @@ public class Player : NetworkBehaviour
 
     private void SaveCardToWinner(Player player, Card card)
     {
-        if (player.EquippedCards.Count < player.maxEquipableCards)
+        if (player.EquippedCards.Count < player.MaxEquippableCards)
         {
             player.EquippedCards.Add(card);
 
@@ -216,6 +220,45 @@ public class Player : NetworkBehaviour
             OnPlayerUnequippedCardAdded?.Invoke(card);
 
             player.UnequippedCards.Add(card);
+        }
+    }
+
+    public void SwapCardPreturn(int equippedCardIndex, int unequippedCardIndex)
+    {
+        SwapCardPreturnServerRpc(NetworkObject, equippedCardIndex, unequippedCardIndex);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SwapCardPreturnServerRpc(NetworkObjectReference playerNetworkObjectReference, int equippedCardIndex, int unequippedCardIndex, ServerRpcParams serverRpcParams = default)
+    {
+        SwapCardPreturnClientRpc(playerNetworkObjectReference, equippedCardIndex, unequippedCardIndex);
+    }
+
+    [ClientRpc]
+    private void SwapCardPreturnClientRpc(NetworkObjectReference playerNetworkObjectReference, int equippedCardIndex, int unequippedCardIndex, ClientRpcParams clientRpcParams = default)
+    {
+        Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+
+        Card equippedCard = player.EquippedCards[equippedCardIndex];
+        Card unequippedCard = player.UnequippedCards[unequippedCardIndex];
+
+        if (equippedCard == null)
+        {
+            player.UnequippedCards.RemoveAt(unequippedCardIndex);
+            player.EquippedCards.Insert(equippedCardIndex, unequippedCard);
+        }
+        else
+        {
+            player.EquippedCards.Remove(equippedCard);
+            player.UnequippedCards.Remove(unequippedCard);
+
+            player.EquippedCards.Insert(equippedCardIndex, unequippedCard);
+            player.UnequippedCards.Insert(unequippedCardIndex, equippedCard);
+        }
+
+        if (player == LocalInstance)
+        {
+            OnCardsSwapped?.Invoke(CreateOnPlayerSwappedCardMessage(equippedCard, unequippedCard));
         }
     }
 
@@ -252,6 +295,11 @@ public class Player : NetworkBehaviour
         PickPlaceToDie = true;
 
         OnPlayerDiedPlayerBattle?.Invoke(CreateOnPlayerNeedsToPickAPlaceToDieMessage());
+    }
+
+    private void ConfirmSwapCardDialogUI_OnYesPressed(PlayerCardUI arg1, PlayerCardUI arg2)
+    {
+        SwapCardPreturn(arg1.Index, arg2.Index);
     }
 
     public void OnBattleWon(Card card, Player enemy)
@@ -376,6 +424,26 @@ public class Player : NetworkBehaviour
             $"YOU TOOK {card.Name}",
             $"<color=#{winner.HexPlayerColor}>{winner.PlayerName} </color> took {card.Name} from <color=#{loser.HexPlayerColor}>{loser.PlayerName}</color>"
         };
+    }
+
+    private string[] CreateOnPlayerSwappedCardMessage(Card equippedCard, Card unequippedCard)
+    {
+        if (equippedCard == null)
+        {
+            return new string[]
+            {
+                $"YOU SWAPPED EMPTY SLOT FOR {unequippedCard.Name}",
+                $"<color=#{HexPlayerColor}>{PlayerName} </color> swapped EMPTY SLOT for {unequippedCard.Name}"
+            };
+        }
+        else
+        {
+            return new string[]
+            {
+                $"YOU SWAPPED {equippedCard.Name} FOR {unequippedCard.Name}",
+                $"<color=#{HexPlayerColor}>{PlayerName} </color>swapped {equippedCard.Name} for {unequippedCard.Name}"
+            };
+        }
     }
 
     public void SetSipValue(int value)
