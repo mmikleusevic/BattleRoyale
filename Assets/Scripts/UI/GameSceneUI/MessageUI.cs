@@ -26,7 +26,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         PlayerTurn.OnPlayerTurn += OnCallbackSetMessages;
         Player.OnPlayerMoved += OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleRollOver += OnCallbackSetMessageToMyself;
-        AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
+        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn += OnCallbackSetMessages;
         CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
@@ -53,7 +53,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         PlayerTurn.OnPlayerTurn -= OnCallbackSetMessages;
         Player.OnPlayerMoved -= OnCallbackSetMessages;
         PlayerBattleResults.OnPlayerBattleRollOver -= OnCallbackSetMessageToMyself;
-        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
+        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         EndTurnUI.OnEndTurn -= OnCallbackSetMessages;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
@@ -125,7 +125,7 @@ public class MessageUI : NetworkBehaviour, IBeginDragHandler, IDragHandler, IEnd
         SetMessage(e.message);
     }
 
-    private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
         OnCallbackSetMessages(arg3);
     }

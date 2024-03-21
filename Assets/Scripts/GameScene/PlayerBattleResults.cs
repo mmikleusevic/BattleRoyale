@@ -41,7 +41,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
     private void Awake()
     {
-        AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayerServerRpc;
+        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayerServerRpc;
         PlayerCardsEquippedUI.OnWonEquippedCard += ResolvePlayerBattleServerRpc;
         Player.OnPlayerSelectedPlaceToDie += ResolvePlayerBattleServerRpc;
     }
@@ -57,7 +57,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
     public override void OnDestroy()
     {
-        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayerServerRpc;
+        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayerServerRpc;
         PlayerCardsEquippedUI.OnWonEquippedCard -= ResolvePlayerBattleServerRpc;
         Player.OnPlayerSelectedPlaceToDie -= ResolvePlayerBattleServerRpc;
 
@@ -65,7 +65,7 @@ public class PlayerBattleResults : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void AttackPlayerInfoUI_OnAttackPlayerServerRpc(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    private void PlayerInfoUI_OnAttackPlayerServerRpc(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
         Player player1 = Player.GetPlayerFromNetworkReference(arg1);
         Player player2 = Player.GetPlayerFromNetworkReference(arg2);

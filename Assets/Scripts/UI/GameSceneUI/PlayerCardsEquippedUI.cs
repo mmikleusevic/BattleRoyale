@@ -50,7 +50,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         });
 
         PlayerPreturn.OnPlayerPreturn += PlayerPreturn_OnPlayerPreturn;
-        AttackPlayerInfoUI.OnShowPlayerEquippedCards += AttackPlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
 
@@ -71,7 +71,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         takeCardButton.onClick.RemoveAllListeners();
 
         PlayerPreturn.OnPlayerPreturn -= PlayerPreturn_OnPlayerPreturn;
-        AttackPlayerInfoUI.OnShowPlayerEquippedCards -= AttackPlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin -= PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver -= PlayerPreturn_OnPlayerPreturnOver;
     }
@@ -94,12 +94,13 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         OnPreturnCardsInstantiated?.Invoke();
     }
 
-    private void AttackPlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
+    private void PlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
     {
         titleText.text = $"{obj.PlayerName}'s </color>EQUIPPED CARDS:";
 
         player = obj;
 
+        closeButton.gameObject.SetActive(true);
         ShowOrHideUnequippedCardsButton();
 
         background.color = player.HexPlayerColor.HEXToColor();

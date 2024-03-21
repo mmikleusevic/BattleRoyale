@@ -39,7 +39,7 @@ public class GridManager : NetworkBehaviour
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
         Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
-        AttackPlayerInfoUI.OnAttackPlayer += AttackPlayerInfoUI_OnAttackPlayer;
+        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
     }
 
@@ -53,7 +53,7 @@ public class GridManager : NetworkBehaviour
         Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
         Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
-        AttackPlayerInfoUI.OnAttackPlayer -= AttackPlayerInfoUI_OnAttackPlayer;
+        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
 
         base.OnNetworkDespawn();
@@ -105,7 +105,7 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsWherePlayerCanGoDie();
     }
 
-    private void AttackPlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
     {
         DisableCards();
     }
