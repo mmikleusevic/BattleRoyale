@@ -5,6 +5,7 @@ using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : NetworkBehaviour
 {
@@ -24,6 +25,7 @@ public class Player : NetworkBehaviour
     public static event Action<string> OnPlayerEquippedCardAdded;
     public static event Action<Card> OnPlayerUnequippedCardAdded;
     public static event Action<string> OnPlayerRemovedCard;
+    public static event Action OnNoMoreMovementOrActionPoints;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -270,6 +272,8 @@ public class Player : NetworkBehaviour
     {
         loser.EquippedCards.Remove(card);
 
+        if (loser == LocalInstance) AddOrSubtractPoints(-card.Value);
+
         OnPlayerRemovedCard?.Invoke(CreateOnPlayerRemovedCardMessage(loser, card));
     }
 
@@ -303,6 +307,8 @@ public class Player : NetworkBehaviour
 
     public void OnBattleWon(Card card, Player enemy)
     {
+        AddOrSubtractPoints(card.Value);
+
         OnBattleWonServerRpc(card.NetworkObject, NetworkObject, enemy.NetworkObject);
     }
 
@@ -561,11 +567,15 @@ public class Player : NetworkBehaviour
     public void SubtractMovement()
     {
         Movement--;
+
+        CheckIfMovementAndActionsAreZero();
     }
 
     public void SubtractActionPoints()
     {
         ActionPoints--;
+
+        CheckIfMovementAndActionsAreZero();
 
         OnPlayerActionUsed?.Invoke();
     }
@@ -575,6 +585,14 @@ public class Player : NetworkBehaviour
         Points.Value += value;
 
         OnPlayerPointsChanged?.Invoke();
+    }
+
+    private void CheckIfMovementAndActionsAreZero()
+    {
+        if (Movement == 0 && ActionPoints == 0)
+        {
+            OnNoMoreMovementOrActionPoints?.Invoke();
+        }
     }
 
     private void ResetActionsAndMovement()

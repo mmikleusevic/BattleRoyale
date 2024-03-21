@@ -7,6 +7,7 @@ public class EndTurnUI : MonoBehaviour
     public static event Action<string[]> OnEndTurn;
 
     [SerializeField] private Button endTurnButton;
+    [SerializeField] private ParticleSystem particleGlow;
 
     private void Awake()
     {
@@ -14,12 +15,16 @@ public class EndTurnUI : MonoBehaviour
         {
             Hide();
             OnEndTurn?.Invoke(SendToMessageUI());
+            particleGlow.Stop();
             await StateManager.Instance.EndState();
         });
 
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
+        Player.OnNoMoreMovementOrActionPoints += Player_OnNoMoreMovementOrActionPoints;
+
+        particleGlow.Stop();
 
         Hide();
     }
@@ -29,6 +34,8 @@ public class EndTurnUI : MonoBehaviour
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
         PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
+        Player.OnNoMoreMovementOrActionPoints -= Player_OnNoMoreMovementOrActionPoints;
+
         endTurnButton.onClick.RemoveAllListeners();
     }
 
@@ -45,6 +52,11 @@ public class EndTurnUI : MonoBehaviour
     private void PlayerBattleResults_OnAfterBattleResolved()
     {
         Show();
+    }
+
+    private void Player_OnNoMoreMovementOrActionPoints()
+    {
+        particleGlow.Play();
     }
 
     private string[] SendToMessageUI()
