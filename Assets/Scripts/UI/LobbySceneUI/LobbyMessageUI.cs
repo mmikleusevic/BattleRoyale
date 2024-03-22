@@ -25,6 +25,7 @@ public class LobbyMessageUI : MonoBehaviour
         LobbyServiceHandler.OnQuickJoinFailed += LobbyServiceHandler_OnQuickJoinFailed;
         LobbyServiceHandler.OnRemovingJoinedLobbies += LobbyServiceHandler_OnRemovingJoinedLobbies;
         LobbyServiceHandler.OnRemovingJoinedLobbiesOver += LobbyServiceHandler_OnRemovingJoinedLobbiesOver;
+        LobbyServiceHandler.OnRemovingJoinedLobbiesFailed += LobbyServiceHandler_OnRemovingJoinedLobbiesFailed;
     }
 
     private void OnDestroy()
@@ -37,6 +38,7 @@ public class LobbyMessageUI : MonoBehaviour
         LobbyServiceHandler.OnQuickJoinFailed -= LobbyServiceHandler_OnQuickJoinFailed;
         LobbyServiceHandler.OnRemovingJoinedLobbies -= LobbyServiceHandler_OnRemovingJoinedLobbies;
         LobbyServiceHandler.OnRemovingJoinedLobbiesOver -= LobbyServiceHandler_OnRemovingJoinedLobbiesOver;
+        LobbyServiceHandler.OnRemovingJoinedLobbiesFailed -= LobbyServiceHandler_OnRemovingJoinedLobbiesFailed;
 
         closeButton.onClick.RemoveAllListeners();
     }
@@ -58,7 +60,7 @@ public class LobbyMessageUI : MonoBehaviour
 
     private void LobbyServiceHandler_OnJoinFailed(object sender, System.EventArgs e)
     {
-        ShowMessage("Failed to join lobby...");
+        ShowMessage("Failed to join lobby!");
     }
 
     private void LobbyServiceHandler_OnJoinStarted(object sender, System.EventArgs e)
@@ -80,7 +82,7 @@ public class LobbyMessageUI : MonoBehaviour
     {
         if (string.IsNullOrEmpty(NetworkManager.Singleton.DisconnectReason))
         {
-            ShowMessage("Failed to connect");
+            ShowMessage("Failed to connect...");
         }
         else
         {
@@ -90,12 +92,17 @@ public class LobbyMessageUI : MonoBehaviour
 
     private void LobbyServiceHandler_OnRemovingJoinedLobbies(object sender, System.EventArgs e)
     {
-        ShowMessage("Removing you from all joined lobbies");
+        ShowMessage("Removing you from all joined lobbies...");
     }
 
     private void LobbyServiceHandler_OnRemovingJoinedLobbiesOver(object sender, System.EventArgs e)
     {
         Hide();
+    }
+
+    private void LobbyServiceHandler_OnRemovingJoinedLobbiesFailed(object sender, System.EventArgs e)
+    {
+        ShowMessage("Removing from lobbies failed...");
     }
 
     private void ShowMessage(string message)

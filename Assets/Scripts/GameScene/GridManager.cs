@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -233,11 +234,7 @@ public class GridManager : NetworkBehaviour
     [ClientRpc]
     private void AddTileToSpawnedTilesOnClientsClientRpc(Vector2 position, NetworkObjectReference networkObjectReference, ClientRpcParams clientRpcParams = default)
     {
-        networkObjectReference.TryGet(out NetworkObject networkObject);
-
-        if (networkObject == null) return;
-
-        Tile tile = networkObject.GetComponent<Tile>();
+        Tile tile = Tile.GetTileFromNetworkReference(networkObjectReference);
 
         gridTiles[position] = tile;
     }
@@ -331,5 +328,17 @@ public class GridManager : NetworkBehaviour
     public CardSO GetCardSOAtPosition(int index)
     {
         return cardSOs[index];
+    }
+
+    public void DecreaseNumberOfLeftCards()
+    {
+        int numberOfLeftCards = gridTiles.Values.Where(a => a.Card != null).Count();
+
+        Debug.Log(numberOfLeftCards);
+
+        if (numberOfLeftCards == 0)
+        {
+            GameManager.Instance.DetermineWinnerAndLosers();
+        }
     }
 }

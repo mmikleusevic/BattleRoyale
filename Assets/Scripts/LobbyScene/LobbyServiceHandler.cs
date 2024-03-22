@@ -19,6 +19,7 @@ public class LobbyServiceHandler : IDisposable
     public static event EventHandler OnCreateLobbyFailed;
     public static event EventHandler OnJoinStarted;
     public static event EventHandler OnRemovingJoinedLobbies;
+    public static event EventHandler OnRemovingJoinedLobbiesFailed;
     public static event EventHandler OnRemovingJoinedLobbiesOver;
     public static event EventHandler<OnLobbyListChangdEventArgs> OnLobbyListChanged;
 
@@ -276,6 +277,7 @@ public class LobbyServiceHandler : IDisposable
         }
         catch (LobbyServiceException ex)
         {
+            OnRemovingJoinedLobbiesFailed?.Invoke(this, EventArgs.Empty);
             Debug.LogError(ex.Message);
         }
     }

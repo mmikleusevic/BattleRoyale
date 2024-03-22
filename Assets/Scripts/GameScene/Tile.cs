@@ -257,4 +257,13 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     {
         Interactable = false;
     }
+
+    public static Tile GetTileFromNetworkReference(NetworkObjectReference networkObjectReference)
+    {
+        networkObjectReference.TryGet(out NetworkObject networkObject);
+
+        if (networkObject == null) return null;
+
+        return networkObject.GetComponent<Tile>();
+    }
 }

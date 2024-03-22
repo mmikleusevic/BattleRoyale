@@ -73,6 +73,7 @@ public class Player : NetworkBehaviour
         {
             LocalInstance = this;
             ClientId.Value = NetworkObject.OwnerClientId;
+
             PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
             CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
             ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
@@ -188,16 +189,14 @@ public class Player : NetworkBehaviour
         AddOrSubtractPoints(card.Value);
 
         SaveWonCardClientRpc(networkObjectReferenceCard, networkObjectReferencePlayer);
+
+        GridManager.Instance.DecreaseNumberOfLeftCards();
     }
 
     [ClientRpc]
     private void SaveWonCardClientRpc(NetworkObjectReference networkObjectReferenceCard, NetworkObjectReference networkObjectReferencePlayer, ClientRpcParams clientRpcParams = default)
     {
-        networkObjectReferenceCard.TryGet(out NetworkObject networkObjectCard);
-
-        if (networkObjectCard == null) return;
-
-        Tile tile = networkObjectCard.GetComponent<Tile>();
+        Tile tile = Tile.GetTileFromNetworkReference(networkObjectReferenceCard);
 
         Card card = tile.Card;
 

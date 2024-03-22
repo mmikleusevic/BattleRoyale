@@ -29,6 +29,11 @@ public class PlayerInfoUI : MonoBehaviour
         Hide();
     }
 
+    private void OnDestroy()
+    {
+        attackPlayerButton.onClick.RemoveAllListeners();
+    }
+
     public void Instantiate(Player player, bool showAttackButton)
     {
         this.player = player;
@@ -79,11 +84,6 @@ public class PlayerInfoUI : MonoBehaviour
         }
 
         Show();
-    }
-
-    private void OnDestroy()
-    {
-        attackPlayerButton.onClick.RemoveAllListeners();
     }
 
     private string CreateMessageForMessageUI()

@@ -1,12 +1,19 @@
+using System;
 using System.Threading.Tasks;
-using UnityEngine;
 
 public class Lost : State
 {
+    public static event Action<string> OnLost;
+
     public override async Task Start()
     {
         await base.Start();
 
-        Debug.Log("You were defeated.");
+        OnLost?.Invoke(CreateOnLostMessage());
+    }
+
+    private string CreateOnLostMessage()
+    {
+        return "YOU LOST!";
     }
 }

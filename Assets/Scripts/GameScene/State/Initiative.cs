@@ -9,14 +9,17 @@ public partial class Initiative : State
     {
         await base.Start();
 
-        string message = "ROLL FOR INITIATIVE";
-
-        OnInitiativeStart?.Invoke(this, message);
+        OnInitiativeStart?.Invoke(this, CreateOnInitiativeMessage());
     }
 
     public override async Task End()
     {
         await base.End();
+    }
+
+    private string CreateOnInitiativeMessage()
+    {
+        return "ROLL FOR INITIATIVE";
     }
 }
 

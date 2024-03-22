@@ -185,4 +185,30 @@ public class GameManager : NetworkBehaviour
 
         PlayerManager.Instance.SetPlayerReadyServerRpc(true);
     }
+
+    public void DetermineWinnerAndLosers()
+    {
+        Player winner = PlayerManager.Instance.Players.OrderByDescending(a => a.Points.Value).FirstOrDefault();
+
+        ClientRpcParams clientRpcParamsWinner = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { winner.ClientId.Value }
+            }
+        };
+
+        ulong[] loserIds = PlayerManager.Instance.Players.FindAll(a => a.ClientId.Value != winner.ClientId.Value).Select(a => a.ClientId.Value).ToArray();
+
+        ClientRpcParams clientRpcParamsLosers = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = loserIds
+            }
+        };
+
+        StateManager.Instance.SetStateToClients(StateEnum.Won, clientRpcParamsWinner);
+        StateManager.Instance.SetStateToClients(StateEnum.Lost, clientRpcParamsLosers);
+    }
 }

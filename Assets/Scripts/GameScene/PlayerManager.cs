@@ -29,7 +29,36 @@ public class PlayerManager : NetworkBehaviour
 
         PrepareClientDictionaryReady();
 
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+
         base.OnNetworkSpawn();
+    }
+
+    public override void OnDestroy()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+        }
+
+        base.OnDestroy();
+    }
+
+    private void NetworkManager_OnClientDisconnectCallback(ulong obj)
+    {
+        Player player = Players.FirstOrDefault(a => a.ClientId.Value == obj);
+
+        RemovePlayerSetNewLastPlayerClientRpc(player.NetworkObject);
+    }
+
+    [ClientRpc]
+    private void RemovePlayerSetNewLastPlayerClientRpc(NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        Player player = Player.GetPlayerFromNetworkReference(playerNetworkObjectReference);
+        Players.Remove(player);
+
+        Player lastPlayer = Players.LastOrDefault();
+        LastPlayer = lastPlayer;
     }
 
     private void PrepareClientDictionaryReady()
@@ -62,11 +91,7 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     public void SetLastPlayerClientRpc(NetworkObjectReference networkObjectReference)
     {
-        networkObjectReference.TryGet(out NetworkObject networkObject);
-
-        if (networkObject == null) return;
-
-        Player lastPlayer = networkObject.GetComponent<Player>();
+        Player lastPlayer = Player.GetPlayerFromNetworkReference(networkObjectReference);
 
         LastPlayer = lastPlayer;
     }

@@ -34,6 +34,7 @@ public class ResurrectUI : MonoBehaviour
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerSelectedPlaceToDie -= Player_OnPlayerSelectedPlaceToDie;
         PlayerTurn.OnPlayerTurnOver -= PlayerTurn_OnPlayerTurnOver;
+
         resurrectButton.onClick.RemoveAllListeners();
     }
 

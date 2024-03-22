@@ -35,6 +35,7 @@ public class PlayerListUI : MonoBehaviour
         PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
+        PlayerManager.Instance.OnActivePlayerChanged -= Instance_OnActivePlayerChanged;
     }
 
     private void ActionsUI_OnAttackPlayer(Tile tile)

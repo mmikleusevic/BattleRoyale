@@ -1,5 +1,5 @@
 using System;
-using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 public partial class WaitingForPlayers : State
 {
@@ -8,10 +8,13 @@ public partial class WaitingForPlayers : State
     public override async Task Start()
     {
         await base.Start();
+     
+        OnWaitingForPlayers?.Invoke(this, CreateOnWaitingForPlayersMessage());
+    }
 
-        string message = "WAITING FOR PLAYERS";
-
-        OnWaitingForPlayers?.Invoke(this, message);
+    private string CreateOnWaitingForPlayersMessage()
+    {
+        return "WAITING FOR PLAYERS";
     }
 }
 

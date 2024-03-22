@@ -54,7 +54,7 @@ public class InteractUI : MonoBehaviour
 
     public void HideWithAnimation()
     {
-        interactUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
+        interactUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
 
     private void Show()
