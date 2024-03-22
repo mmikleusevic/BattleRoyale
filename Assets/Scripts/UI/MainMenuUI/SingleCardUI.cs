@@ -28,7 +28,7 @@ public class SingleCardUI : MonoBehaviour, IPointerDownHandler
 
     public void Destroy()
     {
-        cardRectTransform.DOScale(Vector3.zero, 0.3f).OnComplete(() => Destroy(gameObject)).Kill(true);
+        cardRectTransform.DOScale(Vector3.zero, 0.3f).OnComplete(() => Destroy(gameObject));
     }
 
     public void OnPointerDown(PointerEventData eventData)
