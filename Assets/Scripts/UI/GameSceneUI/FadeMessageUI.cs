@@ -41,6 +41,7 @@ public class FadeMessageUI : MonoBehaviour
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
+        Player.OnPlayerTookCard -= Player_OnPlayerTookCard;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
         Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
         Player.OnPlayerSelectedPlaceToDie -= Player_OnPlayerSelectedPlaceToDie;

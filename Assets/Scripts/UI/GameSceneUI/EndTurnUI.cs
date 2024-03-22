@@ -15,7 +15,7 @@ public class EndTurnUI : MonoBehaviour
         {
             Hide();
             OnEndTurn?.Invoke(SendToMessageUI());
-            particleGlow.Stop();
+            ParticleSystemManager.Instance.Stop(particleGlow);
             await StateManager.Instance.EndState();
         });
 
@@ -24,7 +24,7 @@ public class EndTurnUI : MonoBehaviour
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
         Player.OnNoMoreMovementOrActionPoints += Player_OnNoMoreMovementOrActionPoints;
 
-        particleGlow.Stop();
+        ParticleSystemManager.Instance.Stop(particleGlow);
 
         Hide();
     }
@@ -56,7 +56,7 @@ public class EndTurnUI : MonoBehaviour
 
     private void Player_OnNoMoreMovementOrActionPoints()
     {
-        particleGlow.Play();
+        ParticleSystemManager.Instance.Play(particleGlow);
     }
 
     private string[] SendToMessageUI()

@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : NetworkBehaviour
 {
@@ -59,7 +57,7 @@ public class Player : NetworkBehaviour
     {
         ClientId = new NetworkVariable<ulong>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         IsDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-        Points = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        Points = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         playerParticleSystem = particleCircle.GetComponent<ParticleSystem>();
         EquippedCards = new List<Card>();
         UnequippedCards = new List<Card>();
@@ -82,6 +80,7 @@ public class Player : NetworkBehaviour
             CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
             ResurrectUI.OnResurrectPressed += ResurrectUI_OnResurrectPressed;
             PlayerBattleResults.OnBattleLost += PlayerBattleResults_OnBattleLost;
+            Points.OnValueChanged += PointsChanged;
         }
 
         InitializePlayerClientRpc();
@@ -98,10 +97,10 @@ public class Player : NetworkBehaviour
         CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
         ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
         PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
+        Points.OnValueChanged -= PointsChanged;
 
         base.OnDestroy();
     }
-
 
     [ClientRpc]
     private void InitializePlayerClientRpc()
@@ -178,14 +177,16 @@ public class Player : NetworkBehaviour
 
     private void CardBattleResults_OnCardWon(CardBattleResults.OnCardBattleEventArgs obj)
     {
-        AddOrSubtractPoints(obj.card.Value);
-
         SaveWonCardServerRpc(obj.card.NetworkObject, NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void SaveWonCardServerRpc(NetworkObjectReference networkObjectReferenceCard, NetworkObjectReference networkObjectReferencePlayer, ServerRpcParams serverRpcParams = default)
     {
+        Card card = Card.GetCardFromNetworkReference(networkObjectReferenceCard);
+
+        AddOrSubtractPoints(card.Value);
+
         SaveWonCardClientRpc(networkObjectReferenceCard, networkObjectReferencePlayer);
     }
 
@@ -272,8 +273,6 @@ public class Player : NetworkBehaviour
     {
         loser.EquippedCards.Remove(card);
 
-        if (loser == LocalInstance) AddOrSubtractPoints(-card.Value);
-
         OnPlayerRemovedCard?.Invoke(CreateOnPlayerRemovedCardMessage(loser, card));
     }
 
@@ -305,11 +304,14 @@ public class Player : NetworkBehaviour
         OnPlayerDiedPlayerBattle?.Invoke(CreateOnPlayerNeedsToPickAPlaceToDieMessage());
     }
 
-    public void OnBattleWon(Card card, Player enemy)
+    private void PointsChanged(int previousValue, int newValue)
     {
-        AddOrSubtractPoints(card.Value);
+        OnPlayerPointsChanged?.Invoke();
+    }
 
-        OnBattleWonServerRpc(card.NetworkObject, NetworkObject, enemy.NetworkObject);
+    public void OnBattleWon(Card card, Player loser)
+    {
+        OnBattleWonServerRpc(card.NetworkObject, NetworkObject, loser.NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -320,6 +322,9 @@ public class Player : NetworkBehaviour
         Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
 
         Card card = Card.GetCardFromNetworkReference(cardNetworkObjectReference);
+
+        winner.AddOrSubtractPoints(card.Value);
+        loser.AddOrSubtractPoints(-card.Value);
 
         OnPlayerTookCard?.Invoke(CreateOnPlayerTakenCardMessage(card, winner, loser));
 
@@ -583,8 +588,6 @@ public class Player : NetworkBehaviour
     public void AddOrSubtractPoints(int value)
     {
         Points.Value += value;
-
-        OnPlayerPointsChanged?.Invoke();
     }
 
     private void CheckIfMovementAndActionsAreZero()

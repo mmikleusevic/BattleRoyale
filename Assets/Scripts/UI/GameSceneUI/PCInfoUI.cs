@@ -89,7 +89,7 @@ public class PCInfoUI : MonoBehaviour
 
     private void Player_OnPlayerPointsChanged()
     {
-        SetIsDeadText();
+        SetPointsText();
     }
 
     private void Player_OnPlayerDiedPlayerBattle(string[] messages)
