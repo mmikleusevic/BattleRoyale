@@ -6,7 +6,7 @@
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
-# TODO remove when building real game /[Bb]uilds/
+/[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
@@ -63,7 +63,7 @@ ExportedObj/
 sysinfo.txt
 
 # Builds
-# TODO remove when building real game *.apk
+*.apk
 *.aab
 *.unitypackage
 *.app
