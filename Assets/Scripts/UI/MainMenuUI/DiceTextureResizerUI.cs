@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[ExecuteAlways]
 public class DiceTextureResizerUI : MonoBehaviour
 {
     [SerializeField] private RectTransform canvasRectTransform;
