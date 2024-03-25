@@ -36,9 +36,12 @@ public class DiceTextureResizerUI : MonoBehaviour
             texture.width = canvasWidth;
             texture.height = canvasHeight;
 
-            texture.GenerateMips();
+            texture.useMipMap = true;
+            texture.autoGenerateMips = false;
 
             texture.Create();
+
+            texture.GenerateMips();
         }
     }
 }
