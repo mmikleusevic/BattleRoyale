@@ -37,6 +37,8 @@ public class DiceTextureResizerUI : MonoBehaviour
             texture.width = canvasWidth;
             texture.height = canvasHeight;
 
+            texture.GenerateMips();
+
             texture.Create();
         }
     }
