@@ -7,8 +7,9 @@ using UnityEngine.EventSystems;
 
 public class Tile : NetworkBehaviour, IPointerDownHandler
 {
-    public static event EventHandler<Player> OnTilePressed;
+    public static event Action<Tile> OnTilePressed;
     public static event Action OnTileClosed;
+    public event Action OnTileValueChanged;
 
     [SerializeField] private List<CardPosition> cardPositions;
     [SerializeField] private GameObject highlight;
@@ -222,7 +223,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        OnTilePressed?.Invoke(this, Player.LocalInstance);
+        OnTilePressed?.Invoke(this);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -251,11 +252,15 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     public void Enable()
     {
         Interactable = true;
+
+        OnTileValueChanged?.Invoke();
     }
 
     public void Disable()
     {
         Interactable = false;
+
+        OnTileValueChanged?.Invoke();
     }
 
     public static Tile GetTileFromNetworkReference(NetworkObjectReference networkObjectReference)

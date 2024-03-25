@@ -46,12 +46,12 @@ public class EndTurnUI : MonoBehaviour
 
     private void PlayerBattleResults_OnPlayerBattleRollOver(string obj)
     {
-        Hide();
+        endTurnButton.interactable = false;
     }
 
     private void PlayerBattleResults_OnAfterBattleResolved()
     {
-        Show();
+        endTurnButton.interactable = true;
     }
 
     private void Player_OnNoMoreMovementOrActionPoints()

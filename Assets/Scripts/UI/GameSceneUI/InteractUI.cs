@@ -26,7 +26,7 @@ public class InteractUI : MonoBehaviour
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
     }
 
-    private void Tile_OnTilePressed(object sender, Player player)
+    private void Tile_OnTilePressed(Tile tile)
     {
         ShowWithAnimation();
     }

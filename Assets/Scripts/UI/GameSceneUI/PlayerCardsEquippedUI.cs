@@ -83,7 +83,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         player = Player.LocalInstance;
 
         closeButton.gameObject.SetActive(true);
-        ShowOrHideUnequippedCardsButton();
+        ShowOrHideUnequippedCardsButton(false);
 
         background.color = player.HexPlayerColor.HEXToColor();
 
@@ -94,14 +94,14 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         OnPreturnCardsInstantiated?.Invoke();
     }
 
-    private void PlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
+    private void PlayerInfoUI_OnShowPlayerEquippedCards(Player obj, bool isOver)
     {
         titleText.text = $"{obj.PlayerName}'s </color>EQUIPPED CARDS:";
 
         player = obj;
 
         closeButton.gameObject.SetActive(true);
-        ShowOrHideUnequippedCardsButton();
+        ShowOrHideUnequippedCardsButton(isOver);
 
         background.color = player.HexPlayerColor.HEXToColor();
 
@@ -115,7 +115,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         player = loser;
 
         closeButton.gameObject.SetActive(false);
-        ShowOrHideUnequippedCardsButton();
+        ShowOrHideUnequippedCardsButton(false);
         takeCardButton.gameObject.SetActive(true);
 
         background.color = player.HexPlayerColor.HEXToColor();
@@ -130,9 +130,9 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         showUneqippedCardsButton.gameObject.SetActive(false);
     }
 
-    private void ShowOrHideUnequippedCardsButton()
+    private void ShowOrHideUnequippedCardsButton(bool isOver)
     {
-        if (player == Player.LocalInstance && player.UnequippedCards.Count > 0)
+        if (player == Player.LocalInstance && player.UnequippedCards.Count > 0 || isOver)
         {
             showUneqippedCardsButton.gameObject.SetActive(true);
         }

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class PlayerInfoUI : MonoBehaviour
 {
     public static event Action<NetworkObjectReference, NetworkObjectReference, string> OnAttackPlayer;
-    public static event Action<Player> OnShowPlayerEquippedCards;
+    public static event Action<Player, bool> OnShowPlayerEquippedCards;
 
     private Player player;
 
@@ -19,19 +19,37 @@ public class PlayerInfoUI : MonoBehaviour
     [SerializeField] private Button showEquippedCardsButton;
     [SerializeField] private Button attackPlayerButton;
 
+    private bool isOver = false;
+
     private void Awake()
     {
         showEquippedCardsButton.onClick.AddListener(() =>
         {
-            OnShowPlayerEquippedCards?.Invoke(player);
+            OnShowPlayerEquippedCards?.Invoke(player, isOver);
         });
+
+        Won.OnWon += OnGameOver;
+        Lost.OnLost += OnGameOver;
 
         Hide();
     }
 
     private void OnDestroy()
     {
+        Won.OnWon -= OnGameOver;
+        Lost.OnLost -= OnGameOver;
+
+        showEquippedCardsButton.onClick.RemoveAllListeners();
+    }
+
+    private void OnDisable()
+    {
         attackPlayerButton.onClick.RemoveAllListeners();
+    }
+
+    private void OnGameOver(string obj)
+    {
+        isOver = true;
     }
 
     public void Instantiate(Player player, bool showAttackButton)

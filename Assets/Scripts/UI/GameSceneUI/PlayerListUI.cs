@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class PlayerListUI : MonoBehaviour
     [SerializeField] private Transform template;
     [SerializeField] private Button closeButton;
     [SerializeField] private Button infoButton;
+    [SerializeField] private TextMeshProUGUI gameOverText;
     private int originalSiblingIndex;
 
     private void Awake()
@@ -21,8 +23,11 @@ public class PlayerListUI : MonoBehaviour
         PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsUI_OnPlayerCardsUIClosed;
-        PlayerManager.Instance.OnActivePlayerChanged += Instance_OnActivePlayerChanged;
+        PlayerManager.Instance.OnActivePlayerChanged += PlayerManager_OnActivePlayerChanged;
+        Won.OnWon += OnGameOver;
+        Lost.OnLost += OnGameOver;
 
+        gameOverText.gameObject.SetActive(false);
         originalSiblingIndex = transform.GetSiblingIndex();
     }
 
@@ -35,7 +40,9 @@ public class PlayerListUI : MonoBehaviour
         PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
-        PlayerManager.Instance.OnActivePlayerChanged -= Instance_OnActivePlayerChanged;
+        PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
+        Won.OnWon -= OnGameOver;
+        Lost.OnLost -= OnGameOver;
     }
 
     private void ActionsUI_OnAttackPlayer(Tile tile)
@@ -81,7 +88,7 @@ public class PlayerListUI : MonoBehaviour
         Hide();
     }
 
-    private void PlayerInfoUI_OnShowPlayerEquippedCards(Player obj)
+    private void PlayerInfoUI_OnShowPlayerEquippedCards(Player obj, bool isOver)
     {
         RestoreOriginalOrder();
     }
@@ -98,11 +105,26 @@ public class PlayerListUI : MonoBehaviour
         }
     }
 
-    private void Instance_OnActivePlayerChanged(Player obj)
+    private void PlayerManager_OnActivePlayerChanged(Player obj)
     {
         infoButton.gameObject.SetActive(true);
 
-        PlayerManager.Instance.OnActivePlayerChanged -= Instance_OnActivePlayerChanged;
+        PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
+    }
+
+    private void OnGameOver(string obj)
+    {
+        gameOverText.gameObject.SetActive(true);
+        closeButton.gameObject.SetActive(false);
+        infoButton.gameObject.SetActive(false);
+
+        gameOverText.text = obj;
+
+        RestoreOriginalOrder();
+
+        List<Player> players = PlayerManager.Instance.Players;
+
+        InstantiatePlayerInfo(players, false);
     }
 
     private void SetAsLastSibling()

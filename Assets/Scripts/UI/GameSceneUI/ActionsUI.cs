@@ -1,4 +1,5 @@
 using System;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,17 +20,20 @@ public class ActionsUI : MonoBehaviour
         moveButton.onClick.AddListener(() =>
         {
             OnMove?.Invoke(tile);
+            gameObject.SetActive(false);
         });
 
         attackCardButton.onClick.AddListener(() =>
         {
             RollType.rollType = RollTypeEnum.CardAttack;
             OnAttackCard?.Invoke(tile, SendAttackingCardMessage());
+            gameObject.SetActive(false);
         });
 
         attackPlayerButton.onClick.AddListener(() =>
         {
             OnAttackPlayer?.Invoke(tile);
+            gameObject.SetActive(false);
         });
 
         Tile.OnTilePressed += Tile_OnTilePressed;
@@ -43,9 +47,32 @@ public class ActionsUI : MonoBehaviour
         attackPlayerButton.onClick.RemoveAllListeners();
     }
 
-    private void Tile_OnTilePressed(object sender, Player player)
+    private void OnDisable()
     {
-        tile = sender as Tile;
+        if (tile != null)
+        {
+            tile.OnTileValueChanged -= Tile_OnTileValueChanged;
+            tile = null;
+        }
+    }
+
+    private void Tile_OnTilePressed(Tile tile)
+    {
+        if (this.tile != tile)
+        {
+            this.tile = tile;
+        }
+
+        this.tile.OnTileValueChanged += Tile_OnTileValueChanged;
+
+        gameObject.SetActive(true);
+
+        GetPossibleActions();
+    }
+
+    private void GetPossibleActions()
+    {
+        Player player = Player.LocalInstance;
 
         if (tile != null && tile.Interactable)
         {
@@ -83,6 +110,11 @@ public class ActionsUI : MonoBehaviour
         {
             HideAll();
         }
+    }
+
+    private void Tile_OnTileValueChanged()
+    {
+        GetPossibleActions();
     }
 
     private void HideAll()

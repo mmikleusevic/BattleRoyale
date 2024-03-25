@@ -351,7 +351,7 @@ public class Player : NetworkBehaviour
 
         SubtractActionPoints();
 
-        AddSips();
+        AddSipsToPlayerServerRpc(NetworkObject, SipValue);
 
         OnPlayerResurrected?.Invoke(CreateOnPlayerResurrectedMessage());
     }
@@ -459,10 +459,24 @@ public class Player : NetworkBehaviour
     {
         SipValue = value;
     }
-
-    public void AddSips()
+   
+    [ServerRpc(RequireOwnership = false)]
+    private void AddSipsToPlayerServerRpc(NetworkObjectReference playerNetworkObjectReference, int value, ServerRpcParams serverRpcParams = default)
     {
-        SipCounter += SipValue;
+        AddSipsToPlayerClientRpc(playerNetworkObjectReference, value);
+    }
+
+    [ClientRpc]
+    private void AddSipsToPlayerClientRpc(NetworkObjectReference playerNetworkObjectReference, int value, ClientRpcParams clientRpcParams = default)
+    {
+        Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+
+        AddSips(player, value);
+    }
+
+    private void AddSips(Player player, int value)
+    {
+        player.SipCounter += value;
     }
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)

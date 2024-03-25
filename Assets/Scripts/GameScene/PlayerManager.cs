@@ -48,6 +48,8 @@ public class PlayerManager : NetworkBehaviour
     {
         Player player = Players.FirstOrDefault(a => a.ClientId.Value == obj);
 
+        if (player == null || player.NetworkObject == null || NetworkManager.ShutdownInProgress) return;
+
         RemovePlayerSetNewLastPlayerClientRpc(player.NetworkObject);
     }
 

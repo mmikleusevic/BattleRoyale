@@ -12,15 +12,14 @@ public class TileUI : MonoBehaviour
         Tile.OnTilePressed += Tile_OnTilePressed;
     }
 
-    private void Tile_OnTilePressed(object sender, Player e)
-    {
-        Tile tile = sender as Tile;
-        image.preserveAspect = true;
-        image.sprite = tile.GetCardOrTileSprite();
-    }
-
     private void OnDestroy()
     {
         Tile.OnTilePressed -= Tile_OnTilePressed;
+    }
+
+    private void Tile_OnTilePressed(Tile tile)
+    {
+        image.preserveAspect = true;
+        image.sprite = tile.GetCardOrTileSprite();
     }
 }

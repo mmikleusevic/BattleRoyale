@@ -25,15 +25,25 @@ public class PauseMultiplayerUI : MonoBehaviour
     {
         GameManager.Instance.OnMultiplayerGamePaused += GameManager_OnMultiplayerGamePaused;
         GameManager.Instance.OnMultiplayerGameUnpaused += GameManager_OnMultiplayerGameUnpaused;
+        Won.OnWon += OnGameOver;
+        Lost.OnLost += OnGameOver;
 
         pauseText.gameObject.SetActive(false);
         background.gameObject.SetActive(false);
+    }
+
+    private void OnGameOver(string obj)
+    {
+        GameManager.Instance.OnMultiplayerGamePaused -= GameManager_OnMultiplayerGamePaused;
+        GameManager.Instance.OnMultiplayerGameUnpaused -= GameManager_OnMultiplayerGameUnpaused;
     }
 
     private void OnDestroy()
     {
         GameManager.Instance.OnMultiplayerGamePaused -= GameManager_OnMultiplayerGamePaused;
         GameManager.Instance.OnMultiplayerGameUnpaused -= GameManager_OnMultiplayerGameUnpaused;
+        Won.OnWon -= OnGameOver;
+        Lost.OnLost -= OnGameOver;
 
         pauseButton.onClick.RemoveAllListeners();
     }
