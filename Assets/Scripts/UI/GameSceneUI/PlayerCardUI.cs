@@ -20,7 +20,7 @@ public class PlayerCardUI : MonoBehaviour
     {
         PlayerCardsEquippedUI.OnPreturnCardsInstantiated += PlayerCardsEquippedUI_OnPreturnCardsInstantiated;
         PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
-        ConfirmSwapCardDialogUI.OnYesPressed += ConfirmSwapDialogUI_OnYesPressed;
+        Player.OnCardsSwapped += Player_OnCardsSwapped;
 
         Hide();
     }
@@ -29,7 +29,7 @@ public class PlayerCardUI : MonoBehaviour
     {
         PlayerCardsEquippedUI.OnPreturnCardsInstantiated -= PlayerCardsEquippedUI_OnPreturnCardsInstantiated;
         PlayerPreturn.OnPlayerPreturnOver -= PlayerPreturn_OnPlayerPreturnOver;
-        ConfirmSwapCardDialogUI.OnYesPressed -= ConfirmSwapDialogUI_OnYesPressed;
+        Player.OnCardsSwapped -= Player_OnCardsSwapped;
     }
 
     private void PlayerCardsEquippedUI_OnPreturnCardsInstantiated()
@@ -47,11 +47,18 @@ public class PlayerCardUI : MonoBehaviour
         button.interactable = false;
     }
 
-    private void ConfirmSwapDialogUI_OnYesPressed(PlayerCardUI arg1, PlayerCardUI arg2)
+    private void Player_OnCardsSwapped(string[] obj)
     {
         if (button == null) return;
 
-        button.interactable = false;
+        if (Player.LocalInstance.UnequippedCards.Count > 0 && Player.LocalInstance.EquippedCards.Count < Player.LocalInstance.MaxEquippableCards)
+        {
+            button.interactable = true;
+        }
+        else
+        {
+            button.interactable = false;
+        }
     }
 
     public void Instantiate(Card card, int index)

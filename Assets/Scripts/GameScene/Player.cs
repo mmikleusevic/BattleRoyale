@@ -19,10 +19,11 @@ public class Player : NetworkBehaviour
     public static event Action<string[]> OnPlayerDiedPlayerBattle;
     public static event Action<ulong> OnPlayerSelectedPlaceToDie;
     public static event Action<string[]> OnPlayerResurrected;
-    public static event Action<string[]> OnPlayerTookCard;
+    public static event Action<string> OnPlayerTookCard;
     public static event Action<string> OnPlayerEquippedCardAdded;
     public static event Action<Card> OnPlayerUnequippedCardAdded;
     public static event Action<string> OnPlayerRemovedCard;
+    public static event Action OnPlayerSipCounterChanged;
     public static event Action OnNoMoreMovementOrActionPoints;
 
     [SerializeField] private SetVisual playerVisual;
@@ -308,9 +309,9 @@ public class Player : NetworkBehaviour
         OnPlayerPointsChanged?.Invoke();
     }
 
-    public void OnBattleWon(Card card, Player loser)
+    public void OnBattleWon(Card card, Player winner, Player loser)
     {
-        OnBattleWonServerRpc(card.NetworkObject, NetworkObject, loser.NetworkObject);
+        OnBattleWonServerRpc(card.NetworkObject, winner.NetworkObject, loser.NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -331,9 +332,9 @@ public class Player : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void OnBattleWonClientRpc(NetworkObjectReference cardNetworkObjectReference, NetworkObjectReference playerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    private void OnBattleWonClientRpc(NetworkObjectReference cardNetworkObjectReference, NetworkObjectReference winnerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
     {
-        Player winner = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+        Player winner = GetPlayerFromNetworkReference(winnerNetworkObjectReference);
 
         Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
 
@@ -426,13 +427,10 @@ public class Player : NetworkBehaviour
         };
     }
 
-    private string[] CreateOnPlayerTakenCardMessage(Card card, Player winner, Player loser)
+    private string CreateOnPlayerTakenCardMessage(Card card, Player winner, Player loser)
     {
-        return new string[]
-        {
-            $"YOU TOOK {card.Name}",
-            $"<color=#{winner.HexPlayerColor}>{winner.PlayerName} </color> took {card.Name} from <color=#{loser.HexPlayerColor}>{loser.PlayerName}</color>"
-        };
+        return $"<color=#{winner.HexPlayerColor}>{winner.PlayerName} </color>took {card.Name} from <color=#{loser.HexPlayerColor}>{loser.PlayerName}</color>";
+        
     }
 
     private string[] CreateOnPlayerSwappedCardMessage(Card equippedCard, Card unequippedCard)
@@ -477,6 +475,11 @@ public class Player : NetworkBehaviour
     private void AddSips(Player player, int value)
     {
         player.SipCounter += value;
+
+        if (player == LocalInstance)
+        {
+            OnPlayerSipCounterChanged?.Invoke();
+        }
     }
 
     private IEnumerator PlayWalkingAnimation(Vector3 targetPosition)

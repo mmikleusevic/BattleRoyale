@@ -9,12 +9,14 @@ public class ResurrectUI : MonoBehaviour
 
     [SerializeField] RectTransform resurrectUIRectTransform;
     [SerializeField] private Button resurrectButton;
+    [SerializeField] private ParticleSystem particleGlow;
 
     private void Awake()
     {
         resurrectButton.onClick.AddListener(() =>
         {
             OnResurrectPressed?.Invoke();
+            ParticleSystemManager.Instance.Stop(particleGlow);
             HideWithAnimation();
         });
 
@@ -23,6 +25,8 @@ public class ResurrectUI : MonoBehaviour
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerSelectedPlaceToDie += Player_OnPlayerSelectedPlaceToDie;
         PlayerTurn.OnPlayerTurnOver += PlayerTurn_OnPlayerTurnOver;
+
+        ParticleSystemManager.Instance.Stop(particleGlow);
 
         HideWithAnimation();
     }
@@ -88,6 +92,7 @@ public class ResurrectUI : MonoBehaviour
 
     private void Show()
     {
+        ParticleSystemManager.Instance.Play(particleGlow);
         gameObject.SetActive(true);
     }
 }

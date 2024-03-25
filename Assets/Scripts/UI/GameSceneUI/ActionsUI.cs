@@ -20,20 +20,17 @@ public class ActionsUI : MonoBehaviour
         moveButton.onClick.AddListener(() =>
         {
             OnMove?.Invoke(tile);
-            gameObject.SetActive(false);
         });
 
         attackCardButton.onClick.AddListener(() =>
         {
             RollType.rollType = RollTypeEnum.CardAttack;
             OnAttackCard?.Invoke(tile, SendAttackingCardMessage());
-            gameObject.SetActive(false);
         });
 
         attackPlayerButton.onClick.AddListener(() =>
         {
             OnAttackPlayer?.Invoke(tile);
-            gameObject.SetActive(false);
         });
 
         Tile.OnTilePressed += Tile_OnTilePressed;
@@ -58,10 +55,7 @@ public class ActionsUI : MonoBehaviour
 
     private void Tile_OnTilePressed(Tile tile)
     {
-        if (this.tile != tile)
-        {
-            this.tile = tile;
-        }
+        this.tile = tile;
 
         this.tile.OnTileValueChanged += Tile_OnTileValueChanged;
 

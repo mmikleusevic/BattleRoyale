@@ -11,7 +11,7 @@ public class PlayerBattleResults : NetworkBehaviour
     public static event Action OnPlayerBattleRollDisadvantageRollOver;
     public static event Action<string> OnPlayerBattleShowUI;
     public static event Action<string> OnPlayerBattleRollOver;
-    public static event Action<Player> OnBattleWin;
+    public static event Action<Player, Player> OnBattleWin;
     public static event Action OnBattleLost;
     public static event Action OnAfterBattleResolved;
 
@@ -300,7 +300,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
                 if (player2.EquippedCards.Count > 0)
                 {
-                    CallOnBattleWinResolveClientRpc(player2.NetworkObject, clientRpcParamsPlayer1);
+                    CallOnBattleWonResolveClientRpc(player1.NetworkObject, player2.NetworkObject, clientRpcParamsPlayer1);
                     afterBattleResolved[player1.ClientId.Value] = false;
                     afterBattleResolved[player2.ClientId.Value] = false;
                 }
@@ -317,7 +317,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
                 if (player1.EquippedCards.Count > 0)
                 {
-                    CallOnBattleWinResolveClientRpc(player1.NetworkObject, clientRpcParamsPlayer2);
+                    CallOnBattleWonResolveClientRpc(player2.NetworkObject, player1.NetworkObject, clientRpcParamsPlayer2);
                     afterBattleResolved[player1.ClientId.Value] = false;
                     afterBattleResolved[player2.ClientId.Value] = false;
                 }
@@ -400,11 +400,12 @@ public class PlayerBattleResults : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void CallOnBattleWinResolveClientRpc(NetworkObjectReference loser, ClientRpcParams clientRpcParams = default)
+    private void CallOnBattleWonResolveClientRpc(NetworkObjectReference winnerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
     {
-        Player player = Player.GetPlayerFromNetworkReference(loser);
+        Player winner = Player.GetPlayerFromNetworkReference(winnerNetworkObjectReference);
+        Player loser = Player.GetPlayerFromNetworkReference(loserNetworkObjectReference);
 
-        OnBattleWin?.Invoke(player);
+        OnBattleWin?.Invoke(winner, loser);
     }
 
     [ClientRpc]

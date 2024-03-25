@@ -24,6 +24,8 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     [SerializeField] private Image background;
 
     private Player player;
+    private Player winner;
+    private Player loser;
 
     private void Awake()
     {
@@ -53,6 +55,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
+        Player.OnCardsSwapped += Player_OnCardsSwapped;
 
         takeCardButton.gameObject.SetActive(false);
 
@@ -74,15 +77,17 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin -= PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver -= PlayerPreturn_OnPlayerPreturnOver;
+        Player.OnCardsSwapped -= Player_OnCardsSwapped;
     }
 
     private void PlayerPreturn_OnPlayerPreturn(object sender, string[] e)
     {
-        titleText.text = "PRETURN(PRESS CARD TO SWAP IT)\nEQUIPPED CARDS:";
+        titleText.text = "PRETURN(PRESS CARD TO SWAP IT, NEED TO HAVE 3 EQUIPED IF POSSIBLE)\nEQUIPPED CARDS:";
 
         player = Player.LocalInstance;
 
-        closeButton.gameObject.SetActive(true);
+        ShowOrHideCloseButton();
+
         ShowOrHideUnequippedCardsButton(false);
 
         background.color = player.HexPlayerColor.HEXToColor();
@@ -110,9 +115,11 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         InstantiateCards();
     }
 
-    private void PlayerBattleResults_OnAfterBattle(Player loser)
+    private void PlayerBattleResults_OnAfterBattle(Player winner, Player loser)
     {
         player = loser;
+        this.loser = loser;
+        this.winner = winner;
 
         closeButton.gameObject.SetActive(false);
         ShowOrHideUnequippedCardsButton(false);
@@ -128,6 +135,12 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     private void PlayerPreturn_OnPlayerPreturnOver(object sender, EventArgs e)
     {
         showUneqippedCardsButton.gameObject.SetActive(false);
+    }
+
+    private void Player_OnCardsSwapped(string[] obj)
+    {
+        ShowOrHideCloseButton();
+        ShowOrHideUnequippedCardsButton(false);
     }
 
     private void ShowOrHideUnequippedCardsButton(bool isOver)
@@ -165,6 +178,18 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         }
     }
 
+    private void ShowOrHideCloseButton()
+    {
+        if (Player.LocalInstance.UnequippedCards.Count > 0 && Player.LocalInstance.EquippedCards.Count < Player.LocalInstance.MaxEquippableCards)
+        {
+            closeButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            closeButton.gameObject.SetActive(true);
+        }
+    }
+
     private IEnumerator TakeCard()
     {
         takeCardButton.gameObject.SetActive(false);
@@ -182,11 +207,14 @@ public class PlayerCardsEquippedUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        Player.LocalInstance.OnBattleWon(card, player);
+        Player.LocalInstance.OnBattleWon(card, winner, loser);
 
-        OnWonEquippedCard?.Invoke(Player.LocalInstance.ClientId.Value);
+        OnWonEquippedCard?.Invoke(winner.ClientId.Value);
 
         yield return new WaitForSeconds(2f);
+
+        winner = null;
+        loser = null;
 
         HideWithAnimation();
     }

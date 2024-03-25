@@ -21,6 +21,7 @@ public class PCInfoUI : MonoBehaviour
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
         Player.OnPlayerPointsChanged += Player_OnPlayerPointsChanged;
         Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
+        Player.OnPlayerSipCounterChanged += Player_OnPlayerSipCounterChanged;
 
         Hide();
     }
@@ -41,6 +42,7 @@ public class PCInfoUI : MonoBehaviour
         Player.OnPlayerPointsChanged -= Player_OnPlayerPointsChanged;
         Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
         PlayerManager.Instance.OnActivePlayerChanged -= Instance_OnActivePlayerChanged;
+        Player.OnPlayerSipCounterChanged -= Player_OnPlayerSipCounterChanged;
     }
 
     private void Initiative_OnInitiativeStart(object sender, string e)
@@ -58,21 +60,17 @@ public class PCInfoUI : MonoBehaviour
     {
         SetMovementsText();
         SetActionsText();
-        SetIsDeadText();
-        SetSipCounter();
     }
 
     private void Player_OnPlayerMoved(object sender, string[] e)
     {
         SetMovementsText();
         SetActionsText();
-        SetIsDeadText();
     }
 
     private void Player_OnPlayerActionUsed()
     {
         SetActionsText();
-        SetIsDeadText();
     }
 
     private void Player_OnPlayerDiedCardBattle()
@@ -82,9 +80,7 @@ public class PCInfoUI : MonoBehaviour
 
     private void Player_OnPlayerResurrected(string[] obj)
     {
-        SetActionsText();
         SetIsDeadText();
-        SetSipCounter();
     }
 
     private void Player_OnPlayerPointsChanged()
@@ -100,6 +96,11 @@ public class PCInfoUI : MonoBehaviour
     private void Instance_OnActivePlayerChanged(Player obj)
     {
         SetActivePlayerText(obj);
+    }
+
+    private void Player_OnPlayerSipCounterChanged()
+    {
+        SetSipCounter();
     }
 
     private void SetMovementsText()

@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class InteractUI : MonoBehaviour
 {
-    [SerializeField] RectTransform interactUIRectTransform;
+    [SerializeField] private RectTransform interactUIRectTransform;
+    [SerializeField] private Transform actionsContainer;
 
     private void Awake()
     {
@@ -47,7 +48,7 @@ public class InteractUI : MonoBehaviour
     }
 
     public void ShowWithAnimation()
-    {
+    {      
         Show();
         interactUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
     }
@@ -59,11 +60,13 @@ public class InteractUI : MonoBehaviour
 
     private void Show()
     {
+        actionsContainer.gameObject.SetActive(true);
         gameObject.SetActive(true);
     }
 
     private void Hide()
     {
+        actionsContainer.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 }

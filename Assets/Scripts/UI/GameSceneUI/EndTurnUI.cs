@@ -41,6 +41,8 @@ public class EndTurnUI : MonoBehaviour
 
     private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
     {
+        endTurnButton.interactable = true;
+
         Show();
     }
 
