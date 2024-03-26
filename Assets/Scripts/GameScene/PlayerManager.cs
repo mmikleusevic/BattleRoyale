@@ -60,7 +60,7 @@ public class PlayerManager : NetworkBehaviour
             StateManager.Instance.GiveCurrentStateToSetNext(player.currentState);
         }
 
-        OnPlayerLeftGame?.Invoke(CreateOnPlayerLeftGameMessage(player));
+        ChangePlayerOwnershipAndDie(player);
 
         RemovePlayerSetNewLastPlayerClientRpc(player.NetworkObject);
     }
@@ -142,6 +142,17 @@ public class PlayerManager : NetworkBehaviour
         SetLastPlayerClientRpc(lastPlayer.NetworkObject);
 
         StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.Initiative);
+    }
+
+    public void ChangePlayerOwnershipAndDie(Player player)
+    {
+        player.NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
+
+        player.IsDead.Value = true;
+
+        player.DeathAnimation();
+
+        OnPlayerLeftGame?.Invoke(CreateOnPlayerLeftGameMessage(player));
     }
 
     private string CreateOnPlayerLeftGameMessage(Player player)

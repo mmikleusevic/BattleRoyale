@@ -56,6 +56,23 @@ public class PlayerInfoUI : MonoBehaviour
     {
         this.player = player;
 
+        SetAttackPlayerButton(showAttackButton);
+
+        SetPlayerColorBackground();
+
+        SetPlayerName();
+
+        SetUnequippedCardsText();
+
+        SetPlayerStatsText();
+
+        SetEquippedCardsText();
+
+        Show();
+    }
+
+    private void SetAttackPlayerButton(bool showAttackButton)
+    {
         if (showAttackButton)
         {
             if (player == Player.LocalInstance) return;
@@ -74,34 +91,62 @@ public class PlayerInfoUI : MonoBehaviour
         else
         {
             attackPlayerButton.gameObject.SetActive(false);
-
-            if (player.UnequippedCards.Count <= 0)
-            {
-                unequippedCardsText.text = "UNEQUIPPED CARDS: NONE";
-            }
-            else
-            {
-                unequippedCardsText.text = $"UNEQUIPPED CARDS: {player.UnequippedCards.Count}";
-            }
         }
+    }
 
+    private void SetPlayerColorBackground()
+    {
         backgroundImage.color = player.HexPlayerColor.HEXToColor();
+    }
+
+    private void SetPlayerName()
+    {
         playerNameText.text = player.PlayerName;
+    }
+
+    private void SetUnequippedCardsText()
+    {
+        if (player.UnequippedCards.Count <= 0)
+        {
+            unequippedCardsText.text = "UNEQUIPPED CARDS: NONE";
+        }
+        else
+        {
+            unequippedCardsText.text = $"UNEQUIPPED CARDS: {player.UnequippedCards.Count}";
+        }
+    }
+
+    private void SetPlayerStatsText()
+    {
         string message = "POINTS: " + player.Points.Value.ToString() + "\n" +
                          "SIPS: " + player.SipCounter + "\n" +
                          "DEAD: ";
 
         if (player.IsDead.Value)
         {
-            message += "YES";
+            message += "YES\n";
         }
         else
         {
+            message += "NO\n";
+        }
+
+        message += "ACTIVE: ";
+
+        if (player.Disabled)
+        {
             message += "NO";
+        }
+        else
+        {
+            message += "YES";
         }
 
         playerStatsText.text = message;
+    }
 
+    private void SetEquippedCardsText()
+    {
         if (player.EquippedCards.Count <= 0)
         {
             equippedCardsText.text = "EQUIPPED CARDS: NONE";
@@ -112,8 +157,6 @@ public class PlayerInfoUI : MonoBehaviour
             equippedCardsText.text = $"EQUIPPED CARDS: {player.EquippedCards.Count}";
             showEquippedCardsButton.gameObject.SetActive(true);
         }
-
-        Show();
     }
 
     private string CreateMessageForMessageUI()

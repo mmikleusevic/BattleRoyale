@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -450,7 +451,6 @@ public class Player : NetworkBehaviour
     private string CreateOnPlayerTakenCardMessage(Card card, Player winner, Player loser)
     {
         return $"<color=#{winner.HexPlayerColor}>{winner.PlayerName} </color>took {card.Name} from <color=#{loser.HexPlayerColor}>{loser.PlayerName}</color>";
-
     }
 
     private string[] CreateOnPlayerSwappedCardMessage(Card equippedCard, Card unequippedCard)
@@ -571,7 +571,7 @@ public class Player : NetworkBehaviour
         DeathAnimation();
     }
 
-    private void DeathAnimation()
+    public void DeathAnimation()
     {
         playerAnimator.DieAnimation();
     }
@@ -650,6 +650,10 @@ public class Player : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void DisablePlayerServerRpc(NetworkObjectReference playerNetworkObjectReference, ServerRpcParams serverRpcParams = default)
     {
+        Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+
+        PlayerManager.Instance.ChangePlayerOwnershipAndDie(player);
+
         DisablePlayerClientRpc(playerNetworkObjectReference);
     }
 
