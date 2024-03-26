@@ -97,7 +97,7 @@ public class GameManager : NetworkBehaviour
     {
         SpawnPlayers();
 
-        StateManager.Instance.SetStateToClients(StateEnum.Initiative);
+        StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.WaitingForPlayers);     
     }
 
     public void TogglePauseGame()

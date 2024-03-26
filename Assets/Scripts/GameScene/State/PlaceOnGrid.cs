@@ -16,14 +16,7 @@ public class PlaceOnGrid : State
 
     public override async Task End()
     {
-        if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
-        {
-            StateManager.Instance.SetEnemyStateToEveryoneExceptNextPlayer();
-        }
-        else
-        {
-            StateManager.Instance.NextClientStateServerRpc(StateEnum.PlaceOnGrid);
-        }
+        StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.PlaceOnGrid);
 
         await base.End();
     }

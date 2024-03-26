@@ -5,8 +5,10 @@ using Unity.Netcode;
 
 public class PlayerManager : NetworkBehaviour
 {
-    public event Action<Player> OnActivePlayerChanged;
+    public static event Action<string> OnPlayerLeftGame;
     public static PlayerManager Instance { get; private set; }
+
+    public event Action<Player> OnActivePlayerChanged;
 
     private Dictionary<ulong, bool> clientsReady;
 
@@ -49,6 +51,13 @@ public class PlayerManager : NetworkBehaviour
         Player player = Players.FirstOrDefault(a => a.ClientId.Value == obj);
 
         if (player == null || player.NetworkObject == null || NetworkManager.ShutdownInProgress) return;
+
+        if (ActivePlayer == player)
+        {
+            StateManager.Instance.GiveCurrentStateToSetNext(player.currentState);
+        }
+
+        OnPlayerLeftGame?.Invoke(CreateOnPlayerLeftGameMessage(player));
 
         RemovePlayerSetNewLastPlayerClientRpc(player.NetworkObject);
     }
@@ -115,6 +124,11 @@ public class PlayerManager : NetworkBehaviour
 
         SetLastPlayerClientRpc(lastPlayer.NetworkObject);
 
-        StateManager.Instance.NextClientStateServerRpc(StateEnum.PlaceOnGrid);
+        StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.Initiative);
+    }
+
+    private string CreateOnPlayerLeftGameMessage(Player player)
+    {
+        return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>LEFT THE GAME";
     }
 }

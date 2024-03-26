@@ -45,6 +45,11 @@ public class StateManager : NetworkBehaviour, IStateManager
                 break;
         }
 
+        if (Player.LocalInstance)
+        {
+            Player.LocalInstance.UpdateCurrentState(state);
+        }
+
         await this.state.Start();
     }
 
@@ -91,6 +96,43 @@ public class StateManager : NetworkBehaviour, IStateManager
     public async Task EndState()
     {
         await state.End();
+    }
+
+    public void GiveCurrentStateToSetNext(StateEnum currentState)
+    {
+
+        switch (currentState)
+        {
+            case StateEnum.WaitingForPlayers:
+                SetStateToClients(StateEnum.Initiative);
+                break;
+            case StateEnum.Initiative:
+                NextClientStateServerRpc(StateEnum.PlaceOnGrid);
+                break;
+            case StateEnum.PlaceOnGrid:
+                if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
+                {
+                    SetEnemyStateToEveryoneExceptNextPlayer();
+                }
+                else
+                {
+                    NextClientStateServerRpc(StateEnum.PlaceOnGrid);
+                }
+                break;
+            case StateEnum.PlayerPreturn:
+                SetState(StateEnum.PlayerTurn);
+                break;
+            case StateEnum.PlayerTurn:
+                SetState(StateEnum.EnemyTurn);
+                NextClientStateServerRpc(StateEnum.PlayerPreturn);
+                break;
+            case StateEnum.EnemyTurn:
+                break;
+            case StateEnum.Lost:
+                break;
+            case StateEnum.Won:
+                break;
+        }
     }
 
     public void SetStateToClients(StateEnum state, ClientRpcParams clientRpcParams = default)

@@ -26,6 +26,8 @@ public class Player : NetworkBehaviour
     public static event Action OnPlayerSipCounterChanged;
     public static event Action OnNoMoreMovementOrActionPoints;
 
+    public StateEnum currentState;
+
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
 
@@ -119,6 +121,25 @@ public class Player : NetworkBehaviour
         playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
 
         OnPlayerConnected?.Invoke(this, PlayerConnectedMessage());
+    }
+
+    public void UpdateCurrentState(StateEnum state)
+    {
+        UpdateCurrentStateServerRpc(state, NetworkObject);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateCurrentStateServerRpc(StateEnum state, NetworkObjectReference playerNetworkObjectReference, ServerRpcParams serverRpcParams = default)
+    {
+        UpdateCurrentStateClientRpc(state, playerNetworkObjectReference);
+    }
+
+    [ClientRpc]
+    private void UpdateCurrentStateClientRpc(StateEnum state, NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+
+        player.currentState = state;
     }
 
     private string PlayerConnectedMessage()

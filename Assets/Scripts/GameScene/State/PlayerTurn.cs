@@ -43,8 +43,7 @@ public class PlayerTurn : State
 
         await base.End();
 
-        StateManager.Instance.SetState(StateEnum.EnemyTurn);
-        StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerPreturn);
+        StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.PlayerTurn);
     }
 
     private async void ActionsUI_OnMove(Tile obj)

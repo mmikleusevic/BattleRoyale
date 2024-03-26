@@ -21,7 +21,7 @@ public class PlayerPreturn : State
 
     public override async Task End()
     {
-        StateManager.Instance.SetState(StateEnum.PlayerTurn);
+        StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.PlayerPreturn);
 
         OnPlayerPreturnOver?.Invoke(this, EventArgs.Empty);
 
