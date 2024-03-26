@@ -32,26 +32,30 @@ public class PlayerManager : NetworkBehaviour
 
         PrepareClientDictionaryReady();
 
-        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_ServerOnClientDisconnectCallback;
 
         base.OnNetworkSpawn();
     }
 
-    public override void OnDestroy()
+    public override void OnNetworkDespawn()
     {
         if (NetworkManager.Singleton != null)
         {
-            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_ServerOnClientDisconnectCallback;
         }
 
-        base.OnDestroy();
+        base.OnNetworkDespawn();
     }
 
-    private void NetworkManager_OnClientDisconnectCallback(ulong obj)
+    private void NetworkManager_ServerOnClientDisconnectCallback(ulong clientId)
     {
-        Player player = Players.FirstOrDefault(a => a.ClientId.Value == obj);
+        if (NetworkManager.Singleton == null || NetworkManager.ServerClientId == clientId || NetworkManager.Singleton.ShutdownInProgress) return;
 
-        if (player == null || player.NetworkObject == null || NetworkManager.ShutdownInProgress || NetworkManager.ServerClientId == obj) return;
+        Player player = Players.FirstOrDefault(a => a.ClientId.Value == clientId);
+
+        if (player == null || player.NetworkObject == null) return;
+
+        player.NetworkObject.DontDestroyWithOwner = true;
 
         if (ActivePlayer == player)
         {

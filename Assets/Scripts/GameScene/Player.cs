@@ -86,7 +86,7 @@ public class Player : NetworkBehaviour
         base.OnNetworkSpawn();
     }
 
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
@@ -96,7 +96,10 @@ public class Player : NetworkBehaviour
         ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
         PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
         Points.OnValueChanged -= PointsChanged;
+
+        base.OnNetworkDespawn();
     }
+
 
     [ClientRpc]
     private void InitializePlayerClientRpc()
@@ -663,17 +666,9 @@ public class Player : NetworkBehaviour
 
     public void DisablePlayer()
     {
-        DisablePlayerServerRpc(NetworkObject);
-    }
+        DisablePlayerClientRpc(NetworkObject);
 
-    [ServerRpc(RequireOwnership = false)]
-    private void DisablePlayerServerRpc(NetworkObjectReference playerNetworkObjectReference, ServerRpcParams serverRpcParams = default)
-    {
-        Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
-
-        PlayerManager.Instance.ChangePlayerOwnershipAndDie(player);
-
-        DisablePlayerClientRpc(playerNetworkObjectReference);
+        PlayerManager.Instance.ChangePlayerOwnershipAndDie(this);
     }
 
     [ClientRpc]

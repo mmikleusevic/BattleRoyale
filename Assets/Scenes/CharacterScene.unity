@@ -535,6 +535,67 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterSelectPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1865617278, guid: a1b7848c1fe7291499de82a4e18a1fd5,
+        type: 3}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Maskable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_FillCenter
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_UseSpriteMesh
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952822854004553727, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_PreserveAspect
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2922454449654300466, guid: b2d0c52d68ea91b4296f9efb815e0db2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -584,6 +645,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3249118176726176709, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436058672248011468, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436058672248011468, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6876747455410479378, guid: b2d0c52d68ea91b4296f9efb815e0db2,
+        type: 3}
+      propertyPath: m_CullTransparentMesh
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

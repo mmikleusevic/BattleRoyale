@@ -37,6 +37,8 @@ public class GameManager : NetworkBehaviour
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+
+        base.OnNetworkSpawn();
     }
 
     public override void OnNetworkDespawn()

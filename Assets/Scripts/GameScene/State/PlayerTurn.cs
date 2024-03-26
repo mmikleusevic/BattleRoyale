@@ -17,6 +17,7 @@ public class PlayerTurn : State
         string[] messages = CreateOnPlayerTurnMessage();
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
 
         OnPlayerTurn?.Invoke();

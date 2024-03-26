@@ -89,7 +89,7 @@ public class PlayerInfoUI : MonoBehaviour
                 MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateMessageForMessageUI());
             });
 
-            GridManager.Instance.DisableCards();           
+            GridManager.Instance.DisableCards();
         }
         else
         {

@@ -11,6 +11,7 @@ public class PlaceOnGrid : State
         string[] messages = CreateOnPlaceOnGridStartedMessage();
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
 
         GridManager.Instance.HighlightAllUnoccupiedCards();

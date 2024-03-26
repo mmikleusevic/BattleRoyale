@@ -19,6 +19,7 @@ public class PlayerPreturn : State
         string[] messages = CreateOnPrePlayerTurnMessage();
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
 
         OnPlayerPreturn?.Invoke();
