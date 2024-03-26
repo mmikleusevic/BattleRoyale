@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class DiceRollUI : MonoBehaviour
@@ -15,7 +14,7 @@ public class DiceRollUI : MonoBehaviour
         InitiativeResults.OnReRoll += InitiativeResults_OnReRoll;
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
         PlayerBattleResults.OnPlayerBattleRollDie += PlayerBattleResults_OnPlayerBattleRoll;
-        PlayerBattleResults.OnPlayerBattleRollDieOver += PlayerBattleResults_OnPlayerBattleRollDieOver;
+        PlayerBattleResults.OnPlayerBattleRollDieOver += Hide;
     }
 
     private void OnDestroy()
@@ -28,7 +27,7 @@ public class DiceRollUI : MonoBehaviour
         InitiativeResults.OnReRoll -= InitiativeResults_OnReRoll;
         InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
         PlayerBattleResults.OnPlayerBattleRollDie -= PlayerBattleResults_OnPlayerBattleRoll;
-        PlayerBattleResults.OnPlayerBattleRollDieOver -= PlayerBattleResults_OnPlayerBattleRollDieOver;
+        PlayerBattleResults.OnPlayerBattleRollDieOver -= Hide;
     }
 
     private void CardBattleResults_OnCardRoll()
@@ -36,9 +35,9 @@ public class DiceRollUI : MonoBehaviour
         rollUI.ShowWithAnimation(3);
     }
 
-    private void CardBattleResults_OnCardBattle(CardBattleResults.OnCardBattleEventArgs obj)
+    private void CardBattleResults_OnCardBattle(Card card)
     {
-        rollUI.HideWithAnimation();
+        Hide();
     }
 
     private void PlayerBattleResults_OnPlayerBattleRollDisadvantage()
@@ -51,17 +50,17 @@ public class DiceRollUI : MonoBehaviour
         rollUI.ShowWithAnimation(1);
     }
 
-    private void InitiativeResults_OnReRoll(object sender, EventArgs e)
+    private void InitiativeResults_OnReRoll()
     {
         rollUI.ShowWithAnimation(1);
     }
 
-    private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
+    private void InitiativeResults_OnInitiativeRollOver(InitiativeResults.OnInitiativeRollOverEventArgs e)
     {
-        rollUI.HideWithAnimation();
+        Hide();
     }
 
-    private void PlayerBattleResults_OnPlayerBattleRollDieOver()
+    private void Hide()
     {
         rollUI.HideWithAnimation();
     }

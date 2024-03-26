@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PCInfoUI : MonoBehaviour
 {
+    public static PCInfoUI Instance { get; private set; }
+
     [SerializeField] private TextMeshProUGUI playerNameText;
     [SerializeField] private TextMeshProUGUI movementsText;
     [SerializeField] private TextMeshProUGUI actionsText;
@@ -13,22 +15,13 @@ public class PCInfoUI : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
-        Player.OnPlayerActionUsed += Player_OnPlayerActionUsed;
-        Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
-        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
-        Player.OnPlayerPointsChanged += Player_OnPlayerPointsChanged;
-        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
-        Player.OnPlayerSipCounterChanged += Player_OnPlayerSipCounterChanged;
 
         Hide();
-    }
-
-    private void Start()
-    {
-        PlayerManager.Instance.OnActivePlayerChanged += Instance_OnActivePlayerChanged;
     }
 
     private void OnDestroy()
@@ -36,16 +29,9 @@ public class PCInfoUI : MonoBehaviour
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
-        Player.OnPlayerActionUsed -= Player_OnPlayerActionUsed;
-        Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
-        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
-        Player.OnPlayerPointsChanged -= Player_OnPlayerPointsChanged;
-        Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
-        PlayerManager.Instance.OnActivePlayerChanged -= Instance_OnActivePlayerChanged;
-        Player.OnPlayerSipCounterChanged -= Player_OnPlayerSipCounterChanged;
     }
 
-    private void Initiative_OnInitiativeStart(object sender, string e)
+    private void Initiative_OnInitiativeStart()
     {
         Show();
 
@@ -62,75 +48,40 @@ public class PCInfoUI : MonoBehaviour
         SetActionsText();
     }
 
-    private void Player_OnPlayerMoved(object sender, string[] e)
+    private void Player_OnPlayerMoved()
     {
         SetMovementsText();
         SetActionsText();
     }
 
-    private void Player_OnPlayerActionUsed()
-    {
-        SetActionsText();
-    }
-
-    private void Player_OnPlayerDiedCardBattle()
-    {
-        SetIsDeadText();
-    }
-
-    private void Player_OnPlayerResurrected(string[] obj)
-    {
-        SetIsDeadText();
-    }
-
-    private void Player_OnPlayerPointsChanged()
-    {
-        SetPointsText();
-    }
-
-    private void Player_OnPlayerDiedPlayerBattle(string[] messages)
-    {
-        SetIsDeadText();
-    }
-
-    private void Instance_OnActivePlayerChanged(Player obj)
-    {
-        SetActivePlayerText(obj);
-    }
-
-    private void Player_OnPlayerSipCounterChanged()
-    {
-        SetSipCounter();
-    }
-
-    private void SetMovementsText()
+    public void SetMovementsText()
     {
         movementsText.text = $"Movements: {Player.LocalInstance.Movement}";
     }
 
-    private void SetActionsText()
+    public void SetActionsText()
     {
         actionsText.text = $"Actions: {Player.LocalInstance.ActionPoints}";
     }
 
-    private void SetPointsText()
+    public void SetPointsText()
     {
         pointsText.text = $"Points: {Player.LocalInstance.Points.Value}";
     }
 
-    private void SetPlayerNameText()
+    public void SetPlayerNameText()
     {
         playerNameText.text = "Player Name: ";
         playerNameText.text += $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color>";
     }
 
-    private void SetActivePlayerText(Player player)
+    public void SetActivePlayerText(Player player)
     {
         currentActivePlayerText.text = "Active player: ";
         currentActivePlayerText.text += $"<color=#{player.HexPlayerColor}>{player.PlayerName}</color>";
     }
 
-    private void SetIsDeadText()
+    public void SetIsDeadText()
     {
         if (Player.LocalInstance.IsDead.Value)
         {
@@ -142,7 +93,7 @@ public class PCInfoUI : MonoBehaviour
         }
     }
 
-    private void SetSipCounter()
+    public void SetSipCounter()
     {
         sipCounterText.text = $"Number of sips: {Player.LocalInstance.SipCounter}";
     }

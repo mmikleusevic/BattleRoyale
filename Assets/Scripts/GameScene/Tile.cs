@@ -8,7 +8,6 @@ using UnityEngine.EventSystems;
 public class Tile : NetworkBehaviour, IPointerDownHandler
 {
     public static event Action<Tile> OnTilePressed;
-    public static event Action OnTileClosed;
     public event Action OnTileValueChanged;
 
     [SerializeField] private List<CardPosition> cardPositions;
@@ -44,7 +43,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
         if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer)
         {
-            OnTileClosed?.Invoke();
+            GridManager.Instance.ToggleCardToGetGridPositionsWherePlayerCanInteract();
         }
     }
 

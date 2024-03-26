@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FadeMessageUI : MonoBehaviour
 {
+    public static FadeMessageUI Instance { get; private set; }
+
     [SerializeField] private TextMeshProUGUI fadeText;
 
     private float maxFadeTime = 4f;
@@ -14,14 +16,8 @@ public class FadeMessageUI : MonoBehaviour
 
     private void Awake()
     {
-        Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
-        PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
-        PlayerPreturn.OnPlayerPreturn += PlayerPreturn_OnPlayerPreturn;
-        PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
-        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
-        CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
-        CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
-        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
+        Instance = this;
+
         Player.OnPlayerSelectedPlaceToDie += Player_OnPlayerSelectedPlaceToDie;
     }
 
@@ -34,55 +30,7 @@ public class FadeMessageUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
-        PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
-        PlayerPreturn.OnPlayerPreturn -= PlayerPreturn_OnPlayerPreturn;
-        PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
-        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
-        CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
-        CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
-        Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
         Player.OnPlayerSelectedPlaceToDie -= Player_OnPlayerSelectedPlaceToDie;
-    }
-
-    private void Initiative_OnInitiativeStart(object sender, string e)
-    {
-        StartFadeMessage(e);
-    }
-
-    private void PlaceOnGrid_OnPlaceOnGrid(object sender, string[] e)
-    {
-        StartFadeMessage(e[0]);
-    }
-
-    private void PlayerPreturn_OnPlayerPreturn(object sender, string[] e)
-    {
-        StartFadeMessage(e[0]);
-    }
-
-    private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
-    {
-        StartFadeMessage(e[0]);
-    }
-
-    private void Player_OnPlayerResurrected(string[] obj)
-    {
-        StartFadeMessage(obj[0]);
-    }
-
-    private void CardBattleResults_OnCardLost(CardBattleResults.OnCardBattleEventArgs obj)
-    {
-        StartFadeMessage(obj.messages[0]);
-    }
-
-    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardBattleEventArgs obj)
-    {
-        StartFadeMessage(obj.messages[0]);
-    }
-
-    private void Player_OnPlayerDiedPlayerBattle(string[] obj)
-    {
-        KeepMessage(obj[0]);
     }
 
     private void Player_OnPlayerSelectedPlaceToDie(ulong obj)
@@ -90,7 +38,7 @@ public class FadeMessageUI : MonoBehaviour
         fadeText.text = string.Empty;
     }
 
-    private void KeepMessage(string message)
+    public void KeepMessage(string message)
     {
         fadeText.text = message;
         alphaValue = maxAlphaValue;

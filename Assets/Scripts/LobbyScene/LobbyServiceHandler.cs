@@ -13,15 +13,15 @@ using static GameLobby;
 
 public class LobbyServiceHandler : IDisposable
 {
-    public static event EventHandler OnQuickJoinFailed;
-    public static event EventHandler OnJoinFailed;
-    public static event EventHandler OnCreateLobbyStarted;
-    public static event EventHandler OnCreateLobbyFailed;
-    public static event EventHandler OnJoinStarted;
-    public static event EventHandler OnRemovingJoinedLobbies;
-    public static event EventHandler OnRemovingJoinedLobbiesFailed;
-    public static event EventHandler OnRemovingJoinedLobbiesOver;
-    public static event EventHandler<OnLobbyListChangdEventArgs> OnLobbyListChanged;
+    public static event Action OnQuickJoinFailed;
+    public static event Action OnJoinFailed;
+    public static event Action OnCreateLobbyStarted;
+    public static event Action OnCreateLobbyFailed;
+    public static event Action OnJoinStarted;
+    public static event Action OnRemovingJoinedLobbies;
+    public static event Action OnRemovingJoinedLobbiesFailed;
+    public static event Action OnRemovingJoinedLobbiesOver;
+    public static event Action<OnLobbyListChangdEventArgs> OnLobbyListChanged;
 
     public class OnLobbyListChangdEventArgs : EventArgs
     {
@@ -56,7 +56,7 @@ public class LobbyServiceHandler : IDisposable
 
             QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
 
-            OnLobbyListChanged?.Invoke(this, new OnLobbyListChangdEventArgs
+            OnLobbyListChanged?.Invoke(new OnLobbyListChangdEventArgs
             {
                 lobbyList = queryResponse.Results
             });
@@ -72,13 +72,13 @@ public class LobbyServiceHandler : IDisposable
     {
         if (string.IsNullOrEmpty(lobbyName))
         {
-            OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
+            OnCreateLobbyFailed?.Invoke();
             return null;
         }
 
         try
         {
-            OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
+            OnCreateLobbyStarted?.Invoke();
 
             Allocation allocation = await relayServiceHandler.AllocateRelay();
 
@@ -113,7 +113,7 @@ public class LobbyServiceHandler : IDisposable
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
+            OnCreateLobbyFailed?.Invoke();
             return null;
         }
     }
@@ -141,7 +141,7 @@ public class LobbyServiceHandler : IDisposable
     {
         try
         {
-            OnJoinStarted?.Invoke(this, EventArgs.Empty);
+            OnJoinStarted?.Invoke();
 
             Lobby joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
 
@@ -152,7 +152,7 @@ public class LobbyServiceHandler : IDisposable
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
+            OnQuickJoinFailed?.Invoke();
             await ClearJoinedLobbiesOnJoinFailed();
             return null;
         }
@@ -162,13 +162,13 @@ public class LobbyServiceHandler : IDisposable
     {
         if (string.IsNullOrEmpty(lobbyId))
         {
-            OnJoinFailed?.Invoke(this, EventArgs.Empty);
+            OnJoinFailed?.Invoke();
             return null;
         }
 
         try
         {
-            OnJoinStarted?.Invoke(this, EventArgs.Empty);
+            OnJoinStarted?.Invoke();
 
             Lobby joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
 
@@ -179,7 +179,7 @@ public class LobbyServiceHandler : IDisposable
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            OnJoinFailed?.Invoke(this, EventArgs.Empty);
+            OnJoinFailed?.Invoke();
             await ClearJoinedLobbiesOnJoinFailed();
             return null;
         }
@@ -189,13 +189,13 @@ public class LobbyServiceHandler : IDisposable
     {
         if (string.IsNullOrEmpty(lobbyCode))
         {
-            OnJoinFailed?.Invoke(this, EventArgs.Empty);
+            OnJoinFailed?.Invoke();
             return null;
         }
 
         try
         {
-            OnJoinStarted?.Invoke(this, EventArgs.Empty);
+            OnJoinStarted?.Invoke();
 
             Lobby joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
 
@@ -206,7 +206,7 @@ public class LobbyServiceHandler : IDisposable
         catch (LobbyServiceException ex)
         {
             Debug.LogError(ex.Message);
-            OnJoinFailed?.Invoke(this, EventArgs.Empty);
+            OnJoinFailed?.Invoke();
             await ClearJoinedLobbiesOnJoinFailed();
             return null;
         }
@@ -262,7 +262,7 @@ public class LobbyServiceHandler : IDisposable
     {
         try
         {
-            OnRemovingJoinedLobbies?.Invoke(this, EventArgs.Empty);
+            OnRemovingJoinedLobbies?.Invoke();
 
             List<string> lobbyIds = await LobbyService.Instance.GetJoinedLobbiesAsync();
 
@@ -273,11 +273,11 @@ public class LobbyServiceHandler : IDisposable
                 await RemovePlayer(item);
             }
 
-            OnRemovingJoinedLobbiesOver?.Invoke(this, EventArgs.Empty);
+            OnRemovingJoinedLobbiesOver?.Invoke();
         }
         catch (LobbyServiceException ex)
         {
-            OnRemovingJoinedLobbiesFailed?.Invoke(this, EventArgs.Empty);
+            OnRemovingJoinedLobbiesFailed?.Invoke();
             Debug.LogError(ex.Message);
         }
     }

@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,12 +47,12 @@ public class PauseMultiplayerUI : MonoBehaviour
         pauseButton.onClick.RemoveAllListeners();
     }
 
-    private void GameManager_OnMultiplayerGameUnpaused(object sender, EventArgs e)
+    private void GameManager_OnMultiplayerGameUnpaused()
     {
         Hide();
     }
 
-    private void GameManager_OnMultiplayerGamePaused(object sender, EventArgs e)
+    private void GameManager_OnMultiplayerGamePaused()
     {
         Show();
     }

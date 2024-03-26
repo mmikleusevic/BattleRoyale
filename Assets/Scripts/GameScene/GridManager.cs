@@ -33,87 +33,32 @@ public class GridManager : NetworkBehaviour
         SetMovementVectors();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
-        PlaceOnGrid.OnPlaceOnGrid += PlaceOnGrid_OnPlaceOnGrid;
-        Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
-        Player.OnPlayerMoved += Player_OnPlayerMoved;
-        Tile.OnTileClosed += Tile_OnTileClosed;
-        Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
-        Player.OnPlayerResurrected += Player_OnPlayerResurrected;
-        Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
-        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
-        PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
     }
 
     public override void OnNetworkDespawn()
     {
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
-        PlaceOnGrid.OnPlaceOnGrid -= PlaceOnGrid_OnPlaceOnGrid;
-        Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
-        Player.OnPlayerMoved -= Player_OnPlayerMoved;
-        Tile.OnTileClosed -= Tile_OnTileClosed;
-        Player.OnPlayerDiedCardBattle -= Player_OnPlayerDiedCardBattle;
-        Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
-        Player.OnPlayerDiedPlayerBattle -= Player_OnPlayerDiedPlayerBattle;
-        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
-        PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
 
         base.OnNetworkDespawn();
     }
 
-    private void Initiative_OnInitiativeStart(object sender, string e)
+    private void Initiative_OnInitiativeStart()
     {
         GetCardDimensions();
         PositionCamera();
         GenerateRandomCardNumbers();
     }
 
-    private void PlaceOnGrid_OnPlaceOnGrid(object sender, string[] e)
-    {
-        HighlightAllUnoccupiedCards();
-    }
-
-    private void Player_OnPlayerTurnSet()
-    {
-        EnableGridPositionsWherePlayerCanInteract();
-    }
-
-    private void Player_OnPlayerMoved(object sender, string[] e)
+    public void ToggleCardToGetGridPositionsWherePlayerCanInteract()
     {
         DisableCards();
         EnableGridPositionsWherePlayerCanInteract();
     }
 
-    private void Tile_OnTileClosed()
-    {
-        DisableCards();
-        EnableGridPositionsWherePlayerCanInteract();
-    }
-
-    private void Player_OnPlayerDiedCardBattle()
-    {
-        DisableCards();
-    }
-
-    private void Player_OnPlayerResurrected(string[] messages)
-    {
-        DisableCards();
-        EnableGridPositionsWherePlayerCanInteract();
-    }
-
-    private void Player_OnPlayerDiedPlayerBattle(string[] messages)
+    public void ToggleCardToGetGridPositionsWherePlayerCanGoDie()
     {
         DisableCards();
         EnableGridPositionsWherePlayerCanGoDie();
-    }
-
-    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
-    {
-        DisableCards();
-    }
-
-    private void PlayerBattleResults_OnAfterBattleResolved()
-    {
-        EnableGridPositionsWherePlayerCanInteract();
     }
 
     private void SetMovementVectors()

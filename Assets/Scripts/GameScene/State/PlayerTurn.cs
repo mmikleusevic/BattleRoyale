@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerTurn : State
 {
-    public static event EventHandler<string[]> OnPlayerTurn;
+    public static event Action OnPlayerTurn;
     public static event Action OnPlayerTurnOver;
 
     public override async Task Start()
@@ -14,7 +14,12 @@ public class PlayerTurn : State
         ActionsUI.OnMove += ActionsUI_OnMove;
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
 
-        OnPlayerTurn?.Invoke(this, CreateOnPlayerTurnMessage());
+        string[] messages = CreateOnPlayerTurnMessage();
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+        FadeMessageUI.Instance.StartFadeMessage(messages[0]);
+
+        OnPlayerTurn?.Invoke();
     }
 
     public async Task AttackCard()
@@ -51,7 +56,7 @@ public class PlayerTurn : State
         await Move(obj);
     }
 
-    private async void ActionsUI_OnAttackCard(Tile tile, string[] messages)
+    private async void ActionsUI_OnAttackCard(Tile tile)
     {
         await AttackCard();
     }

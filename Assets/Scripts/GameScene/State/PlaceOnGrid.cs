@@ -1,17 +1,19 @@
-using System;
 using System.Threading.Tasks;
 
 public class PlaceOnGrid : State
 {
-    public static event EventHandler<string[]> OnPlaceOnGrid;
-    public static event EventHandler<string[]> OnPlayerPlaced;
     public override async Task Start()
     {
         await base.Start();
 
         ActionsUI.OnMove += ActionsUI_OnMove;
 
-        OnPlaceOnGrid?.Invoke(this, CreateOnPlaceOnGridStartedMessage());
+        string[] messages = CreateOnPlaceOnGridStartedMessage();
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+        FadeMessageUI.Instance.StartFadeMessage(messages[0]);
+
+        GridManager.Instance.HighlightAllUnoccupiedCards();
     }
 
     public override async Task End()
@@ -29,7 +31,7 @@ public class PlaceOnGrid : State
 
         Player.LocalInstance.SetPlayersPosition(tile);
 
-        OnPlayerPlaced?.Invoke(this, CreateOnPlayerPlacedMessage(tile));
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerPlacedMessage(tile));
 
         await End();
     }

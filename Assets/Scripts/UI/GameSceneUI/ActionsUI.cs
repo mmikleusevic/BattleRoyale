@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class ActionsUI : MonoBehaviour
 {
     public static event Action<Tile> OnMove;
-    public static event Action<Tile, string[]> OnAttackCard;
+    public static event Action<Tile> OnAttackCard;
     public static event Action<Tile> OnAttackPlayer;
 
     [SerializeField] private Button moveButton;
@@ -24,7 +24,8 @@ public class ActionsUI : MonoBehaviour
         attackCardButton.onClick.AddListener(() =>
         {
             RollType.rollType = RollTypeEnum.CardAttack;
-            OnAttackCard?.Invoke(tile, SendAttackingCardMessage());
+            OnAttackCard?.Invoke(tile);
+            MessageUI.Instance.SendMessageToEveryoneExceptMe(SendAttackingCardMessage());
         });
 
         attackPlayerButton.onClick.AddListener(() =>

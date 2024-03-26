@@ -6,14 +6,8 @@ using Unity.Netcode;
 public class CardBattleResults : NetworkBehaviour
 {
     public static event Action OnCardRoll;
-    public static event Action<OnCardBattleEventArgs> OnCardWon;
-    public static event Action<OnCardBattleEventArgs> OnCardLost;
-
-    public class OnCardBattleEventArgs : EventArgs
-    {
-        public string[] messages;
-        public Card card;
-    }
+    public static event Action<Card> OnCardWon;
+    public static event Action<Card> OnCardLost;
 
     private Tile tile;
 
@@ -29,7 +23,7 @@ public class CardBattleResults : NetworkBehaviour
         base.OnDestroy();
     }
 
-    private void ActionsUI_OnAttackCard(Tile tile, string[] messages)
+    private void ActionsUI_OnAttackCard(Tile tile)
     {
         this.tile = tile;
 
@@ -44,28 +38,24 @@ public class CardBattleResults : NetworkBehaviour
 
         bool isThreeOfAKind = results.Distinct().Count() == 1;
 
-        string[] message = null;
+        string[] messages = null;
 
         if (sum >= tile.Card.Value || isThreeOfAKind)
         {
             tile.DisableCard();
-            message = SendCardWonMessageToMessageUI();
+            messages = SendCardWonMessageToMessageUI();
 
-            OnCardWon?.Invoke(new OnCardBattleEventArgs
-            {
-                card = tile.Card,
-                messages = message,
-            });
+            OnCardWon?.Invoke(tile.Card);
         }
         else
         {
-            message = SendCardLostMessageToMessageUI();
-            OnCardLost?.Invoke(new OnCardBattleEventArgs
-            {
-                card = tile.Card,
-                messages = message,
-            });
+            messages = SendCardLostMessageToMessageUI();
+
+            OnCardLost?.Invoke(tile.Card);
         }
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+        FadeMessageUI.Instance.StartFadeMessage(messages[0]);
 
         tile = null;
     }

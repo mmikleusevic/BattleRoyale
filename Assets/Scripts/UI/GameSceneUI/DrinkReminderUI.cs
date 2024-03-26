@@ -1,13 +1,10 @@
 using DG.Tweening;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DrinkReminderUI : MonoBehaviour
 {
-
-    public static event Action<string[]> OnPlayerDrank;
     [SerializeField] private TextMeshProUGUI drinkReminderText;
     [SerializeField] private RectTransform drinkReminderRectTransform;
     [SerializeField] private Button closeButton;
@@ -20,7 +17,7 @@ public class DrinkReminderUI : MonoBehaviour
         {
             HideWithAnimation();
 
-            OnPlayerDrank?.Invoke(CreateOnPlayerDrinkReminderMessage());
+            MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerDrinkReminderMessage());
         });
 
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
@@ -34,7 +31,7 @@ public class DrinkReminderUI : MonoBehaviour
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
     }
 
-    private void Player_OnPlayerResurrected(string[] obj)
+    private void Player_OnPlayerResurrected()
     {
         numberOfSips = Player.LocalInstance.SipValue;
 

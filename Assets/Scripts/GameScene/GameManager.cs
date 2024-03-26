@@ -8,9 +8,9 @@ public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public event EventHandler OnToggleLocalGamePause;
-    public event EventHandler OnMultiplayerGamePaused;
-    public event EventHandler OnMultiplayerGameUnpaused;
+    public event Action OnToggleLocalGamePause;
+    public event Action OnMultiplayerGamePaused;
+    public event Action OnMultiplayerGameUnpaused;
 
     [SerializeField] private Transform playerPrefab;
     [SerializeField] private List<Vector3> spawnPositionList;
@@ -71,12 +71,12 @@ public class GameManager : NetworkBehaviour
         if (isGamePaused.Value)
         {
             Time.timeScale = 0f;
-            OnMultiplayerGamePaused?.Invoke(this, EventArgs.Empty);
+            OnMultiplayerGamePaused?.Invoke();
         }
         else
         {
             Time.timeScale = 1f;
-            OnMultiplayerGameUnpaused?.Invoke(this, EventArgs.Empty);
+            OnMultiplayerGameUnpaused?.Invoke();
         }
     }
 
@@ -87,7 +87,7 @@ public class GameManager : NetworkBehaviour
         GameLobby.Instance.DisconnectClientsOnServerLeaving(obj);
     }
 
-    private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
+    private void InitiativeResults_OnInitiativeRollOver(InitiativeResults.OnInitiativeRollOverEventArgs e)
     {
         SetPlayerToPlayersList(e.playerOrder);
     }
@@ -97,14 +97,14 @@ public class GameManager : NetworkBehaviour
     {
         SpawnPlayers();
 
-        StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.WaitingForPlayers);     
+        StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.WaitingForPlayers);
     }
 
     public void TogglePauseGame()
     {
         TogglePauseGameServerRpc();
 
-        OnToggleLocalGamePause?.Invoke(this, EventArgs.Empty);
+        OnToggleLocalGamePause?.Invoke();
     }
 
     [ServerRpc(RequireOwnership = false)]

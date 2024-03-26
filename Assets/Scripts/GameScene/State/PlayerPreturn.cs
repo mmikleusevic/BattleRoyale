@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 public class PlayerPreturn : State
 {
-    public static event EventHandler<string[]> OnPlayerPreturn;
-    public static event EventHandler OnPlayerPreturnOver;
+    public static event Action OnPlayerPreturn;
+    public static event Action OnPlayerPreturnOver;
 
     public override async Task Start()
     {
@@ -16,14 +16,19 @@ public class PlayerPreturn : State
 
         await base.Start();
 
-        OnPlayerPreturn?.Invoke(this, CreateOnPrePlayerTurnMessage());
+        string[] messages = CreateOnPrePlayerTurnMessage();
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+        FadeMessageUI.Instance.StartFadeMessage(messages[0]);
+
+        OnPlayerPreturn?.Invoke();
     }
 
     public override async Task End()
     {
         StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.PlayerPreturn);
 
-        OnPlayerPreturnOver?.Invoke(this, EventArgs.Empty);
+        OnPlayerPreturnOver?.Invoke();
 
         await Task.CompletedTask;
     }

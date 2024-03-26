@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 
 public class PlayerManager : NetworkBehaviour
 {
-    public static event Action<string> OnPlayerLeftGame;
     public static PlayerManager Instance { get; private set; }
 
     public event Action<Player> OnActivePlayerChanged;
@@ -60,7 +58,7 @@ public class PlayerManager : NetworkBehaviour
             StateManager.Instance.GiveCurrentStateToSetNext(player.currentState);
         }
 
-        ChangePlayerOwnershipAndDie(player);
+        player.DisablePlayer();
 
         RemovePlayerSetNewLastPlayerClientRpc(player.NetworkObject);
     }
@@ -69,7 +67,6 @@ public class PlayerManager : NetworkBehaviour
     private void RemovePlayerSetNewLastPlayerClientRpc(NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
     {
         Player player = Player.GetPlayerFromNetworkReference(playerNetworkObjectReference);
-        player.DisablePlayer();
 
         RemoveFromActivePlayers(player);
     }
@@ -100,7 +97,7 @@ public class PlayerManager : NetworkBehaviour
             ActivePlayer.HideParticleCircle();
         }
 
-        FindNextActiveIndexSetActivePlayer();        
+        FindNextActiveIndexSetActivePlayer();
     }
 
     private void FindNextActiveIndexSetActivePlayer()
@@ -112,6 +109,8 @@ public class PlayerManager : NetworkBehaviour
         activeIndex = nextIndex;
 
         OnActivePlayerChanged?.Invoke(ActivePlayer);
+
+        PCInfoUI.Instance.SetActivePlayerText(ActivePlayer);
 
         ActivePlayer.ShowParticleCircle();
     }
@@ -152,7 +151,7 @@ public class PlayerManager : NetworkBehaviour
 
         player.DeathAnimation();
 
-        OnPlayerLeftGame?.Invoke(CreateOnPlayerLeftGameMessage(player));
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerLeftGameMessage(player));
     }
 
     private string CreateOnPlayerLeftGameMessage(Player player)

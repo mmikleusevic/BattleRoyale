@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,21 +9,14 @@ public class Player : NetworkBehaviour
 {
     public static Player LocalInstance { get; private set; }
 
-    public static event Action<string[]> OnCardsSwapped;
-    public static event EventHandler<string> OnPlayerConnected;
+    public static event Action OnCardsSwapped;
     public static event Action OnPlayerTurnSet;
-    public static event EventHandler<string[]> OnPlayerMoved;
-    public static event Action OnPlayerPointsChanged;
-    public static event Action OnPlayerActionUsed;
+    public static event Action OnPlayerMoved;
     public static event Action OnPlayerDiedCardBattle;
-    public static event Action<string[]> OnPlayerDiedPlayerBattle;
+    public static event Action OnPlayerDiedPlayerBattle;
     public static event Action<ulong> OnPlayerSelectedPlaceToDie;
-    public static event Action<string[]> OnPlayerResurrected;
-    public static event Action<string> OnPlayerTookCard;
-    public static event Action<string> OnPlayerEquippedCardAdded;
+    public static event Action OnPlayerResurrected;
     public static event Action<Card> OnPlayerUnequippedCardAdded;
-    public static event Action<string> OnPlayerRemovedCard;
-    public static event Action OnPlayerSipCounterChanged;
     public static event Action OnNoMoreMovementOrActionPoints;
 
     public StateEnum currentState = StateEnum.WaitingForPlayers;
@@ -120,7 +112,7 @@ public class Player : NetworkBehaviour
 
         playerAnimator = playerVisual.gameObject.GetComponent<PlayerAnimator>();
 
-        OnPlayerConnected?.Invoke(this, PlayerConnectedMessage());
+        MessageUI.Instance.SetMessage(PlayerConnectedMessage());
     }
 
     public void UpdateCurrentState(StateEnum state)
@@ -187,20 +179,24 @@ public class Player : NetworkBehaviour
 
         if (CurrentTile != null)
         {
-            OnPlayerMoved?.Invoke(this, messages);
+            GridManager.Instance.ToggleCardToGetGridPositionsWherePlayerCanInteract();
+
+            OnPlayerMoved?.Invoke();
+
+            MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
         }
 
         CurrentTile = tile;
     }
 
-    private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
+    private void PlayerTurn_OnPlayerTurn()
     {
         ResetActionsAndMovement();
     }
 
-    private void CardBattleResults_OnCardWon(CardBattleResults.OnCardBattleEventArgs obj)
+    private void CardBattleResults_OnCardWon(Card card)
     {
-        SaveWonCardServerRpc(obj.card.NetworkObject, NetworkObject);
+        SaveWonCardServerRpc(card.NetworkObject, NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -235,7 +231,7 @@ public class Player : NetworkBehaviour
         {
             player.EquippedCards.Add(card);
 
-            OnPlayerEquippedCardAdded?.Invoke(CreateOnPlayerEquippedCardMessage(player, card));
+            MessageUI.Instance.SetMessage(CreateOnPlayerEquippedCardMessage(player, card));
         }
         else
         {
@@ -286,7 +282,8 @@ public class Player : NetworkBehaviour
 
         if (player == LocalInstance)
         {
-            OnCardsSwapped?.Invoke(CreateOnPlayerSwappedCardMessage(equippedCard, unequippedCard));
+            OnCardsSwapped?.Invoke();
+            MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerSwappedCardMessage(equippedCard, unequippedCard));
         }
     }
 
@@ -294,24 +291,28 @@ public class Player : NetworkBehaviour
     {
         loser.EquippedCards.Remove(card);
 
-        OnPlayerRemovedCard?.Invoke(CreateOnPlayerRemovedCardMessage(loser, card));
+        MessageUI.Instance.SetMessage(CreateOnPlayerRemovedCardMessage(loser, card));
     }
 
-    private void ActionsUI_OnAttackCard(Tile obj, string[] messages)
+    private void ActionsUI_OnAttackCard(Tile obj)
     {
         SubtractActionPoints();
     }
 
-    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2)
     {
         SubtractActionPoints();
     }
 
-    private void CardBattleResults_OnCardLost(CardBattleResults.OnCardBattleEventArgs obj)
+    private void CardBattleResults_OnCardLost(Card card)
     {
         IsDead.Value = true;
 
         DeathAnimationServerRpc();
+
+        PCInfoUI.Instance.SetIsDeadText();
+
+        GridManager.Instance.DisableCards();
 
         OnPlayerDiedCardBattle?.Invoke();
     }
@@ -322,12 +323,20 @@ public class Player : NetworkBehaviour
 
         PickPlaceToDie = true;
 
-        OnPlayerDiedPlayerBattle?.Invoke(CreateOnPlayerNeedsToPickAPlaceToDieMessage());
+        string[] messages = CreateOnPlayerNeedsToPickAPlaceToDieMessage();
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+        FadeMessageUI.Instance.KeepMessage(messages[0]);
+        PCInfoUI.Instance.SetIsDeadText();
+
+        GridManager.Instance.ToggleCardToGetGridPositionsWherePlayerCanGoDie();
+
+        OnPlayerDiedPlayerBattle?.Invoke();
     }
 
     private void PointsChanged(int previousValue, int newValue)
     {
-        OnPlayerPointsChanged?.Invoke();
+        PCInfoUI.Instance.SetPointsText();
     }
 
     public void OnBattleWon(Card card, Player loser)
@@ -347,7 +356,7 @@ public class Player : NetworkBehaviour
         winner.AddOrSubtractPoints(card.Value);
         loser.AddOrSubtractPoints(-card.Value);
 
-        OnPlayerTookCard?.Invoke(CreateOnPlayerTakenCardMessage(card, winner, loser));
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerTakenCardMessage(card, winner, loser));
 
         OnBattleWonClientRpc(cardNetworkObjectReference, playerNetworkObjectReference, loserNetworkObjectReference);
     }
@@ -375,7 +384,15 @@ public class Player : NetworkBehaviour
 
         AddSipsToPlayerServerRpc(NetworkObject, SipValue);
 
-        OnPlayerResurrected?.Invoke(CreateOnPlayerResurrectedMessage());
+        GridManager.Instance.ToggleCardToGetGridPositionsWherePlayerCanInteract();
+        PCInfoUI.Instance.SetIsDeadText();
+
+        OnPlayerResurrected?.Invoke();
+
+        string[] messages = CreateOnPlayerResurrectedMessage();
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+        FadeMessageUI.Instance.StartFadeMessage(messages[0]);
     }
 
     public void SetPlayersPosition(Tile tile)
@@ -498,7 +515,7 @@ public class Player : NetworkBehaviour
 
         if (player == LocalInstance)
         {
-            OnPlayerSipCounterChanged?.Invoke();
+            PCInfoUI.Instance.SetSipCounter();
         }
     }
 
@@ -618,7 +635,7 @@ public class Player : NetworkBehaviour
 
         CheckIfMovementAndActionsAreZero();
 
-        OnPlayerActionUsed?.Invoke();
+        PCInfoUI.Instance.SetActionsText();
     }
 
     public void AddOrSubtractPoints(int value)
@@ -638,6 +655,8 @@ public class Player : NetworkBehaviour
     {
         ActionPoints = defaultActionPoints;
         Movement = defaultMovement;
+
+        GridManager.Instance.EnableGridPositionsWherePlayerCanInteract();
 
         OnPlayerTurnSet?.Invoke();
     }

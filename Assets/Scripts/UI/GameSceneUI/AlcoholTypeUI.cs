@@ -49,7 +49,7 @@ public class AlcoholTypeUI : MonoBehaviour
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
     }
 
-    private void Initiative_OnInitiativeStart(object sender, string e)
+    private void Initiative_OnInitiativeStart()
     {
         Show();
     }

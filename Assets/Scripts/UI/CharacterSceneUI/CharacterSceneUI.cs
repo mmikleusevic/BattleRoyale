@@ -34,12 +34,12 @@ public class CharacterSceneUI : MonoBehaviour
         CharacterScenePlayer.OnPlayerKicked += CharacterScenePlayer_OnPlayerKicked;
     }
 
-    private void CharacterSceneReady_OnReadyChanged(object sender, System.EventArgs e)
+    private void CharacterSceneReady_OnReadyChanged()
     {
         ChangeReadyButtonText();
     }
 
-    private void CharacterScenePlayer_OnPlayerKicked(object sender, System.EventArgs e)
+    private void CharacterScenePlayer_OnPlayerKicked()
     {
         CharacterSceneReady.Instance.RemoveKeyFromPlayerReady();
         ToggleReadyButton();

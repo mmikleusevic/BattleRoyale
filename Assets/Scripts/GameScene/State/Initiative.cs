@@ -3,13 +3,18 @@ using System.Threading.Tasks;
 
 public partial class Initiative : State
 {
-    public static event EventHandler<string> OnInitiativeStart;
+    public static event Action OnInitiativeStart;
 
     public override async Task Start()
     {
         await base.Start();
 
-        OnInitiativeStart?.Invoke(this, CreateOnInitiativeMessage());
+        string message = CreateOnInitiativeMessage();
+
+        MessageUI.Instance.SetMessage(message);
+        FadeMessageUI.Instance.StartFadeMessage(message);
+
+        OnInitiativeStart?.Invoke();
     }
 
     public override async Task End()

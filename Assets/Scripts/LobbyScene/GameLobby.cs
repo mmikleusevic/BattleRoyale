@@ -67,7 +67,7 @@ public class GameLobby : NetworkBehaviour
         base.OnDestroy();
     }
 
-    private void LobbyUI_OnLobbySearch(object sender, LobbyUI.OnLobbyFindEventArgs e)
+    private void LobbyUI_OnLobbySearch(LobbyUI.OnLobbyFindEventArgs e)
     {
         lobbyName = e.lobbyName.ToUpper();
         ListLobbiesPeriodicallyAfterTimer();

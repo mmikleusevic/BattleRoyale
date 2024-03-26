@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class CharacterScenePlayer : MonoBehaviour
 {
-    public static event EventHandler OnPlayerKicked;
+    public static event Action OnPlayerKicked;
 
     [SerializeField] private int playerIndex;
     [SerializeField] private GameObject readyGameObject;
@@ -40,12 +40,12 @@ public class CharacterScenePlayer : MonoBehaviour
         kickButton.onClick.RemoveAllListeners();
     }
 
-    private void CharacterSceneReady_OnReadyChanged(object sender, System.EventArgs e)
+    private void CharacterSceneReady_OnReadyChanged()
     {
         UpdatePlayer();
     }
 
-    private void GameMultiplayer_OnPlayerDataNetworkListChanged(object sender, System.EventArgs e)
+    private void GameMultiplayer_OnPlayerDataNetworkListChanged()
     {
         UpdatePlayer();
     }
@@ -82,6 +82,6 @@ public class CharacterScenePlayer : MonoBehaviour
         PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
         GameLobby.Instance.DisconnectClient(playerData.clientId);
 
-        OnPlayerKicked?.Invoke(this, EventArgs.Empty);
+        OnPlayerKicked?.Invoke();
     }
 }

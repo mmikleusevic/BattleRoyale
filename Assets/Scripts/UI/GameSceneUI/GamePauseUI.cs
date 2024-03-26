@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,7 +42,7 @@ public class GamePauseUI : MonoBehaviour
         mainMenuButton.onClick.RemoveAllListeners();
     }
 
-    private void GameManager_OnToggleLocalGamePause(object sender, EventArgs e)
+    private void GameManager_OnToggleLocalGamePause()
     {
         isPaused = !isPaused;
 

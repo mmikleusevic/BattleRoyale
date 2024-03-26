@@ -9,7 +9,7 @@ public class LobbyUI : MonoBehaviour
 {
     public static LobbyUI Instance { get; private set; }
 
-    public event EventHandler<OnLobbyFindEventArgs> OnLobbyFind;
+    public event Action<OnLobbyFindEventArgs> OnLobbyFind;
 
     public class OnLobbyFindEventArgs : EventArgs
     {
@@ -98,7 +98,7 @@ public class LobbyUI : MonoBehaviour
         findLobbyInputField.onValueChanged.RemoveAllListeners();
     }
 
-    private void LobbyServiceHandler_OnLobbyListChanged(object sender, LobbyServiceHandler.OnLobbyListChangdEventArgs e)
+    private void LobbyServiceHandler_OnLobbyListChanged(LobbyServiceHandler.OnLobbyListChangdEventArgs e)
     {
         UpdateLobbyList(e.lobbyList);
     }
@@ -119,7 +119,7 @@ public class LobbyUI : MonoBehaviour
 
     private void OnFindLobbyValueChanged(string lobbyName)
     {
-        OnLobbyFind?.Invoke(this, new OnLobbyFindEventArgs
+        OnLobbyFind?.Invoke(new OnLobbyFindEventArgs
         {
             lobbyName = lobbyName
         });

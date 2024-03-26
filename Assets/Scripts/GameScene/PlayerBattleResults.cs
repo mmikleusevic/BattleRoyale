@@ -9,7 +9,7 @@ public class PlayerBattleResults : NetworkBehaviour
     public static event Action OnPlayerBattleRollDieOver;
     public static event Action OnPlayerBattleRollDisadvantage;
     public static event Action<string> OnPlayerBattleShowUI;
-    public static event Action<string> OnPlayerBattleRollOver;
+    public static event Action OnPlayerBattleRollOver;
     public static event Action<Player> OnBattleWin;
     public static event Action OnBattleLost;
     public static event Action OnAfterBattleResolved;
@@ -64,7 +64,7 @@ public class PlayerBattleResults : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void PlayerInfoUI_OnAttackPlayerServerRpc(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    private void PlayerInfoUI_OnAttackPlayerServerRpc(NetworkObjectReference arg1, NetworkObjectReference arg2)
     {
         Player player1 = Player.GetPlayerFromNetworkReference(arg1);
         Player player2 = Player.GetPlayerFromNetworkReference(arg2);
@@ -261,17 +261,17 @@ public class PlayerBattleResults : NetworkBehaviour
 
     private bool SetBattleResultOrReroll()
     {
-        KeyValuePair<ulong, List<int>> client1Entries = battleRolls.FirstOrDefault();
-        KeyValuePair<ulong, List<int>> client2Entries = battleRolls.LastOrDefault();
+        KeyValuePair<ulong, List<int>> player1Entries = battleRolls.FirstOrDefault(a => a.Key == player1.ClientId.Value);
+        KeyValuePair<ulong, List<int>> player2Entries = battleRolls.FirstOrDefault(a => a.Key == player2.ClientId.Value);
 
-        int client1Result = client1Entries.Value.LastOrDefault();
-        int client2Result = client2Entries.Value.LastOrDefault();
+        int player1Result = player1Entries.Value.LastOrDefault();
+        int player2Result = player2Entries.Value.LastOrDefault();
 
-        if (client1Result < client2Result)
+        if (player1Result < player2Result)
         {
             player2Wins++;
         }
-        else if (client1Result > client2Result)
+        else if (player1Result > player2Result)
         {
             player1Wins++;
         }
@@ -294,7 +294,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
             if (player1Wins == player1BattlesNeeded)
             {
-                winnerId = battleRolls.FirstOrDefault().Key;
+                winnerId = player1.ClientId.Value;
 
                 if (player2.EquippedCards.Count > 0)
                 {
@@ -311,7 +311,7 @@ public class PlayerBattleResults : NetworkBehaviour
             }
             else if (player2Wins == player2BattlesNeeded)
             {
-                winnerId = battleRolls.LastOrDefault().Key;
+                winnerId = player2.ClientId.Value;
 
                 if (player1.EquippedCards.Count > 0)
                 {
@@ -407,12 +407,15 @@ public class PlayerBattleResults : NetworkBehaviour
     [ClientRpc]
     private void CallOnPlayerBattleRollOverClientRpc(string message, ClientRpcParams clientRpcParams = default)
     {
-        OnPlayerBattleRollOver?.Invoke(message);
+        OnPlayerBattleRollOver?.Invoke();
+        MessageUI.Instance.SetMessage(message);
     }
 
     [ClientRpc]
     private void CallOnAfterBattleResolvedClientRpc(ClientRpcParams clientRpcParams = default)
     {
+        GridManager.Instance.EnableGridPositionsWherePlayerCanInteract();
+
         OnAfterBattleResolved?.Invoke();
     }
 

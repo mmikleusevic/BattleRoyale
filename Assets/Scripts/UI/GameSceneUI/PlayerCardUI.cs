@@ -40,14 +40,14 @@ public class PlayerCardUI : MonoBehaviour
         }
     }
 
-    private void PlayerPreturn_OnPlayerPreturnOver(object sender, EventArgs e)
+    private void PlayerPreturn_OnPlayerPreturnOver()
     {
         if (button == null) return;
 
         button.interactable = false;
     }
 
-    private void Player_OnCardsSwapped(string[] obj)
+    private void Player_OnCardsSwapped()
     {
         if (button == null) return;
 

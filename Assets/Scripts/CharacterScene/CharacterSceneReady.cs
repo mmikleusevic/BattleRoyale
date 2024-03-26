@@ -6,7 +6,7 @@ public class CharacterSceneReady : NetworkBehaviour
 {
     public static CharacterSceneReady Instance { get; private set; }
 
-    public event EventHandler OnReadyChanged;
+    public event Action OnReadyChanged;
 
     private Dictionary<ulong, bool> playerReadyDictonary;
 
@@ -52,7 +52,7 @@ public class CharacterSceneReady : NetworkBehaviour
             playerReadyDictonary[key] = true;
         }
 
-        OnReadyChanged.Invoke(this, EventArgs.Empty);
+        OnReadyChanged.Invoke();
     }
 
     public bool IsPlayerReady(ulong clientId)
@@ -111,7 +111,7 @@ public class CharacterSceneReady : NetworkBehaviour
     {
         SetServerNotReadyClientRpc();
 
-        OnReadyChanged?.Invoke(this, EventArgs.Empty);
+        OnReadyChanged?.Invoke();
     }
 
     [ClientRpc]

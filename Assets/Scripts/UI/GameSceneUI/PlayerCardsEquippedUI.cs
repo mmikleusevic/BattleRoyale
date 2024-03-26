@@ -78,7 +78,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         Player.OnCardsSwapped -= Player_OnCardsSwapped;
     }
 
-    private void PlayerPreturn_OnPlayerPreturn(object sender, string[] e)
+    private void PlayerPreturn_OnPlayerPreturn()
     {
         titleText.text = "PRETURN(PRESS CARD TO SWAP IT, NEED TO HAVE 3 EQUIPED IF POSSIBLE)\nEQUIPPED CARDS:";
 
@@ -128,12 +128,12 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         InstantiateCards();
     }
 
-    private void PlayerPreturn_OnPlayerPreturnOver(object sender, EventArgs e)
+    private void PlayerPreturn_OnPlayerPreturnOver()
     {
         showUneqippedCardsButton.gameObject.SetActive(false);
     }
 
-    private void Player_OnCardsSwapped(string[] obj)
+    private void Player_OnCardsSwapped()
     {
         ShowOrHideCloseButton();
         ShowOrHideUnequippedCardsButton(false);

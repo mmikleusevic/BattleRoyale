@@ -49,7 +49,7 @@ public class ResurrectUI : MonoBehaviour
         }
     }
 
-    private void Player_OnPlayerDiedPlayerBattle(string[] obj)
+    private void Player_OnPlayerDiedPlayerBattle()
     {
         if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer && Player.LocalInstance.ActionPoints > 0 && !Player.LocalInstance.PickPlaceToDie)
         {

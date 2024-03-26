@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class PlayerInfoUI : MonoBehaviour
 {
-    public static event Action<NetworkObjectReference, NetworkObjectReference, string> OnAttackPlayer;
+    public static event Action<NetworkObjectReference, NetworkObjectReference> OnAttackPlayer;
     public static event Action<Player, bool> OnShowPlayerEquippedCards;
 
     private Player player;
@@ -56,6 +56,8 @@ public class PlayerInfoUI : MonoBehaviour
     {
         this.player = player;
 
+        if (showAttackButton && player == Player.LocalInstance) return;
+
         SetAttackPlayerButton(showAttackButton);
 
         SetPlayerColorBackground();
@@ -75,18 +77,19 @@ public class PlayerInfoUI : MonoBehaviour
     {
         if (showAttackButton)
         {
-            if (player == Player.LocalInstance) return;
-
             attackPlayerButton.gameObject.SetActive(true);
 
             attackPlayerButton.onClick.AddListener(() =>
             {
                 OnAttackPlayer?.Invoke(
                     Player.LocalInstance.NetworkObject,
-                    player.NetworkObject,
-                    CreateMessageForMessageUI()
+                    player.NetworkObject
                 );
+
+                MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateMessageForMessageUI());
             });
+
+            GridManager.Instance.DisableCards();           
         }
         else
         {

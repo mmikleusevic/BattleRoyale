@@ -81,7 +81,7 @@ public class PlayerListUI : MonoBehaviour
         }
     }
 
-    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2, string arg3)
+    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2)
     {
         RestoreOriginalOrder();
 

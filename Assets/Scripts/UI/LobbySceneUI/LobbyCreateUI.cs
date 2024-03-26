@@ -50,7 +50,7 @@ public class LobbyCreateUI : MonoBehaviour
         closeButton.onClick.RemoveAllListeners();
     }
 
-    private void LobbyServiceHandler_OnCreateLobbyStarted(object sender, System.EventArgs e)
+    private void LobbyServiceHandler_OnCreateLobbyStarted()
     {
         Hide();
     }

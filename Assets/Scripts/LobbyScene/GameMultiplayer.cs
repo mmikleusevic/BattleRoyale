@@ -12,8 +12,8 @@ public class GameMultiplayer : NetworkBehaviour
     private const string PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER = "PlayerNameMultiplayer";
     public static GameMultiplayer Instance { get; private set; }
 
-    public event EventHandler OnFailedToJoinGame;
-    public event EventHandler OnPlayerDataNetworkListChanged;
+    public event Action OnFailedToJoinGame;
+    public event Action OnPlayerDataNetworkListChanged;
 
     [SerializeField] private List<Color> playerColorList;
 
@@ -62,7 +62,7 @@ public class GameMultiplayer : NetworkBehaviour
 
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
     {
-        OnPlayerDataNetworkListChanged?.Invoke(this, EventArgs.Empty);
+        OnPlayerDataNetworkListChanged?.Invoke();
     }
 
     public void StartHost()
@@ -162,7 +162,7 @@ public class GameMultiplayer : NetworkBehaviour
 
     private void NetworkManager_Client_OnClientDisconnectCallback(ulong clientId)
     {
-        OnFailedToJoinGame?.Invoke(this, EventArgs.Empty);
+        OnFailedToJoinGame?.Invoke();
     }
 
     public bool IsPlayerIndexConnected(int playerIndex)

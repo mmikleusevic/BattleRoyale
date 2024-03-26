@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +6,6 @@ using Random = UnityEngine.Random;
 
 public class Roll : MonoBehaviour
 {
-    public static event EventHandler<OnRollEventArgs> OnRoll;
-
     [SerializeField] private Camera diceCamera;
     private Vector3 cameraPosition;
 
@@ -16,12 +13,6 @@ public class Roll : MonoBehaviour
     {
         cameraPosition = diceCamera.transform.position;
         diceCamera = null;
-    }
-
-    public class OnRollEventArgs : EventArgs
-    {
-        public string[] messages;
-        public int rollValue;
     }
 
     [SerializeField] private RollResults rollResults;
@@ -114,7 +105,7 @@ public class Roll : MonoBehaviour
 
         if (isThreeOfAKind)
         {
-            SendThreeOfAKindMessageToMessageUI(resultSum);
+            SendThreeOfAKindMessageToMessageUI();
         }
 
         SendToMessageUI(resultSum);
@@ -218,28 +209,13 @@ public class Roll : MonoBehaviour
             $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>"
         };
 
-        OnRollEventArgs eventArgs = new OnRollEventArgs
-        {
-            messages = messages,
-            rollValue = result
-        };
-
-        OnRoll?.Invoke(this, eventArgs);
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
     }
 
-    private void SendThreeOfAKindMessageToMessageUI(int result)
+    private void SendThreeOfAKindMessageToMessageUI()
     {
-        string[] messages = new string[] {
-            $"YOU ROLLED THREE OF A KIND",
-            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND"
-        };
+        string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND";
 
-        OnRollEventArgs eventArgs = new OnRollEventArgs
-        {
-            messages = messages,
-            rollValue = result
-        };
-
-        OnRoll?.Invoke(this, eventArgs);
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(message);
     }
 }

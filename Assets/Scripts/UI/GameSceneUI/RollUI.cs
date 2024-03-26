@@ -87,7 +87,7 @@ public class RollUI : NetworkBehaviour
 
     public void HideInstant()
     {
-        rollUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());      
+        rollUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
 
     private IEnumerator Delay()

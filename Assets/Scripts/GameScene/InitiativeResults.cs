@@ -8,8 +8,8 @@ using UnityEngine;
 
 public class InitiativeResults : NetworkBehaviour
 {
-    public static event EventHandler OnReRoll;
-    public static event EventHandler<OnInitiativeRollOverEventArgs> OnInitiativeRollOver;
+    public static event Action OnReRoll;
+    public static event Action<OnInitiativeRollOverEventArgs> OnInitiativeRollOver;
 
     private Dictionary<ulong, bool> clientRolled;
     private Dictionary<int, List<ulong>> rollResults;
@@ -284,7 +284,7 @@ public class InitiativeResults : NetworkBehaviour
     [ClientRpc]
     private void CallOnReRollClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        OnReRoll?.Invoke(this, EventArgs.Empty);
+        OnReRoll?.Invoke();
     }
 
     private void CallOnInitiativeRollOver()
@@ -303,6 +303,8 @@ public class InitiativeResults : NetworkBehaviour
             playerOrder = finalOrder
         };
 
-        OnInitiativeRollOver?.Invoke(this, eventArgs);
+        MessageUI.Instance.SetMessage(message);
+
+        OnInitiativeRollOver?.Invoke(eventArgs);
     }
 }

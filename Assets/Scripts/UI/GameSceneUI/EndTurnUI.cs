@@ -1,11 +1,8 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class EndTurnUI : MonoBehaviour
 {
-    public static event Action<string[]> OnEndTurn;
-
     [SerializeField] private Button endTurnButton;
     [SerializeField] private ParticleSystem particleGlow;
 
@@ -16,7 +13,7 @@ public class EndTurnUI : MonoBehaviour
         endTurnButton.onClick.AddListener(async () =>
         {
             Hide();
-            OnEndTurn?.Invoke(SendToMessageUI());
+            MessageUI.Instance.SendMessageToEveryoneExceptMe(SendToMessageUI());
             ParticleSystemManager.Instance.Stop(particleGlow);
             await StateManager.Instance.EndState();
         });
@@ -41,7 +38,7 @@ public class EndTurnUI : MonoBehaviour
         endTurnButton.onClick.RemoveAllListeners();
     }
 
-    private void PlayerTurn_OnPlayerTurn(object sender, string[] e)
+    private void PlayerTurn_OnPlayerTurn()
     {
         endTurnButton.interactable = true;
 
