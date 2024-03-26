@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[ExecuteAlways]
 public class LookAtCamera : MonoBehaviour
 {
     private enum Mode

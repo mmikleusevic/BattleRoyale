@@ -4,8 +4,7 @@ public class StartOptions : MonoBehaviour
 {
     private void Awake()
     {
-        //TODO check if ok
-        Application.targetFrameRate = 120;
+        Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }

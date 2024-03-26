@@ -334,8 +334,6 @@ public class GridManager : NetworkBehaviour
     {
         int numberOfLeftCards = gridTiles.Values.Where(a => a.Card != null).Count();
 
-        Debug.Log(numberOfLeftCards);
-
         if (numberOfLeftCards == 0)
         {
             GameManager.Instance.DetermineWinnerAndLosers();

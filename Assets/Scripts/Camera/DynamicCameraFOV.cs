@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[ExecuteAlways]
 public class DynamicCameraFOV : MonoBehaviour
 {
     Vector2 lastScreenWidth = Vector2.zero;

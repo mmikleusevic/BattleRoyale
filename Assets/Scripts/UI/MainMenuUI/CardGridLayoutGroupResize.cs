@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteAlways]
 public class CardGridLayoutGroupResize : MonoBehaviour
 {
     [SerializeField] private GameObject container;
