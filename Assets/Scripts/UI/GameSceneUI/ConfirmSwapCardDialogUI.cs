@@ -77,7 +77,7 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
     {
         if (obj.Index < Player.LocalInstance.EquippedCards.Count)
         {
-            equippedCard = Player.LocalInstance.EquippedCards[obj.Index];       
+            equippedCard = Player.LocalInstance.EquippedCards[obj.Index];
         }
         else
         {
@@ -98,7 +98,7 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
     }
 
     private void OnConditionMet()
-    {    
+    {
         if (equippedPlayerCardUI != null && unequippedPlayerCardUI != null)
         {
             ShowWithAnimation();
@@ -107,7 +107,7 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
 
     private void Show()
     {
-        titleText.text = 
+        titleText.text =
             $"ARE YOU SURE YOU WANT TO SWAP\n" +
             $"{(equippedCard != null ? equippedCard.Name : "EMPTY SLOT")}\n" +
             $"FOR\n" +

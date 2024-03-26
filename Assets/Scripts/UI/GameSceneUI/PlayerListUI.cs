@@ -36,7 +36,7 @@ public class PlayerListUI : MonoBehaviour
         closeButton.onClick.RemoveAllListeners();
         infoButton.onClick.RemoveAllListeners();
 
-        ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;      
+        ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
         PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
@@ -70,7 +70,7 @@ public class PlayerListUI : MonoBehaviour
     private void InstantiatePlayerInfo(List<Player> players, bool showAttackButton)
     {
         foreach (Player player in players)
-        {          
+        {
             Transform cardTransform = Instantiate(template, container);
 
             cardTransform.gameObject.SetActive(true);

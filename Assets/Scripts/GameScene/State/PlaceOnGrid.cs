@@ -18,7 +18,7 @@ public class PlaceOnGrid : State
     {
         if (PlayerManager.Instance.ActivePlayer == PlayerManager.Instance.LastPlayer)
         {
-            StateManager.Instance.NextClientStateServerRpc(StateEnum.PlayerPreturn);
+            StateManager.Instance.SetEnemyStateToEveryoneExceptNextPlayer();
         }
         else
         {

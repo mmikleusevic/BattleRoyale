@@ -16,7 +16,6 @@ public class ResurrectUI : MonoBehaviour
         resurrectButton.onClick.AddListener(() =>
         {
             OnResurrectPressed?.Invoke();
-            ParticleSystemManager.Instance.Stop(particleGlow);
             HideWithAnimation();
         });
 
@@ -87,12 +86,18 @@ public class ResurrectUI : MonoBehaviour
 
     public void HideWithAnimation()
     {
-        resurrectUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
+        resurrectUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
 
     private void Show()
     {
-        ParticleSystemManager.Instance.Play(particleGlow);
         gameObject.SetActive(true);
+        ParticleSystemManager.Instance.Play(particleGlow);
+    }
+
+    private void Hide()
+    {
+        ParticleSystemManager.Instance.Stop(particleGlow);
+        gameObject.SetActive(false);
     }
 }

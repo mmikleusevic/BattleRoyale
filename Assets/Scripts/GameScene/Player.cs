@@ -309,9 +309,9 @@ public class Player : NetworkBehaviour
         OnPlayerPointsChanged?.Invoke();
     }
 
-    public void OnBattleWon(Card card, Player winner, Player loser)
+    public void OnBattleWon(Card card, Player loser)
     {
-        OnBattleWonServerRpc(card.NetworkObject, winner.NetworkObject, loser.NetworkObject);
+        OnBattleWonServerRpc(card.NetworkObject, NetworkObject, loser.NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -430,7 +430,7 @@ public class Player : NetworkBehaviour
     private string CreateOnPlayerTakenCardMessage(Card card, Player winner, Player loser)
     {
         return $"<color=#{winner.HexPlayerColor}>{winner.PlayerName} </color>took {card.Name} from <color=#{loser.HexPlayerColor}>{loser.PlayerName}</color>";
-        
+
     }
 
     private string[] CreateOnPlayerSwappedCardMessage(Card equippedCard, Card unequippedCard)
@@ -457,7 +457,7 @@ public class Player : NetworkBehaviour
     {
         SipValue = value;
     }
-   
+
     [ServerRpc(RequireOwnership = false)]
     private void AddSipsToPlayerServerRpc(NetworkObjectReference playerNetworkObjectReference, int value, ServerRpcParams serverRpcParams = default)
     {

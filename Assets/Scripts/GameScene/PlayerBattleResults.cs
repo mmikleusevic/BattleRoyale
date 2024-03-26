@@ -8,10 +8,9 @@ public class PlayerBattleResults : NetworkBehaviour
     public static event Action OnPlayerBattleRollDie;
     public static event Action OnPlayerBattleRollDieOver;
     public static event Action OnPlayerBattleRollDisadvantage;
-    public static event Action OnPlayerBattleRollDisadvantageRollOver;
     public static event Action<string> OnPlayerBattleShowUI;
     public static event Action<string> OnPlayerBattleRollOver;
-    public static event Action<Player, Player> OnBattleWin;
+    public static event Action<Player> OnBattleWin;
     public static event Action OnBattleLost;
     public static event Action OnAfterBattleResolved;
 
@@ -289,8 +288,7 @@ public class PlayerBattleResults : NetworkBehaviour
     {
         if (player1Wins == player1BattlesNeeded || player2Wins == player2BattlesNeeded)
         {
-            SetRollTypeForClientBattleOverClientRpc(rollTypePlayer1, clientRpcParamsPlayer1);
-            SetRollTypeForClientBattleOverClientRpc(rollTypePlayer2, clientRpcParamsPlayer2);
+            SetRollTypeForClientBattleOverClientRpc(clientRpcParamsBattle);
 
             ulong winnerId = 0;
 
@@ -300,7 +298,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
                 if (player2.EquippedCards.Count > 0)
                 {
-                    CallOnBattleWonResolveClientRpc(player1.NetworkObject, player2.NetworkObject, clientRpcParamsPlayer1);
+                    CallOnBattleWonResolveClientRpc(player2.NetworkObject, clientRpcParamsPlayer1);
                     afterBattleResolved[player1.ClientId.Value] = false;
                     afterBattleResolved[player2.ClientId.Value] = false;
                 }
@@ -317,7 +315,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
                 if (player1.EquippedCards.Count > 0)
                 {
-                    CallOnBattleWonResolveClientRpc(player2.NetworkObject, player1.NetworkObject, clientRpcParamsPlayer2);
+                    CallOnBattleWonResolveClientRpc(player1.NetworkObject, clientRpcParamsPlayer2);
                     afterBattleResolved[player1.ClientId.Value] = false;
                     afterBattleResolved[player2.ClientId.Value] = false;
                 }
@@ -338,16 +336,9 @@ public class PlayerBattleResults : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SetRollTypeForClientBattleOverClientRpc(RollTypeEnum rollType, ClientRpcParams clientRpcParams = default)
+    private void SetRollTypeForClientBattleOverClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        if (rollType == RollTypeEnum.PlayerAttack)
-        {
-            OnPlayerBattleRollDieOver?.Invoke();
-        }
-        else if (rollType == RollTypeEnum.Disadvantage)
-        {
-            OnPlayerBattleRollDisadvantageRollOver?.Invoke();
-        }
+        OnPlayerBattleRollDieOver?.Invoke();
     }
 
 
@@ -400,12 +391,11 @@ public class PlayerBattleResults : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void CallOnBattleWonResolveClientRpc(NetworkObjectReference winnerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    private void CallOnBattleWonResolveClientRpc(NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
     {
-        Player winner = Player.GetPlayerFromNetworkReference(winnerNetworkObjectReference);
         Player loser = Player.GetPlayerFromNetworkReference(loserNetworkObjectReference);
 
-        OnBattleWin?.Invoke(winner, loser);
+        OnBattleWin?.Invoke(loser);
     }
 
     [ClientRpc]

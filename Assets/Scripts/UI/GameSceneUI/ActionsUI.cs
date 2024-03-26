@@ -1,5 +1,4 @@
 using System;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -46,11 +45,8 @@ public class ActionsUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (tile != null)
-        {
-            tile.OnTileValueChanged -= Tile_OnTileValueChanged;
-            tile = null;
-        }
+        if (tile == null) return;
+        tile.OnTileValueChanged -= Tile_OnTileValueChanged;
     }
 
     private void Tile_OnTilePressed(Tile tile)

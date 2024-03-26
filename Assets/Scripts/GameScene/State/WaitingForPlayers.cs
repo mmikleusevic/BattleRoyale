@@ -8,7 +8,7 @@ public partial class WaitingForPlayers : State
     public override async Task Start()
     {
         await base.Start();
-     
+
         OnWaitingForPlayers?.Invoke(this, CreateOnWaitingForPlayersMessage());
     }
 

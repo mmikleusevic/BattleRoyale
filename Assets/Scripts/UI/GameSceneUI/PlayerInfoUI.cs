@@ -87,8 +87,20 @@ public class PlayerInfoUI : MonoBehaviour
 
         backgroundImage.color = player.HexPlayerColor.HEXToColor();
         playerNameText.text = player.PlayerName;
-        playerStatsText.text = "POINTS: " + player.Points.Value.ToString() + "\n" +
-                               "SIPS: " + player.SipCounter;
+        string message = "POINTS: " + player.Points.Value.ToString() + "\n" +
+                         "SIPS: " + player.SipCounter + "\n" +
+                         "DEAD: ";
+
+        if (player.IsDead.Value)
+        {
+            message += "YES";
+        }
+        else
+        {
+            message += "NO";
+        }
+
+        playerStatsText.text = message;
 
         if (player.EquippedCards.Count <= 0)
         {

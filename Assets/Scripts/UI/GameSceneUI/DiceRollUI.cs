@@ -1,12 +1,16 @@
 using System;
 using UnityEngine;
 
-public class DieRollUI : MonoBehaviour
+public class DiceRollUI : MonoBehaviour
 {
     [SerializeField] private RollUI rollUI;
 
-    private void Start()
+    private void Awake()
     {
+        CardBattleResults.OnCardRoll += CardBattleResults_OnCardRoll;
+        CardBattleResults.OnCardWon += CardBattleResults_OnCardBattle;
+        CardBattleResults.OnCardLost += CardBattleResults_OnCardBattle;
+        PlayerBattleResults.OnPlayerBattleRollDisadvantage += PlayerBattleResults_OnPlayerBattleRollDisadvantage;
         AlcoholTypeUI.OnAlcoholButtonPress += AlcoholTypeUI_OnAlcoholButtonPress;
         InitiativeResults.OnReRoll += InitiativeResults_OnReRoll;
         InitiativeResults.OnInitiativeRollOver += InitiativeResults_OnInitiativeRollOver;
@@ -16,6 +20,10 @@ public class DieRollUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        CardBattleResults.OnCardRoll -= CardBattleResults_OnCardRoll;
+        CardBattleResults.OnCardWon -= CardBattleResults_OnCardBattle;
+        CardBattleResults.OnCardLost -= CardBattleResults_OnCardBattle;
+        PlayerBattleResults.OnPlayerBattleRollDisadvantage -= PlayerBattleResults_OnPlayerBattleRollDisadvantage;
         AlcoholTypeUI.OnAlcoholButtonPress -= AlcoholTypeUI_OnAlcoholButtonPress;
         InitiativeResults.OnReRoll -= InitiativeResults_OnReRoll;
         InitiativeResults.OnInitiativeRollOver -= InitiativeResults_OnInitiativeRollOver;
@@ -23,14 +31,29 @@ public class DieRollUI : MonoBehaviour
         PlayerBattleResults.OnPlayerBattleRollDieOver -= PlayerBattleResults_OnPlayerBattleRollDieOver;
     }
 
+    private void CardBattleResults_OnCardRoll()
+    {
+        rollUI.ShowWithAnimation(3);
+    }
+
+    private void CardBattleResults_OnCardBattle(CardBattleResults.OnCardBattleEventArgs obj)
+    {
+        rollUI.HideWithAnimation();
+    }
+
+    private void PlayerBattleResults_OnPlayerBattleRollDisadvantage()
+    {
+        rollUI.ShowWithAnimation(2);
+    }
+
     private void AlcoholTypeUI_OnAlcoholButtonPress()
     {
-        rollUI.ShowWithAnimation();
+        rollUI.ShowWithAnimation(1);
     }
 
     private void InitiativeResults_OnReRoll(object sender, EventArgs e)
     {
-        rollUI.ShowWithAnimation();
+        rollUI.ShowWithAnimation(1);
     }
 
     private void InitiativeResults_OnInitiativeRollOver(object sender, InitiativeResults.OnInitiativeRollOverEventArgs e)
@@ -45,6 +68,6 @@ public class DieRollUI : MonoBehaviour
 
     private void PlayerBattleResults_OnPlayerBattleRoll()
     {
-        rollUI.ShowWithAnimation();
+        rollUI.ShowWithAnimation(1);
     }
 }

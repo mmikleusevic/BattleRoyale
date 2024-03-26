@@ -48,7 +48,7 @@ public class InteractUI : MonoBehaviour
     }
 
     public void ShowWithAnimation()
-    {      
+    {
         Show();
         interactUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
     }

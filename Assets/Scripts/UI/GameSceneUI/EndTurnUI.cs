@@ -9,6 +9,8 @@ public class EndTurnUI : MonoBehaviour
     [SerializeField] private Button endTurnButton;
     [SerializeField] private ParticleSystem particleGlow;
 
+    private bool actionsAndMovementUsed = false;
+
     private void Awake()
     {
         endTurnButton.onClick.AddListener(async () =>
@@ -20,9 +22,9 @@ public class EndTurnUI : MonoBehaviour
         });
 
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
-        PlayerBattleResults.OnPlayerBattleRollOver += PlayerBattleResults_OnPlayerBattleRollOver;
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
         Player.OnNoMoreMovementOrActionPoints += Player_OnNoMoreMovementOrActionPoints;
+        PlayerBattleResults.OnPlayerBattleShowUI += PlayerBattleResults_OnPlayerBattleShowUI;
 
         ParticleSystemManager.Instance.Stop(particleGlow);
 
@@ -32,9 +34,9 @@ public class EndTurnUI : MonoBehaviour
     public void OnDestroy()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
-        PlayerBattleResults.OnPlayerBattleRollOver -= PlayerBattleResults_OnPlayerBattleRollOver;
         PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
         Player.OnNoMoreMovementOrActionPoints -= Player_OnNoMoreMovementOrActionPoints;
+        PlayerBattleResults.OnPlayerBattleShowUI -= PlayerBattleResults_OnPlayerBattleShowUI;
 
         endTurnButton.onClick.RemoveAllListeners();
     }
@@ -46,19 +48,34 @@ public class EndTurnUI : MonoBehaviour
         Show();
     }
 
-    private void PlayerBattleResults_OnPlayerBattleRollOver(string obj)
-    {
-        endTurnButton.interactable = false;
-    }
-
     private void PlayerBattleResults_OnAfterBattleResolved()
     {
         endTurnButton.interactable = true;
+        ToggleParticleEffect();
     }
 
     private void Player_OnNoMoreMovementOrActionPoints()
     {
-        ParticleSystemManager.Instance.Play(particleGlow);
+        actionsAndMovementUsed = true;
+        ToggleParticleEffect();
+    }
+
+    private void PlayerBattleResults_OnPlayerBattleShowUI(string obj)
+    {
+        ParticleSystemManager.Instance.Stop(particleGlow);
+        endTurnButton.interactable = false;
+    }
+
+    private void ToggleParticleEffect()
+    {
+        if (actionsAndMovementUsed)
+        {
+            ParticleSystemManager.Instance.Play(particleGlow);
+        }
+        else
+        {
+            ParticleSystemManager.Instance.Stop(particleGlow);
+        }
     }
 
     private string[] SendToMessageUI()
@@ -77,6 +94,7 @@ public class EndTurnUI : MonoBehaviour
 
     private void Hide()
     {
+        actionsAndMovementUsed = false;
         gameObject.SetActive(false);
     }
 }

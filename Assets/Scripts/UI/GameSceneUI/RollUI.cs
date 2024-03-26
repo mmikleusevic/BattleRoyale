@@ -2,30 +2,26 @@ using DG.Tweening;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
+using Button = UnityEngine.UI.Button;
 
 public class RollUI : NetworkBehaviour
 {
     [SerializeField] RectTransform rollUIRectTransform;
-    [SerializeField] private GameObject backgroundImageGameObject;
     [SerializeField] private Button rollButton;
     [SerializeField] private GameObject[] dice;
-    [SerializeField] private Camera diceCamera;
+
     [SerializeField] private Roll roll;
-    private Vector3 cameraPosition;
-    private Vector3[] dicePositions;
+
+    private bool cardBattle = false;
+    private GameObject[] rollDice;
 
     public void Awake()
     {
         rollButton.onClick.AddListener(() =>
         {
             rollButton.gameObject.SetActive(false);
-            roll.RotateDice(dice, dicePositions, cameraPosition);
+            roll.RotateDice(rollDice, cardBattle);
         });
-
-        cameraPosition = diceCamera.transform.position;
-
-        AssignDicePosition();
 
         HideInstant();
     }
@@ -37,23 +33,50 @@ public class RollUI : NetworkBehaviour
         base.OnDestroy();
     }
 
-    private void AssignDicePosition()
+    private void ToggleDice(int value)
     {
-        dicePositions = new Vector3[dice.Length];
-
-        for (int i = 0; i < dice.Length; i++)
+        switch (value)
         {
-            Vector3 position = dice[i].transform.position;
+            case 1:
+                dice[1].gameObject.SetActive(true);
+                rollDice = new GameObject[] { dice[1] };
 
-            dicePositions[i] = position;
+                cardBattle = false;
+                break;
+            case 2:
+                dice[0].gameObject.SetActive(true);
+                dice[2].gameObject.SetActive(true);
+                rollDice = new GameObject[] { dice[0], dice[2] };
+
+                cardBattle = false;
+                break;
+            case 3:
+                dice[0].gameObject.SetActive(true);
+                dice[1].gameObject.SetActive(true);
+                dice[2].gameObject.SetActive(true);
+                rollDice = new GameObject[] { dice[0], dice[1], dice[2] };
+
+                cardBattle = true;
+                break;
         }
     }
 
-    public void ShowWithAnimation()
+    public void ShowWithAnimation(int value)
     {
+        if (rollDice != null && rollDice.Length == value)
+        {
+            foreach (GameObject die in rollDice)
+            {
+                die.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            ToggleDice(value);
+        }
+
         gameObject.SetActive(true);
         rollUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
-        backgroundImageGameObject.SetActive(true);
         rollButton.gameObject.SetActive(true);
     }
 
@@ -64,16 +87,28 @@ public class RollUI : NetworkBehaviour
 
     public void HideInstant()
     {
-        rollUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
-        backgroundImageGameObject.SetActive(false);
-        rollButton.gameObject.SetActive(false);
+        rollUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());      
     }
 
     private IEnumerator Delay()
     {
         yield return new WaitForSeconds(1.5f);
-        rollUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
-        backgroundImageGameObject.SetActive(false);
+        rollUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
+    }
+
+    private void Hide()
+    {
+        gameObject.SetActive(false);
         rollButton.gameObject.SetActive(false);
+
+        DisableAllDice();
+    }
+
+    private void DisableAllDice()
+    {
+        foreach (var die in dice)
+        {
+            die.gameObject.SetActive(false);
+        }
     }
 }

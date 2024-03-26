@@ -98,6 +98,41 @@ public class StateManager : NetworkBehaviour, IStateManager
         SetStateToClientsClientRpc(state, clientRpcParams);
     }
 
+    public void SetEnemyStateToEveryoneExceptNextPlayer()
+    {
+        NextClientStateServerRpc(StateEnum.PlayerPreturn);
+
+        SetEnemyStateToEveryoneExceptNextPlayerServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetEnemyStateToEveryoneExceptNextPlayerServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        Player activePlayer = PlayerManager.Instance.ActivePlayer;
+
+        ulong[] clientIds = new ulong[PlayerManager.Instance.Players.Count - 1];
+
+        int i = 0;
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (clientId == activePlayer.ClientId.Value) continue;
+
+            clientIds[i] = clientId;
+
+            i++;
+        }
+
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = clientIds
+            }
+        };
+
+        SetStateToClientsClientRpc(StateEnum.EnemyTurn, clientRpcParams);
+    }
+
     [ClientRpc]
     private void SetStateToClientsClientRpc(StateEnum state, ClientRpcParams clientRpcParams = default)
     {

@@ -127,7 +127,7 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
     }
 
     private void ShowWithAnimation()
-    {      
+    {
         Show();
         PlayerCardsUnequippedUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
     }

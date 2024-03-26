@@ -3844,9 +3844,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasRectTransform: {fileID: 2043374275}
   renderTextures:
-  - {fileID: 8400000, guid: 6728bc2d73d32d84592a75047ab881c2, type: 2}
   - {fileID: 8400000, guid: ef373d40aeca38446a5a979a66de44f5, type: 2}
-  - {fileID: 8400000, guid: 120b3cbc224fddb4fa94b82f0e435678, type: 2}
 --- !u!1 &2062042292
 GameObject:
   m_ObjectHideFlags: 0

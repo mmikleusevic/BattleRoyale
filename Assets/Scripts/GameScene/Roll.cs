@@ -9,6 +9,15 @@ public class Roll : MonoBehaviour
 {
     public static event EventHandler<OnRollEventArgs> OnRoll;
 
+    [SerializeField] private Camera diceCamera;
+    private Vector3 cameraPosition;
+
+    private void Awake()
+    {
+        cameraPosition = diceCamera.transform.position;
+        diceCamera = null;
+    }
+
     public class OnRollEventArgs : EventArgs
     {
         public string[] messages;
@@ -16,7 +25,6 @@ public class Roll : MonoBehaviour
     }
 
     [SerializeField] private RollResults rollResults;
-    [SerializeField] private bool cardBattle = false;
 
     private readonly float interactDistance = 0.51f;
 
@@ -60,28 +68,31 @@ public class Roll : MonoBehaviour
 
         return side;
     }
-    public void RotateDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
+
+    public void RotateDice(GameObject[] dice, bool cardBattle)
     {
         if (cardBattle)
         {
-            StartCoroutine(RotateCardBattleDice(dice, dicePositions, cameraPosition));
+            StartCoroutine(RotateCardBattleDice(dice));
         }
         else
         {
-            StartCoroutine(RotateOtherDice(dice, dicePositions, cameraPosition));
+            StartCoroutine(RotateOtherDice(dice));
         }
     }
 
-    private IEnumerator RotateCardBattleDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
+    private IEnumerator RotateCardBattleDice(GameObject[] dice)
     {
         List<int> resultList = new List<int>();
         int resultSum = 0;
 
         yield return StartCoroutine(Rotate(dice));
 
-        for (int i = 0; i < dice.Length; i++)
+        foreach (GameObject die in dice)
         {
-            Vector3 direction = dicePositions[i] - cameraPosition;
+            Vector3 dicePosition = die.transform.position;
+
+            Vector3 direction = dicePosition - cameraPosition;
 
             int result = GetResult(direction, cameraPosition);
 
@@ -94,7 +105,7 @@ public class Roll : MonoBehaviour
 
             Vector3 side = GetSide(result);
 
-            StartCoroutine(RotateToFace(side, dice[i]));
+            StartCoroutine(RotateToFace(side, die));
         }
 
         rollResults.SetRollResults(resultList);
@@ -109,7 +120,7 @@ public class Roll : MonoBehaviour
         SendToMessageUI(resultSum);
     }
 
-    private IEnumerator RotateOtherDice(GameObject[] dice, Vector3[] dicePositions, Vector3 cameraPosition)
+    private IEnumerator RotateOtherDice(GameObject[] dice)
     {
         int resultSum = 0;
         int min = int.MaxValue;
@@ -118,7 +129,9 @@ public class Roll : MonoBehaviour
 
         for (int i = 0; i < dice.Length; i++)
         {
-            Vector3 direction = dicePositions[i] - cameraPosition;
+            Vector3 dicePosition = dice[i].transform.position;
+
+            Vector3 direction = dicePosition - cameraPosition;
 
             int result = GetResult(direction, cameraPosition);
 

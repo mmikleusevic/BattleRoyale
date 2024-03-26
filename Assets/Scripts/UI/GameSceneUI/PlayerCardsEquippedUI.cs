@@ -24,8 +24,6 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     [SerializeField] private Image background;
 
     private Player player;
-    private Player winner;
-    private Player loser;
 
     private void Awake()
     {
@@ -115,11 +113,9 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         InstantiateCards();
     }
 
-    private void PlayerBattleResults_OnAfterBattle(Player winner, Player loser)
+    private void PlayerBattleResults_OnAfterBattle(Player loser)
     {
         player = loser;
-        this.loser = loser;
-        this.winner = winner;
 
         closeButton.gameObject.SetActive(false);
         ShowOrHideUnequippedCardsButton(false);
@@ -161,11 +157,11 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         {
             Transform cardUITransform = Instantiate(template, container);
 
-            cardUITransform.gameObject.SetActive(true);       
+            cardUITransform.gameObject.SetActive(true);
 
             PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
 
-            if (player.EquippedCards.Count >= i+1)
+            if (player.EquippedCards.Count >= i + 1)
             {
                 Card card = player.EquippedCards[i];
 
@@ -207,14 +203,11 @@ public class PlayerCardsEquippedUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        Player.LocalInstance.OnBattleWon(card, winner, loser);
+        Player.LocalInstance.OnBattleWon(card, player);
 
-        OnWonEquippedCard?.Invoke(winner.ClientId.Value);
+        OnWonEquippedCard?.Invoke(Player.LocalInstance.ClientId.Value);
 
         yield return new WaitForSeconds(2f);
-
-        winner = null;
-        loser = null;
 
         HideWithAnimation();
     }
