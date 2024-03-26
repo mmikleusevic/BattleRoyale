@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 
 public class PlayerManager : NetworkBehaviour
 {
@@ -70,6 +71,11 @@ public class PlayerManager : NetworkBehaviour
         Player player = Player.GetPlayerFromNetworkReference(playerNetworkObjectReference);
         player.DisablePlayer();
 
+        RemoveFromActivePlayers(player);
+    }
+
+    public void RemoveFromActivePlayers(Player player)
+    {
         ActivePlayers.Remove(player);
 
         Player lastPlayer = ActivePlayers.LastOrDefault();

@@ -658,8 +658,8 @@ public class Player : NetworkBehaviour
     {
         Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
 
-        PlayerManager.Instance.ActivePlayers.Remove(player);
-
         player.Disabled = true;
+
+        PlayerManager.Instance.RemoveFromActivePlayers(player);
     }
 }
