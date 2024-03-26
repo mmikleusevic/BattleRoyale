@@ -418,7 +418,7 @@ public class PlayerBattleResults : NetworkBehaviour
 
     private string SendBattleWinnerMessageToMessageUI(ulong winnerId)
     {
-        Player player = PlayerManager.Instance.Players.Where(a => a.ClientId.Value == winnerId).FirstOrDefault();
+        Player player = PlayerManager.Instance.ActivePlayers.Where(a => a.ClientId.Value == winnerId).FirstOrDefault();
 
         string playerName = player.PlayerName;
         string playerColor = player.HexPlayerColor;

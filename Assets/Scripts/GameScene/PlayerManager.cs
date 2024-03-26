@@ -13,6 +13,7 @@ public class PlayerManager : NetworkBehaviour
     private Dictionary<ulong, bool> clientsReady;
 
     public List<Player> Players { get; private set; }
+    public List<Player> ActivePlayers { get; private set; }
     public Player ActivePlayer { get; private set; }
     public Player LastPlayer { get; private set; }
 
@@ -23,6 +24,7 @@ public class PlayerManager : NetworkBehaviour
         Instance = this;
 
         Players = new List<Player>();
+        ActivePlayers = new List<Player>();
     }
 
     public override void OnNetworkSpawn()
@@ -50,7 +52,7 @@ public class PlayerManager : NetworkBehaviour
     {
         Player player = Players.FirstOrDefault(a => a.ClientId.Value == obj);
 
-        if (player == null || player.NetworkObject == null || NetworkManager.ShutdownInProgress) return;
+        if (player == null || player.NetworkObject == null || NetworkManager.ShutdownInProgress || NetworkManager.ServerClientId == obj) return;
 
         if (ActivePlayer == player)
         {
@@ -66,9 +68,11 @@ public class PlayerManager : NetworkBehaviour
     private void RemovePlayerSetNewLastPlayerClientRpc(NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
     {
         Player player = Player.GetPlayerFromNetworkReference(playerNetworkObjectReference);
-        Players.Remove(player);
+        player.DisablePlayer();
 
-        Player lastPlayer = Players.LastOrDefault();
+        ActivePlayers.Remove(player);
+
+        Player lastPlayer = ActivePlayers.LastOrDefault();
         LastPlayer = lastPlayer;
     }
 
@@ -90,9 +94,16 @@ public class PlayerManager : NetworkBehaviour
             ActivePlayer.HideParticleCircle();
         }
 
-        activeIndex = (activeIndex + 1) % Players.Count;
+        FindNextActiveIndexSetActivePlayer();        
+    }
 
-        ActivePlayer = Players[activeIndex];
+    private void FindNextActiveIndexSetActivePlayer()
+    {
+        int nextIndex = (activeIndex + 1) % ActivePlayers.Count;
+
+        ActivePlayer = ActivePlayers[nextIndex];
+
+        activeIndex = nextIndex;
 
         OnActivePlayerChanged?.Invoke(ActivePlayer);
 

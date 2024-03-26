@@ -26,7 +26,7 @@ public class Player : NetworkBehaviour
     public static event Action OnPlayerSipCounterChanged;
     public static event Action OnNoMoreMovementOrActionPoints;
 
-    public StateEnum currentState;
+    public StateEnum currentState = StateEnum.WaitingForPlayers;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -39,6 +39,7 @@ public class Player : NetworkBehaviour
     private int defaultActionPoints = 2;
     private float moveSpeed = 20f;
 
+    public bool Disabled { get; private set; } = false;
     public int MaxEquippableCards { get; private set; } = 3;
     public Tile CurrentTile { get; private set; }
     public List<Card> EquippedCards { get; private set; }
@@ -92,7 +93,7 @@ public class Player : NetworkBehaviour
         base.OnNetworkSpawn();
     }
 
-    public override void OnDestroy()
+    private void OnDisable()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
@@ -102,8 +103,6 @@ public class Player : NetworkBehaviour
         ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
         PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
         Points.OnValueChanged -= PointsChanged;
-
-        base.OnDestroy();
     }
 
     [ClientRpc]
@@ -641,5 +640,26 @@ public class Player : NetworkBehaviour
         Movement = defaultMovement;
 
         OnPlayerTurnSet?.Invoke();
+    }
+
+    public void DisablePlayer()
+    {
+        DisablePlayerServerRpc(NetworkObject);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DisablePlayerServerRpc(NetworkObjectReference playerNetworkObjectReference, ServerRpcParams serverRpcParams = default)
+    {
+        DisablePlayerClientRpc(playerNetworkObjectReference);
+    }
+
+    [ClientRpc]
+    private void DisablePlayerClientRpc(NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
+
+        PlayerManager.Instance.ActivePlayers.Remove(player);
+
+        player.Disabled = true;
     }
 }

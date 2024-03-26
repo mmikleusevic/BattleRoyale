@@ -181,14 +181,35 @@ public class GameManager : NetworkBehaviour
         {
             player = players.Where(a => a.ClientId.Value == clientId).FirstOrDefault();
             PlayerManager.Instance.Players.Add(player);
+            PlayerManager.Instance.ActivePlayers.Add(player);
         }
 
         PlayerManager.Instance.SetPlayerReadyServerRpc(true);
     }
 
+    public void DisablePlayersWithFourCardsLessThanFirst()
+    {
+        List<Player> playersOrderedByMostCards = PlayerManager.Instance.ActivePlayers.OrderByDescending(a => a.EquippedCards.Count + a.UnequippedCards.Count).ToList();
+
+        Player playerWithMostCards = playersOrderedByMostCards.FirstOrDefault();
+        int cardCount = playerWithMostCards.UnequippedCards.Count + playerWithMostCards.EquippedCards.Count;
+
+        foreach (Player player in playersOrderedByMostCards)
+        {
+            if (player == playerWithMostCards) continue;
+
+            int playerCardCount = player.EquippedCards.Count + player.UnequippedCards.Count;
+
+            if (cardCount - playerCardCount >= 4)
+            {
+                player.DisablePlayer();
+            }
+        }
+    }
+
     public void DetermineWinnerAndLosers()
     {
-        Player winner = PlayerManager.Instance.Players.OrderByDescending(a => a.Points.Value).FirstOrDefault();
+        Player winner = PlayerManager.Instance.ActivePlayers.OrderByDescending(a => a.Points.Value).FirstOrDefault();
 
         ClientRpcParams clientRpcParamsWinner = new ClientRpcParams
         {
@@ -198,7 +219,7 @@ public class GameManager : NetworkBehaviour
             }
         };
 
-        ulong[] loserIds = PlayerManager.Instance.Players.FindAll(a => a.ClientId.Value != winner.ClientId.Value).Select(a => a.ClientId.Value).ToArray();
+        ulong[] loserIds = PlayerManager.Instance.ActivePlayers.FindAll(a => a.ClientId.Value != winner.ClientId.Value).Select(a => a.ClientId.Value).ToArray();
 
         ClientRpcParams clientRpcParamsLosers = new ClientRpcParams
         {

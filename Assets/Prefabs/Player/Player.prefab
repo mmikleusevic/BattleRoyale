@@ -4882,7 +4882,7 @@ MonoBehaviour:
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
+  DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
 --- !u!114 &1342194194439268504
 MonoBehaviour:
@@ -4926,6 +4926,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4629738c49828ac4f8ef9a1bbd3646b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentState: 0
   playerVisual: {fileID: 6176863607520815035}
   particleCircle: {fileID: 2274552818883280472}
 --- !u!1001 &743050057221264117

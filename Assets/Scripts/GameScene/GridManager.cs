@@ -299,7 +299,7 @@ public class GridManager : NetworkBehaviour
                 {
                     Tile tile = gridTiles[position];
 
-                    if (player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePeopleOnTheCard() != true)
+                    if (player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePlayersOnTheCard() != true)
                     {
                         continue;
                     }
@@ -334,7 +334,11 @@ public class GridManager : NetworkBehaviour
     {
         int numberOfLeftCards = gridTiles.Values.Where(a => a.Card != null).Count();
 
-        if (numberOfLeftCards == 0)
+        if (numberOfLeftCards == 1)
+        {
+            GameManager.Instance.DisablePlayersWithFourCardsLessThanFirst();
+        }
+        else if (numberOfLeftCards == 0)
         {
             GameManager.Instance.DetermineWinnerAndLosers();
         }

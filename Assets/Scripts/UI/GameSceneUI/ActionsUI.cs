@@ -78,7 +78,7 @@ public class ActionsUI : MonoBehaviour
                 HideMoveButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0 && !tile.AreMultipleAlivePeopleOnTheCard() && !tile.IsClosed)
+            if (isPlayerOnCard && player.ActionPoints > 0 && !tile.AreMultipleAlivePlayersOnTheCard() && !tile.IsClosed)
             {
                 ShowAttackCardButton();
             }
@@ -87,7 +87,7 @@ public class ActionsUI : MonoBehaviour
                 HideAttackCardButton();
             }
 
-            if (isPlayerOnCard && player.ActionPoints > 0 && tile.AreMultipleAlivePeopleOnTheCard())
+            if (isPlayerOnCard && player.ActionPoints > 0 && tile.AreMultipleAlivePlayersOnTheCard())
             {
                 ShowAttackPlayerButton();
             }

@@ -98,12 +98,12 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         }
     }
 
-    public bool AreMultipleAlivePeopleOnTheCard()
+    public bool AreMultipleAlivePlayersOnTheCard()
     {
         int count = 0;
         foreach (CardPosition cardPosition in cardPositions)
         {
-            if (cardPosition.IsOccupied == true && !cardPosition.Player.IsDead.Value)
+            if (cardPosition.IsOccupied == true && !cardPosition.Player.IsDead.Value && !cardPosition.Player.Disabled)
             {
                 count++;
             }
@@ -120,7 +120,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
         foreach (CardPosition cardPosition in cardPositions)
         {
-            if (cardPosition.Player != null && !cardPosition.Player.IsDead.Value)
+            if (cardPosition.Player != null && !cardPosition.Player.IsDead.Value && !cardPosition.Player.Disabled)
             {
                 players.Add(cardPosition.Player);
             }

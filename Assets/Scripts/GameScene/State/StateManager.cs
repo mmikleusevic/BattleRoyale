@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
 
@@ -100,7 +101,6 @@ public class StateManager : NetworkBehaviour, IStateManager
 
     public void GiveCurrentStateToSetNext(StateEnum currentState)
     {
-
         switch (currentState)
         {
             case StateEnum.WaitingForPlayers:
@@ -123,7 +123,11 @@ public class StateManager : NetworkBehaviour, IStateManager
                 SetState(StateEnum.PlayerTurn);
                 break;
             case StateEnum.PlayerTurn:
-                SetState(StateEnum.EnemyTurn);
+                if (PlayerManager.Instance.ActivePlayers.Count > 1)
+                {
+                    SetState(StateEnum.EnemyTurn);
+                }
+
                 NextClientStateServerRpc(StateEnum.PlayerPreturn);
                 break;
             case StateEnum.EnemyTurn:
@@ -152,10 +156,10 @@ public class StateManager : NetworkBehaviour, IStateManager
     {
         Player activePlayer = PlayerManager.Instance.ActivePlayer;
 
-        ulong[] clientIds = new ulong[PlayerManager.Instance.Players.Count - 1];
+        ulong[] clientIds = new ulong[PlayerManager.Instance.ActivePlayers.Count - 1];
 
         int i = 0;
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        foreach (ulong clientId in PlayerManager.Instance.ActivePlayers.Select(a => a.ClientId.Value))
         {
             if (clientId == activePlayer.ClientId.Value) continue;
 
