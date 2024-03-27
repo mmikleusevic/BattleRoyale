@@ -19,14 +19,13 @@ public class Player : NetworkBehaviour
     public static event Action<Card> OnPlayerUnequippedCardAdded;
     public static event Action OnNoMoreMovementOrActionPoints;
 
-    public StateEnum currentState = StateEnum.WaitingForPlayers;
-
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
 
     ParticleSystem playerParticleSystem;
     PlayerAnimator playerAnimator;
 
+    public StateEnum currentState = StateEnum.WaitingForPlayers;
     private int defaultMovement = 0;
     private int gamesNeededForDefeat = 3;
     private int defaultActionPoints = 2;
@@ -72,11 +71,6 @@ public class Player : NetworkBehaviour
             ClientId.Value = NetworkObject.OwnerClientId;
 
             PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
-            CardBattleResults.OnCardWon += CardBattleResults_OnCardWon;
-            ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
-            PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
-            CardBattleResults.OnCardLost += CardBattleResults_OnCardLost;
-            ResurrectUI.OnResurrectPressed += ResurrectUI_OnResurrectPressed;
             PlayerBattleResults.OnBattleLost += PlayerBattleResults_OnBattleLost;
             Points.OnValueChanged += PointsChanged;
         }
@@ -89,11 +83,6 @@ public class Player : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
-        CardBattleResults.OnCardWon -= CardBattleResults_OnCardWon;
-        ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
-        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
-        CardBattleResults.OnCardLost -= CardBattleResults_OnCardLost;
-        ResurrectUI.OnResurrectPressed -= ResurrectUI_OnResurrectPressed;
         PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
         Points.OnValueChanged -= PointsChanged;
 
@@ -197,7 +186,7 @@ public class Player : NetworkBehaviour
         ResetActionsAndMovement();
     }
 
-    private void CardBattleResults_OnCardWon(Card card)
+    public void SaveWonCard(Card card)
     {
         SaveWonCardServerRpc(card.NetworkObject, NetworkObject);
     }
@@ -297,17 +286,7 @@ public class Player : NetworkBehaviour
         MessageUI.Instance.SetMessage(CreateOnPlayerRemovedCardMessage(loser, card));
     }
 
-    private void ActionsUI_OnAttackCard(Tile obj)
-    {
-        SubtractActionPoints();
-    }
-
-    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2)
-    {
-        SubtractActionPoints();
-    }
-
-    private void CardBattleResults_OnCardLost(Card card)
+    public void PlayerDiedCardBattle()
     {
         IsDead.Value = true;
 
@@ -377,7 +356,7 @@ public class Player : NetworkBehaviour
         RemoveCardFromLoser(loser, card);
     }
 
-    private void ResurrectUI_OnResurrectPressed()
+    public void Ressurect()
     {
         IsDead.Value = false;
 

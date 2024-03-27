@@ -24,6 +24,7 @@ public class ActionsUI : MonoBehaviour
         attackCardButton.onClick.AddListener(() =>
         {
             RollType.rollType = RollTypeEnum.CardAttack;
+            Player.LocalInstance.SubtractActionPoints();
             OnAttackCard?.Invoke(tile);
             MessageUI.Instance.SendMessageToEveryoneExceptMe(SendAttackingCardMessage());
         });

@@ -15,7 +15,7 @@ public class ResurrectUI : MonoBehaviour
     {
         resurrectButton.onClick.AddListener(() =>
         {
-            OnResurrectPressed?.Invoke();
+            Player.LocalInstance.Ressurect();
             HideWithAnimation();
         });
 

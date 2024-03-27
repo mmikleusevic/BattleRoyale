@@ -86,6 +86,7 @@ public class PlayerInfoUI : MonoBehaviour
                     player.NetworkObject
                 );
 
+                Player.LocalInstance.SubtractActionPoints();
                 MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateMessageForMessageUI());
             });
 

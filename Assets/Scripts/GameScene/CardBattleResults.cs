@@ -45,11 +45,15 @@ public class CardBattleResults : NetworkBehaviour
             tile.DisableCard();
             messages = SendCardWonMessageToMessageUI();
 
+            Player.LocalInstance.SaveWonCard(tile.Card);
+
             OnCardWon?.Invoke(tile.Card);
         }
         else
         {
             messages = SendCardLostMessageToMessageUI();
+
+            Player.LocalInstance.PlayerDiedCardBattle();
 
             OnCardLost?.Invoke(tile.Card);
         }
