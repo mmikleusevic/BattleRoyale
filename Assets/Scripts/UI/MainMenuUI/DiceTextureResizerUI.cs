@@ -23,19 +23,31 @@ public class DiceTextureResizerUI : MonoBehaviour
 
         if (lastCanvasSize == canvasSize) return;
 
-        int canvasWidth = (int)canvasRectTransform.rect.width;
-        int canvasHeight = (int)canvasRectTransform.rect.height;
+        float screenWidth = canvasRectTransform.rect.width;
+        float screenHeight = canvasRectTransform.rect.height;
 
-        lastCanvasSize.x = canvasWidth;
-        lastCanvasSize.y = canvasHeight;
+        int newScreenWidth = (int)screenWidth / 4;
+        int newScreenHeight = (int)screenHeight / 4;
+
+        float aspectRatio = screenWidth / screenHeight;
+
+        int renderTextureWidth = newScreenWidth;
+        int renderTextureHeight = (int)(newScreenWidth / aspectRatio);
+
+        if (renderTextureHeight > newScreenHeight)
+        {
+            renderTextureHeight = newScreenHeight;
+            renderTextureWidth = (int)(newScreenHeight * aspectRatio);
+        }
 
         foreach (RenderTexture texture in renderTextures)
         {
             texture.Release();
 
-            texture.width = canvasWidth;
-            texture.height = canvasHeight;
+            texture.width = renderTextureWidth;
+            texture.height = renderTextureHeight;
             texture.anisoLevel = 0;
+            texture.useDynamicScale = true;
 
             texture.Create();
         }

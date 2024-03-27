@@ -2,16 +2,21 @@ using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
 
 public class Roll : MonoBehaviour
 {
     [SerializeField] private Camera diceCamera;
     private Vector3 cameraPosition;
+    private List<int> resultList;
+    private string[] messages;
 
     private void Awake()
     {
         cameraPosition = diceCamera.transform.position;
+        resultList = new List<int>();
+        messages = new string[2];
         diceCamera = null;
     }
 
@@ -74,8 +79,7 @@ public class Roll : MonoBehaviour
     }
 
     private void CalculateCardBattleRoll(GameObject[] dice)
-    {
-        List<int> resultList = new List<int>();
+    {        
         int resultSum = 0;
 
         foreach (GameObject die in dice)
@@ -185,12 +189,36 @@ public class Roll : MonoBehaviour
 
     private void SendToMessageUI(int result)
     {
-        string[] messages = new string[] {
-            $"YOU ROLLED {result}",
-            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>"
-        };
+        if (resultList.Count == 3)
+        {
+            messages[0] = $"YOU ROLLED {result} ("; 
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result} (</color>";
+
+            for (int i = 0; i < resultList.Count; i++)
+            {
+                messages[0] += $"{resultList[i]}";
+                messages[1] += $"{resultList[i]}";
+
+                if (i != resultList.Count - 1)
+                {
+                    messages[0] += ",";
+                    messages[1] += ",";
+                }
+                else
+                {
+                    messages[0] += ")";
+                    messages[1] += ")";
+                }
+            }
+        }
+        else
+        {
+            messages[0] = $"YOU ROLLED {result}";
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>";      
+        }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+        resultList.Clear();
     }
 
     private void SendThreeOfAKindMessageToMessageUI()

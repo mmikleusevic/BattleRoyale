@@ -21680,6 +21680,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DIce
       objectReference: {fileID: 0}
+    - target: {fileID: 2372284013128074240, guid: 17d330d0cf375964e86b7c399e287e43,
+        type: 3}
+      propertyPath: field of view
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 6232005310087692130, guid: 17d330d0cf375964e86b7c399e287e43,
         type: 3}
       propertyPath: rollResults
