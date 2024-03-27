@@ -151,11 +151,13 @@ public class Roll : MonoBehaviour
     {
         Sequence mySequence = DOTween.Sequence();
 
+        Vector3 rotation = Random.onUnitSphere.normalized;
+
         for (int i = 0; i < dice.Length; i++)
         {
             dice[i].transform.rotation = Random.rotationUniform;
 
-            mySequence.Join(dice[i].transform.DORotate(Random.onUnitSphere.normalized, rotationTime / numberOfSideChanges)
+            mySequence.Join(dice[i].transform.DORotate(rotation, rotationTime / numberOfSideChanges)
                                                .SetEase(Ease.Linear)
                                                .SetLoops(numberOfSideChanges, LoopType.Incremental));
         }
