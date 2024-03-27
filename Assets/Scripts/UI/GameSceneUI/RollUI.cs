@@ -12,7 +12,7 @@ public class RollUI : NetworkBehaviour
 
     [SerializeField] private Roll roll;
 
-    private bool cardBattle = false;
+    private BattleType battleType = BattleType.Player;
     private GameObject[] rollDice;
 
     public void Awake()
@@ -20,7 +20,7 @@ public class RollUI : NetworkBehaviour
         rollButton.onClick.AddListener(() =>
         {
             rollButton.gameObject.SetActive(false);
-            roll.RotateDice(rollDice, cardBattle);
+            roll.RotateDice(rollDice, battleType);
         });
 
         HideInstant();
@@ -41,14 +41,14 @@ public class RollUI : NetworkBehaviour
                 dice[1].gameObject.SetActive(true);
                 rollDice = new GameObject[] { dice[1] };
 
-                cardBattle = false;
+                battleType = BattleType.Player;
                 break;
             case 2:
                 dice[0].gameObject.SetActive(true);
                 dice[2].gameObject.SetActive(true);
                 rollDice = new GameObject[] { dice[0], dice[2] };
 
-                cardBattle = false;
+                battleType = BattleType.Player;
                 break;
             case 3:
                 dice[0].gameObject.SetActive(true);
@@ -56,7 +56,7 @@ public class RollUI : NetworkBehaviour
                 dice[2].gameObject.SetActive(true);
                 rollDice = new GameObject[] { dice[0], dice[1], dice[2] };
 
-                cardBattle = true;
+                battleType = BattleType.Card;
                 break;
         }
     }

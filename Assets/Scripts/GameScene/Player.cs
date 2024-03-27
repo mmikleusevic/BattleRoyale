@@ -493,6 +493,11 @@ public class Player : NetworkBehaviour
         }
     }
 
+    private string CreateOnPlayerLeftGameMessage(Player player)
+    {
+        return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>LEFT THE GAME";
+    }
+
     public void SetSipValue(int value)
     {
         SipValue = value;
@@ -668,7 +673,18 @@ public class Player : NetworkBehaviour
     {
         DisablePlayerClientRpc(NetworkObject);
 
-        PlayerManager.Instance.ChangePlayerOwnershipAndDie(this);
+        ChangePlayerOwnershipAndDie(this);
+    }
+
+    public void ChangePlayerOwnershipAndDie(Player player)
+    {
+        player.NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
+
+        player.IsDead.Value = true;
+
+        player.DeathAnimation();
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerLeftGameMessage(player));
     }
 
     [ClientRpc]

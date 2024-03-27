@@ -1,7 +1,9 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class Roll : MonoBehaviour
@@ -17,10 +19,11 @@ public class Roll : MonoBehaviour
 
     [SerializeField] private RollResults rollResults;
 
-    private readonly float interactDistance = 0.51f;
+    private readonly float interactDistance = 0.55f;
 
     private float rotationTime = 3f;
-    private float rotationSpeed = 540f;
+    private float turnToSideTime = 1f;
+    private int numberOfSideChanges = 12;
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)
     {
@@ -60,24 +63,22 @@ public class Roll : MonoBehaviour
         return side;
     }
 
-    public void RotateDice(GameObject[] dice, bool cardBattle)
+    public void RotateDice(GameObject[] dice, BattleType battleType)
     {
-        if (cardBattle)
+        if (battleType == BattleType.Card)
         {
-            StartCoroutine(RotateCardBattleDice(dice));
+            Rotate(dice, BattleType.Card);
         }
         else
         {
-            StartCoroutine(RotateOtherDice(dice));
+            Rotate(dice, BattleType.Player);
         }
     }
 
-    private IEnumerator RotateCardBattleDice(GameObject[] dice)
+    private void CalculateCardBattleRoll(GameObject[] dice)
     {
         List<int> resultList = new List<int>();
         int resultSum = 0;
-
-        yield return StartCoroutine(Rotate(dice));
 
         foreach (GameObject die in dice)
         {
@@ -96,7 +97,7 @@ public class Roll : MonoBehaviour
 
             Vector3 side = GetSide(result);
 
-            StartCoroutine(RotateToFace(side, die));
+            RotateToFace(side, die);
         }
 
         rollResults.SetRollResults(resultList);
@@ -111,12 +112,10 @@ public class Roll : MonoBehaviour
         SendToMessageUI(resultSum);
     }
 
-    private IEnumerator RotateOtherDice(GameObject[] dice)
+    private void CalculatePlayerBattleRoll(GameObject[] dice)
     {
         int resultSum = 0;
         int min = int.MaxValue;
-
-        yield return StartCoroutine(Rotate(dice));
 
         for (int i = 0; i < dice.Length; i++)
         {
@@ -130,7 +129,7 @@ public class Roll : MonoBehaviour
 
             Vector3 side = GetSide(result);
 
-            StartCoroutine(RotateToFace(side, dice[i]));
+            RotateToFace(side, dice[i]);
 
             if (result < min)
             {
@@ -148,58 +147,42 @@ public class Roll : MonoBehaviour
         SendToMessageUI(resultSum);
     }
 
-    private IEnumerator Rotate(GameObject[] dice)
+    private void Rotate(GameObject[] dice, BattleType battleType)
     {
-        Vector3[] randomAxes = new Vector3[dice.Length];
+        Sequence mySequence = DOTween.Sequence();
 
-        for (int i = 0; i < randomAxes.Length; i++)
+        for (int i = 0; i < dice.Length; i++)
         {
-            randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
             dice[i].transform.rotation = Random.rotationUniform;
+
+            mySequence.Join(dice[i].transform.DORotate(Random.onUnitSphere, rotationTime / numberOfSideChanges)
+                                               .SetEase(Ease.Linear)
+                                               .SetLoops(numberOfSideChanges, LoopType.Incremental));
         }
 
-        float spinTimer = rotationTime;
-        float rotationTimer = 0.0f;
+        mySequence.Play()
+                  .OnComplete(() => OnRotateCompleteCall(dice, battleType));
+    }
 
-        while (spinTimer > 0)
+    private void OnRotateCompleteCall(GameObject[] dice, BattleType battleType)
+    {
+        switch (battleType)
         {
-            spinTimer -= Time.deltaTime;
-            rotationTimer += Time.deltaTime;
-
-            for (int i = 0; i < dice.Length; i++)
-            {
-                Quaternion targetRotation = dice[i].transform.rotation * Quaternion.Euler(randomAxes[i] * rotationSpeed * Time.deltaTime);
-                dice[i].transform.rotation = Quaternion.RotateTowards(dice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
-
-            if (rotationTimer >= 0.25f)
-            {
-                for (int i = 0; i < dice.Length; i++)
-                {
-                    randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
-                }
-
-                rotationTimer = 0.0f;
-            }
-
-            yield return null;
+            case BattleType.Player:
+                CalculatePlayerBattleRoll(dice);
+                break;
+            case BattleType.Card:
+                CalculateCardBattleRoll(dice);
+                break;
         }
     }
 
-    private IEnumerator RotateToFace(Vector3 side, GameObject die)
+    private void RotateToFace(Vector3 side, GameObject die)
     {
-        float timer = 1f;
-        float speed = 10f * Time.deltaTime;
+        Quaternion rotation = Quaternion.LookRotation(side);
 
-        while (timer > 0)
-        {
-            timer -= Time.deltaTime;
-
-            Quaternion rotation = Quaternion.LookRotation(side);
-
-            die.transform.rotation = Quaternion.Slerp(die.transform.rotation, rotation, speed);
-            yield return null;
-        }
+        die.transform.DORotateQuaternion(rotation, turnToSideTime)
+            .SetEase(Ease.Linear);
     }
 
     private void SendToMessageUI(int result)
@@ -218,4 +201,10 @@ public class Roll : MonoBehaviour
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(message);
     }
+}
+
+public enum BattleType
+{
+    Player,
+    Card
 }

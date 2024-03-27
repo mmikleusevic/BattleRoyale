@@ -146,20 +146,4 @@ public class PlayerManager : NetworkBehaviour
 
         StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.Initiative);
     }
-
-    public void ChangePlayerOwnershipAndDie(Player player)
-    {
-        player.NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
-
-        player.IsDead.Value = true;
-
-        player.DeathAnimation();
-
-        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerLeftGameMessage(player));
-    }
-
-    private string CreateOnPlayerLeftGameMessage(Player player)
-    {
-        return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>LEFT THE GAME";
-    }
 }
