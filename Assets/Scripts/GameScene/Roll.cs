@@ -157,9 +157,9 @@ public class Roll : MonoBehaviour
         {
             dice[i].transform.rotation = Random.rotationUniform;
 
-            mySequence.Join(dice[i].transform.DORotate(rotation, rotationTime / numberOfSideChanges)
+            mySequence.Join(dice[i].transform.DORotate(Random.onUnitSphere.normalized * 360f, rotationTime / 6)
                                                .SetEase(Ease.Linear)
-                                               .SetLoops(numberOfSideChanges, LoopType.Incremental));
+                                               .SetLoops(6, LoopType.Incremental));
         }
 
         mySequence.Play()
