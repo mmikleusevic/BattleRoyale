@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class ResurrectUI : MonoBehaviour
 {
-    public static event Action OnResurrectPressed;
-
     [SerializeField] RectTransform resurrectUIRectTransform;
     [SerializeField] private Button resurrectButton;
     [SerializeField] private ParticleSystem particleGlow;

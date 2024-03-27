@@ -1,9 +1,7 @@
 using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class Roll : MonoBehaviour
@@ -23,7 +21,7 @@ public class Roll : MonoBehaviour
 
     private float rotationTime = 3f;
     private float turnToSideTime = 1f;
-    private int numberOfSideChanges = 12;
+    private int numberOfSideChanges = 6;
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)
     {
@@ -151,15 +149,13 @@ public class Roll : MonoBehaviour
     {
         Sequence mySequence = DOTween.Sequence();
 
-        Vector3 rotation = Random.onUnitSphere.normalized;
-
         for (int i = 0; i < dice.Length; i++)
         {
             dice[i].transform.rotation = Random.rotationUniform;
 
-            mySequence.Join(dice[i].transform.DORotate(Random.onUnitSphere.normalized * 360f, rotationTime / 6)
+            mySequence.Join(dice[i].transform.DORotate(new Vector3(Random.value,Random.value, Random.value) * 360f, rotationTime / numberOfSideChanges)
                                                .SetEase(Ease.Linear)
-                                               .SetLoops(6, LoopType.Incremental));
+                                               .SetLoops(numberOfSideChanges, LoopType.Incremental));
         }
 
         mySequence.Play()
