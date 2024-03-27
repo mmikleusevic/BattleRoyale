@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,7 +26,8 @@ public class Roll : MonoBehaviour
 
     private float rotationTime = 3f;
     private float turnToSideTime = 1f;
-    private int numberOfSideChanges = 6;
+    private int numberOfSideChanges = 12;
+    private float rotationSpeed = 540f;
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)
     {
@@ -69,11 +71,11 @@ public class Roll : MonoBehaviour
     {
         if (battleType == BattleType.Card)
         {
-            Rotate(dice, BattleType.Card);
+            StartCoroutine(Rotate(dice, BattleType.Card));
         }
         else
         {
-            Rotate(dice, BattleType.Player);
+            StartCoroutine(Rotate(dice, BattleType.Player));
         }
     }
 
@@ -148,21 +150,45 @@ public class Roll : MonoBehaviour
         SendToMessageUI(resultSum);
     }
 
-    private void Rotate(GameObject[] dice, BattleType battleType)
+    private IEnumerator Rotate(GameObject[] dice, BattleType battleType)
     {
-        Sequence mySequence = DOTween.Sequence();
+        Vector3[] randomAxes = new Vector3[dice.Length];
 
-        for (int i = 0; i < dice.Length; i++)
+        for (int i = 0; i < randomAxes.Length; i++)
         {
+            randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
             dice[i].transform.rotation = Random.rotationUniform;
-
-            mySequence.Join(dice[i].transform.DORotate(new Vector3(Random.value,Random.value, Random.value) * 360f, rotationTime / numberOfSideChanges)
-                                               .SetEase(Ease.Linear)
-                                               .SetLoops(numberOfSideChanges, LoopType.Incremental));
         }
 
-        mySequence.Play()
-                  .OnComplete(() => OnRotateCompleteCall(dice, battleType));
+        float spinTimer = rotationTime;
+        float rotationTimer = 0.0f;
+        float numberOfSpins = rotationTime / numberOfSideChanges;
+
+        while (spinTimer > 0)
+        {
+            spinTimer -= Time.deltaTime;
+            rotationTimer += Time.deltaTime;
+
+            for (int i = 0; i < dice.Length; i++)
+            {
+                Quaternion targetRotation = dice[i].transform.rotation * Quaternion.Euler(randomAxes[i] * rotationSpeed * Time.deltaTime);
+                dice[i].transform.rotation = Quaternion.RotateTowards(dice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+
+            if (rotationTimer >= numberOfSpins)
+            {
+                for (int i = 0; i < dice.Length; i++)
+                {
+                    randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
+                }
+
+                rotationTimer = 0.0f;
+            }
+
+            yield return null;
+        }
+
+        OnRotateCompleteCall(dice, battleType);
     }
 
     private void OnRotateCompleteCall(GameObject[] dice, BattleType battleType)

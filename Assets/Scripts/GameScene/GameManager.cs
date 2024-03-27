@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour
@@ -202,11 +203,16 @@ public class GameManager : NetworkBehaviour
 
             int playerCardCount = player.EquippedCards.Count + player.UnequippedCards.Count;
 
-            if (cardCount - playerCardCount >= 4)
+            if ((cardCount - playerCardCount) > 3)
             {
                 player.DisablePlayer();
+
+                MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerLostGameMessage(player));
             }
         }
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnLastCardLeftGameMessage());
+        FadeMessageUI.Instance.StartFadeMessage(CreateOnLastCardLeftGameMessage());
     }
 
     public void DetermineWinnerAndLosers()
@@ -233,5 +239,15 @@ public class GameManager : NetworkBehaviour
 
         StateManager.Instance.SetStateToClients(StateEnum.Won, clientRpcParamsWinner);
         StateManager.Instance.SetStateToClients(StateEnum.Lost, clientRpcParamsLosers);
+    }
+
+    private string CreateOnPlayerLostGameMessage(Player player)
+    {
+        return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>HAD MORE THAN A 3-CARD DIFFERENCE COMPARED TO THE FIRST PLAYER, AND THUS HAS LOST";
+    }
+
+    private string CreateOnLastCardLeftGameMessage()
+    {
+        return $"KEEP MOVING TO ADJACENT FIELDS AROUND LAST CARD";
     }
 }

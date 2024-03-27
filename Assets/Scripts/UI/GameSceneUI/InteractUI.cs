@@ -6,6 +6,8 @@ public class InteractUI : MonoBehaviour
     [SerializeField] private RectTransform interactUIRectTransform;
     [SerializeField] private Transform actionsContainer;
 
+    private bool interactable = true;
+
     private void Awake()
     {
         Tile.OnTilePressed += Tile_OnTilePressed;
@@ -39,13 +41,26 @@ public class InteractUI : MonoBehaviour
 
     public void ShowWithAnimation()
     {
-        Show();
-        interactUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
+        if (interactable)
+        {
+            interactable = false;
+
+            Show();
+            interactUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack).OnComplete(() => interactable = true);
+        }
     }
 
     public void HideWithAnimation()
     {
-        interactUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
+        if (interactable)
+        {
+            interactable = false;
+
+            interactUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => {
+                Hide();
+                interactable = true;
+            });
+        }
     }
 
     private void Show()

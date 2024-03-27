@@ -65,6 +65,8 @@ public class PlayerManager : NetworkBehaviour
         player.DisablePlayer();
 
         RemovePlayerSetNewLastPlayerClientRpc(player.NetworkObject);
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerLeftGameMessage(player));
     }
 
     [ClientRpc]
@@ -145,5 +147,10 @@ public class PlayerManager : NetworkBehaviour
         SetLastPlayerClientRpc(lastPlayer.NetworkObject);
 
         StateManager.Instance.GiveCurrentStateToSetNext(StateEnum.Initiative);
+    }
+
+    private string CreateOnPlayerLeftGameMessage(Player player)
+    {
+        return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>LEFT THE GAME";
     }
 }

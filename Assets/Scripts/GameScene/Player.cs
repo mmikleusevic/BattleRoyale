@@ -472,11 +472,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private string CreateOnPlayerLeftGameMessage(Player player)
-    {
-        return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>LEFT THE GAME";
-    }
-
     public void SetSipValue(int value)
     {
         SipValue = value;
@@ -662,8 +657,6 @@ public class Player : NetworkBehaviour
         player.IsDead.Value = true;
 
         player.DeathAnimation();
-
-        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerLeftGameMessage(player));
     }
 
     [ClientRpc]

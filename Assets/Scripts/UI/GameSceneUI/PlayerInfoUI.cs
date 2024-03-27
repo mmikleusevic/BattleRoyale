@@ -16,7 +16,7 @@ public class PlayerInfoUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerStatsText;
     [SerializeField] private TextMeshProUGUI equippedCardsText;
     [SerializeField] private TextMeshProUGUI unequippedCardsText;
-    [SerializeField] private Button showEquippedCardsButton;
+    [SerializeField] private ExtendedButton showEquippedCardsButton;
     [SerializeField] private Button attackPlayerButton;
 
     private bool isOver = false;
