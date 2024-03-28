@@ -4926,9 +4926,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4629738c49828ac4f8ef9a1bbd3646b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
   playerVisual: {fileID: 6176863607520815035}
   particleCircle: {fileID: 2274552818883280472}
+  currentState: 0
 --- !u!1001 &743050057221264117
 PrefabInstance:
   m_ObjectHideFlags: 0

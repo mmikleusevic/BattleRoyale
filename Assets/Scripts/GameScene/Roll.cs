@@ -217,7 +217,7 @@ public class Roll : MonoBehaviour
         if (resultList.Count == 3)
         {
             messages[0] = $"YOU ROLLED {result} ("; 
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result} (</color>";
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} (";
 
             for (int i = 0; i < resultList.Count; i++)
             {
@@ -239,7 +239,7 @@ public class Roll : MonoBehaviour
         else
         {
             messages[0] = $"YOU ROLLED {result}";
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled <color=#{Player.LocalInstance.HexPlayerColor}>{result}</color>";      
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result}";      
         }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);

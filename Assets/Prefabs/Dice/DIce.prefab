@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 8357170490821379978}
   - component: {fileID: 53546817407834476}
   - component: {fileID: 5781580720942212562}
+  - component: {fileID: 1888615733516107821}
   m_Layer: 3
   m_Name: DiceVisual
   m_TagString: Untagged
@@ -176,6 +177,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1888615733516107821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085926907390142383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f7127db42ff2df4c820e7a28bb95ec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bodyMeshRenderer: {fileID: 5781580720942212562}
 --- !u!1 &1225106448364083730
 GameObject:
   m_ObjectHideFlags: 0
@@ -1473,6 +1487,7 @@ GameObject:
   - component: {fileID: 8952808296062109003}
   - component: {fileID: 5639735186612075427}
   - component: {fileID: 243751072218394357}
+  - component: {fileID: 4001564583289249568}
   m_Layer: 3
   m_Name: DiceVisual
   m_TagString: Untagged
@@ -1546,6 +1561,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4001564583289249568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5229329973510894602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f7127db42ff2df4c820e7a28bb95ec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bodyMeshRenderer: {fileID: 243751072218394357}
 --- !u!1 &5446309666000788949
 GameObject:
   m_ObjectHideFlags: 0
@@ -2328,6 +2356,7 @@ GameObject:
   - component: {fileID: 3729965491587357254}
   - component: {fileID: 5190812251388987647}
   - component: {fileID: 4313543492094861412}
+  - component: {fileID: 1838802692905404303}
   m_Layer: 3
   m_Name: DiceVisual
   m_TagString: Untagged
@@ -2401,6 +2430,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1838802692905404303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8435642595321330289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f7127db42ff2df4c820e7a28bb95ec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bodyMeshRenderer: {fileID: 4313543492094861412}
 --- !u!1 &8507672589905827015
 GameObject:
   m_ObjectHideFlags: 0

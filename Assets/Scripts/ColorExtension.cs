@@ -12,8 +12,15 @@ public static class ColorExtension
 
     public static Color HEXToColor(this string colorString)
     {
-        colorString = colorString.Replace("0x", "");
-        colorString = colorString.Replace("#", "");
+        if (colorString.Contains("#"))
+        {
+            colorString = colorString.Replace("#", "");
+        }
+
+        if (colorString.Contains("0x"))
+        {
+            colorString = colorString.Replace("0x", "");
+        }
 
         byte a = 255;
         byte r = byte.Parse(colorString.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);

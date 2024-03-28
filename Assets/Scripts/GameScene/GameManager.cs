@@ -248,6 +248,6 @@ public class GameManager : NetworkBehaviour
 
     private string CreateOnLastCardLeftGameMessage()
     {
-        return $"KEEP MOVING TO ADJACENT FIELDS AROUND LAST CARD";
+        return $"KEEP MOVING TOWARDS ADJACENT FIELDS AROUND LAST CARD";
     }
 }

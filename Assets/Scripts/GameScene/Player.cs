@@ -25,6 +25,7 @@ public class Player : NetworkBehaviour
     ParticleSystem playerParticleSystem;
     PlayerAnimator playerAnimator;
 
+
     public StateEnum currentState = StateEnum.WaitingForPlayers;
     private int defaultMovement = 0;
     private int gamesNeededForDefeat = 3;
