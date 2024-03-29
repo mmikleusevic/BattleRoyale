@@ -43,7 +43,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
         if (Player.LocalInstance == PlayerManager.Instance.ActivePlayer)
         {
-            GridManager.Instance.ToggleCardToGetGridPositionsWherePlayerCanInteract();
+            GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
         }
     }
 

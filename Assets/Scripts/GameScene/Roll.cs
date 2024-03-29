@@ -22,7 +22,7 @@ public class Roll : MonoBehaviour
 
     [SerializeField] private RollResults rollResults;
 
-    private readonly float interactDistance = 0.55f;
+    private readonly float interactDistance = 0.8f;
 
     private float rotationTime = 3f;
     private float turnToSideTime = 1f;

@@ -172,7 +172,7 @@ public class Player : NetworkBehaviour
 
         if (CurrentTile != null)
         {
-            GridManager.Instance.ToggleCardToGetGridPositionsWherePlayerCanInteract();
+            GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
 
             OnPlayerMoved?.Invoke();
 
@@ -201,7 +201,7 @@ public class Player : NetworkBehaviour
 
         SaveWonCardClientRpc(networkObjectReferenceCard, networkObjectReferencePlayer);
 
-        GridManager.Instance.DecreaseNumberOfLeftCards();
+        GridManager.Instance.CheckNumberOfLeftCards();
     }
 
     [ClientRpc]
@@ -367,7 +367,7 @@ public class Player : NetworkBehaviour
 
         AddSipsToPlayerServerRpc(NetworkObject, SipValue);
 
-        GridManager.Instance.ToggleCardToGetGridPositionsWherePlayerCanInteract();
+        GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
         PCInfoUI.Instance.SetIsDeadText();
 
         OnPlayerResurrected?.Invoke();
@@ -639,7 +639,7 @@ public class Player : NetworkBehaviour
         ActionPoints = defaultActionPoints;
         Movement = defaultMovement;
 
-        GridManager.Instance.EnableGridPositionsWherePlayerCanInteract();
+        GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
 
         OnPlayerTurnSet?.Invoke();
     }

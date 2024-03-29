@@ -190,7 +190,7 @@ public class GameManager : NetworkBehaviour
         PlayerManager.Instance.SetPlayerReadyServerRpc(true);
     }
 
-    public void DisablePlayersWithFourCardsLessThanFirst()
+    public void DisablePlayersOnLastCard()
     {
         List<Player> playersOrderedByMostCards = PlayerManager.Instance.ActivePlayers.OrderByDescending(a => a.EquippedCards.Count + a.UnequippedCards.Count).ToList();
 
@@ -212,7 +212,6 @@ public class GameManager : NetworkBehaviour
         }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnLastCardLeftGameMessage());
-        FadeMessageUI.Instance.StartFadeMessage(CreateOnLastCardLeftGameMessage());
     }
 
     public void DetermineWinnerAndLosers()
@@ -246,7 +245,7 @@ public class GameManager : NetworkBehaviour
         return $"<color=#{player.HexPlayerColor}>{player.PlayerName} </color>HAD MORE THAN A 3-CARD DIFFERENCE COMPARED TO THE FIRST PLAYER, AND THUS HAS LOST";
     }
 
-    private string CreateOnLastCardLeftGameMessage()
+    public string CreateOnLastCardLeftGameMessage()
     {
         return $"KEEP MOVING TOWARDS ADJACENT FIELDS AROUND LAST CARD";
     }

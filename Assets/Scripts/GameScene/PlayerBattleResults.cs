@@ -414,7 +414,7 @@ public class PlayerBattleResults : NetworkBehaviour
     [ClientRpc]
     private void CallOnAfterBattleResolvedClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        GridManager.Instance.EnableGridPositionsWherePlayerCanInteract();
+        GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
 
         OnAfterBattleResolved?.Invoke();
     }

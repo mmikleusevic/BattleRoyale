@@ -1,7 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using Unity.Burst.CompilerServices;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GridManager : NetworkBehaviour
 {
@@ -19,10 +23,11 @@ public class GridManager : NetworkBehaviour
     private Dictionary<Vector2, Tile> gridTiles;
     private List<int> randomNumberList;
 
-    private Vector2[,] movementVectors;
+    private Vector2[][] movementVectors;
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
     private Vector2 cardDimensions;
+    private Tile lastTile;
 
     public void Awake()
     {
@@ -49,33 +54,38 @@ public class GridManager : NetworkBehaviour
         GenerateRandomCardNumbers();
     }
 
-    public void ToggleCardToGetGridPositionsWherePlayerCanInteract()
+    public void GetGridPositionsWherePlayerCanInteract()
     {
         DisableCards();
-        EnableGridPositionsWherePlayerCanInteract();
+
+        if (!lastTile)
+        {
+            EnableGridPositions();
+        }
+        else
+        {
+            EnableGridPositionsWhenLastCardLeft();
+        }
     }
 
     public void ToggleCardToGetGridPositionsWherePlayerCanGoDie()
     {
         DisableCards();
-        EnableGridPositionsWherePlayerCanGoDie();
+        EnableGridPositionsForDying();
     }
 
     private void SetMovementVectors()
     {
-        movementVectors = new Vector2[3, 3];
+        movementVectors = new Vector2[3][];
 
-        int k = 0;
-        int l = 0;
-        for (int i = -1; i < 2; i++)
+        for (int i = 0; i < 3; i++)
         {
-            for (int j = -1; j < 2; j++)
+            movementVectors[i] = new Vector2[3];
+
+            for (int j = 0; j < 3; j++)
             {
-                movementVectors[k, l] = new Vector2(i, j);
-                l++;
+                movementVectors[i][j] = new Vector2(i - 1, j - 1);
             }
-            l = 0;
-            k++;
         }
     }
 
@@ -198,18 +208,19 @@ public class GridManager : NetworkBehaviour
         }
     }
 
-    public void EnableGridPositionsWherePlayerCanGoDie()
+    private void EnableGridPositionsForDying()
     {
-        int lengthX = movementVectors.GetLength(0);
-        int lengthY = movementVectors.GetLength(1);
+        int lengthX = movementVectors.Length;
 
         Player player = Player.LocalInstance;
 
         for (int i = 0; i < lengthX; i++)
         {
+            int lengthY = movementVectors[i].Length;
+
             for (int j = 0; j < lengthY; j++)
             {
-                Vector2 position = player.GridPosition - movementVectors[i, j];
+                Vector2 position = player.GridPosition - movementVectors[i][j];
 
                 if (gridTiles.ContainsKey(position))
                 {
@@ -227,36 +238,92 @@ public class GridManager : NetworkBehaviour
         }
     }
 
-    public void EnableGridPositionsWherePlayerCanInteract()
+    private void EnableGridPositions()
     {
-        int lengthX = movementVectors.GetLength(0);
-        int lengthY = movementVectors.GetLength(1);
+        int lengthX = movementVectors.Length;
 
         Player player = Player.LocalInstance;
 
         for (int i = 0; i < lengthX; i++)
         {
+            int lengthY = movementVectors[i].Length;
+
             for (int j = 0; j < lengthY; j++)
             {
-                Vector2 position = player.GridPosition - movementVectors[i, j];
+                Vector2 position = player.GridPosition - movementVectors[i][j];
 
-                if (gridTiles.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
+                CheckIfPlayerCanInteract(position, player);
+            }
+        }
+    }
+
+    private void EnableGridPositionsWhenLastCardLeft()
+    {
+        Player player = Player.LocalInstance;
+
+        List<Vector2> enabledTiles = new List<Vector2>();
+
+        if (IsSameOrAdjacentTile(player.GridPosition, lastTile.GridPosition))
+        {
+            foreach (Vector2[] row in movementVectors)
+            {
+                foreach (Vector2 rowPosition in row)
                 {
-                    Tile tile = gridTiles[position];
+                    Vector2 newPosition = lastTile.GridPosition + rowPosition;
+                    enabledTiles.Add(newPosition);
+                }
+            }
+        }
+        else
+        {
+            foreach (Vector2[] row in movementVectors)
+            {
+                foreach (Vector2 adjacentPosition in row)
+                {
+                    Vector2 newPosition = player.GridPosition + adjacentPosition;
+                    Vector2 directionToLastTile = lastTile.GridPosition - newPosition;
 
-                    if (player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePlayersOnTheCard() != true)
-                    {
-                        continue;
-                    }
+                    bool isAlongDirectionToLastTile = Vector2.Dot(directionToLastTile.normalized, adjacentPosition.normalized) > 0;
 
-                    if (!player.IsDead.Value)
+                    if (isAlongDirectionToLastTile)
                     {
-                        tile.Enable();
-                        tile.ShowHighlight();
+                        enabledTiles.Add(newPosition);
                     }
                 }
             }
         }
+
+        foreach (Vector2 position in enabledTiles)
+        {
+            CheckIfPlayerCanInteract(position, player);
+        }
+    }
+
+    private void CheckIfPlayerCanInteract(Vector2 position, Player player)
+    {
+        if (gridTiles.ContainsKey(position) && (player.Movement > 0 || player.ActionPoints > 0))
+        {
+            Tile tile = gridTiles[position];
+
+            if (player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePlayersOnTheCard() != true)
+            {
+                return;
+            }
+
+            if (!player.IsDead.Value)
+            {
+                tile.Enable();
+                tile.ShowHighlight();
+            }
+        }
+    }
+
+    bool IsSameOrAdjacentTile(Vector2 currentPosition, Vector2 targetPosition)
+    {
+        int deltaX = (int)Mathf.Abs(currentPosition.x - targetPosition.x);
+        int deltaY = (int)Mathf.Abs(currentPosition.y - targetPosition.y);
+
+        return (deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1) || (deltaX == 1 && deltaY == 1) || (deltaX == 0 && deltaY == 0);
     }
 
     public void DisableCards()
@@ -275,17 +342,30 @@ public class GridManager : NetworkBehaviour
         return cardSOs[index];
     }
 
-    public void DecreaseNumberOfLeftCards()
+    public void CheckNumberOfLeftCards()
     {
         int numberOfLeftCards = gridTiles.Values.Where(a => a.Card != null).Count();
 
         if (numberOfLeftCards == 1)
         {
-            GameManager.Instance.DisablePlayersWithFourCardsLessThanFirst();
+            Tile tile = gridTiles.Values.FirstOrDefault(a => a.Card != null);
+            SetLastTileClientRpc(tile.NetworkObject);
+
+            GameManager.Instance.DisablePlayersOnLastCard();
         }
         else if (numberOfLeftCards == 0)
         {
             GameManager.Instance.DetermineWinnerAndLosers();
         }
+    }
+
+    [ClientRpc]
+    private void SetLastTileClientRpc(NetworkObjectReference cardNetworkObjectReference)
+    {
+        Tile lastTile = Tile.GetTileFromNetworkReference(cardNetworkObjectReference);
+
+        this.lastTile = lastTile;
+
+        FadeMessageUI.Instance.StartFadeMessage(GameManager.Instance.CreateOnLastCardLeftGameMessage());
     }
 }
