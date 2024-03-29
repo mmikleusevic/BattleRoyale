@@ -81,6 +81,11 @@ public class PlayerManager : NetworkBehaviour
     {
         ActivePlayers.Remove(player);
 
+        if (ActivePlayers.Count == 1)
+        {
+            GameManager.Instance.DetermineWinnerAndLosers();
+        }
+
         Player lastPlayer = ActivePlayers.LastOrDefault();
         LastPlayer = lastPlayer;
     }

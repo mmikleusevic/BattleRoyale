@@ -40,7 +40,7 @@ public class CardBattleResults : NetworkBehaviour
 
         string[] messages = null;
 
-        if (sum >= tile.Card.Value || isThreeOfAKind)
+        if (sum >= tile.Card.WinValue || isThreeOfAKind)
         {
             tile.DisableCard();
             messages = SendCardWonMessageToMessageUI();

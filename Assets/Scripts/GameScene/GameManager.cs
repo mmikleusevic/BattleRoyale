@@ -228,16 +228,21 @@ public class GameManager : NetworkBehaviour
 
         ulong[] loserIds = PlayerManager.Instance.ActivePlayers.FindAll(a => a.ClientId.Value != winner.ClientId.Value).Select(a => a.ClientId.Value).ToArray();
 
-        ClientRpcParams clientRpcParamsLosers = new ClientRpcParams
+
+        if (loserIds.Length > 0)
         {
-            Send = new ClientRpcSendParams
+            ClientRpcParams clientRpcParamsLosers = new ClientRpcParams
             {
-                TargetClientIds = loserIds
-            }
-        };
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = loserIds
+                }
+            };
+
+            StateManager.Instance.SetStateToClients(StateEnum.Lost, clientRpcParamsLosers);
+        }
 
         StateManager.Instance.SetStateToClients(StateEnum.Won, clientRpcParamsWinner);
-        StateManager.Instance.SetStateToClients(StateEnum.Lost, clientRpcParamsLosers);
     }
 
     private string CreateOnPlayerLostGameMessage(Player player)

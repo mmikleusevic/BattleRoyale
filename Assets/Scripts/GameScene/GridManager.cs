@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using Unity.Burst.CompilerServices;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class GridManager : NetworkBehaviour
 {
@@ -18,6 +14,7 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private Tile tileTemplate;
     [SerializeField] private List<CardSO> cardSOs;
     [SerializeField] private Vector2[] placementTiles;
+    [SerializeField] private Material lastCardMaterial;
 
     private Dictionary<int, int> randomCardNumberCountChecker;
     private Dictionary<Vector2, Tile> gridTiles;
@@ -349,6 +346,12 @@ public class GridManager : NetworkBehaviour
         if (numberOfLeftCards == 1)
         {
             Tile tile = gridTiles.Values.FirstOrDefault(a => a.Card != null);
+
+            if (tile.Card.WinValue > 12)
+            {
+                tile.Card.SetLastCardValueServerRpc();
+            }
+
             SetLastTileClientRpc(tile.NetworkObject);
 
             GameManager.Instance.DisablePlayersOnLastCard();
@@ -367,5 +370,10 @@ public class GridManager : NetworkBehaviour
         this.lastTile = lastTile;
 
         FadeMessageUI.Instance.StartFadeMessage(GameManager.Instance.CreateOnLastCardLeftGameMessage());
+    }
+
+    public Material GetLastCardMaterial()
+    {
+        return lastCardMaterial;
     }
 }

@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class Card : NetworkBehaviour
 {
-    public int Value { get; private set; }
+    [SerializeField] private MeshRenderer costRenderer;
+
+    public int Points { get; private set; }
+    public int WinValue { get; private set; }
     public string Name { get; private set; }
     public Sprite Sprite { get; private set; }
 
@@ -15,7 +18,8 @@ public class Card : NetworkBehaviour
 
         Sprite = cardSO.cardSprite;
         Name = cardSO.name.ToUpper();
-        Value = cardSO.cost;
+        Points = cardSO.cost;
+        WinValue = cardSO.cost;
     }
 
     public static Card GetCardFromNetworkReference(NetworkObjectReference networkObjectReference)
@@ -25,5 +29,25 @@ public class Card : NetworkBehaviour
         if (networkObject == null) return null;
 
         return networkObject.GetComponent<Card>();
+    }
+
+    [ServerRpc]
+    public void SetLastCardValueServerRpc()
+    {
+        SetLastCardValueClientRpc();
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateMessageForLastCard());
+    }
+
+    [ClientRpc]
+    private void SetLastCardValueClientRpc()
+    {
+        WinValue = 12;
+        costRenderer.material = GridManager.Instance.GetLastCardMaterial();
+    }
+
+    private string CreateMessageForLastCard()
+    {
+        return $"{Name} WIN VALUE CHANGED TO {WinValue} POINTS YOU GET FOR WINNING ARE STILL {Points}";
     }
 }

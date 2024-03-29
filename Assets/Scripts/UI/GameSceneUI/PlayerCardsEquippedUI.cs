@@ -11,7 +11,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 {
     public static event Action OnPreturnCardsInstantiated;
     public static event Action OnPlayerCardsEquippedUIClosed;
-    public static event Action OnShowUnequippedCards;
+    public static event Action<Player> OnShowUnequippedCards;
     public static event Action<ulong> OnWonEquippedCard;
 
     [SerializeField] private RectTransform PlayerCardsUIRectTransform;
@@ -41,7 +41,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         showUneqippedCardsButton.onClick.AddListener(() =>
         {
-            OnShowUnequippedCards?.Invoke();
+            OnShowUnequippedCards?.Invoke(player);
         });
 
         takeCardButton.onClick.AddListener(() =>
@@ -80,6 +80,8 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
     private void PlayerPreturn_OnPlayerPreturn()
     {
+        Hide();
+
         titleText.text = "PRETURN(PRESS CARD TO SWAP IT, NEED TO HAVE 3 EQUIPED IF POSSIBLE)\nEQUIPPED CARDS:";
 
         player = Player.LocalInstance;

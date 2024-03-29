@@ -197,7 +197,7 @@ public class Player : NetworkBehaviour
     {
         Card card = Card.GetCardFromNetworkReference(networkObjectReferenceCard);
 
-        AddOrSubtractPoints(card.Value);
+        AddOrSubtractPoints(card.Points);
 
         SaveWonCardClientRpc(networkObjectReferenceCard, networkObjectReferencePlayer);
 
@@ -336,8 +336,8 @@ public class Player : NetworkBehaviour
 
         Card card = Card.GetCardFromNetworkReference(cardNetworkObjectReference);
 
-        winner.AddOrSubtractPoints(card.Value);
-        loser.AddOrSubtractPoints(-card.Value);
+        winner.AddOrSubtractPoints(card.Points);
+        loser.AddOrSubtractPoints(-card.Points);
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerTakenCardMessage(card, winner, loser));
 

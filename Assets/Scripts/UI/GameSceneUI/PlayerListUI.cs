@@ -41,8 +41,6 @@ public class PlayerListUI : MonoBehaviour
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
         PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
-        Won.OnWon -= OnGameOver;
-        Lost.OnLost -= OnGameOver;
     }
 
     private void ActionsUI_OnAttackPlayer(Tile tile)
@@ -114,6 +112,9 @@ public class PlayerListUI : MonoBehaviour
 
     private void OnGameOver(string obj)
     {
+        Won.OnWon -= OnGameOver;
+        Lost.OnLost -= OnGameOver;
+
         gameOverText.gameObject.SetActive(true);
         closeButton.gameObject.SetActive(false);
         infoButton.gameObject.SetActive(false);
