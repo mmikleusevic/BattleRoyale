@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -131,13 +131,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: image_0
+      name: Instructions_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1956
-        height: 16588
+        width: 1889
+        height: 16554
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,8 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dda55615a9c1a464f838a30f9bafb4f9
-      internalID: -1893662319
+      spriteID: bc94fe17a3d1abc4e80b10daf65b1b20
+      internalID: 1597046940
       vertices: []
       indices: 
       edges: []
@@ -154,7 +154,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 904d5bebb4d738b489df49973f21eb2e
+    spriteID: 5f6e4ce089ab03b48aed12499d15d481
     internalID: 0
     vertices: []
     indices: 
@@ -162,7 +162,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      image_0: -1893662319
+      Instructions_0: 1597046940
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
