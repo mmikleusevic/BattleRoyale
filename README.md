@@ -4,6 +4,8 @@ Download link: https://www.dropbox.com/scl/fo/p04i1lqw55bn4m020n6x2/h?rlkey=qk7a
 <h1 align="center">Battle Royale </h1>
 <h1 align="center">Game Instructions  </h1>
 
+<h3> 2-6 Players </h3>
+
 <h1>1. Setting up the grid </h1>
 
 The cards are arranged in a diamond shape, with a height and width of 7 cards, face up. The arranged map should look like this:  
