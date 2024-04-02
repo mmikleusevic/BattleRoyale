@@ -50,4 +50,8 @@ public class Card : NetworkBehaviour
     {
         return $"{Name} WIN VALUE CHANGED TO {WinValue} POINTS YOU GET FOR WINNING ARE STILL {Points}";
     }
+
+    public virtual void Equip(Player player) { }
+    public virtual void Unequip(Player player) { }
+    public virtual void UseAbility() { }
 }

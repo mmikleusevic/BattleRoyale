@@ -99,7 +99,7 @@ public class PlayerListUI : MonoBehaviour
         {
             RestoreOriginalOrder();
         }
-        else
+        else if (container.childCount > 1)
         {
             SetAsLastSibling();
         }

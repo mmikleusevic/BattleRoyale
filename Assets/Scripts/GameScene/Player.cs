@@ -47,7 +47,7 @@ public class Player : NetworkBehaviour
     public int SipCounter { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
-    public int EnemyRollWinsToLose { get; private set; }
+    public int RollsNeededToLose { get; private set; }
     public bool PickPlaceToDie { get; private set; }
 
     private void Awake()
@@ -59,7 +59,7 @@ public class Player : NetworkBehaviour
         EquippedCards = new List<Card>();
         UnequippedCards = new List<Card>();
 
-        EnemyRollWinsToLose = gamesNeededForDefeat;
+        RollsNeededToLose = gamesNeededForDefeat;
         Movement = defaultMovement;
         ActionPoints = defaultActionPoints;
     }
@@ -224,6 +224,8 @@ public class Player : NetworkBehaviour
         {
             player.EquippedCards.Add(card);
 
+            card.Equip(player);
+
             MessageUI.Instance.SetMessage(CreateOnPlayerEquippedCardMessage(player, card));
         }
         else
@@ -263,6 +265,8 @@ public class Player : NetworkBehaviour
         {
             player.UnequippedCards.Remove(unequippedCard);
             player.EquippedCards.Insert(equippedCardIndex, unequippedCard);
+
+            unequippedCard.Equip(player);
         }
         else
         {
@@ -271,6 +275,9 @@ public class Player : NetworkBehaviour
 
             player.EquippedCards.Insert(equippedCardIndex, unequippedCard);
             player.UnequippedCards.Insert(unequippedCardIndex, equippedCard);
+
+            equippedCard.Unequip(player);
+            unequippedCard.Equip(player);
         }
 
         if (player == LocalInstance)
@@ -283,6 +290,8 @@ public class Player : NetworkBehaviour
     private void RemoveCardFromLoser(Player loser, Card card)
     {
         loser.EquippedCards.Remove(card);
+
+        card.Unequip(loser);
 
         MessageUI.Instance.SetMessage(CreateOnPlayerRemovedCardMessage(loser, card));
     }
@@ -668,5 +677,10 @@ public class Player : NetworkBehaviour
         player.Disabled = true;
 
         PlayerManager.Instance.RemoveFromActivePlayers(player);
+    }
+
+    public void SetRollsNeededToLose(int value)
+    {
+        RollsNeededToLose += value;
     }
 }

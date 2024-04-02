@@ -106,8 +106,8 @@ public class PlayerBattleResults : NetworkBehaviour
             }
         };
 
-        player1BattlesNeeded = enemyPlayer.EnemyRollWinsToLose;
-        player2BattlesNeeded = player.EnemyRollWinsToLose;
+        player1BattlesNeeded = enemyPlayer.RollsNeededToLose;
+        player2BattlesNeeded = player.RollsNeededToLose;
 
         clientRolled.Clear();
         battleRolls.Clear();
