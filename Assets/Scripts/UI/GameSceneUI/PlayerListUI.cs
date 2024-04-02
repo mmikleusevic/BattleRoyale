@@ -22,7 +22,7 @@ public class PlayerListUI : MonoBehaviour
         ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
         PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
-        PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsUI_OnPlayerCardsUIClosed;
+        PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.Instance.OnActivePlayerChanged += PlayerManager_OnActivePlayerChanged;
         Won.OnWon += OnGameOver;
         Lost.OnLost += OnGameOver;
@@ -39,7 +39,7 @@ public class PlayerListUI : MonoBehaviour
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
         PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
-        PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsUI_OnPlayerCardsUIClosed;
+        PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
     }
 
@@ -91,15 +91,17 @@ public class PlayerListUI : MonoBehaviour
         RestoreOriginalOrder();
     }
 
-    private void PlayerCardsUI_OnPlayerCardsUIClosed()
+    private void PlayerCardsEquippedUI_OnPlayerCardsUIClosed()
     {
-        if (container.childCount > 1)
+        StateEnum stateEnum = StateManager.Instance.GetState();
+
+        if (stateEnum == StateEnum.Won || stateEnum == StateEnum.Lost)
         {
-            SetAsLastSibling();
+            RestoreOriginalOrder();
         }
         else
         {
-            RestoreOriginalOrder();
+            SetAsLastSibling();
         }
     }
 
