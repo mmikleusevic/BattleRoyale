@@ -257,6 +257,7 @@ public class GridManager : NetworkBehaviour
     private void EnableGridPositionsWhenLastCardLeft()
     {
         Player player = Player.LocalInstance;
+        Vector2 directionToLastTile = lastTile.GridPosition - player.GridPosition;
 
         List<Vector2> enabledTiles = new List<Vector2>();
 
@@ -278,9 +279,9 @@ public class GridManager : NetworkBehaviour
                 foreach (Vector2 adjacentPosition in row)
                 {
                     Vector2 newPosition = player.GridPosition + adjacentPosition;
-                    Vector2 directionToLastTile = lastTile.GridPosition - newPosition;
+                    Vector2 vectorToPlayer = newPosition - player.GridPosition;
 
-                    bool isAlongDirectionToLastTile = Vector2.Dot(directionToLastTile.normalized, adjacentPosition.normalized) > 0;
+                    bool isAlongDirectionToLastTile = Vector2.Dot(directionToLastTile, vectorToPlayer) > 0;
 
                     if (isAlongDirectionToLastTile)
                     {

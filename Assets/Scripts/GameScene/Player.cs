@@ -18,7 +18,6 @@ public class Player : NetworkBehaviour
     public static event Action OnPlayerResurrected;
     public static event Action<Card> OnPlayerUnequippedCardAdded;
     public static event Action OnNoMoreMovementOrActionPoints;
-    public static event Action OnMovementChanged;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -693,7 +692,7 @@ public class Player : NetworkBehaviour
 
         defaultMovement += value;
 
-        OnMovementChanged?.Invoke();
+        PCInfoUI.Instance.SetMovementsText();
     }
 
     public void SetRollsNeededToLose(int value)
