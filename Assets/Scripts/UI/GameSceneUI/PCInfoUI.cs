@@ -20,6 +20,7 @@ public class PCInfoUI : MonoBehaviour
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerMoved += Player_OnPlayerMoved;
+        Player.OnMovementChanged += Player_OnMovementChanged;
 
         Hide();
     }
@@ -29,6 +30,7 @@ public class PCInfoUI : MonoBehaviour
         Initiative.OnInitiativeStart -= Initiative_OnInitiativeStart;
         Player.OnPlayerTurnSet -= Player_OnPlayerTurnSet;
         Player.OnPlayerMoved -= Player_OnPlayerMoved;
+        Player.OnMovementChanged -= Player_OnMovementChanged;
     }
 
     private void Initiative_OnInitiativeStart()
@@ -52,6 +54,11 @@ public class PCInfoUI : MonoBehaviour
     {
         SetMovementsText();
         SetActionsText();
+    }
+
+    private void Player_OnMovementChanged()
+    {
+        SetMovementsText();
     }
 
     public void SetMovementsText()

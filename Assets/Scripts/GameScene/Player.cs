@@ -18,6 +18,7 @@ public class Player : NetworkBehaviour
     public static event Action OnPlayerResurrected;
     public static event Action<Card> OnPlayerUnequippedCardAdded;
     public static event Action OnNoMoreMovementOrActionPoints;
+    public static event Action OnMovementChanged;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -679,8 +680,24 @@ public class Player : NetworkBehaviour
         PlayerManager.Instance.RemoveFromActivePlayers(player);
     }
 
-    public void SetRollsNeededToLose(int value)
+    public void SetMovement(int value)
     {
+        if (Movement <= 0 && value < 0)
+        {
+            Movement = 0;
+        }
+        else
+        {
+            Movement += value;
+        }
+
+        defaultMovement += value;
+
+        OnMovementChanged?.Invoke();
+    }
+
+    public void SetRollsNeededToLose(int value)
+    {   
         RollsNeededToLose += value;
     }
 }
