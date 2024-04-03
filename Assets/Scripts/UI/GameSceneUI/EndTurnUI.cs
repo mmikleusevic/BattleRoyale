@@ -20,7 +20,7 @@ public class EndTurnUI : MonoBehaviour
 
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
-        Player.OnNoMoreMovementOrActionPoints += Player_OnNoMoreMovementOrActionPoints;
+        Player.OnMovementOrActionPoints += Player_OnMovementOrActionPoints;
         PlayerBattleResults.OnPlayerBattleShowUI += PlayerBattleResults_OnPlayerBattleShowUI;
 
         ParticleSystemManager.Instance.Stop(particleGlow);
@@ -32,7 +32,7 @@ public class EndTurnUI : MonoBehaviour
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
-        Player.OnNoMoreMovementOrActionPoints -= Player_OnNoMoreMovementOrActionPoints;
+        Player.OnMovementOrActionPoints -= Player_OnMovementOrActionPoints;
         PlayerBattleResults.OnPlayerBattleShowUI -= PlayerBattleResults_OnPlayerBattleShowUI;
 
         endTurnButton.onClick.RemoveAllListeners();
@@ -51,9 +51,17 @@ public class EndTurnUI : MonoBehaviour
         ToggleParticleEffect();
     }
 
-    private void Player_OnNoMoreMovementOrActionPoints()
+    private void Player_OnMovementOrActionPoints()
     {
-        actionsAndMovementUsed = true;
+        if (Player.LocalInstance.Movement == 0 && Player.LocalInstance.ActionPoints == 0)
+        {
+            actionsAndMovementUsed = true;
+        }
+        else
+        {
+            actionsAndMovementUsed = false;
+        }
+
         ToggleParticleEffect();
     }
 

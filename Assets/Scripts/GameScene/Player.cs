@@ -17,7 +17,8 @@ public class Player : NetworkBehaviour
     public static event Action<ulong> OnPlayerSelectedPlaceToDie;
     public static event Action OnPlayerResurrected;
     public static event Action<Card> OnPlayerUnequippedCardAdded;
-    public static event Action OnNoMoreMovementOrActionPoints;
+    public static event Action OnMovementOrActionPoints;
+    public static event Action OnAction;
 
     [SerializeField] private SetVisual playerVisual;
     [SerializeField] private GameObject particleCircle;
@@ -44,6 +45,7 @@ public class Player : NetworkBehaviour
     public int Movement { get; private set; }
     public int ActionPoints { get; private set; }
     public int SipValue { get; private set; }
+    public int ActionSipValue { get; private set; } = 0;
     public int SipCounter { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
@@ -225,6 +227,8 @@ public class Player : NetworkBehaviour
             player.EquippedCards.Add(card);
 
             card.Equip(player);
+
+            GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
 
             MessageUI.Instance.SetMessage(CreateOnPlayerEquippedCardMessage(player, card));
         }
@@ -623,13 +627,19 @@ public class Player : NetworkBehaviour
         CheckIfMovementAndActionsAreZero();
 
         PCInfoUI.Instance.SetActionsText();
+
+        if (ActionSipValue > 0)
+        {
+            AddSipsToPlayerServerRpc(NetworkObject, ActionSipValue);
+            OnAction?.Invoke();
+        }
     }
 
     private void CheckIfMovementAndActionsAreZero()
     {
         if (Movement == 0 && ActionPoints == 0)
         {
-            OnNoMoreMovementOrActionPoints?.Invoke();
+            OnMovementOrActionPoints?.Invoke();
         }
     }
 
@@ -687,6 +697,8 @@ public class Player : NetworkBehaviour
 
         defaultMovement += value;
 
+        CheckIfMovementAndActionsAreZero();
+
         PCInfoUI.Instance.SetMovementsText();
     }
 
@@ -703,5 +715,20 @@ public class Player : NetworkBehaviour
     public void AddOrSubtractSipValue(int value)
     {
         SipValue += value;
+    }
+
+    public void AddOrSubtractActionSipValue(int value)
+    {
+        ActionSipValue += value;
+    }
+
+    public void SetActionPoints(int value)
+    {
+        ActionPoints = value;
+        defaultActionPoints = value;
+
+        CheckIfMovementAndActionsAreZero();
+
+        PCInfoUI.Instance.SetActionsText();
     }
 }

@@ -8,6 +8,7 @@ public class DrinkReminderUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI drinkReminderText;
     [SerializeField] private RectTransform drinkReminderRectTransform;
     [SerializeField] private Button closeButton;
+    [SerializeField] private UIElementController uiElementController;
 
     private int numberOfSips;
 
@@ -21,30 +22,47 @@ public class DrinkReminderUI : MonoBehaviour
         });
 
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
+        Player.OnAction += Player_OnAction;
 
         HideInstant();
     }
 
     private void OnDestroy()
     {
-        closeButton.onClick.RemoveAllListeners();
         Player.OnPlayerResurrected -= Player_OnPlayerResurrected;
+        Player.OnAction -= Player_OnAction;
+
+        closeButton.onClick.RemoveAllListeners();
     }
 
     private void Player_OnPlayerResurrected()
     {
-        numberOfSips = Player.LocalInstance.SipValue;
-
-        if (numberOfSips > 1)
+        uiElementController.AddEvent(() =>
         {
-            drinkReminderText.text = $"Drink {numberOfSips} sips";
-        }
-        else
-        {
-            drinkReminderText.text = $"Drink {numberOfSips} sip";
-        }
+            numberOfSips = Player.LocalInstance.SipValue;
 
-        ShowWithAnimation();
+            SetText();
+
+            ShowWithAnimation();
+        });
+    }
+
+    private void Player_OnAction()
+    {
+        uiElementController.AddEvent(() =>
+        {
+            numberOfSips = Player.LocalInstance.ActionSipValue;
+
+            SetText();
+
+            ShowWithAnimation();
+        });
+    }
+
+    private void SetText()
+    {
+        string sipText = (numberOfSips > 1) ? "sips" : "sip";
+        drinkReminderText.text = $"Drink {numberOfSips} {sipText}";
     }
 
     public void ShowWithAnimation()
@@ -55,7 +73,7 @@ public class DrinkReminderUI : MonoBehaviour
 
     private void HideWithAnimation()
     {
-        drinkReminderRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
+        drinkReminderRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
 
     private void Show()
@@ -63,28 +81,25 @@ public class DrinkReminderUI : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    private void Hide()
+    {
+        gameObject.SetActive(false);
+        uiElementController.CloseUIElement();
+    }
+
     private void HideInstant()
     {
-        drinkReminderRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => gameObject.SetActive(false));
+        drinkReminderRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
 
     private string[] CreateOnPlayerDrinkReminderMessage()
     {
-        if (numberOfSips == 1)
+        string sipText = (numberOfSips > 1) ? " sips" : " sip";
+
+        return new string[]
         {
-            return new string[]
-            {
-                $"YOU DRANK 1 SIP",
-                $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>drank 1 sip"
-            };
-        }
-        else
-        {
-            return new string[]
-            {
-                $"YOU DRANK {numberOfSips} SIPS",
-                $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>drank {numberOfSips} sips"
-            };
-        }
+            $"YOU DRANK {numberOfSips + sipText}",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>drank {numberOfSips + sipText}"
+        };
     }
 }
