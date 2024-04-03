@@ -725,10 +725,23 @@ public class Player : NetworkBehaviour
     public void SetActionPoints(int value)
     {
         ActionPoints = value;
-        defaultActionPoints = value;
 
         CheckIfMovementAndActionsAreZero();
 
         PCInfoUI.Instance.SetActionsText();
+    }
+
+    public void SubtractActionPoints(int value)
+    {
+        ActionPoints += value;
+
+        CheckIfMovementAndActionsAreZero();
+
+        PCInfoUI.Instance.SetActionsText();
+    }
+
+    public void SetDefaultActionPoints(int value)
+    {
+        defaultActionPoints += value;        
     }
 }
