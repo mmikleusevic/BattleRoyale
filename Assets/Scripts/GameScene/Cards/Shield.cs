@@ -6,11 +6,11 @@ public class Shield : Card
 
     public override void Equip(Player player)
     {
-        player.SetRollsNeededToLose(value);
+        player.AddOrSubtractRollsNeededToLose(value);
     }
 
     public override void Unequip(Player player)
     {
-        player.SetRollsNeededToLose(-value);
+        player.AddOrSubtractRollsNeededToLose(-value);
     }
 }

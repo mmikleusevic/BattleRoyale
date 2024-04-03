@@ -118,7 +118,7 @@ public class PlayerBattleResults : NetworkBehaviour
         clientRolled[player.ClientId.Value] = false;
         clientRolled[enemyPlayer.ClientId.Value] = false;
 
-        string message = SendCurrentBattleResultMessage(player1, player1Wins, string.Empty);
+        string message = SendCurrentBattleResultMessage(player1, player1Wins, string.Empty, player1BattlesNeeded);
         SetClientRpcParamsForBattle();
         SetBattleResultInfoClientRpc(message);
 
@@ -345,7 +345,7 @@ public class PlayerBattleResults : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void CallOnBattleReRollServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        string message = SendCurrentBattleResultMessage(player1, player1Wins, string.Empty);
+        string message = SendCurrentBattleResultMessage(player1, player1Wins, string.Empty, player1BattlesNeeded);
         CallOnBattleReRoll(message);
         CallOnBattleShowUIClientRpc(message, clientRpcParamsOther);
     }
@@ -364,7 +364,7 @@ public class PlayerBattleResults : NetworkBehaviour
         OnPlayerBattleShowUI?.Invoke(message);
     }
 
-    private string SendCurrentBattleResultMessage(Player player, int winCount, string message)
+    private string SendCurrentBattleResultMessage(Player player, int winCount, string message, int battlesNeeded)
     {
         if (message == string.Empty)
         {
@@ -374,13 +374,13 @@ public class PlayerBattleResults : NetworkBehaviour
         string playerName = player.PlayerName;
         string playerColor = player.HexPlayerColor;
 
-        message += $"<color=#{playerColor}>{playerName}</color>: {winCount}";
+        message += $"<color=#{playerColor}>{playerName}</color>: {winCount}/{battlesNeeded}";
 
         if (player == player2) return message;
 
         message += "\n";
 
-        return SendCurrentBattleResultMessage(player2, player2Wins, message);
+        return SendCurrentBattleResultMessage(player2, player2Wins, message, player2BattlesNeeded);
     }
 
     private void CallOnPlayerBattleRollOver(ulong winnerId, ClientRpcParams clientRpcParams = default)

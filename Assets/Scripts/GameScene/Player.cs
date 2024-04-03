@@ -482,11 +482,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public void SetSipValue(int value)
-    {
-        SipValue = value;
-    }
-
     [ServerRpc(RequireOwnership = false)]
     private void AddSipsToPlayerServerRpc(NetworkObjectReference playerNetworkObjectReference, int value, ServerRpcParams serverRpcParams = default)
     {
@@ -630,11 +625,6 @@ public class Player : NetworkBehaviour
         PCInfoUI.Instance.SetActionsText();
     }
 
-    public void AddOrSubtractPoints(int value)
-    {
-        Points.Value += value;
-    }
-
     private void CheckIfMovementAndActionsAreZero()
     {
         if (Movement == 0 && ActionPoints == 0)
@@ -679,7 +669,12 @@ public class Player : NetworkBehaviour
         PlayerManager.Instance.RemoveFromActivePlayers(player);
     }
 
-    public void SetMovement(int value)
+    public void SetSipValue(int value)
+    {
+        SipValue = value;
+    }
+
+    public void AddOrSubtractMovement(int value)
     {
         if (Movement <= 0 && value < 0)
         {
@@ -695,8 +690,18 @@ public class Player : NetworkBehaviour
         PCInfoUI.Instance.SetMovementsText();
     }
 
-    public void SetRollsNeededToLose(int value)
+    public void AddOrSubtractRollsNeededToLose(int value)
     {   
         RollsNeededToLose += value;
+    }
+
+    public void AddOrSubtractPoints(int value)
+    {
+        Points.Value += value;
+    }
+
+    public void AddOrSubtractSipValue(int value)
+    {
+        SipValue += value;
     }
 }
