@@ -134,10 +134,10 @@ TextureImporter:
       name: SacredRelic_0
       rect:
         serializedVersion: 2
-        x: 34
-        y: 30
-        width: 705
-        height: 987
+        x: 32
+        y: 34
+        width: 703
+        height: 982
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,8 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5364ef7834d2fa047ba624153518c379
-      internalID: 1576409482
+      spriteID: 6cbd4bba6101ef24a9854745c9d74a53
+      internalID: 1805487014
       vertices: []
       indices: 
       edges: []
@@ -154,7 +154,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 7891b0cc461fb97498ff9530eca49901
+    spriteID: 4aa1cb23e2cb3454485e914a730413ee
     internalID: 0
     vertices: []
     indices: 
@@ -162,7 +162,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      SacredRelic_0: 1576409482
+      SacredRelic_0: 1805487014
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
