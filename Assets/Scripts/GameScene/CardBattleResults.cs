@@ -32,15 +32,13 @@ public class CardBattleResults : NetworkBehaviour
         OnCardRoll?.Invoke();
     }
 
-    public void SetCardResult(List<int> results)
+    public void SetCardResult(List<int> results, int result)
     {
-        int sum = results.Sum();
-
         bool isThreeOfAKind = results.Distinct().Count() == 1;
 
         string[] messages = null;
 
-        if (sum >= tile.Card.WinValue || isThreeOfAKind)
+        if (result >= tile.Card.WinValue || isThreeOfAKind)
         {
             tile.DisableCard();
             messages = SendCardWonMessageToMessageUI();

@@ -8,9 +8,19 @@ using Random = UnityEngine.Random;
 public class Roll : MonoBehaviour
 {
     [SerializeField] private Camera diceCamera;
-    private Vector3 cameraPosition;
+    [SerializeField] private RollResults rollResults;
+
+    public int Modifier { get; private set; } = 0;
+
     private List<int> resultList;
+
+    private Vector3 cameraPosition;
+    private readonly float interactDistance = 0.8f;
+    private float rotationTime = 3f;
     private string[] messages;
+    private float turnToSideTime = 1f;
+    private int numberOfSideChanges = 12;
+    private float rotationSpeed = 540f;
 
     private void Awake()
     {
@@ -19,15 +29,6 @@ public class Roll : MonoBehaviour
         messages = new string[2];
         diceCamera = null;
     }
-
-    [SerializeField] private RollResults rollResults;
-
-    private readonly float interactDistance = 0.8f;
-
-    private float rotationTime = 3f;
-    private float turnToSideTime = 1f;
-    private int numberOfSideChanges = 12;
-    private float rotationSpeed = 540f;
 
     private int GetResult(Vector3 direction, Vector3 cameraPosition)
     {
@@ -69,6 +70,8 @@ public class Roll : MonoBehaviour
 
     public void RotateDice(GameObject[] dice, BattleType battleType)
     {
+        Modifier = 0;
+
         if (battleType == BattleType.Card)
         {
             StartCoroutine(Rotate(dice, BattleType.Card));
@@ -80,30 +83,30 @@ public class Roll : MonoBehaviour
     }
 
     private void CalculateCardBattleRoll(GameObject[] dice)
-    {        
+    {
+        resultList.Clear();
         int resultSum = 0;
 
-        foreach (GameObject die in dice)
+        for (int i = 0; i < dice.Length; i++)
         {
-            Vector3 dicePosition = die.transform.position;
+            Vector3 dicePosition = dice[i].transform.position;
 
             Vector3 direction = dicePosition - cameraPosition;
 
             int result = GetResult(direction, cameraPosition);
 
-            if (RollType.rollType == RollTypeEnum.CardAttack)
-            {
-                resultList.Add(result);
-            }
+            resultList[i] = result;
 
             resultSum += result;
 
             Vector3 side = GetSide(result);
 
-            RotateToFace(side, die);
+            RotateToFace(side, dice[i]);
         }
 
-        rollResults.SetRollResults(resultList);
+        GetCardRollModifier();
+
+        rollResults.SetRollResults(resultList, resultSum + Modifier);
 
         bool isThreeOfAKind = resultList.Distinct().Count() == 1;
 
@@ -216,8 +219,8 @@ public class Roll : MonoBehaviour
     {
         if (resultList.Count == 3)
         {
-            messages[0] = $"YOU ROLLED {result} ("; 
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} (";
+            messages[0] = $"YOU ROLLED {result} ({Modifier}) ("; 
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({Modifier}) (";
 
             for (int i = 0; i < resultList.Count; i++)
             {
@@ -238,12 +241,11 @@ public class Roll : MonoBehaviour
         }
         else
         {
-            messages[0] = $"YOU ROLLED {result}";
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result}";      
+            messages[0] = $"YOU ROLLED {result} ({Modifier})";
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({Modifier})";      
         }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
-        resultList.Clear();
     }
 
     private void SendThreeOfAKindMessageToMessageUI()
@@ -251,6 +253,14 @@ public class Roll : MonoBehaviour
         string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND";
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(message);
+    }
+
+    private void GetCardRollModifier()
+    {
+        foreach (Card card in Player.LocalInstance.EquippedCards)
+        {
+            Modifier += card.CardRollModifier;
+        }
     }
 }
 

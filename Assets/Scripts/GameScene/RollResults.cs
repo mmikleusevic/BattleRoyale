@@ -22,8 +22,8 @@ public class RollResults : NetworkBehaviour, IRollResults
         }
     }
 
-    public void SetRollResults(List<int> result)
+    public void SetRollResults(List<int> results, int result)
     {
-        cardBattleResults.SetCardResult(result);
+        cardBattleResults.SetCardResult(results, result);
     }
 }

@@ -9,7 +9,8 @@ public class Card : NetworkBehaviour
     public int WinValue { get; private set; }
     public string Name { get; private set; }
     public Sprite Sprite { get; private set; }
-
+    public virtual int CardRollModifier { get; protected set; } = 0;
+    public virtual int PlayerRollModifier { get; protected set; } = 0;
 
     [ClientRpc]
     public void InitializeClientRpc(int index)
