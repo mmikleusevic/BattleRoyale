@@ -134,15 +134,15 @@ public class Player : NetworkBehaviour
         return $"<color=#{HexPlayerColor}>{PlayerName} </color> successfully connected";
     }
 
-    public void MovePlayerPosition(Tile tile)
+    public IEnumerator MovePlayerPosition(Tile tile)
     {
         CardPosition cardPosition = tile.GetCardPosition(this);
 
-        if (cardPosition == null) return;
+        if (cardPosition == null) yield break;
 
         Vector3 targetPosition = tile.transform.position + cardPosition.Position;
 
-        StartCoroutine(PlayWalkingAnimation(targetPosition));
+        yield return StartCoroutine(PlayWalkingAnimation(targetPosition));
 
         string[] messages = null;
 
@@ -228,7 +228,10 @@ public class Player : NetworkBehaviour
 
             card.Equip(player);
 
-            GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
+            if (player == LocalInstance)
+            {
+                GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
+            }
 
             MessageUI.Instance.SetMessage(CreateOnPlayerEquippedCardMessage(player, card));
         }
@@ -703,7 +706,7 @@ public class Player : NetworkBehaviour
     }
 
     public void AddOrSubtractRollsNeededToLose(int value)
-    {   
+    {
         RollsNeededToLose += value;
     }
 
@@ -722,26 +725,13 @@ public class Player : NetworkBehaviour
         ActionSipValue += value;
     }
 
-    public void SetActionPoints(int value)
-    {
-        ActionPoints = value;
-
-        CheckIfMovementAndActionsAreZero();
-
-        PCInfoUI.Instance.SetActionsText();
-    }
-
-    public void SubtractActionPoints(int value)
+    public void AddOrSubtractActionPoints(int value)
     {
         ActionPoints += value;
+        defaultActionPoints += value;
 
         CheckIfMovementAndActionsAreZero();
 
         PCInfoUI.Instance.SetActionsText();
-    }
-
-    public void SetDefaultActionPoints(int value)
-    {
-        defaultActionPoints += value;        
     }
 }

@@ -1,7 +1,5 @@
-using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,22 +8,25 @@ public class Roll : MonoBehaviour
     [SerializeField] private Camera diceCamera;
     [SerializeField] private RollResults rollResults;
 
-    public int Modifier { get; private set; } = 0;
+    public int CardBattleModifier { get; private set; } = 0;
+    public int PlayerBattleModifier { get; private set; } = 0;
 
     private List<int> resultList;
+    private List<int> diceToReroll;
 
+    private int resultSum = 0;
+    private string[] messages;
     private Vector3 cameraPosition;
     private readonly float interactDistance = 0.8f;
-    private float rotationTime = 3f;
-    private string[] messages;
-    private float turnToSideTime = 1f;
-    private int numberOfSideChanges = 12;
+    private float rotationTime = 2.5f;
     private float rotationSpeed = 540f;
+    private int numberOfSideChanges = 12;
 
     private void Awake()
     {
         cameraPosition = diceCamera.transform.position;
         resultList = new List<int>();
+        diceToReroll = new List<int>();
         messages = new string[2];
         diceCamera = null;
     }
@@ -68,9 +69,15 @@ public class Roll : MonoBehaviour
         return side;
     }
 
-    public void RotateDice(GameObject[] dice, BattleType battleType)
+    public void RotateDice(Die[] dice, BattleType battleType)
     {
-        Modifier = 0;
+        ResetDice(dice);
+
+        CardBattleModifier = 0;
+        PlayerBattleModifier = 0;
+        resultList.Clear();
+        diceToReroll.Clear();
+        resultSum = 0;
 
         if (battleType == BattleType.Card)
         {
@@ -82,45 +89,118 @@ public class Roll : MonoBehaviour
         }
     }
 
-    private void CalculateCardBattleRoll(GameObject[] dice)
+    private IEnumerator HandleCardBattleRoll(Die[] dice, BattleType battleType)
     {
-        resultList.Clear();
-        int resultSum = 0;
+        yield return StartCoroutine(CardDiceRoll(dice));
+        yield return StartCoroutine(UseCardAbilitiesOnRoll());
 
-        for (int i = 0; i < dice.Length; i++)
+        if (diceToReroll.Count > 0)
         {
-            Vector3 dicePosition = dice[i].transform.position;
+            resultSum = 0;
 
-            Vector3 direction = dicePosition - cameraPosition;
+            yield return StartCoroutine(RerollDice(dice, battleType));
 
-            int result = GetResult(direction, cameraPosition);
-
-            resultList[i] = result;
-
-            resultSum += result;
-
-            Vector3 side = GetSide(result);
-
-            RotateToFace(side, dice[i]);
+            yield break;
         }
 
         GetCardRollModifier();
 
-        rollResults.SetRollResults(resultList, resultSum + Modifier);
-
-        bool isThreeOfAKind = resultList.Distinct().Count() == 1;
-
-        if (isThreeOfAKind)
-        {
-            SendThreeOfAKindMessageToMessageUI();
-        }
+        rollResults.SetRollResults(resultList, resultSum + CardBattleModifier);
 
         SendToMessageUI(resultSum);
     }
 
-    private void CalculatePlayerBattleRoll(GameObject[] dice)
+    private IEnumerator HandlePlayerBattleRoll(Die[] dice, BattleType battleType)
     {
-        int resultSum = 0;
+        yield return StartCoroutine(PlayerDiceRoll(dice));
+        yield return StartCoroutine(UseCardAbilitiesOnRoll());
+
+        while (diceToReroll.Count > 0)
+        {
+            resultSum = 0;
+
+            yield return StartCoroutine(RerollDice(dice, battleType));
+
+            yield break;
+        }
+
+        rollResults.SetRollResults(resultSum, RollType.rollType);
+
+        SendToMessageUI(resultSum);
+    }
+
+    private IEnumerator Rotate(Die[] dice, BattleType battleType)
+    {
+        Die[] newDice = ReturnRollingDice(dice);
+
+        Vector3[] randomAxes = new Vector3[newDice.Length];
+
+        for (int i = 0; i < newDice.Length; i++)
+        {
+            randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
+            newDice[i].transform.rotation = Random.rotationUniform;
+        }
+
+        float spinTimer = rotationTime;
+        float rotationTimer = 0.0f;
+        float numberOfSpins = rotationTime / numberOfSideChanges;
+
+        while (spinTimer > 0)
+        {
+            spinTimer -= Time.deltaTime;
+            rotationTimer += Time.deltaTime;
+
+            for (int i = 0; i < newDice.Length; i++)
+            {
+                Quaternion targetRotation = newDice[i].transform.rotation * Quaternion.Euler(randomAxes[i] * rotationSpeed * Time.deltaTime);
+                newDice[i].transform.rotation = Quaternion.RotateTowards(newDice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+
+            if (rotationTimer >= numberOfSpins)
+            {
+                for (int i = 0; i < newDice.Length; i++)
+                {
+                    randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
+                }
+
+                rotationTimer = 0.0f;
+            }
+
+            yield return null;
+        }
+
+        yield return OnRotateCompleteCall(dice, battleType);
+    }
+
+    private Die[] ReturnRollingDice(Die[] dice)
+    {
+        Die[] newDice;
+
+        if (diceToReroll.Count > 0)
+        {
+            newDice = new Die[diceToReroll.Count];
+
+            int i = 0;
+
+            foreach (Die die in dice)
+            {
+                if (die.Reroll == true)
+                {
+                    newDice[i] = die;
+                    i++;
+                }
+            }
+        }
+        else
+        {
+            newDice = dice;
+        }
+
+        return newDice;
+    }
+
+    private IEnumerator PlayerDiceRoll(Die[] dice)
+    {
         int min = int.MaxValue;
 
         for (int i = 0; i < dice.Length; i++)
@@ -135,92 +215,113 @@ public class Roll : MonoBehaviour
 
             Vector3 side = GetSide(result);
 
-            RotateToFace(side, dice[i]);
+            yield return StartCoroutine(RotateToFace(side, dice[i]));
 
             if (result < min)
             {
                 min = result;
             }
+
+            dice[i].Rolled = true;
         }
 
         if (RollType.rollType == RollTypeEnum.Disadvantage)
         {
             resultSum = min;
         }
-
-        rollResults.SetRollResults(resultSum, RollType.rollType);
-
-        SendToMessageUI(resultSum);
     }
 
-    private IEnumerator Rotate(GameObject[] dice, BattleType battleType)
+    private IEnumerator CardDiceRoll(Die[] dice)
     {
-        Vector3[] randomAxes = new Vector3[dice.Length];
-
-        for (int i = 0; i < randomAxes.Length; i++)
+        for (int i = 0; i < dice.Length; i++)
         {
-            randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
-            dice[i].transform.rotation = Random.rotationUniform;
-        }
+            Vector3 dicePosition = dice[i].transform.position;
 
-        float spinTimer = rotationTime;
-        float rotationTimer = 0.0f;
-        float numberOfSpins = rotationTime / numberOfSideChanges;
+            Vector3 direction = dicePosition - cameraPosition;
 
-        while (spinTimer > 0)
-        {
-            spinTimer -= Time.deltaTime;
-            rotationTimer += Time.deltaTime;
+            int result = GetResult(direction, cameraPosition);
 
-            for (int i = 0; i < dice.Length; i++)
+            if (!dice[i].Rolled)
             {
-                Quaternion targetRotation = dice[i].transform.rotation * Quaternion.Euler(randomAxes[i] * rotationSpeed * Time.deltaTime);
-                dice[i].transform.rotation = Quaternion.RotateTowards(dice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                resultList.Add(result);
+            }
+            else if (resultList[i] == 0)
+            {
+                resultList[i] = result;
             }
 
-            if (rotationTimer >= numberOfSpins)
-            {
-                for (int i = 0; i < dice.Length; i++)
-                {
-                    randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
-                }
+            resultSum += result;
 
-                rotationTimer = 0.0f;
-            }
+            Vector3 side = GetSide(result);
 
-            yield return null;
+            yield return StartCoroutine(RotateToFace(side, dice[i]));
+
+            dice[i].Rolled = true;
+            dice[i].Reroll = false;
         }
-
-        OnRotateCompleteCall(dice, battleType);
     }
 
-    private void OnRotateCompleteCall(GameObject[] dice, BattleType battleType)
+    private IEnumerator RerollDice(Die[] dice, BattleType battleType)
+    {
+        for (int i = 0; i < diceToReroll.Count; i++)
+        {
+            int indexDieToReroll = diceToReroll[i];
+
+            dice[indexDieToReroll].Reroll = true;
+
+            resultList[indexDieToReroll] = 0;
+        }
+
+        yield return StartCoroutine(Rotate(dice, battleType));
+    }
+
+    private IEnumerator OnRotateCompleteCall(Die[] dice, BattleType battleType)
     {
         switch (battleType)
         {
             case BattleType.Player:
-                CalculatePlayerBattleRoll(dice);
+                yield return StartCoroutine(HandlePlayerBattleRoll(dice, battleType));
                 break;
             case BattleType.Card:
-                CalculateCardBattleRoll(dice);
+                yield return StartCoroutine(HandleCardBattleRoll(dice, battleType));
                 break;
         }
     }
 
-    private void RotateToFace(Vector3 side, GameObject die)
+    private IEnumerator RotateToFace(Vector3 side, Die die)
     {
+        float timer = 0.3f;
+        float speed = 20f * Time.deltaTime;
+
         Quaternion rotation = Quaternion.LookRotation(side);
 
-        die.transform.DORotateQuaternion(rotation, turnToSideTime)
-            .SetEase(Ease.Linear);
+        while (timer > 0)
+        {
+            if (Quaternion.Angle(die.transform.rotation, rotation) < 0.01f) yield break;
+
+            timer -= Time.deltaTime;
+
+            die.transform.rotation = Quaternion.Slerp(die.transform.rotation, rotation, speed);
+
+            yield return null;
+        }
+    }
+
+    private void ResetDice(Die[] dice)
+    {
+        foreach (Die die in dice)
+        {
+            die.Reroll = false;
+            die.Rolled = false;
+        }
     }
 
     private void SendToMessageUI(int result)
     {
         if (resultList.Count == 3)
         {
-            messages[0] = $"YOU ROLLED {result} ({Modifier}) ("; 
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({Modifier}) (";
+            messages[0] = $"YOU ROLLED {result} ({CardBattleModifier}) (";
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({CardBattleModifier}) (";
 
             for (int i = 0; i < resultList.Count; i++)
             {
@@ -241,25 +342,36 @@ public class Roll : MonoBehaviour
         }
         else
         {
-            messages[0] = $"YOU ROLLED {result} ({Modifier})";
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({Modifier})";      
+            messages[0] = $"YOU ROLLED {result} ({PlayerBattleModifier})";
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({PlayerBattleModifier})";
         }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
     }
 
-    private void SendThreeOfAKindMessageToMessageUI()
+    private IEnumerator UseCardAbilitiesOnRoll()
     {
-        string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND";
-
-        MessageUI.Instance.SendMessageToEveryoneExceptMe(message);
+        foreach (Card card in Player.LocalInstance.EquippedCards)
+        {
+            yield return StartCoroutine(CardsWithRollManipulationAbilities(card));
+        }
     }
 
     private void GetCardRollModifier()
     {
         foreach (Card card in Player.LocalInstance.EquippedCards)
         {
-            Modifier += card.CardRollModifier;
+            CardBattleModifier += card.CardRollModifier;
+        }
+    }
+
+    private IEnumerator CardsWithRollManipulationAbilities(Card card)
+    {
+        switch (card)
+        {
+            case DeepWounds deepWoundsCard:
+                yield return StartCoroutine(deepWoundsCard.Ability(resultList, diceToReroll));
+                break;
         }
     }
 }

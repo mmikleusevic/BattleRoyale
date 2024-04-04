@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -58,39 +57,24 @@ public class StateManager : NetworkBehaviour, IStateManager
     {
         if (state == null) return StateEnum.WaitingForPlayers;
 
-        Type stateType = state.GetType();
-
-        if (stateType == typeof(WaitingForPlayers))
+        switch (state)
         {
-            return StateEnum.WaitingForPlayers;
-        }
-        else if (stateType == typeof(Initiative))
-        {
-            return StateEnum.Initiative;
-        }
-        else if (stateType == typeof(PlaceOnGrid))
-        {
-            return StateEnum.PlaceOnGrid;
-        }
-        else if (stateType == typeof(PlayerPreturn))
-        {
-            return StateEnum.PlayerPreturn;
-        }
-        else if (stateType == typeof(PlayerTurn))
-        {
-            return StateEnum.PlayerTurn;
-        }
-        else if (stateType == typeof(EnemyTurn))
-        {
-            return StateEnum.EnemyTurn;
-        }
-        else if (stateType == typeof(Lost))
-        {
-            return StateEnum.Lost;
-        }
-        else
-        {
-            return StateEnum.Won;
+            case WaitingForPlayers:
+                return StateEnum.WaitingForPlayers;
+            case Initiative:
+                return StateEnum.Initiative;
+            case PlaceOnGrid:
+                return StateEnum.PlaceOnGrid;
+            case PlayerPreturn:
+                return StateEnum.PlayerPreturn;
+            case PlayerTurn:
+                return StateEnum.PlayerTurn;
+            case EnemyTurn:
+                return StateEnum.EnemyTurn;
+            case Lost:
+                return StateEnum.Lost;
+            default:
+                return StateEnum.Won;
         }
     }
 

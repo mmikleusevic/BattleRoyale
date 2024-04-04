@@ -1,5 +1,3 @@
-using Unity.Services.Lobbies.Models;
-
 public class Shield : Card
 {
     private int value = 1;

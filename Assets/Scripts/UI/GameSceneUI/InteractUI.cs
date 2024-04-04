@@ -56,7 +56,8 @@ public class InteractUI : MonoBehaviour
         {
             interactable = false;
 
-            interactUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() => {
+            interactUIRectTransform.DOScale(Vector2.zero, .4f).SetEase(Ease.InOutBack).OnComplete(() =>
+            {
                 Hide();
                 interactable = true;
             });

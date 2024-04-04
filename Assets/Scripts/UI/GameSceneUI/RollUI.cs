@@ -8,12 +8,12 @@ public class RollUI : NetworkBehaviour
 {
     [SerializeField] RectTransform rollUIRectTransform;
     [SerializeField] private Button rollButton;
-    [SerializeField] private GameObject[] dice;
+    [SerializeField] private Die[] dice;
 
     [SerializeField] private Roll roll;
 
     private BattleType battleType = BattleType.Player;
-    private GameObject[] rollDice;
+    private Die[] rollDice;
 
     public void Awake()
     {
@@ -39,14 +39,14 @@ public class RollUI : NetworkBehaviour
         {
             case 1:
                 dice[1].gameObject.SetActive(true);
-                rollDice = new GameObject[] { dice[1] };
+                rollDice = new Die[] { dice[1] };
 
                 battleType = BattleType.Player;
                 break;
             case 2:
                 dice[0].gameObject.SetActive(true);
                 dice[2].gameObject.SetActive(true);
-                rollDice = new GameObject[] { dice[0], dice[2] };
+                rollDice = new Die[] { dice[0], dice[2] };
 
                 battleType = BattleType.Player;
                 break;
@@ -54,7 +54,7 @@ public class RollUI : NetworkBehaviour
                 dice[0].gameObject.SetActive(true);
                 dice[1].gameObject.SetActive(true);
                 dice[2].gameObject.SetActive(true);
-                rollDice = new GameObject[] { dice[0], dice[1], dice[2] };
+                rollDice = new Die[] { dice[0], dice[1], dice[2] };
 
                 battleType = BattleType.Card;
                 break;
@@ -65,7 +65,7 @@ public class RollUI : NetworkBehaviour
     {
         if (rollDice != null && rollDice.Length == value)
         {
-            foreach (GameObject die in rollDice)
+            foreach (Die die in rollDice)
             {
                 die.gameObject.SetActive(true);
             }

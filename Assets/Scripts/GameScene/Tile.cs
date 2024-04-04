@@ -89,7 +89,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
                 if (player == Player.LocalInstance)
                 {
-                    Player.LocalInstance.MovePlayerPosition(this);
+                    StartCoroutine(Player.LocalInstance.MovePlayerPosition(this));
                 }
 
                 return;

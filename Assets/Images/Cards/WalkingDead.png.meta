@@ -50,7 +50,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -134,10 +134,10 @@ TextureImporter:
       name: WalkingDead_0
       rect:
         serializedVersion: 2
-        x: 32
-        y: 29
-        width: 703
-        height: 986
+        x: 34
+        y: 32
+        width: 700
+        height: 985
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,8 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7c9f0f350e979c249889c72fee4a8208
-      internalID: 1396950352
+      spriteID: f91c4d2dbd095314fbd07d580f783fe5
+      internalID: 1223677275
       vertices: []
       indices: 
       edges: []
@@ -154,7 +154,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 84814ddf06512d9468091336b5fe471e
+    spriteID: 93c1e68769d1e4541b91ccd7a89e8ab8
     internalID: 0
     vertices: []
     indices: 
@@ -162,7 +162,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      WalkingDead_0: 1396950352
+      WalkingDead_0: 1223677275
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -36,7 +36,12 @@ public class CardBattleResults : NetworkBehaviour
     {
         bool isThreeOfAKind = results.Distinct().Count() == 1;
 
-        string[] messages = null;
+        if (isThreeOfAKind)
+        {
+            SendThreeOfAKindMessageToMessageUI();
+        }
+
+        string[] messages;
 
         if (result >= tile.Card.WinValue || isThreeOfAKind)
         {
@@ -60,6 +65,13 @@ public class CardBattleResults : NetworkBehaviour
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
 
         tile = null;
+    }
+
+    private void SendThreeOfAKindMessageToMessageUI()
+    {
+        string message = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled THREE OF A KIND";
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(message);
     }
 
     private string[] SendCardWonMessageToMessageUI()
