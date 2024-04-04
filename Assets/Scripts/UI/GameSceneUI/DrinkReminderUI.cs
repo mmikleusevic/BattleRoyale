@@ -41,9 +41,12 @@ public class DrinkReminderUI : MonoBehaviour
         {
             numberOfSips = Player.LocalInstance.SipValue;
 
-            SetText();
+            if (numberOfSips > 0)
+            {
+                SetText();
 
-            ShowWithAnimation();
+                ShowWithAnimation();
+            }
         });
     }
 
