@@ -15,12 +15,13 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private List<CardSO> cardSOs;
     [SerializeField] private Vector2[] placementTiles;
     [SerializeField] private Material lastCardMaterial;
+    
 
     private Dictionary<int, int> randomCardNumberCountChecker;
     private Dictionary<Vector2, Tile> gridTiles;
     private List<int> randomNumberList;
-
     private Vector2[][] movementVectors;
+
     private float spacing = 0.2f;
     private int maxNumberOfEachCard = 2;
     private Vector2 cardDimensions;
@@ -32,7 +33,7 @@ public class GridManager : NetworkBehaviour
 
         randomNumberList = new List<int>();
         gridTiles = new Dictionary<Vector2, Tile>();
-        SetMovementVectors();
+        FullMovementVectors();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
     }
@@ -71,17 +72,46 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsForDying();
     }
 
-    private void SetMovementVectors()
+    public void FullMovementVectors()
     {
         movementVectors = new Vector2[3][];
 
-        for (int i = 0; i < 3; i++)
+        int length = 3;
+
+        for (int i = 0; i < length; i++)
         {
             movementVectors[i] = new Vector2[3];
 
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < length; j++)
             {
                 movementVectors[i][j] = new Vector2(i - 1, j - 1);
+            }
+        }
+    }
+
+    public void HalfMovementVectors()
+    {
+        movementVectors = new Vector2[3][];
+
+        int length = 3;
+        int half = length / 2;
+
+        for (int i = 0; i < length; i++)
+        {
+            movementVectors[i] = i == half ? new Vector2[3] : new Vector2[1];
+
+            int k = 0;
+
+            for (int j = 0; j < length; j++)
+            {
+                int absI = Mathf.Abs(i - 1);
+                int absJ = Mathf.Abs(j - 1);
+
+                if (absI != absJ && (absI == half || absJ == half) || i == half && j == half)
+                {
+                    movementVectors[i][k] = new Vector2(i - 1, j - 1);
+                    k++;
+                }
             }
         }
     }
