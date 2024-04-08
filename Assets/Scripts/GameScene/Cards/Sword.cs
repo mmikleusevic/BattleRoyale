@@ -6,7 +6,7 @@ public class Sword : Card
     {
         if (result > 1 && result < 6)
         {
-            return result + CardRollModifier;
+            return PlayerRollModifier;
         }
 
         return 0;
