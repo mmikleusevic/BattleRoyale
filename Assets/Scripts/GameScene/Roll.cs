@@ -112,33 +112,6 @@ public class Roll : MonoBehaviour
         SendToMessageUI(resultSum);
     }
 
-    private Die[] ReturnRollingDice(Die[] dice)
-    {
-        Die[] newDice;
-
-        if (diceToReroll.Count > 0)
-        {
-            newDice = new Die[diceToReroll.Count];
-
-            int i = 0;
-
-            foreach (Die die in dice)
-            {
-                if (die.Reroll == true)
-                {
-                    newDice[i] = die;
-                    i++;
-                }
-            }
-        }
-        else
-        {
-            newDice = dice;
-        }
-
-        return newDice;
-    }
-
     private IEnumerator PlayerDiceRoll(Die[] dice)
     {
         int min = int.MaxValue;
