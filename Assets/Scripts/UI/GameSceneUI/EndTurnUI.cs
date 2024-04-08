@@ -53,7 +53,9 @@ public class EndTurnUI : MonoBehaviour
 
     private void Player_OnMovementOrActionPoints()
     {
-        if (Player.LocalInstance.Movement == 0 && Player.LocalInstance.ActionPoints == 0)
+        Player player = Player.LocalInstance;
+
+        if (player.Movement == 0 && player.ActionPoints == 0 || player.IsDead.Value == true && player.ActionPoints == 0)
         {
             actionsAndMovementUsed = true;
         }

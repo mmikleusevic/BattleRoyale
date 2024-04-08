@@ -17,4 +17,16 @@ public class DeepWounds : Card
 
         yield return diceToReroll;
     }
+
+    public IEnumerator Ability(int result, List<int> diceToReroll)
+    {
+        diceToReroll.Clear();
+
+        if (result == 1 || result == 6)
+        {
+            diceToReroll.Add(0);
+        }
+
+        yield return diceToReroll;
+    }
 }

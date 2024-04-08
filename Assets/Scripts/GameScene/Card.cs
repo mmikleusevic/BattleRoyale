@@ -9,8 +9,8 @@ public class Card : NetworkBehaviour
     public int WinValue { get; private set; }
     public string Name { get; private set; }
     public Sprite Sprite { get; private set; }
-    public virtual int CardRollModifier { get; protected set; } = 0;
-    public virtual int PlayerRollModifier { get; protected set; } = 0;
+    protected virtual int CardRollModifier { get; set; } = 0;
+    protected virtual int PlayerRollModifier { get; set; } = 0;
 
     [ClientRpc]
     public void InitializeClientRpc(int index)
@@ -52,6 +52,8 @@ public class Card : NetworkBehaviour
         return $"{Name} WIN VALUE CHANGED TO {WinValue} POINTS YOU GET FOR WINNING ARE STILL {Points}";
     }
 
+    public virtual int GetPlayerRollModifier(int result) { return 0; }
+    public virtual int GetCardRollModifier() { return 0; }
     public virtual void Equip(Player player) { }
     public virtual void Unequip(Player player) { }
     public virtual void UseAbility() { }

@@ -134,9 +134,9 @@ TextureImporter:
       name: WalkingDead_0
       rect:
         serializedVersion: 2
-        x: 34
-        y: 32
-        width: 700
+        x: 33
+        y: 33
+        width: 702
         height: 985
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -145,8 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f91c4d2dbd095314fbd07d580f783fe5
-      internalID: 1223677275
+      spriteID: e4d50a3d2fcb89342897fa5b06eb3f3d
+      internalID: -1964063138
       vertices: []
       indices: 
       edges: []
@@ -154,7 +154,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 93c1e68769d1e4541b91ccd7a89e8ab8
+    spriteID: 4d33b43ac0095394c8c0f469594ce428
     internalID: 0
     vertices: []
     indices: 
@@ -162,7 +162,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      WalkingDead_0: 1223677275
+      WalkingDead_0: -1964063138
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

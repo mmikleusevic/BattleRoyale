@@ -56,7 +56,7 @@ public class AlcoholTypeUI : MonoBehaviour
 
     private void SendAcoholValue(int value)
     {
-        Player.LocalInstance.SetSipValue(value);
+        Player.LocalInstance.SetResurrectionSipValue(value);
     }
 
     private void Show()

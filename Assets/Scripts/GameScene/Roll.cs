@@ -5,39 +5,23 @@ using Random = UnityEngine.Random;
 
 public class Roll : MonoBehaviour
 {
-    [SerializeField] private Camera diceCamera;
     [SerializeField] private RollResults rollResults;
+    [SerializeField] private CardAbilities cardAbilities;
 
     public int CardBattleModifier { get; private set; } = 0;
     public int PlayerBattleModifier { get; private set; } = 0;
 
     private List<int> resultList;
     private List<int> diceToReroll;
+    private string[] messages;
 
     private int resultSum = 0;
-    private string[] messages;
-    private Vector3 cameraPosition;
-    private readonly float interactDistance = 0.8f;
-    private float rotationTime = 2.5f;
-    private float rotationSpeed = 540f;
-    private int numberOfSideChanges = 12;
 
     private void Awake()
     {
-        cameraPosition = diceCamera.transform.position;
         resultList = new List<int>();
         diceToReroll = new List<int>();
         messages = new string[2];
-        diceCamera = null;
-    }
-
-    private int GetResult(Vector3 direction, Vector3 cameraPosition)
-    {
-        Physics.Raycast(cameraPosition, direction, out RaycastHit raycastHit, interactDistance);
-
-        int.TryParse(raycastHit.collider.name, out int result);
-
-        return result;
     }
 
     private Vector3 GetSide(int number)
@@ -81,29 +65,27 @@ public class Roll : MonoBehaviour
 
         if (battleType == BattleType.Card)
         {
-            StartCoroutine(Rotate(dice, BattleType.Card));
+            StartCoroutine(OnRotate(dice, BattleType.Card));
         }
         else
         {
-            StartCoroutine(Rotate(dice, BattleType.Player));
+            StartCoroutine(OnRotate(dice, BattleType.Player));
         }
     }
 
     private IEnumerator HandleCardBattleRoll(Die[] dice, BattleType battleType)
     {
         yield return StartCoroutine(CardDiceRoll(dice));
-        yield return StartCoroutine(UseCardAbilitiesOnRoll());
+        yield return StartCoroutine(cardAbilities.UseCardAbilitiesOnCardRoll(resultList, diceToReroll));
 
         if (diceToReroll.Count > 0)
         {
-            resultSum = 0;
-
             yield return StartCoroutine(RerollDice(dice, battleType));
 
             yield break;
         }
 
-        GetCardRollModifier();
+        CardBattleModifier += cardAbilities.GetCardRollModifier();
 
         rollResults.SetRollResults(resultList, resultSum + CardBattleModifier);
 
@@ -113,63 +95,21 @@ public class Roll : MonoBehaviour
     private IEnumerator HandlePlayerBattleRoll(Die[] dice, BattleType battleType)
     {
         yield return StartCoroutine(PlayerDiceRoll(dice));
-        yield return StartCoroutine(UseCardAbilitiesOnRoll());
+
+        yield return StartCoroutine(cardAbilities.UseCardAbilitiesOnPlayerRoll(resultSum, diceToReroll));
 
         while (diceToReroll.Count > 0)
         {
-            resultSum = 0;
-
             yield return StartCoroutine(RerollDice(dice, battleType));
 
             yield break;
         }
 
+        PlayerBattleModifier += cardAbilities.GetPlayerRollModifier(resultSum);
+
         rollResults.SetRollResults(resultSum, RollType.rollType);
 
         SendToMessageUI(resultSum);
-    }
-
-    private IEnumerator Rotate(Die[] dice, BattleType battleType)
-    {
-        Die[] newDice = ReturnRollingDice(dice);
-
-        Vector3[] randomAxes = new Vector3[newDice.Length];
-
-        for (int i = 0; i < newDice.Length; i++)
-        {
-            randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
-            newDice[i].transform.rotation = Random.rotationUniform;
-        }
-
-        float spinTimer = rotationTime;
-        float rotationTimer = 0.0f;
-        float numberOfSpins = rotationTime / numberOfSideChanges;
-
-        while (spinTimer > 0)
-        {
-            spinTimer -= Time.deltaTime;
-            rotationTimer += Time.deltaTime;
-
-            for (int i = 0; i < newDice.Length; i++)
-            {
-                Quaternion targetRotation = newDice[i].transform.rotation * Quaternion.Euler(randomAxes[i] * rotationSpeed * Time.deltaTime);
-                newDice[i].transform.rotation = Quaternion.RotateTowards(newDice[i].transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
-
-            if (rotationTimer >= numberOfSpins)
-            {
-                for (int i = 0; i < newDice.Length; i++)
-                {
-                    randomAxes[i] = new Vector3(Random.value, Random.value, Random.value).normalized;
-                }
-
-                rotationTimer = 0.0f;
-            }
-
-            yield return null;
-        }
-
-        yield return OnRotateCompleteCall(dice, battleType);
     }
 
     private Die[] ReturnRollingDice(Die[] dice)
@@ -205,24 +145,24 @@ public class Roll : MonoBehaviour
 
         for (int i = 0; i < dice.Length; i++)
         {
-            Vector3 dicePosition = dice[i].transform.position;
-
-            Vector3 direction = dicePosition - cameraPosition;
-
-            int result = GetResult(direction, cameraPosition);
-
-            resultSum += result;
-
-            Vector3 side = GetSide(result);
-
-            yield return StartCoroutine(RotateToFace(side, dice[i]));
-
-            if (result < min)
+            if (dice[i].Reroll == true || dice[i].Rolled == false)
             {
-                min = result;
-            }
+                int result = Random.Range(1, 7);
 
-            dice[i].Rolled = true;
+                resultSum += result;
+
+                Vector3 side = GetSide(result);
+
+                yield return StartCoroutine(RotateToFace(side, dice[i]));
+
+                if (result < min)
+                {
+                    min = result;
+                }
+
+                dice[i].Rolled = true;
+                dice[i].Rolled = false;
+            }
         }
 
         if (RollType.rollType == RollTypeEnum.Disadvantage)
@@ -235,29 +175,28 @@ public class Roll : MonoBehaviour
     {
         for (int i = 0; i < dice.Length; i++)
         {
-            Vector3 dicePosition = dice[i].transform.position;
-
-            Vector3 direction = dicePosition - cameraPosition;
-
-            int result = GetResult(direction, cameraPosition);
-
-            if (!dice[i].Rolled)
+            if (dice[i].Reroll == true || dice[i].Rolled == false)
             {
-                resultList.Add(result);
+                int result = Random.Range(1, 7);
+
+                if (!dice[i].Rolled)
+                {
+                    resultList.Add(result);
+                }
+                else if (resultList[i] == 0)
+                {
+                    resultList[i] = result;
+                }
+
+                resultSum += result;
+
+                Vector3 side = GetSide(result);
+
+                yield return StartCoroutine(RotateToFace(side, dice[i]));
+
+                dice[i].Rolled = true;
+                dice[i].Reroll = false;
             }
-            else if (resultList[i] == 0)
-            {
-                resultList[i] = result;
-            }
-
-            resultSum += result;
-
-            Vector3 side = GetSide(result);
-
-            yield return StartCoroutine(RotateToFace(side, dice[i]));
-
-            dice[i].Rolled = true;
-            dice[i].Reroll = false;
         }
     }
 
@@ -265,17 +204,28 @@ public class Roll : MonoBehaviour
     {
         for (int i = 0; i < diceToReroll.Count; i++)
         {
-            int indexDieToReroll = diceToReroll[i];
+            if (resultList.Count == 0)
+            {
+                resultSum = 0;
 
-            dice[indexDieToReroll].Reroll = true;
+                dice[i].Reroll = true;
+            }
+            else
+            {
+                int indexDieToReroll = diceToReroll[i];
 
-            resultList[indexDieToReroll] = 0;
+                dice[indexDieToReroll].Reroll = true;
+
+                resultSum -= resultList[indexDieToReroll];
+
+                resultList[indexDieToReroll] = 0;
+            }
         }
 
-        yield return StartCoroutine(Rotate(dice, battleType));
+        yield return StartCoroutine(OnRotate(dice, battleType));
     }
 
-    private IEnumerator OnRotateCompleteCall(Die[] dice, BattleType battleType)
+    private IEnumerator OnRotate(Die[] dice, BattleType battleType)
     {
         switch (battleType)
         {
@@ -290,8 +240,8 @@ public class Roll : MonoBehaviour
 
     private IEnumerator RotateToFace(Vector3 side, Die die)
     {
-        float timer = 0.3f;
-        float speed = 20f * Time.deltaTime;
+        float timer = 0.7f;
+        float speed = 10f * Time.deltaTime;
 
         Quaternion rotation = Quaternion.LookRotation(side);
 
@@ -347,32 +297,6 @@ public class Roll : MonoBehaviour
         }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
-    }
-
-    private IEnumerator UseCardAbilitiesOnRoll()
-    {
-        foreach (Card card in Player.LocalInstance.EquippedCards)
-        {
-            yield return StartCoroutine(CardsWithRollManipulationAbilities(card));
-        }
-    }
-
-    private void GetCardRollModifier()
-    {
-        foreach (Card card in Player.LocalInstance.EquippedCards)
-        {
-            CardBattleModifier += card.CardRollModifier;
-        }
-    }
-
-    private IEnumerator CardsWithRollManipulationAbilities(Card card)
-    {
-        switch (card)
-        {
-            case DeepWounds deepWoundsCard:
-                yield return StartCoroutine(deepWoundsCard.Ability(resultList, diceToReroll));
-                break;
-        }
     }
 }
 

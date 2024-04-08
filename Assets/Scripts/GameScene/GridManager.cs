@@ -15,7 +15,7 @@ public class GridManager : NetworkBehaviour
     [SerializeField] private List<CardSO> cardSOs;
     [SerializeField] private Vector2[] placementTiles;
     [SerializeField] private Material lastCardMaterial;
-    
+
 
     private Dictionary<int, int> randomCardNumberCountChecker;
     private Dictionary<Vector2, Tile> gridTiles;
@@ -333,8 +333,9 @@ public class GridManager : NetworkBehaviour
         {
             Tile tile = gridTiles[position];
 
-            if (player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePlayersOnTheCard() != true)
+            if ((player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePlayersOnTheCard() != true) || (player.GridPosition == tile.GridPosition && player.ActionPoints == 0))
             {
+                Debug.Log("true");
                 return;
             }
 

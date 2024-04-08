@@ -17,8 +17,8 @@ public class DrinkReminderUI : MonoBehaviour
         closeButton.onClick.AddListener(() =>
         {
             HideWithAnimation();
-
             MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerDrinkReminderMessage());
+            numberOfSips = 0;
         });
 
         Player.OnPlayerResurrected += Player_OnPlayerResurrected;
@@ -37,14 +37,12 @@ public class DrinkReminderUI : MonoBehaviour
 
     private void Player_OnPlayerResurrected()
     {
-        uiElementController.AddEvent(() =>
+        numberOfSips = Player.LocalInstance.ResurrectionSipValue;
+
+        if (numberOfSips > 0)
         {
-            numberOfSips = Player.LocalInstance.SipValue;
-
-            SetText();
-
-            ShowWithAnimation();
-        });
+            QueueEvent();
+        }
     }
 
     private void Player_OnAction()
@@ -53,13 +51,18 @@ public class DrinkReminderUI : MonoBehaviour
 
         if (numberOfSips > 0)
         {
-            uiElementController.AddEvent(() =>
-            {
-                SetText();
-
-                ShowWithAnimation();
-            });
+            QueueEvent();
         }
+    }
+
+    private void QueueEvent()
+    {
+        uiElementController.AddEvent(() =>
+        {
+            SetText();
+
+            ShowWithAnimation();
+        });
     }
 
     private void SetText()

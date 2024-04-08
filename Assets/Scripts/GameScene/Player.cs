@@ -32,6 +32,7 @@ public class Player : NetworkBehaviour
     private int gamesNeededForDefeat = 3;
     private int defaultActionPoints = 2;
     private float moveSpeed = 20f;
+    public int defaultResurrectionSipValue = 0;
 
     public bool Disabled { get; private set; } = false;
     public int MaxEquippableCards { get; private set; } = 3;
@@ -44,7 +45,7 @@ public class Player : NetworkBehaviour
     public Vector2 GridPosition { get; private set; }
     public int Movement { get; private set; }
     public int ActionPoints { get; private set; }
-    public int SipValue { get; private set; }
+    public int ResurrectionSipValue { get; private set; }
     public int ActionSipValue { get; private set; } = 0;
     public int SipCounter { get; private set; }
     public string HexPlayerColor { get; private set; }
@@ -381,7 +382,7 @@ public class Player : NetworkBehaviour
 
         SubtractActionPoints();
 
-        AddSipsToPlayerServerRpc(NetworkObject, SipValue);
+        AddSipsToPlayerServerRpc(NetworkObject, ResurrectionSipValue);
 
         GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
         PCInfoUI.Instance.SetIsDeadText();
@@ -682,9 +683,14 @@ public class Player : NetworkBehaviour
         PlayerManager.Instance.RemoveFromActivePlayers(player);
     }
 
-    public void SetSipValue(int value)
+    public void SetResurrectionSipValue(int value)
     {
-        SipValue = value;
+        if (defaultResurrectionSipValue == 0)
+        {
+            defaultResurrectionSipValue = value;
+        }
+
+        ResurrectionSipValue = value;
     }
 
     public void AddOrSubtractMovement(int value)
@@ -717,7 +723,7 @@ public class Player : NetworkBehaviour
 
     public void AddOrSubtractSipValue(int value)
     {
-        SipValue += value;
+        ResurrectionSipValue += value;
     }
 
     public void AddOrSubtractActionSipValue(int value)
