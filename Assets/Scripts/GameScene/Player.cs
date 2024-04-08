@@ -721,7 +721,7 @@ public class Player : NetworkBehaviour
         Points.Value += value;
     }
 
-    public void AddOrSubtractSipValue(int value)
+    public void AddOrSubtractResurrectionSipValue(int value)
     {
         ResurrectionSipValue += value;
     }

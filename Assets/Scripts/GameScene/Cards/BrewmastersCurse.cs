@@ -4,11 +4,11 @@ public class BrewmastersCurse : Card
 
     public override void Equip(Player player)
     {
-        player.AddOrSubtractSipValue(value);
+        player.AddOrSubtractResurrectionSipValue(value);
     }
 
     public override void Unequip(Player player)
     {
-        player.AddOrSubtractSipValue(-value);
+        player.AddOrSubtractResurrectionSipValue(-value);
     }
 }
