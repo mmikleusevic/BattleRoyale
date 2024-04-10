@@ -41,7 +41,15 @@ public class RollUI : NetworkBehaviour
 
         rerollButton1.onClick.AddListener(() =>
         {
-            rollDice[1].Reroll = true;
+            if (battleType == BattleType.Player)
+            {
+                rollDice[0].Reroll = true;
+            }
+            else
+            {
+                rollDice[1].Reroll = true;
+            }
+
             OnReroll?.Invoke();
             HideRerollOrPass();
             Roll();

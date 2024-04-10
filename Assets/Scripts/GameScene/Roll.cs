@@ -107,14 +107,9 @@ public class Roll : MonoBehaviour
 
         yield return StartCoroutine(cardAbilities.GetPlayerRerolls());
 
-        for (int i = 0; i < dice.Length; i++)
-        {
-            if (dice[i].Reroll)
-            {
-                resultSum = 0;
-                yield break;
-            }
-        }
+        bool rerolled = dice.Any(a => a.Reroll);
+
+        if (rerolled) yield break;
 
         PlayerBattleModifier += cardAbilities.GetPlayerRollModifier(resultSum);
 
@@ -135,6 +130,8 @@ public class Roll : MonoBehaviour
     private IEnumerator PlayerDiceRoll(Die[] dice)
     {
         int min = int.MaxValue;
+
+        resultSum = 0;
 
         for (int i = 0; i < dice.Length; i++)
         {

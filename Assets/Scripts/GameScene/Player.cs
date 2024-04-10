@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -229,7 +230,9 @@ public class Player : NetworkBehaviour
 
             card.Equip(player);
 
-            if (player == LocalInstance)
+            bool isFromCardBattle = RollType.rollType != RollTypeEnum.PlayerAttack && RollType.rollType != RollTypeEnum.Disadvantage;
+
+            if (player == LocalInstance && player == PlayerManager.Instance.ActivePlayer && isFromCardBattle)
             {
                 GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
             }
@@ -298,7 +301,6 @@ public class Player : NetworkBehaviour
     private void RemoveCardFromLoser(Player loser, Card card)
     {
         loser.EquippedCards.Remove(card);
-
         card.Unequip(loser);
 
         MessageUI.Instance.SetMessage(CreateOnPlayerRemovedCardMessage(loser, card));

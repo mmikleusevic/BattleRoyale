@@ -44,12 +44,12 @@ public class InteractUI : MonoBehaviour
 
     private void ActionsUI_OnAttackCard(NetworkObjectReference arg1, NetworkObjectReference arg2)
     {
-        Hide();
+        HideWithAnimation();
     }
 
     private void AbilityUI_OnAbilityUsed()
     {
-        Hide();
+        HideWithAnimation();
     }
 
     public void ShowWithAnimation()
