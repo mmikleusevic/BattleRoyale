@@ -1,5 +1,4 @@
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +7,7 @@ public class AbilityUI : MonoBehaviour
     public static event Action OnAbilityUsed;
 
     [SerializeField] private Transform container;
-    [SerializeField] private Button buttonTemplate;
+    [SerializeField] private Transform template;
     [SerializeField] private Button cancelButton;
 
     private void Awake()
@@ -17,7 +16,7 @@ public class AbilityUI : MonoBehaviour
 
         ActionsUI.OnAbility += ActionsUI_OnAbility;
 
-        buttonTemplate.gameObject.SetActive(false);
+        template.gameObject.SetActive(false);
 
         Hide();
     }
@@ -37,10 +36,14 @@ public class AbilityUI : MonoBehaviour
         {
             if (card.Ability != null && !card.AbilityUsed)
             {
-                Button newButton = Instantiate(buttonTemplate, container);
+                Transform cardTransform = Instantiate(template, container);
 
-                newButton.GetComponentInChildren<TextMeshProUGUI>().text = card.Name;
-                newButton.onClick.AddListener(() =>
+                Image image = cardTransform.GetComponent<Image>();
+                image.sprite = card.Sprite;
+
+                Button button = cardTransform.GetComponent<Button>();
+
+                button.onClick.AddListener(() =>
                 {
                     Player.LocalInstance.SubtractActionPoints();
 
@@ -51,7 +54,7 @@ public class AbilityUI : MonoBehaviour
                     OnAbilityUsed?.Invoke();
                 });
 
-                newButton.gameObject.SetActive(true);
+                cardTransform.gameObject.SetActive(true);
             }
         }
 
@@ -74,7 +77,7 @@ public class AbilityUI : MonoBehaviour
     {
         foreach (Transform child in container)
         {
-            if (child == buttonTemplate.transform) continue;
+            if (child == template) continue;
             Destroy(child.gameObject);
         }
     }
