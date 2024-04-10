@@ -84,11 +84,16 @@ public class AbilityResults : NetworkBehaviour, IResult
         OnStartRoll?.Invoke();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetResultServerRpc(int result, RollTypeEnum rollTypeEnum, ServerRpcParams serverRpcParams = default)
+    public void SetResult(int result, RollTypeEnum rollTypeEnum)
     {
         if (rollTypeEnum != RollTypeEnum.Ability) return;
 
+        SetResultServerRpc(result);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
+    {
         ulong clientId = serverRpcParams.Receive.SenderClientId;
 
         clientRolled[clientId] = true;

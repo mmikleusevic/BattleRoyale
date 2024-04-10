@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -22,6 +23,22 @@ public class Roll : MonoBehaviour
         resultList = new List<int>();
         diceToReroll = new List<int>();
         messages = new string[2];
+    }
+
+    public IEnumerator OnRotate(Die[] dice, BattleType battleType)
+    {
+        switch (battleType)
+        {
+            case BattleType.Player:
+                yield return StartCoroutine(HandlePlayerBattleRoll(dice, battleType));
+                break;
+            case BattleType.Card:
+                yield return StartCoroutine(HandleCardBattleRoll(dice, battleType));
+                break;
+            case BattleType.Ability:
+                yield return StartCoroutine(HandleAbilityCardRoll(dice));
+                break;
+        }
     }
 
     private Vector3 GetSide(int number)
@@ -53,19 +70,6 @@ public class Roll : MonoBehaviour
         return side;
     }
 
-    public void RotateDice(Die[] dice, BattleType battleType)
-    {
-        ResetDice(dice);
-
-        CardBattleModifier = 0;
-        PlayerBattleModifier = 0;
-        resultList.Clear();
-        diceToReroll.Clear();
-        resultSum = 0;
-
-        StartCoroutine(OnRotate(dice, battleType));
-    }
-
     private IEnumerator HandleCardBattleRoll(Die[] dice, BattleType battleType)
     {
         yield return StartCoroutine(CardDiceRoll(dice));
@@ -74,35 +78,49 @@ public class Roll : MonoBehaviour
         if (diceToReroll.Count > 0)
         {
             yield return StartCoroutine(RerollDice(dice, battleType));
-
             yield break;
         }
+
+        yield return StartCoroutine(cardAbilities.GetCardRerolls());
+
+        bool rerolled = dice.Any(a => a.Reroll);
+
+        if (rerolled) yield break;
 
         CardBattleModifier += cardAbilities.GetCardRollModifier();
 
         rollResults.SetRollResults(resultList, resultSum + CardBattleModifier);
 
-        SendToMessageUI(resultSum);
+        SendToMessageUIResetVariables(dice, resultSum);
     }
 
     private IEnumerator HandlePlayerBattleRoll(Die[] dice, BattleType battleType)
     {
         yield return StartCoroutine(PlayerDiceRoll(dice));
-
         yield return StartCoroutine(cardAbilities.UseCardAbilitiesOnPlayerRoll(resultSum, diceToReroll));
 
-        while (diceToReroll.Count > 0)
+        if (diceToReroll.Count > 0)
         {
             yield return StartCoroutine(RerollDice(dice, battleType));
-
             yield break;
+        }
+
+        yield return StartCoroutine(cardAbilities.GetPlayerRerolls());
+
+        for (int i = 0; i < dice.Length; i++)
+        {
+            if (dice[i].Reroll)
+            {
+                resultSum = 0;
+                yield break;
+            }
         }
 
         PlayerBattleModifier += cardAbilities.GetPlayerRollModifier(resultSum);
 
-        rollResults.SetRollResults(resultSum);
+        rollResults.SetRollResults(resultSum + PlayerBattleModifier);
 
-        SendToMessageUI(resultSum);
+        SendToMessageUIResetVariables(dice, resultSum);
     }
 
     private IEnumerator HandleAbilityCardRoll(Die[] dice)
@@ -111,7 +129,7 @@ public class Roll : MonoBehaviour
 
         rollResults.SetRollResults(resultSum);
 
-        SendToMessageUI(resultSum);
+        SendToMessageUIResetVariables(dice, resultSum);
     }
 
     private IEnumerator PlayerDiceRoll(Die[] dice)
@@ -136,7 +154,7 @@ public class Roll : MonoBehaviour
                 }
 
                 dice[i].Rolled = true;
-                dice[i].Rolled = false;
+                dice[i].Reroll = false;
             }
         }
 
@@ -161,7 +179,7 @@ public class Roll : MonoBehaviour
                 yield return StartCoroutine(RotateToFace(side, dice[i]));
 
                 dice[i].Rolled = true;
-                dice[i].Rolled = false;
+                dice[i].Reroll = false;
             }
         }
     }
@@ -178,8 +196,9 @@ public class Roll : MonoBehaviour
                 {
                     resultList.Add(result);
                 }
-                else if (resultList[i] == 0)
+                else if (dice[i].Reroll)
                 {
+                    resultSum -= resultList[i];
                     resultList[i] = result;
                 }
 
@@ -212,28 +231,10 @@ public class Roll : MonoBehaviour
                 dice[indexDieToReroll].Reroll = true;
 
                 resultSum -= resultList[indexDieToReroll];
-
-                resultList[indexDieToReroll] = 0;
             }
         }
 
         yield return StartCoroutine(OnRotate(dice, battleType));
-    }
-
-    private IEnumerator OnRotate(Die[] dice, BattleType battleType)
-    {
-        switch (battleType)
-        {
-            case BattleType.Player:
-                yield return StartCoroutine(HandlePlayerBattleRoll(dice, battleType));
-                break;
-            case BattleType.Card:
-                yield return StartCoroutine(HandleCardBattleRoll(dice, battleType));
-                break;
-            case BattleType.Ability:
-                yield return StartCoroutine(HandleAbilityCardRoll(dice));
-                break;
-        }
     }
 
     private IEnumerator RotateToFace(Vector3 side, Die die)
@@ -264,7 +265,7 @@ public class Roll : MonoBehaviour
         }
     }
 
-    private void SendToMessageUI(int result)
+    private void SendToMessageUIResetVariables(Die[] dice, int result)
     {
         if (resultList.Count == 3)
         {
@@ -295,6 +296,14 @@ public class Roll : MonoBehaviour
         }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
+
+        ResetDice(dice);
+
+        CardBattleModifier = 0;
+        PlayerBattleModifier = 0;
+        resultList.Clear();
+        diceToReroll.Clear();
+        resultSum = 0;
     }
 }
 

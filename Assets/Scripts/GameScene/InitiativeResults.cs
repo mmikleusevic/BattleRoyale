@@ -48,11 +48,16 @@ public class InitiativeResults : NetworkBehaviour, IResult
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetResultServerRpc(int result, RollTypeEnum rollTypeEnum, ServerRpcParams serverRpcParams = default)
+    public void SetResult(int result, RollTypeEnum rollTypeEnum)
     {
         if (rollTypeEnum != RollTypeEnum.Initiative) return;
 
+        SetResultServerRpc(result);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
+    {
         var clientId = serverRpcParams.Receive.SenderClientId;
 
         SetInitiativeResult(result, clientId);

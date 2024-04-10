@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -6,8 +7,15 @@ using Button = UnityEngine.UI.Button;
 
 public class RollUI : NetworkBehaviour
 {
+    public static event Action OnReroll;
+    public static event Action OnAccept;
+
     [SerializeField] RectTransform rollUIRectTransform;
     [SerializeField] private Button rollButton;
+    [SerializeField] private Button rerollButton0;
+    [SerializeField] private Button rerollButton1;
+    [SerializeField] private Button rerollButton2;
+    [SerializeField] private Button acceptRollButton;
     [SerializeField] private Die[] dice;
 
     [SerializeField] private Roll roll;
@@ -20,17 +28,66 @@ public class RollUI : NetworkBehaviour
         rollButton.onClick.AddListener(() =>
         {
             rollButton.gameObject.SetActive(false);
-            roll.RotateDice(rollDice, battleType);
+            Roll();
         });
 
+        rerollButton0.onClick.AddListener(() =>
+        {
+            rollDice[0].Reroll = true;
+            OnReroll?.Invoke();
+            HideRerollOrPass();
+            Roll();
+        });
+
+        rerollButton1.onClick.AddListener(() =>
+        {
+            rollDice[1].Reroll = true;
+            OnReroll?.Invoke();
+            HideRerollOrPass();
+            Roll();
+        });
+
+        rerollButton2.onClick.AddListener(() =>
+        {
+            rollDice[2].Reroll = true;
+            OnReroll?.Invoke();
+            HideRerollOrPass();
+            Roll();
+        });
+
+        acceptRollButton.onClick.AddListener(() =>
+        {
+            OnAccept?.Invoke();
+            HideRerollOrPass();
+        });
+
+        CardAbilities.OnTryReroll += CardAbilities_OnTryReroll;
+
+        HideRerollOrPass();
         HideInstant();
     }
 
     public override void OnDestroy()
     {
         rollButton.onClick.RemoveAllListeners();
+        rerollButton0.onClick.RemoveAllListeners();
+        rerollButton1.onClick.RemoveAllListeners();
+        rerollButton2.onClick.RemoveAllListeners();
+        acceptRollButton.onClick.RemoveAllListeners();
+
+        CardAbilities.OnTryReroll -= CardAbilities_OnTryReroll;
 
         base.OnDestroy();
+    }
+
+    private void Roll()
+    {
+        StartCoroutine(roll.OnRotate(rollDice, battleType));
+    }
+
+    private void CardAbilities_OnTryReroll()
+    {
+        ShowRerollOrPass();
     }
 
     private void ToggleDice(int value, BattleType battleType)
@@ -78,6 +135,22 @@ public class RollUI : NetworkBehaviour
         gameObject.SetActive(true);
         rollUIRectTransform.DOScale(Vector2.one, .4f).SetEase(Ease.InOutBack);
         rollButton.gameObject.SetActive(true);
+    }
+
+    private void ShowRerollOrPass()
+    {
+        rerollButton0.gameObject.SetActive(true);
+        rerollButton1.gameObject.SetActive(true);
+        rerollButton2.gameObject.SetActive(true);
+        acceptRollButton.gameObject.SetActive(true);
+    }
+
+    private void HideRerollOrPass()
+    {
+        rerollButton0.gameObject.SetActive(false);
+        rerollButton1.gameObject.SetActive(false);
+        rerollButton2.gameObject.SetActive(false);
+        acceptRollButton.gameObject.SetActive(false);
     }
 
     public void HideWithAnimation()

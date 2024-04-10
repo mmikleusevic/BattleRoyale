@@ -56,11 +56,16 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
         OnCardRoll?.Invoke();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetResultServerRpc(int[] results, int result, RollTypeEnum rollTypeEnum, ServerRpcParams serverRpcParams = default)
+    public void SetResult(int[] results, int result, RollTypeEnum rollTypeEnum)
     {
         if (rollTypeEnum != RollTypeEnum.CardAttack) return;
 
+        SetResultServerRpc(results, result);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetResultServerRpc(int[] results, int result, ServerRpcParams serverRpcParams = default)
+    {
         bool isThreeOfAKind = results.Distinct().Count() == 1;
 
         if (result >= tile.Card.WinValue || isThreeOfAKind)

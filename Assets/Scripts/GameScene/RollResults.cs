@@ -8,18 +8,18 @@ public class RollResults : NetworkBehaviour, IRollResults
 
     private void Start()
     {
-        IResult[] iResults = GetComponentsInChildren<IResult>();
+        IResult[] results = GetComponentsInChildren<IResult>();
 
-        foreach (IResult iResult in iResults)
+        foreach (IResult result in results)
         {
-            rollResults.Add(iResult);
+            rollResults.Add(result);
         }
 
-        ICardResults[] iCardResults = GetComponentsInChildren<ICardResults>();
+        ICardResults[] cardResults = GetComponentsInChildren<ICardResults>();
 
-        foreach (ICardResults iCardResult in iCardResults)
+        foreach (ICardResults cardResult in cardResults)
         {
-            cardBattleResults.Add(iCardResult);
+            cardBattleResults.Add(cardResult);
         }
     }
 
@@ -27,7 +27,7 @@ public class RollResults : NetworkBehaviour, IRollResults
     {
         foreach (IResult rollResult in rollResults)
         {
-            rollResult.SetResultServerRpc(result, RollType.rollType);
+            rollResult.SetResult(result, RollType.rollType);
         }
     }
 
@@ -37,7 +37,7 @@ public class RollResults : NetworkBehaviour, IRollResults
 
         foreach (ICardResults rollResult in cardBattleResults)
         {
-            rollResult.SetResultServerRpc(resultsArray, result, RollType.rollType);
+            rollResult.SetResult(resultsArray, result, RollType.rollType);
         }
     }
 }

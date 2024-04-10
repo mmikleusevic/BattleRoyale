@@ -1,9 +1,37 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CardAbilities : MonoBehaviour
 {
+    public static event Action OnTryReroll;
+
+    private bool reroll = false;
+    private bool accept = false;
+
+    private void Awake()
+    {
+        RollUI.OnReroll += RollUI_OnReroll;
+        RollUI.OnAccept += RollUI_OnAccept;
+    }
+
+    private void OnDestroy()
+    {
+        RollUI.OnReroll -= RollUI_OnReroll;
+        RollUI.OnAccept -= RollUI_OnAccept;
+    }
+
+    private void RollUI_OnAccept()
+    {
+        accept = true;
+    }
+
+    private void RollUI_OnReroll()
+    {
+        reroll = true;
+    }
+
     public IEnumerator UseCardAbilitiesOnCardRoll(List<int> resultList, List<int> diceToReroll)
     {
         foreach (Card card in Player.LocalInstance.EquippedCards)
@@ -40,6 +68,78 @@ public class CardAbilities : MonoBehaviour
         }
 
         return modifier;
+    }
+
+    public IEnumerator GetCardRerolls()
+    {
+        foreach (Card card in Player.LocalInstance.EquippedCards)
+        {
+            ICardReroll cardRerollAbility = card as ICardReroll;
+
+            if (cardRerollAbility != null && !card.AbilityUsed)
+            {
+                bool isExecuted = false;
+
+                yield return new WaitUntil(() =>
+                {
+                    if (!isExecuted)
+                    {
+                        isExecuted = true;
+
+                        OnTryReroll?.Invoke();
+                    }
+
+                    return accept == true || reroll == true;
+                });
+
+                if (reroll == true)
+                {
+                    cardRerollAbility.Use();
+                    reroll = false;
+                }
+
+                if (accept == true)
+                {
+                    accept = false;
+                }
+            }
+        }
+    }
+
+    public IEnumerator GetPlayerRerolls()
+    {
+        foreach (Card card in Player.LocalInstance.EquippedCards)
+        {
+            IPlayerReroll playerRerollAbility = card as IPlayerReroll;
+
+            if (playerRerollAbility != null && !card.AbilityUsed)
+            {
+                bool isExecuted = false;
+
+                yield return new WaitUntil(() =>
+                {
+                    if (!isExecuted)
+                    {
+                        isExecuted = true;
+
+                        OnTryReroll?.Invoke();
+                    }
+
+                    return accept == true || reroll == true;
+                });
+
+                if (reroll == true)
+                {
+                    playerRerollAbility.Use();
+                    reroll = false;
+                }
+
+                if (accept == true)
+                {
+                    accept = false;
+                }
+            }
+        }
     }
 
     public int GetPlayerRollModifier(int result)
