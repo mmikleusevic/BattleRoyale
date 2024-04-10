@@ -8,7 +8,12 @@ public class CardAbilities : MonoBehaviour
     {
         foreach (Card card in Player.LocalInstance.EquippedCards)
         {
-            yield return StartCoroutine(CardsWithRollManipulationAbilities(card, resultList, diceToReroll));
+            IHandleCardResult handleCardResult = card as IHandleCardResult;
+
+            if (handleCardResult != null)
+            {
+                yield return StartCoroutine(handleCardResult.HandleResults(resultList, diceToReroll));
+            }
         }
     }
 
@@ -16,27 +21,12 @@ public class CardAbilities : MonoBehaviour
     {
         foreach (Card card in Player.LocalInstance.EquippedCards)
         {
-            yield return StartCoroutine(CardsWithRollManipulationAbilities(card, result, diceToReroll));
-        }
-    }
+            IHandlePlayerResult handlePlayerResult = card as IHandlePlayerResult;
 
-    private IEnumerator CardsWithRollManipulationAbilities(Card card, List<int> resultList, List<int> diceToReroll)
-    {
-        switch (card)
-        {
-            case DeepWounds deepWoundsCard:
-                yield return StartCoroutine(deepWoundsCard.Ability(resultList, diceToReroll));
-                break;
-        }
-    }
-
-    private IEnumerator CardsWithRollManipulationAbilities(Card card, int result, List<int> diceToReroll)
-    {
-        switch (card)
-        {
-            case DeepWounds deepWoundsCard:
-                yield return StartCoroutine(deepWoundsCard.Ability(result, diceToReroll));
-                break;
+            if (handlePlayerResult != null)
+            {
+                yield return StartCoroutine(handlePlayerResult.HandleResults(result, diceToReroll));
+            }
         }
     }
 

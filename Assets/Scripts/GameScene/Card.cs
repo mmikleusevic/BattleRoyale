@@ -11,6 +11,20 @@ public class Card : NetworkBehaviour
     public Sprite Sprite { get; private set; }
     protected virtual int CardRollModifier { get; set; } = 0;
     protected virtual int PlayerRollModifier { get; set; } = 0;
+    public IAbility Ability { get; protected set; }
+    public bool AbilityUsed { get; set; } = false;
+
+    private void Awake()
+    {
+        PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+    }
+
+    public override void OnDestroy()
+    {
+        PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
+
+        base.OnDestroy();
+    }
 
     [ClientRpc]
     public void InitializeClientRpc(int index)
@@ -21,6 +35,11 @@ public class Card : NetworkBehaviour
         Name = cardSO.name.ToUpper();
         Points = cardSO.cost;
         WinValue = cardSO.cost;
+    }
+
+    private void PlayerTurn_OnPlayerTurn()
+    {
+        AbilityUsed = false;
     }
 
     public static Card GetCardFromNetworkReference(NetworkObjectReference networkObjectReference)
@@ -56,5 +75,4 @@ public class Card : NetworkBehaviour
     public virtual int GetCardRollModifier() { return 0; }
     public virtual void Equip(Player player) { }
     public virtual void Unequip(Player player) { }
-    public virtual void UseAbility() { }
 }

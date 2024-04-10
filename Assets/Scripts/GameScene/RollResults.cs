@@ -1,29 +1,43 @@
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 
 public class RollResults : NetworkBehaviour, IRollResults
 {
-    [SerializeField] private InitiativeResults initiativeResults;
-    [SerializeField] private PlayerBattleResults playerBattleResults;
-    [SerializeField] private CardBattleResults cardBattleResults;
+    private List<IResult> rollResults = new List<IResult>();
+    private List<ICardResults> cardBattleResults = new List<ICardResults>();
 
-    public void SetRollResults(int result, RollTypeEnum rollType)
+    private void Start()
     {
-        switch (rollType)
+        IResult[] iResults = GetComponentsInChildren<IResult>();
+
+        foreach (IResult iResult in iResults)
         {
-            case RollTypeEnum.Initiative:
-                initiativeResults.SetInitiativeResultServerRpc(result);
-                break;
-            case RollTypeEnum.PlayerAttack:
-            case RollTypeEnum.Disadvantage:
-                playerBattleResults.SetBattleResultServerRpc(result);
-                break;
+            rollResults.Add(iResult);
+        }
+
+        ICardResults[] iCardResults = GetComponentsInChildren<ICardResults>();
+
+        foreach (ICardResults iCardResult in iCardResults)
+        {
+            cardBattleResults.Add(iCardResult);
+        }
+    }
+
+    public void SetRollResults(int result)
+    {
+        foreach (IResult rollResult in rollResults)
+        {
+            rollResult.SetResultServerRpc(result, RollType.rollType);
         }
     }
 
     public void SetRollResults(List<int> results, int result)
     {
-        cardBattleResults.SetCardResult(results, result);
+        int[] resultsArray = results.ToArray();
+
+        foreach (ICardResults rollResult in cardBattleResults)
+        {
+            rollResult.SetResultServerRpc(resultsArray, result, RollType.rollType);
+        }
     }
 }

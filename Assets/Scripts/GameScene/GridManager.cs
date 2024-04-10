@@ -33,7 +33,7 @@ public class GridManager : NetworkBehaviour
 
         randomNumberList = new List<int>();
         gridTiles = new Dictionary<Vector2, Tile>();
-        FullMovementVectors();
+        movementVectors = FullMovementVectors();
 
         Initiative.OnInitiativeStart += Initiative_OnInitiativeStart;
     }
@@ -72,9 +72,9 @@ public class GridManager : NetworkBehaviour
         EnableGridPositionsForDying();
     }
 
-    public void FullMovementVectors()
+    public Vector2[][] FullMovementVectors()
     {
-        movementVectors = new Vector2[3][];
+        Vector2[][] movementVectors = new Vector2[3][];
 
         int length = 3;
 
@@ -87,11 +87,13 @@ public class GridManager : NetworkBehaviour
                 movementVectors[i][j] = new Vector2(i - 1, j - 1);
             }
         }
+
+        return movementVectors;
     }
 
-    public void HalfMovementVectors()
+    public Vector2[][] HalfMovementVectors()
     {
-        movementVectors = new Vector2[3][];
+        Vector2[][] movementVectors = new Vector2[3][];
 
         int length = 3;
         int half = length / 2;
@@ -114,6 +116,8 @@ public class GridManager : NetworkBehaviour
                 }
             }
         }
+
+        return movementVectors;
     }
 
     private void GetCardDimensions()
@@ -335,7 +339,6 @@ public class GridManager : NetworkBehaviour
 
             if ((player.GridPosition == tile.GridPosition && tile.IsClosed && tile.AreMultipleAlivePlayersOnTheCard() != true) || (player.GridPosition == tile.GridPosition && player.ActionPoints == 0))
             {
-                Debug.Log("true");
                 return;
             }
 
@@ -407,5 +410,15 @@ public class GridManager : NetworkBehaviour
     public Material GetLastCardMaterial()
     {
         return lastCardMaterial;
+    }
+
+    public void SetMovementVectors(Vector2[][] movementVectors)
+    {
+        this.movementVectors = movementVectors;
+    }
+
+    public Dictionary<Vector2, Tile> GetTiles()
+    {
+        return gridTiles;
     }
 }

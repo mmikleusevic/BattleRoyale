@@ -33,7 +33,7 @@ public class RollUI : NetworkBehaviour
         base.OnDestroy();
     }
 
-    private void ToggleDice(int value)
+    private void ToggleDice(int value, BattleType battleType)
     {
         switch (value)
         {
@@ -41,14 +41,14 @@ public class RollUI : NetworkBehaviour
                 dice[1].gameObject.SetActive(true);
                 rollDice = new Die[] { dice[1] };
 
-                battleType = BattleType.Player;
+                this.battleType = battleType == BattleType.Player ? BattleType.Player : BattleType.Ability;
                 break;
             case 2:
                 dice[0].gameObject.SetActive(true);
                 dice[2].gameObject.SetActive(true);
                 rollDice = new Die[] { dice[0], dice[2] };
 
-                battleType = BattleType.Player;
+                this.battleType = BattleType.Player;
                 break;
             case 3:
                 dice[0].gameObject.SetActive(true);
@@ -56,12 +56,12 @@ public class RollUI : NetworkBehaviour
                 dice[2].gameObject.SetActive(true);
                 rollDice = new Die[] { dice[0], dice[1], dice[2] };
 
-                battleType = BattleType.Card;
+                this.battleType = BattleType.Card;
                 break;
         }
     }
 
-    public void ShowWithAnimation(int value)
+    public void ShowWithAnimation(int value, BattleType battleType)
     {
         if (rollDice != null && rollDice.Length == value)
         {
@@ -72,7 +72,7 @@ public class RollUI : NetworkBehaviour
         }
         else
         {
-            ToggleDice(value);
+            ToggleDice(value, battleType);
         }
 
         gameObject.SetActive(true);

@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class DeepWounds : Card
+public class DeepWounds : Card, IHandlePlayerResult, IHandleCardResult
 {
-    public IEnumerator Ability(List<int> resultList, List<int> diceToReroll)
+    public IEnumerator HandleResults(List<int> resultList, List<int> diceToReroll)
     {
         diceToReroll.Clear();
 
@@ -18,7 +18,7 @@ public class DeepWounds : Card
         yield return diceToReroll;
     }
 
-    public IEnumerator Ability(int result, List<int> diceToReroll)
+    public IEnumerator HandleResults(int result, List<int> diceToReroll)
     {
         diceToReroll.Clear();
 

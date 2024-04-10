@@ -1,3 +1,4 @@
+using UnityEngine;
 
 public class Disorientation : Card
 {
@@ -5,7 +6,8 @@ public class Disorientation : Card
     {
         if (player == Player.LocalInstance)
         {
-            GridManager.Instance.HalfMovementVectors();
+            Vector2[][] movementVectors = GridManager.Instance.HalfMovementVectors();
+            GridManager.Instance.SetMovementVectors(movementVectors);
         }
     }
 
@@ -13,7 +15,8 @@ public class Disorientation : Card
     {
         if (player == Player.LocalInstance)
         {
-            GridManager.Instance.FullMovementVectors();
+            Vector2[][] movementVectors = GridManager.Instance.FullMovementVectors();
+            GridManager.Instance.SetMovementVectors(movementVectors);
         }
     }
 }

@@ -63,14 +63,7 @@ public class Roll : MonoBehaviour
         diceToReroll.Clear();
         resultSum = 0;
 
-        if (battleType == BattleType.Card)
-        {
-            StartCoroutine(OnRotate(dice, BattleType.Card));
-        }
-        else
-        {
-            StartCoroutine(OnRotate(dice, BattleType.Player));
-        }
+        StartCoroutine(OnRotate(dice, battleType));
     }
 
     private IEnumerator HandleCardBattleRoll(Die[] dice, BattleType battleType)
@@ -107,7 +100,16 @@ public class Roll : MonoBehaviour
 
         PlayerBattleModifier += cardAbilities.GetPlayerRollModifier(resultSum);
 
-        rollResults.SetRollResults(resultSum, RollType.rollType);
+        rollResults.SetRollResults(resultSum);
+
+        SendToMessageUI(resultSum);
+    }
+
+    private IEnumerator HandleAbilityCardRoll(Die[] dice)
+    {
+        yield return StartCoroutine(AbilityDiceRoll(dice));
+
+        rollResults.SetRollResults(resultSum);
 
         SendToMessageUI(resultSum);
     }
@@ -141,6 +143,26 @@ public class Roll : MonoBehaviour
         if (RollType.rollType == RollTypeEnum.Disadvantage)
         {
             resultSum = min;
+        }
+    }
+
+    private IEnumerator AbilityDiceRoll(Die[] dice)
+    {
+        for (int i = 0; i < dice.Length; i++)
+        {
+            if (dice[i].Reroll == true || dice[i].Rolled == false)
+            {
+                int result = Random.Range(1, 7);
+
+                resultSum += result;
+
+                Vector3 side = GetSide(result);
+
+                yield return StartCoroutine(RotateToFace(side, dice[i]));
+
+                dice[i].Rolled = true;
+                dice[i].Rolled = false;
+            }
         }
     }
 
@@ -207,6 +229,9 @@ public class Roll : MonoBehaviour
                 break;
             case BattleType.Card:
                 yield return StartCoroutine(HandleCardBattleRoll(dice, battleType));
+                break;
+            case BattleType.Ability:
+                yield return StartCoroutine(HandleAbilityCardRoll(dice));
                 break;
         }
     }
@@ -276,5 +301,6 @@ public class Roll : MonoBehaviour
 public enum BattleType
 {
     Player,
-    Card
+    Card,
+    Ability
 }

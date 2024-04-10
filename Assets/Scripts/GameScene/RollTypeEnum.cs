@@ -8,5 +8,6 @@ public enum RollTypeEnum
     Initiative,
     Disadvantage,
     CardAttack,
-    PlayerAttack
+    PlayerAttack,
+    Ability
 }

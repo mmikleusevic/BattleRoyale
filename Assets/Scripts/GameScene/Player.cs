@@ -317,6 +317,15 @@ public class Player : NetworkBehaviour
         OnPlayerDiedCardBattle?.Invoke();
     }
 
+    public void PlayerDiedAbilityCheck()
+    {
+        IsDead.Value = true;
+
+        DeathAnimationServerRpc();
+
+        PCInfoUI.Instance.SetIsDeadText();
+    }
+
     private void PlayerBattleResults_OnBattleLost()
     {
         IsDead.Value = true;

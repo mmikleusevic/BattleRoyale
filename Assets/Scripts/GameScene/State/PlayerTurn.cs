@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerTurn : State
@@ -57,7 +58,7 @@ public class PlayerTurn : State
         await Move(obj);
     }
 
-    private async void ActionsUI_OnAttackCard(Tile tile)
+    private async void ActionsUI_OnAttackCard(NetworkObjectReference tileNetworkObjectReference, NetworkObjectReference playerNetworkObjectReference)
     {
         await AttackCard();
     }

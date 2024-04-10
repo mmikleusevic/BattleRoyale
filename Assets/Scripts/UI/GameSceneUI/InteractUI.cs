@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Unity.Netcode;
 using UnityEngine;
 
 public class InteractUI : MonoBehaviour
@@ -12,8 +13,9 @@ public class InteractUI : MonoBehaviour
     {
         Tile.OnTilePressed += Tile_OnTilePressed;
         ActionsUI.OnMove += Hide;
-        ActionsUI.OnAttackCard += Hide;
+        ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
         ActionsUI.OnAttackPlayer += Hide;
+        AbilityUI.OnAbilityUsed += AbilityUI_OnAbilityUsed;
     }
 
     private void Start()
@@ -25,8 +27,9 @@ public class InteractUI : MonoBehaviour
     {
         Tile.OnTilePressed -= Tile_OnTilePressed;
         ActionsUI.OnMove -= Hide;
-        ActionsUI.OnAttackCard -= Hide;
+        ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
         ActionsUI.OnAttackPlayer -= Hide;
+        AbilityUI.OnAbilityUsed -= AbilityUI_OnAbilityUsed;
     }
 
     private void Tile_OnTilePressed(Tile tile)
@@ -37,6 +40,16 @@ public class InteractUI : MonoBehaviour
     private void Hide(Tile tile)
     {
         HideWithAnimation();
+    }
+
+    private void ActionsUI_OnAttackCard(NetworkObjectReference arg1, NetworkObjectReference arg2)
+    {
+        Hide();
+    }
+
+    private void AbilityUI_OnAbilityUsed()
+    {
+        Hide();
     }
 
     public void ShowWithAnimation()

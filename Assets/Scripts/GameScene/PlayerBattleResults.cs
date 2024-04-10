@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 
-public class PlayerBattleResults : NetworkBehaviour
+public class PlayerBattleResults : NetworkBehaviour, IResult
 {
     public static event Action OnPlayerBattleRollDie;
     public static event Action OnPlayerBattleRollDieOver;
@@ -208,8 +208,10 @@ public class PlayerBattleResults : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetBattleResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
+    public void SetResultServerRpc(int result, RollTypeEnum rollTypeEnum, ServerRpcParams serverRpcParams = default)
     {
+        if (rollTypeEnum != RollTypeEnum.PlayerAttack && rollTypeEnum != RollTypeEnum.Disadvantage) return;
+
         SetBattleRollResult(result, serverRpcParams);
 
         bool allRolled = CheckIfBattleRollsOver();

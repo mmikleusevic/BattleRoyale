@@ -1,16 +1,20 @@
 using System;
+using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ActionsUI : MonoBehaviour
 {
     public static event Action<Tile> OnMove;
-    public static event Action<Tile> OnAttackCard;
+    public static event Action<NetworkObjectReference, NetworkObjectReference> OnAttackCard;
     public static event Action<Tile> OnAttackPlayer;
+    public static event Action OnAbility;
 
     [SerializeField] private Button moveButton;
     [SerializeField] private Button attackCardButton;
     [SerializeField] private Button attackPlayerButton;
+    [SerializeField] private Button abilitiesButton;
 
     private Tile tile;
 
@@ -25,7 +29,7 @@ public class ActionsUI : MonoBehaviour
         {
             RollType.rollType = RollTypeEnum.CardAttack;
             Player.LocalInstance.SubtractActionPoints();
-            OnAttackCard?.Invoke(tile);
+            OnAttackCard?.Invoke(tile.NetworkObject, Player.LocalInstance.NetworkObject);
             MessageUI.Instance.SendMessageToEveryoneExceptMe(SendAttackingCardMessage());
         });
 
@@ -34,12 +38,22 @@ public class ActionsUI : MonoBehaviour
             OnAttackPlayer?.Invoke(tile);
         });
 
+        abilitiesButton.onClick.AddListener(() =>
+        {
+            OnAbility?.Invoke();
+        });
+
+        abilitiesButton.gameObject.SetActive(false);
+
         Tile.OnTilePressed += Tile_OnTilePressed;
+        PlayerTurn.OnPlayerTurnOver += PlayerTurn_OnPlayerTurnOver;
     }
 
     private void OnDestroy()
     {
         Tile.OnTilePressed -= Tile_OnTilePressed;
+        PlayerTurn.OnPlayerTurnOver -= PlayerTurn_OnPlayerTurnOver;
+
         moveButton.onClick.RemoveAllListeners();
         attackCardButton.onClick.RemoveAllListeners();
         attackPlayerButton.onClick.RemoveAllListeners();
@@ -60,6 +74,11 @@ public class ActionsUI : MonoBehaviour
         gameObject.SetActive(true);
 
         GetPossibleActions();
+    }
+
+    private void PlayerTurn_OnPlayerTurnOver()
+    {
+        HideAbilitiesButton();
     }
 
     private void GetPossibleActions()
@@ -101,6 +120,20 @@ public class ActionsUI : MonoBehaviour
         else
         {
             HideAll();
+        }
+
+        if (player == PlayerManager.Instance.ActivePlayer)
+        {
+            bool hasAbility = player.EquippedCards.Any(a => a.Ability != null && !a.AbilityUsed) && player.ActionPoints > 0;
+
+            if (hasAbility)
+            {
+                ShowAbilitiesButton();
+            }
+            else
+            {
+                HideAbilitiesButton();
+            }
         }
     }
 
@@ -144,6 +177,16 @@ public class ActionsUI : MonoBehaviour
     private void HideAttackPlayerButton()
     {
         attackPlayerButton.gameObject.SetActive(false);
+    }
+
+    private void ShowAbilitiesButton()
+    {
+        abilitiesButton.gameObject.SetActive(true);
+    }
+
+    private void HideAbilitiesButton()
+    {
+        abilitiesButton.gameObject.SetActive(false);
     }
 
     private string[] SendAttackingCardMessage()

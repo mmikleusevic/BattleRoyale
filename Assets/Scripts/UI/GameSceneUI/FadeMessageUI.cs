@@ -18,7 +18,8 @@ public class FadeMessageUI : MonoBehaviour
     {
         Instance = this;
 
-        Player.OnPlayerSelectedPlaceToDie += Player_OnPlayerSelectedPlaceToDie;
+        Player.OnPlayerSelectedPlaceToDie += SetTextToEmpty;
+        AbilityResults.OnEndRoll += SetTextToEmpty;
     }
 
     private void Start()
@@ -30,10 +31,16 @@ public class FadeMessageUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        Player.OnPlayerSelectedPlaceToDie -= Player_OnPlayerSelectedPlaceToDie;
+        Player.OnPlayerSelectedPlaceToDie -= SetTextToEmpty;
+        AbilityResults.OnEndRoll -= SetTextToEmpty;
     }
 
-    private void Player_OnPlayerSelectedPlaceToDie(ulong obj)
+    private void SetTextToEmpty(ulong obj)
+    {
+        SetTextToEmpty();
+    }
+
+    private void SetTextToEmpty()
     {
         fadeText.text = string.Empty;
     }

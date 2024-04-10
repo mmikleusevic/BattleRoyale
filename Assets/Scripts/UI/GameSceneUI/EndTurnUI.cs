@@ -22,11 +22,15 @@ public class EndTurnUI : MonoBehaviour
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
         Player.OnMovementOrActionPoints += Player_OnMovementOrActionPoints;
         PlayerBattleResults.OnPlayerBattleShowUI += PlayerBattleResults_OnPlayerBattleShowUI;
+        AbilityResults.OnDisableEndTurnButton += TempestAbility_OnDisableEndTurnButton;
+        AbilityResults.OnEnableEndTurnButton += TempestAbility_OnEnableEndTurnButton;
 
         ParticleSystemManager.Instance.Stop(particleGlow);
 
         Hide();
     }
+
+
 
     public void OnDestroy()
     {
@@ -34,6 +38,8 @@ public class EndTurnUI : MonoBehaviour
         PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
         Player.OnMovementOrActionPoints -= Player_OnMovementOrActionPoints;
         PlayerBattleResults.OnPlayerBattleShowUI -= PlayerBattleResults_OnPlayerBattleShowUI;
+        AbilityResults.OnDisableEndTurnButton -= TempestAbility_OnDisableEndTurnButton;
+        AbilityResults.OnEnableEndTurnButton -= TempestAbility_OnEnableEndTurnButton;
 
         endTurnButton.onClick.RemoveAllListeners();
     }
@@ -45,13 +51,7 @@ public class EndTurnUI : MonoBehaviour
         Show();
     }
 
-    private void PlayerBattleResults_OnAfterBattleResolved()
-    {
-        endTurnButton.interactable = true;
-        ToggleParticleEffect();
-    }
-
-    private void Player_OnMovementOrActionPoints()
+    private void CheckRemainingActionsAndMovement()
     {
         Player player = Player.LocalInstance;
 
@@ -63,6 +63,16 @@ public class EndTurnUI : MonoBehaviour
         {
             actionsAndMovementUsed = false;
         }
+    }
+    private void PlayerBattleResults_OnAfterBattleResolved()
+    {
+        endTurnButton.interactable = true;
+        ToggleParticleEffect();
+    }
+
+    private void Player_OnMovementOrActionPoints()
+    {
+        CheckRemainingActionsAndMovement();
 
         ToggleParticleEffect();
     }
@@ -70,6 +80,18 @@ public class EndTurnUI : MonoBehaviour
     private void PlayerBattleResults_OnPlayerBattleShowUI(string obj)
     {
         ParticleSystemManager.Instance.Stop(particleGlow);
+        endTurnButton.interactable = false;
+    }
+
+    private void TempestAbility_OnEnableEndTurnButton()
+    {
+        endTurnButton.interactable = true;
+        CheckRemainingActionsAndMovement();
+        ToggleParticleEffect();
+    }
+
+    private void TempestAbility_OnDisableEndTurnButton()
+    {
         endTurnButton.interactable = false;
     }
 

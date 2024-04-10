@@ -1,4 +1,7 @@
-﻿public interface IRollResults
+﻿using System.Collections.Generic;
+
+public interface IRollResults
 {
-    void SetRollResults(int result, RollTypeEnum rollType);
+    void SetRollResults(int result);
+    void SetRollResults(List<int> results, int result);
 }

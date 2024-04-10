@@ -6,7 +6,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class InitiativeResults : NetworkBehaviour
+public class InitiativeResults : NetworkBehaviour, IResult
 {
     public static event Action OnReRoll;
     public static event Action<OnInitiativeRollOverEventArgs> OnInitiativeRollOver;
@@ -49,8 +49,10 @@ public class InitiativeResults : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetInitiativeResultServerRpc(int result, ServerRpcParams serverRpcParams = default)
+    public void SetResultServerRpc(int result, RollTypeEnum rollTypeEnum, ServerRpcParams serverRpcParams = default)
     {
+        if (rollTypeEnum != RollTypeEnum.Initiative) return;
+
         var clientId = serverRpcParams.Receive.SenderClientId;
 
         SetInitiativeResult(result, clientId);
