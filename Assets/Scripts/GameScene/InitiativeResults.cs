@@ -298,6 +298,8 @@ public class InitiativeResults : NetworkBehaviour, IResult
     {
         string message = SendFinalOrderToMessageUI();
 
+        CardAbilities.ResetRerolls();
+
         CallOnInitiativeRollOverClientRpc(message);
     }
 

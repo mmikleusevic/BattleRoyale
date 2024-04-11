@@ -1,4 +1,1 @@
-public interface IPlayerReroll
-{
-    void Use();
-}
+public interface IPlayerReroll : IAbility { }

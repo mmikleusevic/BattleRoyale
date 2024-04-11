@@ -34,7 +34,12 @@ public class AbilityUI : MonoBehaviour
 
         foreach (Card card in player.EquippedCards)
         {
-            if (card.Ability != null && !card.AbilityUsed)
+            Type abilityType = card.Ability.GetType();
+            Type[] implementedInterfaces = abilityType.GetInterfaces();
+
+            bool isStrictIAbility = implementedInterfaces.Length == 1 && implementedInterfaces[0] == typeof(IAbility);
+
+            if (card.Ability != null && !card.AbilityUsed && isStrictIAbility)
             {
                 Transform cardTransform = Instantiate(template, container);
 

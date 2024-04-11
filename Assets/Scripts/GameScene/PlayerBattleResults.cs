@@ -40,9 +40,10 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
 
     private void Awake()
     {
-        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayerServerRpc;
+        PlayerInfoUI.OnAttackPlayer += OnAttackPlayer;
         PlayerCardsEquippedUI.OnWonEquippedCard += ResolvePlayerBattleServerRpc;
         Player.OnPlayerSelectedPlaceToDie += ResolvePlayerBattleServerRpc;
+        PlayerCardUI.OnDisarmOver += OnAttackPlayer;
     }
 
     private void Start()
@@ -56,15 +57,22 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
 
     public override void OnDestroy()
     {
-        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayerServerRpc;
+        PlayerInfoUI.OnAttackPlayer -= OnAttackPlayer;
         PlayerCardsEquippedUI.OnWonEquippedCard -= ResolvePlayerBattleServerRpc;
         Player.OnPlayerSelectedPlaceToDie -= ResolvePlayerBattleServerRpc;
+        PlayerCardUI.OnDisarmOver -= OnAttackPlayer;
 
         base.OnDestroy();
     }
 
+    private void OnAttackPlayer(Player player, Player enemy)
+    {
+        AttackPlayerServerRpc(player.NetworkObject, enemy.NetworkObject);
+    }
+
+
     [ServerRpc(RequireOwnership = false)]
-    private void PlayerInfoUI_OnAttackPlayerServerRpc(NetworkObjectReference arg1, NetworkObjectReference arg2)
+    private void AttackPlayerServerRpc(NetworkObjectReference arg1, NetworkObjectReference arg2)
     {
         Player player1 = Player.GetPlayerFromNetworkReference(arg1);
         Player player2 = Player.GetPlayerFromNetworkReference(arg2);
@@ -393,6 +401,8 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
     private void CallOnPlayerBattleRollOver(ulong winnerId, ClientRpcParams clientRpcParams = default)
     {
         string message = SendBattleWinnerMessageToMessageUI(winnerId);
+
+        CardAbilities.ResetRerolls();
 
         CallOnPlayerBattleRollOverClientRpc(message);
     }

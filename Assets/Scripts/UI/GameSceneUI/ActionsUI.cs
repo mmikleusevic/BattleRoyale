@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -124,16 +123,30 @@ public class ActionsUI : MonoBehaviour
 
         if (player == PlayerManager.Instance.ActivePlayer)
         {
-            bool hasAbility = player.EquippedCards.Any(a => a.Ability != null && !a.AbilityUsed) && player.ActionPoints > 0;
+            foreach (Card card in player.EquippedCards)
+            {
+                if (card.Ability != null)
+                {
+                    Type abilityType = card.Ability.GetType();
+                    Type[] implementedInterfaces = abilityType.GetInterfaces();
 
-            if (hasAbility)
-            {
-                ShowAbilitiesButton();
+                    bool isStrictIAbility = implementedInterfaces.Length == 1 && implementedInterfaces[0] == typeof(IAbility);
+
+                    if (!card.AbilityUsed && player.ActionPoints > 0 && isStrictIAbility)
+                    {
+                        ShowAbilitiesButton();
+                        break;
+                    }
+                    else
+                    {
+                        HideAbilitiesButton();
+                    }
+                }
             }
-            else
-            {
-                HideAbilitiesButton();
-            }
+        }
+        else
+        {
+            HideAbilitiesButton();
         }
     }
 

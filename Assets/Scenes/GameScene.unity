@@ -10488,10 +10488,10 @@ RectTransform:
   - {fileID: 504738674}
   m_Father: {fileID: 579523744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1361.3778, y: -461.15002}
-  m_SizeDelta: {x: 2722.7556, y: 543.54004}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &801646435
 MonoBehaviour:
@@ -11226,6 +11226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardImage: {fileID: 958925557}
   defaultSprite: {fileID: 828825460, guid: b462b6de2b2cb1343b041c27b616c246, type: 3}
+  greyedOutColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   isEmpty: 1
 --- !u!114 &958925557
 MonoBehaviour:
@@ -15438,6 +15439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardImage: {fileID: 1648387851}
   defaultSprite: {fileID: 828825460, guid: b462b6de2b2cb1343b041c27b616c246, type: 3}
+  greyedOutColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   isEmpty: 1
 --- !u!114 &1648387854
 MonoBehaviour:

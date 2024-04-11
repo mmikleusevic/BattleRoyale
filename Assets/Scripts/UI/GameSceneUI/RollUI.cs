@@ -35,7 +35,7 @@ public class RollUI : NetworkBehaviour
         {
             rollDice[0].Reroll = true;
             OnReroll?.Invoke();
-            HideRerollOrPass();
+            HideCardRerollOrPass();
             Roll();
         });
 
@@ -51,7 +51,7 @@ public class RollUI : NetworkBehaviour
             }
 
             OnReroll?.Invoke();
-            HideRerollOrPass();
+            HideCardRerollOrPass();
             Roll();
         });
 
@@ -59,19 +59,20 @@ public class RollUI : NetworkBehaviour
         {
             rollDice[2].Reroll = true;
             OnReroll?.Invoke();
-            HideRerollOrPass();
+            HideCardRerollOrPass();
             Roll();
         });
 
         acceptRollButton.onClick.AddListener(() =>
         {
             OnAccept?.Invoke();
-            HideRerollOrPass();
+            HideCardRerollOrPass();
         });
 
-        CardAbilities.OnTryReroll += CardAbilities_OnTryReroll;
+        CardAbilities.OnRerollCardBattle += CardAbilities_OnTryReroll;
+        CardAbilities.OnRerollPlayerBattle += CardAbilities_OnRerollPlayerBattle;
 
-        HideRerollOrPass();
+        HideCardRerollOrPass();
         HideInstant();
     }
 
@@ -83,7 +84,8 @@ public class RollUI : NetworkBehaviour
         rerollButton2.onClick.RemoveAllListeners();
         acceptRollButton.onClick.RemoveAllListeners();
 
-        CardAbilities.OnTryReroll -= CardAbilities_OnTryReroll;
+        CardAbilities.OnRerollCardBattle -= CardAbilities_OnTryReroll;
+        CardAbilities.OnRerollPlayerBattle -= CardAbilities_OnRerollPlayerBattle;
 
         base.OnDestroy();
     }
@@ -95,7 +97,12 @@ public class RollUI : NetworkBehaviour
 
     private void CardAbilities_OnTryReroll()
     {
-        ShowRerollOrPass();
+        ShowCardRerollOrPass();
+    }
+
+    private void CardAbilities_OnRerollPlayerBattle()
+    {
+        ShowPlayerRerollOrPass();
     }
 
     private void ToggleDice(int value, BattleType battleType)
@@ -145,7 +152,13 @@ public class RollUI : NetworkBehaviour
         rollButton.gameObject.SetActive(true);
     }
 
-    private void ShowRerollOrPass()
+    private void ShowPlayerRerollOrPass()
+    {
+        rerollButton1.gameObject.SetActive(true);
+        acceptRollButton.gameObject.SetActive(true);
+    }
+
+    private void ShowCardRerollOrPass()
     {
         rerollButton0.gameObject.SetActive(true);
         rerollButton1.gameObject.SetActive(true);
@@ -153,7 +166,7 @@ public class RollUI : NetworkBehaviour
         acceptRollButton.gameObject.SetActive(true);
     }
 
-    private void HideRerollOrPass()
+    private void HideCardRerollOrPass()
     {
         rerollButton0.gameObject.SetActive(false);
         rerollButton1.gameObject.SetActive(false);

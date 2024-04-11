@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,10 +21,12 @@ public class PlayerListUI : MonoBehaviour
         ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
         PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerInfoUI.OnDisarm += PlayerInfoUI_OnDisarm;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.Instance.OnActivePlayerChanged += PlayerManager_OnActivePlayerChanged;
         Won.OnWon += OnGameOver;
         Lost.OnLost += OnGameOver;
+        PlayerCardUI.OnDisarmOver += PlayerCardUI_OnDisarmOver;
 
         gameOverText.gameObject.SetActive(false);
         originalSiblingIndex = transform.GetSiblingIndex();
@@ -39,8 +40,10 @@ public class PlayerListUI : MonoBehaviour
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
         PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerInfoUI.OnDisarm -= PlayerInfoUI_OnDisarm;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
+        PlayerCardUI.OnDisarmOver -= PlayerCardUI_OnDisarmOver;
     }
 
     private void ActionsUI_OnAttackPlayer(Tile tile)
@@ -49,7 +52,7 @@ public class PlayerListUI : MonoBehaviour
 
         Show();
 
-        List<Player> players = tile.GetPlayersOnCard();
+        List<Player> players = tile.GetAlivePlayersOnCard();
 
         InstantiatePlayerInfo(players, true);
     }
@@ -79,7 +82,7 @@ public class PlayerListUI : MonoBehaviour
         }
     }
 
-    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference arg1, NetworkObjectReference arg2)
+    private void PlayerInfoUI_OnAttackPlayer(Player player, Player enemy)
     {
         RestoreOriginalOrder();
 
@@ -87,6 +90,11 @@ public class PlayerListUI : MonoBehaviour
     }
 
     private void PlayerInfoUI_OnShowPlayerEquippedCards(Player obj, bool isOver)
+    {
+        RestoreOriginalOrder();
+    }
+
+    private void PlayerInfoUI_OnDisarm(Player obj)
     {
         RestoreOriginalOrder();
     }
@@ -128,6 +136,13 @@ public class PlayerListUI : MonoBehaviour
         List<Player> players = PlayerManager.Instance.Players;
 
         InstantiatePlayerInfo(players, false);
+    }
+
+    private void PlayerCardUI_OnDisarmOver(Player arg1, Player arg2)
+    {
+        RestoreOriginalOrder();
+
+        Hide();
     }
 
     private void SetAsLastSibling()

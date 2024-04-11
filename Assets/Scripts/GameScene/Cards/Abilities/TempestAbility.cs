@@ -1,18 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TempestAbility : IAbility
+public class TempestAbility : MonoBehaviour, IAbility
 {
     private Tempest tempest;
     private AbilityResults abilityResults;
 
-    public TempestAbility(Tempest tempest, AbilityResults abilityResults)
+    private int goal = 3;
+
+    private void Start()
     {
-        this.tempest = tempest;
+        tempest = GetComponent<Tempest>();
+    }
+
+    public void SetAbilityResults(AbilityResults abilityResults)
+    {
         this.abilityResults = abilityResults;
     }
 
-    private int goal = 3;
     public void Use()
     {
         if (!tempest.AbilityUsed)
@@ -38,7 +43,7 @@ public class TempestAbility : IAbility
                     {
                         Tile tile = gridTiles[position];
 
-                        List<Player> tilePlayers = tile.GetPlayersOnCard();
+                        List<Player> tilePlayers = tile.GetAlivePlayersOnCard();
 
                         foreach (Player player in tilePlayers)
                         {

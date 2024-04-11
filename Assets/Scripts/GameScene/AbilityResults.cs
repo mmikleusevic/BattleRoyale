@@ -138,7 +138,7 @@ public class AbilityResults : NetworkBehaviour, IResult
     [ClientRpc]
     private void RollSucceededLogicClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        string[] messages = CreateOnRollFailedMessage();
+        string[] messages = CreateOnRollSucceededMessage();
 
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);

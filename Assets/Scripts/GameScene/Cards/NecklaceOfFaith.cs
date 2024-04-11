@@ -1,7 +1,9 @@
-public class NecklaceOfFaith : Card, ICardReroll
+public class NecklaceOfFaith : Card
 {
-    public void Use()
+    public override void OnNetworkSpawn()
     {
-        AbilityUsed = true;
+        Ability = GetComponent<NecklaceOfFaithAbility>();
+
+        base.OnNetworkSpawn();
     }
 }

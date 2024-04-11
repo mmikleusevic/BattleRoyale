@@ -113,7 +113,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         return false;
     }
 
-    public List<Player> GetPlayersOnCard()
+    public List<Player> GetAlivePlayersOnCard()
     {
         List<Player> players = new List<Player>();
 

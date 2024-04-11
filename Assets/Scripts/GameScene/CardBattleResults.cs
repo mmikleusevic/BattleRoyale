@@ -77,6 +77,8 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
             CardLostLogicClientRpc(callerClientRpcParams);
         }
 
+        CardAbilities.ResetRerolls();
+
         tile = null;
     }
 

@@ -108,6 +108,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: -6309932108133290923}
+    - targetCorrespondingSourceObject: {fileID: 4932685657585325972, guid: ba81c138302199546a32dc2366d7b3f4,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4912422383721795351}
   m_SourcePrefab: {fileID: 100100000, guid: ba81c138302199546a32dc2366d7b3f4, type: 3}
 --- !u!23 &1140835338541195348 stripped
 MeshRenderer:
@@ -134,4 +138,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   costRenderer: {fileID: 1140835338541195348}
-  tempestAbility: {fileID: 0}
+--- !u!114 &4912422383721795351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910704414839113298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fa8da25fbd761e40a757a27d106c33e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

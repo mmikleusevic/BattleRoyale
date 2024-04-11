@@ -1,8 +1,8 @@
-public class LuckyBracelet : Card
+public class BlackDeath : Card
 {
     public override void OnNetworkSpawn()
     {
-        Ability = GetComponent<LuckyBraceletAbility>();
+        Ability = GetComponent<BlackDeathAbility>();
 
         base.OnNetworkSpawn();
     }

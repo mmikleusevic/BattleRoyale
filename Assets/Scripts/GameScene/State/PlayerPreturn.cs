@@ -22,6 +22,8 @@ public class PlayerPreturn : State
 
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
 
+        StateEnum stateEnum = StateManager.Instance.GetState();
+
         OnPlayerPreturn?.Invoke();
     }
 

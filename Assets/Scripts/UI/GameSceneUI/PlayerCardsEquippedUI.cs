@@ -1,6 +1,8 @@
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
@@ -54,6 +56,10 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
         Player.OnCardsSwapped += Player_OnCardsSwapped;
+        PlayerInfoUI.OnDisarm += PlayerInfoUI_OnDisarm;
+        PlayerCardUI.OnDisarmOver += PlayerCardUI_OnDisarmOver;
+        Won.OnWon += OnGameOver;
+        Lost.OnLost += OnGameOver;
 
         takeCardButton.gameObject.SetActive(false);
 
@@ -76,6 +82,10 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerBattleResults.OnBattleWin -= PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver -= PlayerPreturn_OnPlayerPreturnOver;
         Player.OnCardsSwapped -= Player_OnCardsSwapped;
+        PlayerInfoUI.OnDisarm -= PlayerInfoUI_OnDisarm;
+        PlayerCardUI.OnDisarmOver -= PlayerCardUI_OnDisarmOver;
+        Won.OnWon -= OnGameOver;
+        Lost.OnLost -= OnGameOver;
     }
 
     private void PlayerPreturn_OnPlayerPreturn()
@@ -94,7 +104,14 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         ShowWithAnimation();
 
-        InstantiateCards();
+        EquippedCardState equippedCardState = EquippedCardState.None;
+
+        if (Player.LocalInstance.UnequippedCards.Count > 0)
+        {
+            equippedCardState = EquippedCardState.Swap;
+        }
+
+        InstantiateCards(equippedCardState);
 
         OnPreturnCardsInstantiated?.Invoke();
     }
@@ -112,7 +129,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         ShowWithAnimation();
 
-        InstantiateCards();
+        InstantiateCards(EquippedCardState.None);
     }
 
     private void PlayerBattleResults_OnAfterBattle(Player loser)
@@ -127,7 +144,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         ShowWithAnimation();
 
-        InstantiateCards();
+        InstantiateCards(EquippedCardState.None);
     }
 
     private void PlayerPreturn_OnPlayerPreturnOver()
@@ -139,6 +156,34 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     {
         ShowOrHideCloseButton();
         ShowOrHideUnequippedCardsButton(false);
+    }
+
+    private void PlayerInfoUI_OnDisarm(Player enemy)
+    {
+        player = enemy;
+
+        titleText.text = $"DISARMING {enemy.PlayerName}'s </color>CARDS (Press to disarm)";
+
+        closeButton.gameObject.SetActive(false);
+        ShowOrHideUnequippedCardsButton(false);
+
+        background.color = player.HexPlayerColor.HEXToColor();
+
+        PlayerCardUI.enemy = enemy;
+
+        ShowWithAnimation();
+
+        InstantiateCards(EquippedCardState.Disarm);
+    }
+
+    private void PlayerCardUI_OnDisarmOver(Player player, Player enemy)
+    {
+        HideWithAnimation();
+    }
+
+    private void OnGameOver(string obj)
+    {
+        PlayerPreturn.OnPlayerPreturn -= PlayerPreturn_OnPlayerPreturn;
     }
 
     private void ShowOrHideUnequippedCardsButton(bool isOver)
@@ -153,8 +198,10 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         }
     }
 
-    private void InstantiateCards()
+    private void InstantiateCards(EquippedCardState equippedCardState)
     {
+        DestroyTransforms();
+
         for (int i = 0; i < player.MaxEquippableCards; i++)
         {
             Transform cardUITransform = Instantiate(template, container);
@@ -163,15 +210,17 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
             PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
 
+            playerCardUI.gameObject.SetActive(true);
+
             if (player.EquippedCards.Count >= i + 1)
             {
                 Card card = player.EquippedCards[i];
 
-                playerCardUI.Instantiate(card, i);
+                playerCardUI.Instantiate(card, i, equippedCardState);
             }
             else
             {
-                playerCardUI.Instantiate(i);
+                playerCardUI.Instantiate(i, equippedCardState);
             }
         }
     }
@@ -192,7 +241,21 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     {
         takeCardButton.gameObject.SetActive(false);
 
+        List<int> curseIndexes = player.EquippedCards
+                            .Select((card, index) => new { Card = card, Index = index })
+                            .Where(x => x.Card is ICurse)
+                            .Select(x => x.Index)
+                            .ToList();
+
         int randomCardNumber = Random.Range(0, player.EquippedCards.Count);
+
+        if (curseIndexes.Count > 0)
+        {
+            while (!curseIndexes.Contains(randomCardNumber))
+            {
+                randomCardNumber = Random.Range(0, player.EquippedCards.Count);
+            }
+        }
 
         Card card = player.EquippedCards[randomCardNumber];
 
@@ -234,6 +297,11 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     {
         gameObject.SetActive(false);
 
+        DestroyTransforms();
+    }
+
+    private void DestroyTransforms()
+    {
         foreach (Transform child in container)
         {
             if (child == template) continue;

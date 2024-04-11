@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class CardAbilities : MonoBehaviour
 {
-    public static event Action OnTryReroll;
+    public static event Action OnRerollCardBattle;
+    public static event Action OnRerollPlayerBattle;
 
     private bool reroll = false;
     private bool accept = false;
@@ -74,7 +75,7 @@ public class CardAbilities : MonoBehaviour
     {
         foreach (Card card in Player.LocalInstance.EquippedCards)
         {
-            ICardReroll cardRerollAbility = card as ICardReroll;
+            ICardReroll cardRerollAbility = card.Ability as ICardReroll;
 
             if (cardRerollAbility != null && !card.AbilityUsed)
             {
@@ -86,22 +87,19 @@ public class CardAbilities : MonoBehaviour
                     {
                         isExecuted = true;
 
-                        OnTryReroll?.Invoke();
+                        OnRerollCardBattle?.Invoke();
                     }
 
-                    return accept == true || reroll == true;
+                    return accept || reroll;
                 });
 
-                if (reroll == true)
+                if (reroll)
                 {
                     cardRerollAbility.Use();
                     reroll = false;
                 }
 
-                if (accept == true)
-                {
-                    accept = false;
-                }
+                accept = false;
             }
         }
     }
@@ -110,7 +108,7 @@ public class CardAbilities : MonoBehaviour
     {
         foreach (Card card in Player.LocalInstance.EquippedCards)
         {
-            IPlayerReroll playerRerollAbility = card as IPlayerReroll;
+            IPlayerReroll playerRerollAbility = card.Ability as IPlayerReroll;
 
             if (playerRerollAbility != null && !card.AbilityUsed)
             {
@@ -122,21 +120,38 @@ public class CardAbilities : MonoBehaviour
                     {
                         isExecuted = true;
 
-                        OnTryReroll?.Invoke();
+                        OnRerollPlayerBattle?.Invoke();
                     }
 
-                    return accept == true || reroll == true;
+                    return accept || reroll;
                 });
 
-                if (reroll == true)
+                if (reroll)
                 {
                     playerRerollAbility.Use();
                     reroll = false;
                 }
 
-                if (accept == true)
+                accept = false;
+            }
+        }
+    }
+
+    public static void ResetRerolls()
+    {
+        foreach (Card card in Player.LocalInstance.EquippedCards)
+        {
+            if (card.Ability != null)
+            {
+                Type abilityType = card.Ability.GetType();
+                Type[] implementedInterfaces = abilityType.GetInterfaces();
+
+                bool isNotOnlyIAbility = implementedInterfaces.Length > 1;
+
+                if (isNotOnlyIAbility)
                 {
-                    accept = false;
+                    card.AbilityUsed = false;
+                    continue;
                 }
             }
         }

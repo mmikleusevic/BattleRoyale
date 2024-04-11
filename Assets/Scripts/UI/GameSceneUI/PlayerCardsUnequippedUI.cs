@@ -25,7 +25,7 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         });
 
         PlayerCardsEquippedUI.OnShowUnequippedCards += PlayerCardsEquippedUI_OnShowUnequippedCards;
-        PlayerCardUI.OnEquippedCardPress += PlayerCardUI_OnEquippedCardPress;
+        PlayerCardUI.OnEquippedCardSwap += PlayerCardUI_OnEquippedCardPress;
         ConfirmSwapCardDialogUI.OnYesPressed += ConfirmSwapDialogUI_OnYesPressed;
 
         HideInstantly();
@@ -36,48 +36,37 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         closeButton.onClick.RemoveAllListeners();
 
         PlayerCardsEquippedUI.OnShowUnequippedCards -= PlayerCardsEquippedUI_OnShowUnequippedCards;
-        PlayerCardUI.OnEquippedCardPress -= PlayerCardUI_OnEquippedCardPress;
+        PlayerCardUI.OnEquippedCardSwap -= PlayerCardUI_OnEquippedCardPress;
         ConfirmSwapCardDialogUI.OnYesPressed -= ConfirmSwapDialogUI_OnYesPressed;
     }
 
     private void PlayerCardsEquippedUI_OnShowUnequippedCards(Player player)
     {
         titleText.text = "Unequipped cards:";
-
-        InstantiateCards(player);
-
         ShowWithAnimation();
+
+        InstantiateCards(player, EquippedCardState.None);
     }
 
     private void PlayerCardUI_OnEquippedCardPress(PlayerCardUI obj)
     {
         titleText.text = $"Swapping cards";
-
-        InstantiateCards(Player.LocalInstance);
-
         ShowWithAnimation();
 
-        foreach (Transform child in container)
-        {
-            if (child == template) continue;
-
-            PlayerCardUI playerCardUI = child.GetComponent<PlayerCardUI>();
-
-            playerCardUI.GetButton(true);
-        }
+        InstantiateCards(Player.LocalInstance, EquippedCardState.Swap);
     }
 
-    private void ConfirmSwapDialogUI_OnYesPressed(PlayerCardUI arg1, PlayerCardUI arg2)
+    private void ConfirmSwapDialogUI_OnYesPressed(PlayerCardUI equippedCardsUI, PlayerCardUI unequippedCardsUI)
     {
-        if (arg1.isEmpty)
+        if (equippedCardsUI.isEmpty)
         {
-            arg1.GetComponent<Image>().sprite = arg2.GetComponent<Image>().sprite;
+            equippedCardsUI.GetComponent<Image>().sprite = unequippedCardsUI.GetComponent<Image>().sprite;
         }
         else
         {
-            Sprite tempSprite = arg1.GetComponent<Image>().sprite;
-            arg1.GetComponent<Image>().sprite = arg2.GetComponent<Image>().sprite;
-            arg2.GetComponent<Image>().sprite = tempSprite;
+            Sprite tempSprite = equippedCardsUI.GetComponent<Image>().sprite;
+            equippedCardsUI.GetComponent<Image>().sprite = unequippedCardsUI.GetComponent<Image>().sprite;
+            unequippedCardsUI.GetComponent<Image>().sprite = tempSprite;
         }
 
         HideWithAnimation();
@@ -99,7 +88,7 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         }
     }
 
-    private void InstantiateCards(Player player)
+    private void InstantiateCards(Player player, EquippedCardState equippedCardState)
     {
         for (int i = 0; i < player.UnequippedCards.Count; i++)
         {
@@ -109,9 +98,11 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
 
             PlayerCardUI playerCardUI = cardUITransform.GetComponent<PlayerCardUI>();
 
+            playerCardUI.gameObject.SetActive(true);
+
             Card card = player.UnequippedCards[i];
 
-            playerCardUI.Instantiate(card, i);
+            playerCardUI.Instantiate(card, i, equippedCardState);
         }
     }
 

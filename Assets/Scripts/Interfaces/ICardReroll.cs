@@ -1,4 +1,1 @@
-public interface ICardReroll
-{
-    void Use();
-}
+public interface ICardReroll : IAbility { }

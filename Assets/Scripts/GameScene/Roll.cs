@@ -226,8 +226,6 @@ public class Roll : MonoBehaviour
                 int indexDieToReroll = diceToReroll[i];
 
                 dice[indexDieToReroll].Reroll = true;
-
-                resultSum -= resultList[indexDieToReroll];
             }
         }
 
@@ -240,6 +238,8 @@ public class Roll : MonoBehaviour
         float speed = 10f * Time.deltaTime;
 
         Quaternion rotation = Quaternion.LookRotation(side);
+
+        die.transform.rotation = Random.rotation;
 
         while (timer > 0)
         {

@@ -37,31 +37,36 @@ public class DrinkReminderUI : MonoBehaviour
 
     private void Player_OnPlayerResurrected()
     {
-        numberOfSips = Player.LocalInstance.ResurrectionSipValue;
+        int currentSips = Player.LocalInstance.ResurrectionSipValue;
 
-        if (numberOfSips > 0)
+        if (currentSips > 0)
         {
-            QueueEvent();
+            QueueEvent(currentSips);
         }
     }
 
     private void Player_OnAction()
     {
-        numberOfSips = Player.LocalInstance.ActionSipValue;
+        int currentSips = Player.LocalInstance.ActionSipValue;
 
-        if (numberOfSips > 0)
+        if (currentSips > 0)
         {
-            QueueEvent();
+            QueueEvent(currentSips);
         }
     }
 
-    private void QueueEvent()
+    private void QueueEvent(int currentSips)
     {
+        numberOfSips = currentSips;
+
         uiElementController.AddEvent(() =>
         {
-            SetText();
+            if (numberOfSips > 0)
+            {
+                SetText();
 
-            ShowWithAnimation();
+                ShowWithAnimation();
+            }
         });
     }
 

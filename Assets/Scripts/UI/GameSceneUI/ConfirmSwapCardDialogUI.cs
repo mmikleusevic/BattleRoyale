@@ -44,8 +44,8 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
 
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsEquippedUI_OnPlayerCardsEquippedUIClosed;
         PlayerCardsUnequippedUI.OnPlayerCardsUnequippedUIClosed += PlayerCardsUnequippedUI_OnPlayerCardsUnequippedUIClosed;
-        PlayerCardUI.OnEquippedCardPress += PlayerCardUI_OnEquippedCardPress;
-        PlayerCardUI.OnUnquippedCardPress += PlayerCardUI_OnUnquippedCardPress;
+        PlayerCardUI.OnEquippedCardSwap += PlayerCardUI_OnEquippedCardPress;
+        PlayerCardUI.OnUnquippedCardSwap += PlayerCardUI_OnUnquippedCardPress;
 
         HideInstantly();
     }
@@ -57,8 +57,8 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
 
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsEquippedUI_OnPlayerCardsEquippedUIClosed;
         PlayerCardsUnequippedUI.OnPlayerCardsUnequippedUIClosed -= PlayerCardsUnequippedUI_OnPlayerCardsUnequippedUIClosed;
-        PlayerCardUI.OnEquippedCardPress -= PlayerCardUI_OnEquippedCardPress;
-        PlayerCardUI.OnUnquippedCardPress -= PlayerCardUI_OnUnquippedCardPress;
+        PlayerCardUI.OnEquippedCardSwap -= PlayerCardUI_OnEquippedCardPress;
+        PlayerCardUI.OnUnquippedCardSwap -= PlayerCardUI_OnUnquippedCardPress;
     }
 
     private void PlayerCardsEquippedUI_OnPlayerCardsEquippedUIClosed()
@@ -73,26 +73,26 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
         unequippedPlayerCardUI = null;
     }
 
-    private void PlayerCardUI_OnEquippedCardPress(PlayerCardUI obj)
+    private void PlayerCardUI_OnEquippedCardPress(PlayerCardUI playerCardUI)
     {
-        if (obj.Index < Player.LocalInstance.EquippedCards.Count)
+        if (playerCardUI.Index < Player.LocalInstance.EquippedCards.Count)
         {
-            equippedCard = Player.LocalInstance.EquippedCards[obj.Index];
+            equippedCard = Player.LocalInstance.EquippedCards[playerCardUI.Index];
         }
         else
         {
             equippedCard = null;
         }
 
-        equippedPlayerCardUI = obj;
+        equippedPlayerCardUI = playerCardUI;
 
         OnConditionMet();
     }
 
-    private void PlayerCardUI_OnUnquippedCardPress(PlayerCardUI obj)
+    private void PlayerCardUI_OnUnquippedCardPress(PlayerCardUI playerCardUI)
     {
-        unequippedCard = Player.LocalInstance.UnequippedCards[obj.Index];
-        unequippedPlayerCardUI = obj;
+        unequippedCard = Player.LocalInstance.UnequippedCards[playerCardUI.Index];
+        unequippedPlayerCardUI = playerCardUI;
 
         OnConditionMet();
     }

@@ -8,7 +8,10 @@ public class Tempest : Card
 
         abilityResults = rollResults.GetComponentInChildren<AbilityResults>();
 
-        Ability = new TempestAbility(this, abilityResults);
+        TempestAbility tempestAbility = GetComponent<TempestAbility>();
+        tempestAbility.SetAbilityResults(abilityResults);
+
+        Ability = tempestAbility;
 
         base.OnNetworkSpawn();
     }
