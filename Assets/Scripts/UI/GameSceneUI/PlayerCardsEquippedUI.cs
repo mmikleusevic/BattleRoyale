@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
 using Random = UnityEngine.Random;
@@ -15,6 +16,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     public static event Action OnPlayerCardsEquippedUIClosed;
     public static event Action<Player> OnShowUnequippedCards;
     public static event Action<ulong> OnWonEquippedCard;
+    public static event Action OnPreturnOver;
 
     [SerializeField] private RectTransform PlayerCardsUIRectTransform;
     [SerializeField] private TextMeshProUGUI titleText;
@@ -36,9 +38,16 @@ public class PlayerCardsEquippedUI : MonoBehaviour
                 await StateManager.Instance.EndState();
             }
 
-            HideWithAnimation();
+            if (PlayerCardUI.equippedCardState == EquippedCardState.Disarm)
+            {
+                OnPreturnOver?.Invoke();
+            }
+            else
+            {
+                OnPlayerCardsEquippedUIClosed?.Invoke();
+            }
 
-            OnPlayerCardsEquippedUIClosed?.Invoke();
+            HideWithAnimation();
         });
 
         showUneqippedCardsButton.onClick.AddListener(() =>
@@ -56,10 +65,8 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
         Player.OnCardsSwapped += Player_OnCardsSwapped;
-        PlayerInfoUI.OnDisarm += PlayerInfoUI_OnDisarm;
-        PlayerCardUI.OnDisarmOver += PlayerCardUI_OnDisarmOver;
-        Won.OnWon += OnGameOver;
-        Lost.OnLost += OnGameOver;
+        PlayerBattleResults.OnPrebattle += PlayerBattleResults_OnPrebattle;
+        PlayerBattleResults.OnPlayerBattleSet += PlayerBattleResults_OnPlayerBattleSet;
 
         takeCardButton.gameObject.SetActive(false);
 
@@ -82,10 +89,8 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerBattleResults.OnBattleWin -= PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver -= PlayerPreturn_OnPlayerPreturnOver;
         Player.OnCardsSwapped -= Player_OnCardsSwapped;
-        PlayerInfoUI.OnDisarm -= PlayerInfoUI_OnDisarm;
-        PlayerCardUI.OnDisarmOver -= PlayerCardUI_OnDisarmOver;
-        Won.OnWon -= OnGameOver;
-        Lost.OnLost -= OnGameOver;
+        PlayerBattleResults.OnPrebattle -= PlayerBattleResults_OnPrebattle;
+        PlayerBattleResults.OnPlayerBattleSet -= PlayerBattleResults_OnPlayerBattleSet;
     }
 
     private void PlayerPreturn_OnPlayerPreturn()
@@ -104,14 +109,12 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         ShowWithAnimation();
 
-        EquippedCardState equippedCardState = EquippedCardState.None;
-
         if (Player.LocalInstance.UnequippedCards.Count > 0)
         {
-            equippedCardState = EquippedCardState.Swap;
+            PlayerCardUI.equippedCardState = EquippedCardState.Swap;
         }
 
-        InstantiateCards(equippedCardState);
+        InstantiateCards();
 
         OnPreturnCardsInstantiated?.Invoke();
     }
@@ -129,12 +132,16 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         ShowWithAnimation();
 
-        InstantiateCards(EquippedCardState.None);
+        PlayerCardUI.equippedCardState = EquippedCardState.None;
+
+        InstantiateCards();
     }
 
     private void PlayerBattleResults_OnAfterBattle(Player loser)
     {
         player = loser;
+
+        titleText.text = $"TAKE CARD FROM {player.PlayerName}";
 
         closeButton.gameObject.SetActive(false);
         ShowOrHideUnequippedCardsButton(false);
@@ -144,7 +151,9 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         ShowWithAnimation();
 
-        InstantiateCards(EquippedCardState.None);
+        PlayerCardUI.equippedCardState = EquippedCardState.None;
+
+        InstantiateCards();
     }
 
     private void PlayerPreturn_OnPlayerPreturnOver()
@@ -158,32 +167,28 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         ShowOrHideUnequippedCardsButton(false);
     }
 
-    private void PlayerInfoUI_OnDisarm(Player enemy)
+    private void PlayerBattleResults_OnPrebattle(Player enemy)
     {
         player = enemy;
 
         titleText.text = $"DISARMING {enemy.PlayerName}'s </color>CARDS (Press to disarm)";
 
-        closeButton.gameObject.SetActive(false);
+        closeButton.gameObject.SetActive(true);
         ShowOrHideUnequippedCardsButton(false);
 
         background.color = player.HexPlayerColor.HEXToColor();
 
-        PlayerCardUI.enemy = enemy;
-
         ShowWithAnimation();
 
-        InstantiateCards(EquippedCardState.Disarm);
+        PlayerCardUI.enemy = enemy;
+        PlayerCardUI.equippedCardState = EquippedCardState.Disarm;
+
+        InstantiateCards();
     }
 
-    private void PlayerCardUI_OnDisarmOver(Player player, Player enemy)
+    private void PlayerBattleResults_OnPlayerBattleSet()
     {
         HideWithAnimation();
-    }
-
-    private void OnGameOver(string obj)
-    {
-        PlayerPreturn.OnPlayerPreturn -= PlayerPreturn_OnPlayerPreturn;
     }
 
     private void ShowOrHideUnequippedCardsButton(bool isOver)
@@ -198,7 +203,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         }
     }
 
-    private void InstantiateCards(EquippedCardState equippedCardState)
+    private void InstantiateCards()
     {
         DestroyTransforms();
 
@@ -216,11 +221,11 @@ public class PlayerCardsEquippedUI : MonoBehaviour
             {
                 Card card = player.EquippedCards[i];
 
-                playerCardUI.Instantiate(card, i, equippedCardState);
+                playerCardUI.Instantiate(card, i);
             }
             else
             {
-                playerCardUI.Instantiate(i, equippedCardState);
+                playerCardUI.Instantiate(i);
             }
         }
     }
@@ -296,6 +301,8 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     private void Hide()
     {
         gameObject.SetActive(false);
+
+        PlayerCardUI.equippedCardState = EquippedCardState.None;
 
         DestroyTransforms();
     }

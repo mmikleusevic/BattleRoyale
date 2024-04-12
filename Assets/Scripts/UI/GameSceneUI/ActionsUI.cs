@@ -205,8 +205,8 @@ public class ActionsUI : MonoBehaviour
     private string[] SendAttackingCardMessage()
     {
         return new string[] {
-            $"YOU'RE ATTACKING {tile.GetCardOrTileName()}",
-            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"attacking {tile.GetCardOrTileName()}"
+            $"YOU'RE ATTACKING {tile.GetCardOrTileName()} ({tile.Card.WinValue})",
+            $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"attacking {tile.GetCardOrTileName()} ({tile.Card.WinValue})"
         };
     }
 }

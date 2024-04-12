@@ -9,9 +9,10 @@ public class PlayerCardUI : MonoBehaviour
 {
     public static event Action<PlayerCardUI> OnEquippedCardSwap;
     public static event Action<PlayerCardUI> OnUnquippedCardSwap;
-    public static event Action<Player, Player> OnDisarmOver;
+    public static event Action OnPrebattleOver;
 
     public static Player enemy;
+    public static EquippedCardState equippedCardState = EquippedCardState.None;
 
     [SerializeField] private Image cardImage;
     [SerializeField] private Sprite defaultSprite;
@@ -21,7 +22,6 @@ public class PlayerCardUI : MonoBehaviour
     private Button button;
     private Card card;
 
-    private EquippedCardState equippedCardState = EquippedCardState.None;
     private Color originalColor = new Color(1f, 1f, 1f, 1f);
     public Color greyedOutColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     public bool isEmpty = true;
@@ -32,12 +32,6 @@ public class PlayerCardUI : MonoBehaviour
         Player.OnCardsSwapped += Player_OnCardsSwapped;
 
         Hide();
-    }
-
-    private void OnDisable()
-    {
-        cardImage.color = originalColor;
-        equippedCardState = EquippedCardState.None;
     }
 
     private void OnDestroy()
@@ -59,9 +53,8 @@ public class PlayerCardUI : MonoBehaviour
         }
     }
 
-    public void Instantiate(Card card, int index, EquippedCardState equippedCardState)
+    public void Instantiate(Card card, int index)
     {
-        this.equippedCardState = equippedCardState;
         this.card = card;
 
         cardImage.sprite = card.Sprite;
@@ -73,25 +66,24 @@ public class PlayerCardUI : MonoBehaviour
         GetButton();
     }
 
-    public void Instantiate(int index, EquippedCardState equippedCardState)
+    public void Instantiate(int index)
     {
-        if (equippedCardState == EquippedCardState.Disarm)
-        {
-            this.equippedCardState = EquippedCardState.None;
-        }
-        else
-        {
-            this.equippedCardState = equippedCardState;
-        }
-
         cardImage.sprite = defaultSprite;
         cardImage.preserveAspect = true;
         Index = index;
 
-        GetButton();
+        if (equippedCardState == EquippedCardState.Disarm)
+        {
+            button = GetComponent<Button>();
+            button.interactable = false;
+        }
+        else
+        {
+            GetButton();
+        }  
     }
 
-    public void GetButton()
+    private void GetButton()
     {
         button = GetComponent<Button>();
 
@@ -106,6 +98,11 @@ public class PlayerCardUI : MonoBehaviour
                 button.interactable = true;
                 break;
         }
+    }
+
+    public void DisableButton()
+    {
+        button.interactable = false;
     }
 
     private void Hide()
@@ -147,7 +144,7 @@ public class PlayerCardUI : MonoBehaviour
 
             if (disarmCards.Count == 0 || disarmCards.Count >= enemy.EquippedCards.Count)
             {
-                OnDisarmOver?.Invoke(player, enemy);
+                OnPrebattleOver?.Invoke();
             }
         }
         else if (equippedCardState == EquippedCardState.Equip)

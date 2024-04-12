@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,14 +20,15 @@ public class PlayerListUI : MonoBehaviour
         infoButton.gameObject.SetActive(false);
 
         ActionsUI.OnAttackPlayer += ActionsUI_OnAttackPlayer;
-        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
+        PlayerBattleResults.OnPlayerBattleSet += PlayerBattleResults_OnPlayerBattleSet;
         PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
-        PlayerInfoUI.OnDisarm += PlayerInfoUI_OnDisarm;
+        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
+        PlayerBattleResults.OnPrebattle += PlayerBattleResults_OnPrebattle;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.Instance.OnActivePlayerChanged += PlayerManager_OnActivePlayerChanged;
         Won.OnWon += OnGameOver;
         Lost.OnLost += OnGameOver;
-        PlayerCardUI.OnDisarmOver += PlayerCardUI_OnDisarmOver;
+        PlayerCardUI.OnPrebattleOver += PlayerCardUI_OnPrebattleOver;
 
         gameOverText.gameObject.SetActive(false);
         originalSiblingIndex = transform.GetSiblingIndex();
@@ -38,12 +40,12 @@ public class PlayerListUI : MonoBehaviour
         infoButton.onClick.RemoveAllListeners();
 
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
-        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
+        PlayerBattleResults.OnPlayerBattleSet -= PlayerBattleResults_OnPlayerBattleSet;
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
-        PlayerInfoUI.OnDisarm -= PlayerInfoUI_OnDisarm;
+        PlayerBattleResults.OnPrebattle -= PlayerBattleResults_OnPrebattle;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
-        PlayerCardUI.OnDisarmOver -= PlayerCardUI_OnDisarmOver;
+        PlayerCardUI.OnPrebattleOver -= PlayerCardUI_OnPrebattleOver;
     }
 
     private void ActionsUI_OnAttackPlayer(Tile tile)
@@ -82,7 +84,7 @@ public class PlayerListUI : MonoBehaviour
         }
     }
 
-    private void PlayerInfoUI_OnAttackPlayer(Player player, Player enemy)
+    private void PlayerBattleResults_OnPlayerBattleSet()
     {
         RestoreOriginalOrder();
 
@@ -94,8 +96,17 @@ public class PlayerListUI : MonoBehaviour
         RestoreOriginalOrder();
     }
 
-    private void PlayerInfoUI_OnDisarm(Player obj)
+    private void PlayerInfoUI_OnAttackPlayer(NetworkObjectReference player, NetworkObjectReference enemy)
     {
+        RestoreOriginalOrder();
+
+        Hide();
+    }
+
+    private void PlayerBattleResults_OnPrebattle(Player obj)
+    {
+        Show();
+
         RestoreOriginalOrder();
     }
 
@@ -138,7 +149,7 @@ public class PlayerListUI : MonoBehaviour
         InstantiatePlayerInfo(players, false);
     }
 
-    private void PlayerCardUI_OnDisarmOver(Player arg1, Player arg2)
+    private void PlayerCardUI_OnPrebattleOver()
     {
         RestoreOriginalOrder();
 

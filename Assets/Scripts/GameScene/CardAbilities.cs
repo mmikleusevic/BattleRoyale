@@ -168,4 +168,16 @@ public class CardAbilities : MonoBehaviour
 
         return modifier;
     }
+
+    public int GetPlayerGameModifier(Player player)
+    {
+        int modifier = 0;
+
+        foreach (Card card in player.EquippedCards)
+        {
+            modifier += card.GetPlayerGameModifier();
+        }
+
+        return modifier;
+    }
 }

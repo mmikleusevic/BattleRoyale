@@ -29,7 +29,6 @@ public class Player : NetworkBehaviour
 
     public StateEnum currentState = StateEnum.WaitingForPlayers;
     private int defaultMovement = 0;
-    private int gamesNeededForDefeat = 3;
     private int defaultActionPoints = 2;
     private float moveSpeed = 20f;
     public int defaultResurrectionSipValue = 0;
@@ -50,7 +49,7 @@ public class Player : NetworkBehaviour
     public int SipCounter { get; private set; }
     public string HexPlayerColor { get; private set; }
     public string PlayerName { get; private set; }
-    public int RollsNeededToLose { get; private set; }
+    public int RollsNeededToLose { get; private set; } = 3;
     public bool PickPlaceToDie { get; private set; }
 
     private void Awake()
@@ -62,7 +61,6 @@ public class Player : NetworkBehaviour
         EquippedCards = new List<Card>();
         UnequippedCards = new List<Card>();
 
-        RollsNeededToLose = gamesNeededForDefeat;
         Movement = defaultMovement;
         ActionPoints = defaultActionPoints;
     }

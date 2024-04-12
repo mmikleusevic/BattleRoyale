@@ -45,7 +45,9 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         titleText.text = "Unequipped cards:";
         ShowWithAnimation();
 
-        InstantiateCards(player, EquippedCardState.None);
+        PlayerCardUI.equippedCardState = EquippedCardState.None;
+
+        InstantiateCards(player);
     }
 
     private void PlayerCardUI_OnEquippedCardPress(PlayerCardUI obj)
@@ -53,7 +55,9 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         titleText.text = $"Swapping cards";
         ShowWithAnimation();
 
-        InstantiateCards(Player.LocalInstance, EquippedCardState.Swap);
+        PlayerCardUI.equippedCardState = EquippedCardState.Swap;
+
+        InstantiateCards(Player.LocalInstance);
     }
 
     private void ConfirmSwapDialogUI_OnYesPressed(PlayerCardUI equippedCardsUI, PlayerCardUI unequippedCardsUI)
@@ -88,7 +92,7 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         }
     }
 
-    private void InstantiateCards(Player player, EquippedCardState equippedCardState)
+    private void InstantiateCards(Player player)
     {
         for (int i = 0; i < player.UnequippedCards.Count; i++)
         {
@@ -102,7 +106,7 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
 
             Card card = player.UnequippedCards[i];
 
-            playerCardUI.Instantiate(card, i, equippedCardState);
+            playerCardUI.Instantiate(card, i);
         }
     }
 

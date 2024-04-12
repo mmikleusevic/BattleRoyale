@@ -21,7 +21,6 @@ public class EndTurnUI : MonoBehaviour
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
         Player.OnMovementOrActionPoints += Player_OnMovementOrActionPoints;
-        PlayerBattleResults.OnPlayerBattleShowUI += PlayerBattleResults_OnPlayerBattleShowUI;
         AbilityResults.OnDisableEndTurnButton += TempestAbility_OnDisableEndTurnButton;
         AbilityResults.OnEnableEndTurnButton += TempestAbility_OnEnableEndTurnButton;
 
@@ -30,14 +29,12 @@ public class EndTurnUI : MonoBehaviour
         Hide();
     }
 
-
-
     public void OnDestroy()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
         Player.OnMovementOrActionPoints -= Player_OnMovementOrActionPoints;
-        PlayerBattleResults.OnPlayerBattleShowUI -= PlayerBattleResults_OnPlayerBattleShowUI;
+        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         AbilityResults.OnDisableEndTurnButton -= TempestAbility_OnDisableEndTurnButton;
         AbilityResults.OnEnableEndTurnButton -= TempestAbility_OnEnableEndTurnButton;
 
@@ -64,6 +61,7 @@ public class EndTurnUI : MonoBehaviour
             actionsAndMovementUsed = false;
         }
     }
+
     private void PlayerBattleResults_OnAfterBattleResolved()
     {
         endTurnButton.interactable = true;
@@ -77,7 +75,7 @@ public class EndTurnUI : MonoBehaviour
         ToggleParticleEffect();
     }
 
-    private void PlayerBattleResults_OnPlayerBattleShowUI(string obj)
+    private void PlayerInfoUI_OnAttackPlayer(Unity.Netcode.NetworkObjectReference arg1, Unity.Netcode.NetworkObjectReference arg2)
     {
         ParticleSystemManager.Instance.Stop(particleGlow);
         endTurnButton.interactable = false;

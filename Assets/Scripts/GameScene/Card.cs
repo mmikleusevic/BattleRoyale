@@ -71,6 +71,7 @@ public class Card : NetworkBehaviour
         return $"{Name} WIN VALUE CHANGED TO {WinValue} POINTS YOU GET FOR WINNING ARE STILL {Points}";
     }
 
+    public virtual int GetPlayerGameModifier() { return 0; }
     public virtual int GetPlayerRollModifier(int result) { return 0; }
     public virtual int GetCardRollModifier() { return 0; }
     public virtual void Equip(Player player) { }

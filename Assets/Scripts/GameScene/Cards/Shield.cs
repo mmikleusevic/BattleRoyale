@@ -2,13 +2,13 @@ public class Shield : Card
 {
     private int value = 1;
 
-    public override void Equip(Player player)
+    public override int GetPlayerGameModifier()
     {
-        player.AddOrSubtractRollsNeededToLose(value);
-    }
+        if (!AbilityUsed)
+        {
+            return value;
+        }
 
-    public override void Unequip(Player player)
-    {
-        player.AddOrSubtractRollsNeededToLose(-value);
+        return 0;
     }
 }

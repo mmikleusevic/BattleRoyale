@@ -1,14 +1,13 @@
 using System;
-using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerInfoUI : MonoBehaviour
 {
-    public static event Action<Player, Player> OnAttackPlayer;
+    public static event Action<NetworkObjectReference, NetworkObjectReference> OnAttackPlayer;
     public static event Action<Player, bool> OnShowPlayerEquippedCards;
-    public static event Action<Player> OnDisarm;
 
     private Player player;
 
@@ -80,28 +79,17 @@ public class PlayerInfoUI : MonoBehaviour
         {
             attackPlayerButton.gameObject.SetActive(true);
 
-            int disarmCardsCount = Player.LocalInstance.EquippedCards.Count(a => a.Ability is IDisarm);
-            bool canDisarm = disarmCardsCount <= player.EquippedCards.Count && disarmCardsCount > 0;
-
             attackPlayerButton.onClick.AddListener(() =>
             {
-                if (canDisarm)
-                {
-                    OnDisarm?.Invoke(player);
-                }
-                else
-                {
-                    OnAttackPlayer?.Invoke(
-                        Player.LocalInstance,
-                        player
-                    );
-                }
+                OnAttackPlayer?.Invoke(
+                    Player.LocalInstance.NetworkObject,
+                    player.NetworkObject
+                );
 
                 MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateMessageForMessageUI());
+                GridManager.Instance.DisableCards();
                 Player.LocalInstance.SubtractActionPoints();
             });
-
-            GridManager.Instance.DisableCards();
         }
         else
         {

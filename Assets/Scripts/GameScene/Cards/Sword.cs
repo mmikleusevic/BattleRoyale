@@ -4,9 +4,13 @@ public class Sword : Card
 
     public override int GetPlayerRollModifier(int result)
     {
-        if (result > 1 && result < 6)
+        if (!AbilityUsed)
         {
-            return PlayerRollModifier;
+            if (result > 1 && result < 6)
+            {
+                return PlayerRollModifier;
+            }
+
         }
 
         return 0;

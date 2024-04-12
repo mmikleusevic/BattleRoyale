@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Roll : MonoBehaviour
 {
     [SerializeField] private RollResults rollResults;
-    [SerializeField] private CardAbilities cardAbilities;
 
     public int CardBattleModifier { get; private set; } = 0;
     public int PlayerBattleModifier { get; private set; } = 0;
 
+    private CardAbilities cardAbilities;
     private List<int> resultList;
     private List<int> diceToReroll;
     private string[] messages;
@@ -20,6 +21,7 @@ public class Roll : MonoBehaviour
 
     private void Awake()
     {
+        cardAbilities = FindFirstObjectByType<CardAbilities>();
         resultList = new List<int>();
         diceToReroll = new List<int>();
         messages = new string[2];
@@ -266,8 +268,8 @@ public class Roll : MonoBehaviour
     {
         if (resultList.Count == 3)
         {
-            messages[0] = $"YOU ROLLED {result} ({CardBattleModifier}) (";
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({CardBattleModifier}) (";
+            messages[0] = $"YOU ROLLED {result} + ({CardBattleModifier}) (";
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} + ({CardBattleModifier}) (";
 
             for (int i = 0; i < resultList.Count; i++)
             {
@@ -288,8 +290,8 @@ public class Roll : MonoBehaviour
         }
         else
         {
-            messages[0] = $"YOU ROLLED {result} ({PlayerBattleModifier})";
-            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} ({PlayerBattleModifier})";
+            messages[0] = $"YOU ROLLED {result} + ({PlayerBattleModifier})";
+            messages[1] = $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}</color> rolled {result} + ({PlayerBattleModifier})";
         }
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
