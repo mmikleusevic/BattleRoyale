@@ -21,6 +21,7 @@ public class EndTurnUI : MonoBehaviour
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
         Player.OnMovementOrActionPoints += Player_OnMovementOrActionPoints;
+        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         AbilityResults.OnDisableEndTurnButton += TempestAbility_OnDisableEndTurnButton;
         AbilityResults.OnEnableEndTurnButton += TempestAbility_OnEnableEndTurnButton;
 
@@ -34,7 +35,7 @@ public class EndTurnUI : MonoBehaviour
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnAfterBattleResolved -= PlayerBattleResults_OnAfterBattleResolved;
         Player.OnMovementOrActionPoints -= Player_OnMovementOrActionPoints;
-        PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
+        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         AbilityResults.OnDisableEndTurnButton -= TempestAbility_OnDisableEndTurnButton;
         AbilityResults.OnEnableEndTurnButton -= TempestAbility_OnEnableEndTurnButton;
 
