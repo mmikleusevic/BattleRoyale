@@ -17,12 +17,7 @@ public class StateManager : NetworkBehaviour, IStateManager
     {
         if (currentState != null)
         {
-            StateEnum currentStateEnum = GetCurrentState();
-
-            if (currentStateEnum is StateEnum.EnemyTurn or StateEnum.PlayerTurn or StateEnum.PlaceOnGrid)
-            {
-                currentState.Dispose();
-            }
+            currentState.Dispose();
         }
 
         currentState = CreateState(state);
