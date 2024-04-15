@@ -11,16 +11,18 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
     private ClientRpcParams callerClientRpcParams;
     private Tile tile;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
         ActionsUI.OnAttackCard += ActionsUI_OnAttackCardServerRpc;
+
+        base.OnNetworkSpawn();
     }
 
-    public override void OnDestroy()
+    public override void OnNetworkDespawn()
     {
         ActionsUI.OnAttackCard -= ActionsUI_OnAttackCardServerRpc;
 
-        base.OnDestroy();
+        base.OnNetworkDespawn();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -146,5 +148,12 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
             "YOU DIED",
             $"<color=#{playerColor}>{playerName}</color> has failed a card roll and died."
         };
+    }
+
+    public static void ResetStaticData()
+    {
+        OnCardLost = null;
+        OnCardRoll = null;
+        OnCardWon = null;
     }
 }

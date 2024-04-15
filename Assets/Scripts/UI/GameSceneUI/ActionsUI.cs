@@ -56,6 +56,7 @@ public class ActionsUI : MonoBehaviour
         moveButton.onClick.RemoveAllListeners();
         attackCardButton.onClick.RemoveAllListeners();
         attackPlayerButton.onClick.RemoveAllListeners();
+        abilitiesButton.onClick.RemoveAllListeners();
     }
 
     private void OnDisable()
@@ -208,5 +209,13 @@ public class ActionsUI : MonoBehaviour
             $"YOU'RE ATTACKING {tile.GetCardOrTileName()} ({tile.Card.WinValue})",
             $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"attacking {tile.GetCardOrTileName()} ({tile.Card.WinValue})"
         };
+    }
+
+    public static void ResetStaticData()
+    {
+        OnMove = null;
+        OnAttackCard = null;
+        OnAttackPlayer = null;
+        OnAbility = null;
     }
 }

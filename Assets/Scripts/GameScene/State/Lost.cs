@@ -16,4 +16,9 @@ public class Lost : State
     {
         return "YOU LOST!";
     }
+
+    public static void ResetStaticData()
+    {
+        OnLost = null;
+    }
 }

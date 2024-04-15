@@ -14,16 +14,18 @@ public class Card : NetworkBehaviour
     public IAbility Ability { get; protected set; }
     public bool AbilityUsed { get; set; } = false;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
+
+        base.OnNetworkSpawn();
     }
 
-    public override void OnDestroy()
+    public override void OnNetworkDespawn()
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
 
-        base.OnDestroy();
+        base.OnNetworkDespawn();
     }
 
     [ClientRpc]

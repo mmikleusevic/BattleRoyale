@@ -199,4 +199,12 @@ public class AbilityResults : NetworkBehaviour, IResult
             $"<color=#{player.HexPlayerColor}>{player.PlayerName}</color> succeeded the ability roll"
         };
     }
+
+    public static void ResetStaticData()
+    {
+        OnDisableEndTurnButton = null;
+        OnEnableEndTurnButton = null;
+        OnEndRoll = null;
+        OnStartRoll = null;
+    }
 }

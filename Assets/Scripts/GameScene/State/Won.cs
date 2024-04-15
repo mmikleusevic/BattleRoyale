@@ -16,5 +16,10 @@ public class Won : State
     {
         return "YOU WON!";
     }
+
+    public static void ResetStaticData()
+    {
+        OnWon = null;
+    }
 }
 

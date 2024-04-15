@@ -86,4 +86,9 @@ public class AbilityUI : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
+
+    public static void ResetStaticData()
+    {
+        OnAbilityUsed = null;
+    }
 }

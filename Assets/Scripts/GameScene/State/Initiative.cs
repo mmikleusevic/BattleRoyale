@@ -17,14 +17,14 @@ public partial class Initiative : State
         OnInitiativeStart?.Invoke();
     }
 
-    public override async Task End()
-    {
-        await base.End();
-    }
-
     private string CreateOnInitiativeMessage()
     {
         return "ROLL FOR INITIATIVE";
+    }
+
+    public static void ResetStaticData()
+    {
+        OnInitiativeStart = null;
     }
 }
 

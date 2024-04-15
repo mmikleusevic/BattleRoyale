@@ -43,16 +43,6 @@ public class LobbyMessageUI : MonoBehaviour
         closeButton.onClick.RemoveAllListeners();
     }
 
-    private void GameLobby_OnReconnectFailed()
-    {
-        ShowMessage("Attempting to reconnect...");
-    }
-
-    private void GameLobby_OnReconnectStarted()
-    {
-        ShowMessage("Reconnect failed!");
-    }
-
     private void LobbyServiceHandler_OnQuickJoinFailed()
     {
         ShowMessage("Could not find a lobby to quick join!");

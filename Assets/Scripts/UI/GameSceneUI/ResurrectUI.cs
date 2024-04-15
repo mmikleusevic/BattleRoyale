@@ -16,11 +16,11 @@ public class ResurrectUI : MonoBehaviour
             HideWithAnimation();
         });
 
+        PlayerTurn.OnPlayerTurnOver += PlayerTurn_OnPlayerTurnOver;
         Player.OnPlayerDiedCardBattle += Player_OnPlayerDiedCardBattle;
         Player.OnPlayerDiedPlayerBattle += Player_OnPlayerDiedPlayerBattle;
         Player.OnPlayerTurnSet += Player_OnPlayerTurnSet;
         Player.OnPlayerSelectedPlaceToDie += Player_OnPlayerSelectedPlaceToDie;
-        PlayerTurn.OnPlayerTurnOver += PlayerTurn_OnPlayerTurnOver;
 
         ParticleSystemManager.Instance.Stop(particleGlow);
 

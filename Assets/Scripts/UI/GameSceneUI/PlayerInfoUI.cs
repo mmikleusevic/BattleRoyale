@@ -176,4 +176,10 @@ public class PlayerInfoUI : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+
+    public static void ResetStaticData()
+    {
+        OnAttackPlayer = null;
+        OnShowPlayerEquippedCards = null;
+    }
 }

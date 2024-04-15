@@ -1,7 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public abstract class State
+public abstract class State : IDisposable
 {
     public virtual async Task Start()
     {
@@ -12,6 +13,8 @@ public abstract class State
     {
         GridManager.Instance.DisableCards();
 
-        await Awaitable.WaitForSecondsAsync(.5f);
+        await Awaitable.WaitForSecondsAsync(1f);
     }
+
+    public virtual void Dispose() { }
 }

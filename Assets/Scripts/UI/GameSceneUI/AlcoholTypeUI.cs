@@ -78,4 +78,9 @@ public class AlcoholTypeUI : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+
+    public static void ResetStaticData()
+    {
+        OnAlcoholButtonPress = null;
+    }
 }

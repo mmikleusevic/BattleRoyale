@@ -23,7 +23,7 @@ public class InitiativeResults : NetworkBehaviour, IResult
         public List<ulong> playerOrder;
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
         finalOrder = new List<ulong>();
 
@@ -35,6 +35,8 @@ public class InitiativeResults : NetworkBehaviour, IResult
         clientsToReRollList = new List<List<ulong>>();
 
         SetClientIdToDictionary();
+
+        base.OnNetworkSpawn();
     }
 
     private void SetClientIdToDictionary()
@@ -315,5 +317,11 @@ public class InitiativeResults : NetworkBehaviour, IResult
         MessageUI.Instance.SetMessage(message);
 
         OnInitiativeRollOver?.Invoke(eventArgs);
+    }
+
+    public static void ResetStaticData()
+    {
+        OnReRoll = null;
+        OnInitiativeRollOver = null;
     }
 }

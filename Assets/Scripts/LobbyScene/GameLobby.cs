@@ -34,10 +34,10 @@ public class GameLobby : NetworkBehaviour
     {
         Instance = this;
 
+        DontDestroyOnLoad(gameObject);
+
         relayServiceHandler = new RelayServiceHandler();
         lobbyServiceHandler = new LobbyServiceHandler(relayServiceHandler);
-
-        DontDestroyOnLoad(gameObject);
 
         InitializeUnityAuthentication();
     }
@@ -58,13 +58,13 @@ public class GameLobby : NetworkBehaviour
         LobbyUI.Instance.OnLobbyFind -= LobbyUI_OnLobbySearch;
     }
 
-    public override void OnDestroy()
+    public override void OnNetworkDespawn()
     {
         lobbyServiceHandler.Dispose();
         lobbyServiceHandler = null;
         relayServiceHandler = null;
 
-        base.OnDestroy();
+        base.OnNetworkDespawn();
     }
 
     private void LobbyUI_OnLobbySearch(LobbyUI.OnLobbyFindEventArgs e)

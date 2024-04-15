@@ -25,4 +25,9 @@ public class EnemyTurn : State
 
         await base.End();
     }
+
+    public override void Dispose()
+    {
+        ActionsUI.OnMove -= ActionsUI_OnMove;
+    }
 }

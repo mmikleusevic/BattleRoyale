@@ -5,6 +5,8 @@ public class MainMenuCleanUp : MonoBehaviour
 {
     private void Awake()
     {
+        StaticDataManager.ClearGameStaticData();
+
         if (GameLobby.Instance != null)
         {
             Destroy(GameLobby.Instance.gameObject);
@@ -19,5 +21,7 @@ public class MainMenuCleanUp : MonoBehaviour
         {
             Destroy(NetworkManager.Singleton.gameObject);
         }
+
+        Resources.UnloadUnusedAssets();
     }
 }

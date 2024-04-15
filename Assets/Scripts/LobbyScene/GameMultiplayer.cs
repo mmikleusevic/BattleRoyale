@@ -270,6 +270,7 @@ public class GameMultiplayer : NetworkBehaviour
     public void SetNameClientRpc(NetworkObjectReference networkObject, string newName)
     {
         GameObject gameObject = (GameObject)networkObject;
+
         if (gameObject == null) return;
 
         gameObject.name = newName;

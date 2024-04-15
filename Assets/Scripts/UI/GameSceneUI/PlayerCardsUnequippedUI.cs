@@ -136,4 +136,9 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
     {
         PlayerCardsUnequippedUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
+
+    public static void ResetStaticData()
+    {
+        OnPlayerCardsUnequippedUIClosed = null;
+    }
 }

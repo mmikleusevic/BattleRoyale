@@ -180,4 +180,10 @@ public class CardAbilities : MonoBehaviour
 
         return modifier;
     }
+
+    public static void ResetStaticData()
+    {
+        OnRerollCardBattle = null;
+        OnRerollPlayerBattle = null;
+    }
 }

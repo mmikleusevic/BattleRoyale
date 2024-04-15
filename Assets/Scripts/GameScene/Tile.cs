@@ -270,4 +270,9 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
         return networkObject.GetComponent<Tile>();
     }
+
+    public static void ResetStaticData()
+    {
+        OnTilePressed = null;
+    }
 }

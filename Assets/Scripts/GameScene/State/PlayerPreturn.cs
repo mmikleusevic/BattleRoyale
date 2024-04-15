@@ -41,5 +41,11 @@ public class PlayerPreturn : State
             $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>PRETURN"
         };
     }
+
+    public static void ResetStaticData()
+    {
+        OnPlayerPreturn = null;
+        OnPlayerPreturnOver = null;
+    }
 }
 

@@ -6,7 +6,7 @@ public class StateManager : NetworkBehaviour, IStateManager
 {
     public static StateManager Instance { get; private set; }
 
-    protected State state;
+    protected State currentState;
 
     private void Awake()
     {
@@ -15,49 +15,59 @@ public class StateManager : NetworkBehaviour, IStateManager
 
     public async void SetState(StateEnum state)
     {
-        if (GetState() == StateEnum.EnemyTurn) await this.state.End();
+        if (currentState != null)
+        {
+            StateEnum currentStateEnum = GetCurrentState();
 
+            if (currentStateEnum is StateEnum.EnemyTurn or StateEnum.PlayerTurn or StateEnum.PlaceOnGrid)
+            {
+                currentState.Dispose();
+            }
+        }
+
+        currentState = CreateState(state);
+
+        if (currentState != null)
+        {
+            if (Player.LocalInstance)
+            {
+                Player.LocalInstance.UpdateCurrentState(state);
+            }
+
+            await currentState.Start();
+        }
+    }
+
+    private State CreateState(StateEnum state)
+    {
         switch (state)
         {
             case StateEnum.WaitingForPlayers:
-                this.state = new WaitingForPlayers();
-                break;
+                return new WaitingForPlayers();
             case StateEnum.Initiative:
-                this.state = new Initiative();
-                break;
+                return new Initiative();
             case StateEnum.PlaceOnGrid:
-                this.state = new PlaceOnGrid();
-                break;
+                return new PlaceOnGrid();
             case StateEnum.PlayerPreturn:
-                this.state = new PlayerPreturn();
-                break;
+                return new PlayerPreturn();
             case StateEnum.PlayerTurn:
-                this.state = new PlayerTurn();
-                break;
+                return new PlayerTurn();
             case StateEnum.EnemyTurn:
-                this.state = new EnemyTurn();
-                break;
+                return new EnemyTurn();
             case StateEnum.Lost:
-                this.state = new Lost();
-                break;
+                return new Lost();
             case StateEnum.Won:
-                this.state = new Won();
-                break;
+                return new Won();
+            default:
+                return null;
         }
-
-        if (Player.LocalInstance)
-        {
-            Player.LocalInstance.UpdateCurrentState(state);
-        }
-
-        await this.state.Start();
     }
 
-    public StateEnum GetState()
+    public StateEnum GetCurrentState()
     {
-        if (state == null) return StateEnum.WaitingForPlayers;
+        if (currentState == null) return StateEnum.WaitingForPlayers;
 
-        switch (state)
+        switch (currentState)
         {
             case WaitingForPlayers:
                 return StateEnum.WaitingForPlayers;
@@ -80,7 +90,7 @@ public class StateManager : NetworkBehaviour, IStateManager
 
     public async Task EndState()
     {
-        await state.End();
+        await currentState.End();
     }
 
     public void GiveCurrentStateToSetNext(StateEnum currentState)

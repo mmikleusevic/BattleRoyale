@@ -288,11 +288,15 @@ public class LobbyServiceHandler : IDisposable
         {
             if (disposing)
             {
+
                 OnQuickJoinFailed = null;
                 OnJoinFailed = null;
                 OnCreateLobbyStarted = null;
                 OnCreateLobbyFailed = null;
                 OnJoinStarted = null;
+                OnRemovingJoinedLobbies = null;
+                OnRemovingJoinedLobbiesFailed = null;
+                OnRemovingJoinedLobbiesOver = null;
                 OnLobbyListChanged = null;
             }
 

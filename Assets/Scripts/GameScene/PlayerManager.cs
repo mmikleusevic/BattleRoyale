@@ -7,7 +7,7 @@ public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager Instance { get; private set; }
 
-    public event Action<Player> OnActivePlayerChanged;
+    public static event Action<Player> OnActivePlayerChanged;
 
     private Dictionary<ulong, bool> clientsReady;
 

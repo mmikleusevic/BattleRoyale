@@ -80,7 +80,7 @@ public class PlayerCardUI : MonoBehaviour
         else
         {
             GetButton();
-        }  
+        }
     }
 
     private void GetButton()
@@ -130,7 +130,7 @@ public class PlayerCardUI : MonoBehaviour
             {
                 IDisarm disarmAbility = disarmCard.Ability as IDisarm;
 
-                disarmAbility.Use(enemy, card);
+                disarmAbility.Use(card);
                 disarmCards.Remove(disarmCard);
 
                 cardImage.color = greyedOutColor;
@@ -170,6 +170,14 @@ public class PlayerCardUI : MonoBehaviour
             $"YOU DISARMED {enemy.PlayerName}'s {card.Name}",
             $"<color=#{player.HexPlayerColor}>{player.PlayerName}</color> DISARMED <color=#{enemy.HexPlayerColor}>{enemy.PlayerName}'s </color>{card.Name}"
         };
+    }
+
+    public static void ResetStaticData()
+    {
+        OnEquippedCardSwap = null;
+        OnUnquippedCardSwap = null;
+        OnPrebattleOver = null;
+        enemy = null;
     }
 }
 

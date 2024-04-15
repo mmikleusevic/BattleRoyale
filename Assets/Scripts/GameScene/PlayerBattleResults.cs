@@ -16,11 +16,6 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
     public static event Action<Player> OnPrebattle;
     public static event Action OnPlayerBattleSet;
 
-    public class OnBattleRollOverEventArgs : EventArgs
-    {
-        public string message;
-    }
-
     private CardAbilities cardAbilities;
     private Dictionary<ulong, bool> clientRolled;
     private Dictionary<ulong, List<int>> battleRolls;
@@ -48,9 +43,9 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
 
         PlayerInfoUI.OnAttackPlayer += AttackPlayerServerRpc;
         PlayerCardsEquippedUI.OnWonEquippedCard += ResolvePlayerBattleServerRpc;
-        Player.OnPlayerSelectedPlaceToDie += ResolvePlayerBattleServerRpc;
         PlayerCardUI.OnPrebattleOver += PrebattleOver;
         PlayerCardsEquippedUI.OnPreturnOver += PrebattleOver;
+        Player.OnPlayerSelectedPlaceToDie += ResolvePlayerBattleServerRpc;
     }
 
     public override void OnNetworkSpawn()
@@ -65,7 +60,7 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
         base.OnNetworkSpawn();
     }
 
-    public override void OnDestroy()
+    public override void OnNetworkDespawn()
     {
         PlayerInfoUI.OnAttackPlayer -= AttackPlayerServerRpc;
         PlayerCardsEquippedUI.OnWonEquippedCard -= ResolvePlayerBattleServerRpc;
@@ -73,7 +68,7 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
         PlayerCardUI.OnPrebattleOver -= PrebattleOver;
         PlayerCardsEquippedUI.OnPreturnOver -= PrebattleOver;
 
-        base.OnDestroy();
+        base.OnNetworkDespawn();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -168,13 +163,10 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
         MessageUI.Instance.SendMessageToEveryoneExceptMe(SendDisarmMessage(Player.LocalInstance));
 
         OnPrebattle?.Invoke(enemy);
-    }    
+    }
 
     private void SetPlayerBattle()
     {
-        playerWinsNeeded = enemy.RollsNeededToLose + cardAbilities.GetPlayerGameModifier(enemy);
-        enemyWinsNeeded = player.RollsNeededToLose + cardAbilities.GetPlayerGameModifier(player);
-
         playerWins = 0;
         enemyWins = 0;
 
@@ -208,6 +200,9 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
             SetRollTypeForClientClientRpc(rollTypeEnemy, clientRpcParamsEnemy);
         }
 
+        playerWinsNeeded = enemy.RollsNeededToLose + cardAbilities.GetPlayerGameModifier(enemy);
+        enemyWinsNeeded = player.RollsNeededToLose + cardAbilities.GetPlayerGameModifier(player);
+
         string message = SendCurrentBattleResultMessage(player, playerWins, string.Empty, playerWinsNeeded);
         SetBattleResultInfoClientRpc(message);
 
@@ -218,7 +213,7 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
     private void PlayerBattleSetClientRpc(ClientRpcParams clientRpcParams = default)
     {
         OnPlayerBattleSet?.Invoke();
-    } 
+    }
 
     private void SetClientRpcParamsForBattle()
     {
@@ -507,5 +502,19 @@ public class PlayerBattleResults : NetworkBehaviour, IResult
     {
         return $"<color=#{winner.HexPlayerColor}>{winner.PlayerName}</color> wins the battle with {wins} wins against " +
                $"<color=#{enemy.HexPlayerColor}>{enemy.PlayerName}'s</color> {loses} wins";
+    }
+
+    public static void ResetStaticData()
+    {
+        OnPlayerBattleRollDie = null;
+        OnPlayerBattleRollDieOver = null;
+        OnPlayerBattleRollDisadvantage = null;
+        OnPlayerBattleShowUI = null;
+        OnPlayerBattleRollOver = null;
+        OnBattleWin = null;
+        OnBattleLost = null;
+        OnAfterBattleResolved = null;
+        OnPrebattle = null;
+        OnPlayerBattleSet = null;
     }
 }

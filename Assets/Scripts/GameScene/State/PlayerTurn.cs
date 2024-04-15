@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerTurn : State
@@ -13,7 +12,6 @@ public class PlayerTurn : State
         await base.Start();
 
         ActionsUI.OnMove += ActionsUI_OnMove;
-        ActionsUI.OnAttackCard += ActionsUI_OnAttackCard;
 
         string[] messages = CreateOnPlayerTurnMessage();
 
@@ -22,16 +20,6 @@ public class PlayerTurn : State
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
 
         OnPlayerTurn?.Invoke();
-    }
-
-    public async Task AttackCard()
-    {
-        await Awaitable.NextFrameAsync();
-    }
-
-    public async Task AttackPlayer()
-    {
-        await Awaitable.NextFrameAsync();
     }
 
     public async Task Move(Tile tile)
@@ -46,7 +34,6 @@ public class PlayerTurn : State
         OnPlayerTurnOver?.Invoke();
 
         ActionsUI.OnMove -= ActionsUI_OnMove;
-        ActionsUI.OnAttackCard -= ActionsUI_OnAttackCard;
 
         await base.End();
 
@@ -58,17 +45,23 @@ public class PlayerTurn : State
         await Move(obj);
     }
 
-    private async void ActionsUI_OnAttackCard(NetworkObjectReference tileNetworkObjectReference, NetworkObjectReference playerNetworkObjectReference)
-    {
-        await AttackCard();
-    }
-
     private string[] CreateOnPlayerTurnMessage()
     {
         return new string[] {
             "YOUR TURN TO PLAY",
             $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName}'s </color>" + $"TURN TO PLAY."
         };
+    }
+
+    public override void Dispose()
+    {
+        ActionsUI.OnMove -= ActionsUI_OnMove;
+    }
+
+    public static void ResetStaticData()
+    {
+        OnPlayerTurn = null;
+        OnPlayerTurnOver = null;
     }
 }
 

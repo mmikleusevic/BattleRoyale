@@ -16,7 +16,6 @@ public class Player : NetworkBehaviour
     public static event Action OnPlayerDiedPlayerBattle;
     public static event Action<ulong> OnPlayerSelectedPlaceToDie;
     public static event Action OnPlayerResurrected;
-    public static event Action<Card> OnPlayerUnequippedCardAdded;
     public static event Action OnMovementOrActionPoints;
     public static event Action OnAction;
 
@@ -70,6 +69,7 @@ public class Player : NetworkBehaviour
         if (IsOwner)
         {
             LocalInstance = this;
+
             ClientId.Value = NetworkObject.OwnerClientId;
 
             PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
@@ -238,8 +238,6 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            OnPlayerUnequippedCardAdded?.Invoke(card);
-
             player.UnequippedCards.Add(card);
         }
     }
@@ -747,5 +745,18 @@ public class Player : NetworkBehaviour
         CheckIfMovementAndActionsAreZero();
 
         PCInfoUI.Instance.SetActionsText();
+    }
+
+    public static void ResetStaticData()
+    {
+        OnCardsSwapped = null;
+        OnPlayerTurnSet = null;
+        OnPlayerMoved = null;
+        OnPlayerDiedCardBattle = null;
+        OnPlayerDiedPlayerBattle = null;
+        OnPlayerSelectedPlaceToDie = null;
+        OnPlayerResurrected = null;
+        OnMovementOrActionPoints = null;
+        OnAction = null;
     }
 }

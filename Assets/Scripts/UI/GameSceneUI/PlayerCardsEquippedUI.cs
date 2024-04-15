@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
 using Random = UnityEngine.Random;
@@ -33,7 +32,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     {
         closeButton.onClick.AddListener(async () =>
         {
-            if (StateManager.Instance.GetState() == StateEnum.PlayerPreturn)
+            if (StateManager.Instance.GetCurrentState() == StateEnum.PlayerPreturn)
             {
                 await StateManager.Instance.EndState();
             }
@@ -64,9 +63,9 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
-        Player.OnCardsSwapped += Player_OnCardsSwapped;
         PlayerBattleResults.OnPrebattle += PlayerBattleResults_OnPrebattle;
         PlayerBattleResults.OnPlayerBattleSet += PlayerBattleResults_OnPlayerBattleSet;
+        Player.OnCardsSwapped += Player_OnCardsSwapped;
 
         takeCardButton.gameObject.SetActive(false);
 
@@ -330,5 +329,14 @@ public class PlayerCardsEquippedUI : MonoBehaviour
     private void HideInstantly()
     {
         PlayerCardsUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
+    }
+
+    public static void ResetStaticData()
+    {
+        OnPreturnCardsInstantiated = null;
+        OnPlayerCardsEquippedUIClosed = null;
+        OnShowUnequippedCards = null;
+        OnWonEquippedCard = null;
+        OnPreturnOver = null;
     }
 }

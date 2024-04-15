@@ -47,7 +47,7 @@ public class LevelManager : MonoBehaviour
             float progress = Mathf.Clamp01(asyncOperation.progress / 0.9f);
 
             slider.value = progress;
-            progressText.text = progress * 100f + "%";
+            progressText.text = (int)(progress * 100) + "%";
 
             yield return null;
         }

@@ -16,27 +16,17 @@ public class DisarmAbility : NetworkBehaviour, IDisarm
         disarm.AbilityUsed = true;
     }
 
-    public void Use(Player player, Card card)
+    public void Use(Card card)
     {
         Use();
 
-        DisarmPlayersCardServerRpc(player.NetworkObject, card.NetworkObject);
+        DisarmPlayersCardServerRpc(card.NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void DisarmPlayersCardServerRpc(NetworkObjectReference playerNetworkObjectReference, NetworkObjectReference cardNetworkObjectReference, ServerRpcParams serverRpcParams = default)
+    private void DisarmPlayersCardServerRpc(NetworkObjectReference cardNetworkObjectReference, ServerRpcParams serverRpcParams = default)
     {
-        Player player = Player.GetPlayerFromNetworkReference(playerNetworkObjectReference);
-
-        ClientRpcParams clientRpcParams = new ClientRpcParams
-        {
-            Send = new ClientRpcSendParams
-            {
-                TargetClientIds = new ulong[] { player.ClientId.Value }
-            }
-        };
-
-        DisarmPlayersCardClientRpc(cardNetworkObjectReference, clientRpcParams);
+        DisarmPlayersCardClientRpc(cardNetworkObjectReference);
     }
 
     [ClientRpc]

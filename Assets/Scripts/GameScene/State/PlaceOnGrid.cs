@@ -52,4 +52,9 @@ public class PlaceOnGrid : State
             $"<color=#{Player.LocalInstance.HexPlayerColor}>{Player.LocalInstance.PlayerName} </color>" + $"placed on {tile.GetCardOrTileName()}"
         };
     }
+
+    public override void Dispose()
+    {
+        ActionsUI.OnMove -= ActionsUI_OnMove;
+    }
 }

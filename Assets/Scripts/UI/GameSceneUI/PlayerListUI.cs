@@ -25,7 +25,7 @@ public class PlayerListUI : MonoBehaviour
         PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         PlayerBattleResults.OnPrebattle += PlayerBattleResults_OnPrebattle;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
-        PlayerManager.Instance.OnActivePlayerChanged += PlayerManager_OnActivePlayerChanged;
+        PlayerManager.OnActivePlayerChanged += PlayerManager_OnActivePlayerChanged;
         Won.OnWon += OnGameOver;
         Lost.OnLost += OnGameOver;
         PlayerCardUI.OnPrebattleOver += PlayerCardUI_OnPrebattleOver;
@@ -42,9 +42,12 @@ public class PlayerListUI : MonoBehaviour
         ActionsUI.OnAttackPlayer -= ActionsUI_OnAttackPlayer;
         PlayerBattleResults.OnPlayerBattleSet -= PlayerBattleResults_OnPlayerBattleSet;
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
+        PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerBattleResults.OnPrebattle -= PlayerBattleResults_OnPrebattle;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
-        PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
+        PlayerManager.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
+        Won.OnWon -= OnGameOver;
+        Lost.OnLost -= OnGameOver;
         PlayerCardUI.OnPrebattleOver -= PlayerCardUI_OnPrebattleOver;
     }
 
@@ -112,7 +115,7 @@ public class PlayerListUI : MonoBehaviour
 
     private void PlayerCardsEquippedUI_OnPlayerCardsUIClosed()
     {
-        StateEnum stateEnum = StateManager.Instance.GetState();
+        StateEnum stateEnum = StateManager.Instance.GetCurrentState();
 
         if (stateEnum == StateEnum.Won || stateEnum == StateEnum.Lost)
         {
@@ -128,19 +131,19 @@ public class PlayerListUI : MonoBehaviour
     {
         infoButton.gameObject.SetActive(true);
 
-        PlayerManager.Instance.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
+        PlayerManager.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
     }
 
-    private void OnGameOver(string obj)
+    private void OnGameOver(string gameOverText)
     {
         Won.OnWon -= OnGameOver;
         Lost.OnLost -= OnGameOver;
 
-        gameOverText.gameObject.SetActive(true);
+        this.gameOverText.gameObject.SetActive(true);
         closeButton.gameObject.SetActive(false);
         infoButton.gameObject.SetActive(false);
 
-        gameOverText.text = obj;
+        this.gameOverText.text = gameOverText;
 
         RestoreOriginalOrder();
 

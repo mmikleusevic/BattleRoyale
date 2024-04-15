@@ -76,7 +76,7 @@ public class RollUI : NetworkBehaviour
         HideInstant();
     }
 
-    public override void OnDestroy()
+    public override void OnNetworkDespawn()
     {
         rollButton.onClick.RemoveAllListeners();
         rerollButton0.onClick.RemoveAllListeners();
@@ -87,7 +87,7 @@ public class RollUI : NetworkBehaviour
         CardAbilities.OnRerollCardBattle -= CardAbilities_OnTryReroll;
         CardAbilities.OnRerollPlayerBattle -= CardAbilities_OnRerollPlayerBattle;
 
-        base.OnDestroy();
+        base.OnNetworkDespawn();
     }
 
     private void Roll()
@@ -204,5 +204,11 @@ public class RollUI : NetworkBehaviour
         {
             die.gameObject.SetActive(false);
         }
+    }
+
+    public static void ResetStaticData()
+    {
+        OnAccept = null;
+        OnReroll = null;
     }
 }

@@ -34,6 +34,20 @@ public class CharacterSceneUI : MonoBehaviour
         CharacterScenePlayer.OnPlayerKicked += CharacterScenePlayer_OnPlayerKicked;
     }
 
+    private void OnDestroy()
+    {
+        CharacterSceneReady.Instance.OnReadyChanged -= CharacterSceneReady_OnReadyChanged;
+        CharacterScenePlayer.OnPlayerKicked -= CharacterScenePlayer_OnPlayerKicked;
+
+        mainMenuButton.onClick.RemoveAllListeners();
+        readyButton.onClick.RemoveAllListeners();
+
+        if (NetworkManager.Singleton == null) return;
+
+        NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+    }
+
     private void CharacterSceneReady_OnReadyChanged()
     {
         ChangeReadyButtonText();
@@ -48,20 +62,6 @@ public class CharacterSceneUI : MonoBehaviour
     private void Start()
     {
         UpdateLobbyData();
-    }
-
-    private void OnDestroy()
-    {
-        CharacterSceneReady.Instance.OnReadyChanged -= CharacterSceneReady_OnReadyChanged;
-        CharacterScenePlayer.OnPlayerKicked -= CharacterScenePlayer_OnPlayerKicked;
-
-        mainMenuButton.onClick.RemoveAllListeners();
-        readyButton.onClick.RemoveAllListeners();
-
-        if (NetworkManager.Singleton == null) return;
-
-        NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
-        NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
     }
 
     private void NetworkManager_OnClientConnectedCallback(ulong obj)

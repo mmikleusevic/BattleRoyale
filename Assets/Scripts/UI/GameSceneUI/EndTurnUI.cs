@@ -20,10 +20,10 @@ public class EndTurnUI : MonoBehaviour
 
         PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnAfterBattleResolved += PlayerBattleResults_OnAfterBattleResolved;
-        Player.OnMovementOrActionPoints += Player_OnMovementOrActionPoints;
         PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         AbilityResults.OnDisableEndTurnButton += TempestAbility_OnDisableEndTurnButton;
         AbilityResults.OnEnableEndTurnButton += TempestAbility_OnEnableEndTurnButton;
+        Player.OnMovementOrActionPoints += Player_OnMovementOrActionPoints;
 
         ParticleSystemManager.Instance.Stop(particleGlow);
 

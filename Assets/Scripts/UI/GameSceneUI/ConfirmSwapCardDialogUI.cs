@@ -136,4 +136,9 @@ public class ConfirmSwapCardDialogUI : MonoBehaviour
     {
         ConfirmDialogUIRectTransform.DOScale(Vector2.zero, .0f).SetEase(Ease.InOutBack).OnComplete(() => Hide());
     }
+
+    public static void ResetStaticData()
+    {
+        OnYesPressed = null;
+    }
 }
