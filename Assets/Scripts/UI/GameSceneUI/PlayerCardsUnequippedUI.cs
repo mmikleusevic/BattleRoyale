@@ -45,8 +45,6 @@ public class PlayerCardsUnequippedUI : MonoBehaviour
         titleText.text = "Unequipped cards:";
         ShowWithAnimation();
 
-        PlayerCardUI.equippedCardState = EquippedCardState.None;
-
         InstantiateCards(player);
     }
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
@@ -64,8 +65,10 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerBattleResults.OnBattleWin += PlayerBattleResults_OnAfterBattle;
         PlayerPreturn.OnPlayerPreturnOver += PlayerPreturn_OnPlayerPreturnOver;
         PlayerBattleResults.OnPrebattle += PlayerBattleResults_OnPrebattle;
+        CardBattleResults.OnCardWonCurse += CursedCardWon;
         PlayerBattleResults.OnPlayerBattleSet += PlayerBattleResults_OnPlayerBattleSet;
         Player.OnCardsSwapped += Player_OnCardsSwapped;
+        PlayerCardUI.OnCurseEquipped += PlayerCardUI_OnCurseEquipped;
 
         takeCardButton.gameObject.SetActive(false);
 
@@ -89,14 +92,16 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         PlayerPreturn.OnPlayerPreturnOver -= PlayerPreturn_OnPlayerPreturnOver;
         Player.OnCardsSwapped -= Player_OnCardsSwapped;
         PlayerBattleResults.OnPrebattle -= PlayerBattleResults_OnPrebattle;
+        CardBattleResults.OnCardWonCurse -= CursedCardWon;
         PlayerBattleResults.OnPlayerBattleSet -= PlayerBattleResults_OnPlayerBattleSet;
+        PlayerCardUI.OnCurseEquipped -= PlayerCardUI_OnCurseEquipped;
     }
 
     private void PlayerPreturn_OnPlayerPreturn()
     {
         Hide();
 
-        titleText.text = "PRETURN(PRESS CARD TO SWAP IT, NEED TO HAVE 3 EQUIPED IF POSSIBLE)\nEQUIPPED CARDS:";
+        titleText.text = "PRETURN(PRESS CARD TO SWAP IT, NEED TO HAVE 3 EQUIPED IF POSSIBLE),\nEQUIPPED CARDS:";
 
         player = Player.LocalInstance;
 
@@ -185,8 +190,45 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         InstantiateCards();
     }
 
+    private void CursedCardWon(Card card, Player enemy)
+    {
+        player = Player.LocalInstance;
+
+        titleText.text = $"PICK A CARD THAT YOU WILL SWAP FOR {card.Name}";
+
+        closeButton.gameObject.SetActive(false);
+        showUneqippedCardsButton.gameObject.SetActive(false);
+
+        background.color = player.HexPlayerColor.HEXToColor();
+
+        ShowWithAnimation();
+
+        PlayerCardUI.equippedCardState = EquippedCardState.Equip;
+        PlayerCardUI.enemy = enemy;
+        PlayerCardUI.wonCard = card;
+
+        InstantiateCards();
+    }
+
     private void PlayerBattleResults_OnPlayerBattleSet()
     {
+        HideWithAnimation();
+    }
+
+    private async void PlayerCardUI_OnCurseEquipped(Card cursedCard, Card equippedCard, Player player, Player enemy)
+    {
+        titleText.text = $"SWAPPED {cursedCard.Name} FOR {equippedCard.Name}";
+
+        foreach (Transform child in container)
+        {
+            if (child == template) continue;
+
+            PlayerCardUI playerCardUI = child.GetComponent<PlayerCardUI>();
+            playerCardUI.DisableButton();
+        }
+
+        await Task.Delay(2000);
+
         HideWithAnimation();
     }
 
@@ -247,7 +289,7 @@ public class PlayerCardsEquippedUI : MonoBehaviour
 
         List<int> curseIndexes = player.EquippedCards
                             .Select((card, index) => new { Card = card, Index = index })
-                            .Where(x => x.Card is ICurse)
+                            .Where(x => x.Card.Ability is ICurse)
                             .Select(x => x.Index)
                             .ToList();
 
@@ -268,15 +310,24 @@ public class PlayerCardsEquippedUI : MonoBehaviour
         foreach (Transform child in container)
         {
             PlayerCardUI playerCardUI = child.GetComponent<PlayerCardUI>();
+
             if (child == template || playerCardUI.Index == randomCardNumber) continue;
             Destroy(child.gameObject);
         }
 
-        Player.LocalInstance.OnBattleWon(card, player);
-
         OnWonEquippedCard?.Invoke(Player.LocalInstance.ClientId.Value);
 
         yield return new WaitForSeconds(2f);
+
+        if (card.Ability != null && card.Ability is ICurse && Player.LocalInstance.EquippedCards.Count >= Player.LocalInstance.MaxEquippableCards)
+        {
+            CursedCardWon(card, player);
+            yield break;
+        }
+        else
+        {
+            Player.LocalInstance.OnBattleWon(card, player);
+        }
 
         HideWithAnimation();
     }

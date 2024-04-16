@@ -24,6 +24,7 @@ public class PlayerListUI : MonoBehaviour
         PlayerInfoUI.OnShowPlayerEquippedCards += PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerInfoUI.OnAttackPlayer += PlayerInfoUI_OnAttackPlayer;
         PlayerBattleResults.OnPrebattle += PlayerBattleResults_OnPrebattle;
+        CardBattleResults.OnCardWonCurse += CardBattleResults_OnCardWonCurse;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed += PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.OnActivePlayerChanged += PlayerManager_OnActivePlayerChanged;
         Won.OnWon += OnGameOver;
@@ -44,6 +45,7 @@ public class PlayerListUI : MonoBehaviour
         PlayerInfoUI.OnShowPlayerEquippedCards -= PlayerInfoUI_OnShowPlayerEquippedCards;
         PlayerInfoUI.OnAttackPlayer -= PlayerInfoUI_OnAttackPlayer;
         PlayerBattleResults.OnPrebattle -= PlayerBattleResults_OnPrebattle;
+        CardBattleResults.OnCardWonCurse -= CardBattleResults_OnCardWonCurse;
         PlayerCardsEquippedUI.OnPlayerCardsEquippedUIClosed -= PlayerCardsEquippedUI_OnPlayerCardsUIClosed;
         PlayerManager.OnActivePlayerChanged -= PlayerManager_OnActivePlayerChanged;
         Won.OnWon -= OnGameOver;
@@ -107,6 +109,13 @@ public class PlayerListUI : MonoBehaviour
     }
 
     private void PlayerBattleResults_OnPrebattle(Player obj)
+    {
+        Show();
+
+        RestoreOriginalOrder();
+    }
+
+    private void CardBattleResults_OnCardWonCurse(Card card, Player emptyPlayer)
     {
         Show();
 

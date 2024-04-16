@@ -5,8 +5,9 @@ using Unity.Netcode;
 public class CardBattleResults : NetworkBehaviour, ICardResults
 {
     public static event Action OnCardRoll;
-    public static event Action<Card> OnCardWon;
-    public static event Action<Card> OnCardLost;
+    public static event Action OnCardWon;
+    public static event Action OnCardLost;
+    public static event Action<Card, Player> OnCardWonCurse;
 
     private ClientRpcParams callerClientRpcParams;
     private Tile tile;
@@ -29,9 +30,9 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
     private void ActionsUI_OnAttackCardServerRpc(NetworkObjectReference tileNetowkrObjectReference, NetworkObjectReference playerNetworkObjectReference)
     {
         Tile tile = Tile.GetTileFromNetworkReference(tileNetowkrObjectReference);
-        Player player = Player.GetPlayerFromNetworkReference(playerNetworkObjectReference);
-
         this.tile = tile;
+
+        Player player = Player.GetPlayerFromNetworkReference(playerNetworkObjectReference);
 
         ulong[] clientId = new ulong[] { player.ClientId.Value };
 
@@ -50,7 +51,6 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
     private void CallForRollClientRpc(NetworkObjectReference tileNetowkrObjectReference, ClientRpcParams clientRpcParams = default)
     {
         Tile tile = Tile.GetTileFromNetworkReference(tileNetowkrObjectReference);
-
         this.tile = tile;
 
         RollType.rollType = RollTypeEnum.CardAttack;
@@ -87,18 +87,27 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
     [ClientRpc]
     private void CardWonLogicClientRpc(bool isThreeOfAKind, ClientRpcParams clientRpcParams = default)
     {
+        Player player = Player.LocalInstance;
         if (isThreeOfAKind)
         {
             SendThreeOfAKindMessageToMessageUI();
         }
 
-        tile.DisableCard();
-
         string[] messages = SendCardWonMessageToMessageUI();
 
-        Player.LocalInstance.SaveWonCard(tile.Card);
+        if (player.EquippedCards.Count >= player.MaxEquippableCards && tile.Card.Ability != null && tile.Card.Ability is ICurse)
+        {
+            OnCardWonCurse?.Invoke(tile.Card, null);
+        }
+        else
+        {
+            Player.LocalInstance.SaveWonCard(tile.Card);
+        }
 
-        OnCardWon?.Invoke(tile.Card);
+        OnCardWon?.Invoke();
+
+        tile.DisableCard();
+        tile.RemoveCardServerRpc();
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
@@ -111,7 +120,7 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
 
         Player.LocalInstance.PlayerDiedCardBattle();
 
-        OnCardLost?.Invoke(tile.Card);
+        OnCardLost?.Invoke();
 
         MessageUI.Instance.SendMessageToEveryoneExceptMe(messages);
         FadeMessageUI.Instance.StartFadeMessage(messages[0]);
@@ -155,5 +164,6 @@ public class CardBattleResults : NetworkBehaviour, ICardResults
         OnCardLost = null;
         OnCardRoll = null;
         OnCardWon = null;
+        OnCardWonCurse = null;
     }
 }

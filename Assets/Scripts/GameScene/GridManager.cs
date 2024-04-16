@@ -164,7 +164,7 @@ public class GridManager : NetworkBehaviour
 
             Vector2 position = new Vector3((gridPosition.x * cardDimensions.x) + gridPosition.x * spacing, (gridPosition.y * cardDimensions.y) + gridPosition.y * spacing);
 
-            Transform tileTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"TILE{index}({cardSO.name})");
+            Transform tileTransform = SpawnObject(cardSO.prefab.transform, position, new Quaternion(180, 0, 0, 0), transform, $"TILE{i}({cardSO.name})");
             Tile tile = tileTransform.GetComponent<Tile>();
             Card card = tileTransform.GetComponent<Card>();
             card.InitializeClientRpc(index);

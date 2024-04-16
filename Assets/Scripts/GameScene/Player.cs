@@ -25,7 +25,6 @@ public class Player : NetworkBehaviour
     ParticleSystem playerParticleSystem;
     PlayerAnimator playerAnimator;
 
-
     public StateEnum currentState = StateEnum.WaitingForPlayers;
     private int defaultMovement = 0;
     private int defaultActionPoints = 2;
@@ -74,6 +73,7 @@ public class Player : NetworkBehaviour
 
             PlayerTurn.OnPlayerTurn += PlayerTurn_OnPlayerTurn;
             PlayerBattleResults.OnBattleLost += PlayerBattleResults_OnBattleLost;
+            PlayerCardUI.OnCurseEquipped += PlayerCardUI_OnCurseEquipped;
             Points.OnValueChanged += PointsChanged;
         }
 
@@ -86,6 +86,7 @@ public class Player : NetworkBehaviour
     {
         PlayerTurn.OnPlayerTurn -= PlayerTurn_OnPlayerTurn;
         PlayerBattleResults.OnBattleLost -= PlayerBattleResults_OnBattleLost;
+        PlayerCardUI.OnCurseEquipped -= PlayerCardUI_OnCurseEquipped;
         Points.OnValueChanged -= PointsChanged;
 
         base.OnNetworkDespawn();
@@ -199,7 +200,6 @@ public class Player : NetworkBehaviour
         Card card = Card.GetCardFromNetworkReference(networkObjectReferenceCard);
 
         AddOrSubtractPoints(card.Points);
-
         SaveWonCardClientRpc(networkObjectReferenceCard, networkObjectReferencePlayer);
 
         GridManager.Instance.CheckNumberOfLeftCards();
@@ -209,14 +209,10 @@ public class Player : NetworkBehaviour
     private void SaveWonCardClientRpc(NetworkObjectReference networkObjectReferenceCard, NetworkObjectReference networkObjectReferencePlayer, ClientRpcParams clientRpcParams = default)
     {
         Tile tile = Tile.GetTileFromNetworkReference(networkObjectReferenceCard);
-
         Card card = tile.Card;
-
         Player player = GetPlayerFromNetworkReference(networkObjectReferencePlayer);
 
         SaveCardToWinner(player, card);
-
-        tile.RemoveCardServerRpc();
     }
 
     private void SaveCardToWinner(Player player, Card card)
@@ -340,6 +336,89 @@ public class Player : NetworkBehaviour
         OnPlayerDiedPlayerBattle?.Invoke();
     }
 
+    private void PlayerCardUI_OnCurseEquipped(Card cursedCard, Card equippedCard, Player player, Player enemy)
+    {
+        if (enemy == null)
+        {
+            EquipCursedCardServerRpc(cursedCard.NetworkObject, equippedCard.NetworkObject, player.NetworkObject);
+        }
+        else
+        {
+            EquipCursedCardServerRpc(cursedCard.NetworkObject, equippedCard.NetworkObject, player.NetworkObject, enemy.NetworkObject);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void EquipCursedCardServerRpc(NetworkObjectReference cursedCardNetworkObjectReference, NetworkObjectReference equippedCardNetworkObjectReference, NetworkObjectReference winnerNetworkObjectReference, ServerRpcParams serverRpcParams = default)
+    {
+        Player winner = GetPlayerFromNetworkReference(winnerNetworkObjectReference);
+        Card cursedCard = Card.GetCardFromNetworkReference(cursedCardNetworkObjectReference);
+
+        winner.AddOrSubtractPoints(cursedCard.Points);
+
+        EquipCursedCardClientRpc(cursedCardNetworkObjectReference, equippedCardNetworkObjectReference, winnerNetworkObjectReference);
+
+        GridManager.Instance.CheckNumberOfLeftCards();
+    }
+
+    [ClientRpc]
+    private void EquipCursedCardClientRpc(NetworkObjectReference cursedCardNetworkObjectReference, NetworkObjectReference equippedCardNetworkObjectReference, NetworkObjectReference winnerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        Player winner = GetPlayerFromNetworkReference(winnerNetworkObjectReference);
+        Card cursedCard = Card.GetCardFromNetworkReference(cursedCardNetworkObjectReference);
+        Card equippedCard = Card.GetCardFromNetworkReference(equippedCardNetworkObjectReference);
+
+        winner.EquippedCards.Remove(equippedCard);
+        winner.UnequippedCards.Add(equippedCard);
+        winner.EquippedCards.Add(cursedCard);
+
+        if (winner == LocalInstance)
+        {
+            equippedCard.Unequip(winner);
+            cursedCard.Equip(winner);
+            GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
+            MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerSwappedCardMessage(equippedCard, cursedCard));
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void EquipCursedCardServerRpc(NetworkObjectReference cursedCardNetworkObjectReference, NetworkObjectReference equippedCardNetworkObjectReference, NetworkObjectReference winnerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ServerRpcParams serverRpcParams = default)
+    {
+        Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
+        Player winner = GetPlayerFromNetworkReference(winnerNetworkObjectReference);
+        Card cursedCard = Card.GetCardFromNetworkReference(cursedCardNetworkObjectReference);
+
+        MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerTakenCardMessage(cursedCard, winner, loser));
+
+        loser.AddOrSubtractPoints(-cursedCard.Points);
+        winner.AddOrSubtractPoints(cursedCard.Points);
+
+        EquipCursedCardClientRpc(cursedCardNetworkObjectReference, equippedCardNetworkObjectReference, winnerNetworkObjectReference, loserNetworkObjectReference);
+    }
+
+    [ClientRpc]
+    private void EquipCursedCardClientRpc(NetworkObjectReference cursedCardNetworkObjectReference, NetworkObjectReference equippedCardNetworkObjectReference, NetworkObjectReference winnerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
+    {
+        Player winner = GetPlayerFromNetworkReference(winnerNetworkObjectReference);
+        Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
+        Card cursedCard = Card.GetCardFromNetworkReference(cursedCardNetworkObjectReference);
+        Card equippedCard = Card.GetCardFromNetworkReference(equippedCardNetworkObjectReference);
+
+        winner.EquippedCards.Remove(equippedCard);
+        winner.UnequippedCards.Add(equippedCard);
+        winner.EquippedCards.Add(cursedCard);
+
+        RemoveCardFromLoser(loser, cursedCard);
+
+        if (winner == LocalInstance)
+        {
+            equippedCard.Unequip(winner);
+            cursedCard.Equip(winner);
+            GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
+            MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnPlayerSwappedCardMessage(equippedCard, cursedCard));
+        }
+    }
+
     private void PointsChanged(int previousValue, int newValue)
     {
         PCInfoUI.Instance.SetPointsText();
@@ -354,9 +433,7 @@ public class Player : NetworkBehaviour
     private void OnBattleWonServerRpc(NetworkObjectReference cardNetworkObjectReference, NetworkObjectReference playerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ServerRpcParams serverRpcParams = default)
     {
         Player winner = GetPlayerFromNetworkReference(playerNetworkObjectReference);
-
         Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
-
         Card card = Card.GetCardFromNetworkReference(cardNetworkObjectReference);
 
         winner.AddOrSubtractPoints(card.Points);
@@ -371,9 +448,7 @@ public class Player : NetworkBehaviour
     private void OnBattleWonClientRpc(NetworkObjectReference cardNetworkObjectReference, NetworkObjectReference winnerNetworkObjectReference, NetworkObjectReference loserNetworkObjectReference, ClientRpcParams clientRpcParams = default)
     {
         Player winner = GetPlayerFromNetworkReference(winnerNetworkObjectReference);
-
         Player loser = GetPlayerFromNetworkReference(loserNetworkObjectReference);
-
         Card card = Card.GetCardFromNetworkReference(cardNetworkObjectReference);
 
         SaveCardToWinner(winner, card);
@@ -385,9 +460,7 @@ public class Player : NetworkBehaviour
         IsDead.Value = false;
 
         AliveAnimationServerRpc();
-
         SubtractActionPoints();
-
         AddSipsToPlayerServerRpc(NetworkObject, ResurrectionSipValue);
 
         GridManager.Instance.GetGridPositionsWherePlayerCanInteract();
@@ -673,9 +746,7 @@ public class Player : NetworkBehaviour
     public void ChangePlayerOwnershipAndDie(Player player)
     {
         player.NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
-
         player.IsDead.Value = true;
-
         player.DeathAnimation();
     }
 
@@ -683,7 +754,6 @@ public class Player : NetworkBehaviour
     private void DisablePlayerClientRpc(NetworkObjectReference playerNetworkObjectReference, ClientRpcParams clientRpcParams = default)
     {
         Player player = GetPlayerFromNetworkReference(playerNetworkObjectReference);
-
         player.Disabled = true;
 
         PlayerManager.Instance.RemoveFromActivePlayers(player);

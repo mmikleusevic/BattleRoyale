@@ -41,7 +41,7 @@ public class DiceRollUI : MonoBehaviour
         rollUI.ShowWithAnimation(3, BattleType.Card);
     }
 
-    private void CardBattleResults_OnCardBattle(Card card)
+    private void CardBattleResults_OnCardBattle()
     {
         Hide();
     }

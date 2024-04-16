@@ -9,9 +9,11 @@ public class PlayerCardUI : MonoBehaviour
 {
     public static event Action<PlayerCardUI> OnEquippedCardSwap;
     public static event Action<PlayerCardUI> OnUnquippedCardSwap;
+    public static event Action<Card, Card, Player, Player> OnCurseEquipped;
     public static event Action OnPrebattleOver;
 
     public static Player enemy;
+    public static Card wonCard;
     public static EquippedCardState equippedCardState = EquippedCardState.None;
 
     [SerializeField] private Image cardImage;
@@ -20,12 +22,11 @@ public class PlayerCardUI : MonoBehaviour
     public int Index { get; set; } = -1;
 
     private Button button;
-    private Card card;
+    private Card equippedCard;
 
     private Color originalColor = new Color(1f, 1f, 1f, 1f);
     public Color greyedOutColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     public bool isEmpty = true;
-
 
     private void Awake()
     {
@@ -55,15 +56,29 @@ public class PlayerCardUI : MonoBehaviour
 
     public void Instantiate(Card card, int index)
     {
-        this.card = card;
+        equippedCard = card;
 
         cardImage.sprite = card.Sprite;
-        cardImage.color = originalColor;
         cardImage.preserveAspect = true;
+
+        GetImageColor();
+        GetButton();
+
         isEmpty = false;
         Index = index;
+    }
 
-        GetButton();
+    private void GetImageColor()
+    {
+        if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is IDisarm && equippedCardState == EquippedCardState.Disarm
+            || equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is ICurse && (equippedCardState == EquippedCardState.Equip || equippedCardState == EquippedCardState.Swap))
+        {
+            cardImage.color = greyedOutColor;
+        }
+        else
+        {
+            cardImage.color = originalColor;
+        }
     }
 
     public void Instantiate(int index)
@@ -72,15 +87,8 @@ public class PlayerCardUI : MonoBehaviour
         cardImage.preserveAspect = true;
         Index = index;
 
-        if (equippedCardState == EquippedCardState.Disarm)
-        {
-            button = GetComponent<Button>();
-            button.interactable = false;
-        }
-        else
-        {
-            GetButton();
-        }
+        GetImageColor();
+        GetButton();
     }
 
     private void GetButton()
@@ -93,9 +101,34 @@ public class PlayerCardUI : MonoBehaviour
                 button.interactable = false;
                 break;
             case EquippedCardState.Disarm:
+                if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is IDisarm || equippedCard == null)
+                {
+                    button.interactable = false;
+                }
+                else
+                {
+                    button.interactable = true;
+                }
+                break;
             case EquippedCardState.Swap:
+                if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is ICurse)
+                {
+                    button.interactable = false;
+                }
+                else
+                {
+                    button.interactable = true;
+                }
+                break;
             case EquippedCardState.Equip:
-                button.interactable = true;
+                if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is ICurse)
+                {
+                    button.interactable = false;
+                }
+                else
+                {
+                    button.interactable = true;
+                }
                 break;
         }
     }
@@ -130,7 +163,7 @@ public class PlayerCardUI : MonoBehaviour
             {
                 IDisarm disarmAbility = disarmCard.Ability as IDisarm;
 
-                disarmAbility.Use(card);
+                disarmAbility.Use(equippedCard);
                 disarmCards.Remove(disarmCard);
 
                 cardImage.color = greyedOutColor;
@@ -149,7 +182,8 @@ public class PlayerCardUI : MonoBehaviour
         }
         else if (equippedCardState == EquippedCardState.Equip)
         {
-
+            OnCurseEquipped?.Invoke(wonCard, equippedCard, Player.LocalInstance, enemy);
+            cardImage.sprite = wonCard.Sprite;
         }
     }
 
@@ -167,8 +201,8 @@ public class PlayerCardUI : MonoBehaviour
 
         return new string[]
         {
-            $"YOU DISARMED {enemy.PlayerName}'s {card.Name}",
-            $"<color=#{player.HexPlayerColor}>{player.PlayerName}</color> DISARMED <color=#{enemy.HexPlayerColor}>{enemy.PlayerName}'s </color>{card.Name}"
+            $"YOU DISARMED {enemy.PlayerName}'s {equippedCard.Name}",
+            $"<color=#{player.HexPlayerColor}>{player.PlayerName}</color> DISARMED <color=#{enemy.HexPlayerColor}>{enemy.PlayerName}'s </color>{equippedCard.Name}"
         };
     }
 
@@ -176,8 +210,10 @@ public class PlayerCardUI : MonoBehaviour
     {
         OnEquippedCardSwap = null;
         OnUnquippedCardSwap = null;
+        OnCurseEquipped = null;
         OnPrebattleOver = null;
         enemy = null;
+        wonCard = null;
     }
 }
 
