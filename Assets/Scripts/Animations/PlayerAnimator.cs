@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
-    private static string IS_MOVING = "IsMoving";
-    private static string IS_DEAD = "IsDead";
+    private static readonly string IS_MOVING = "IsMoving";
+    private static readonly string IS_DEAD = "IsDead";
 
     [SerializeField] private Animator animator;
 

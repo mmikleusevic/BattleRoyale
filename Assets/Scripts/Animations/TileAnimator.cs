@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TileAnimator : MonoBehaviour
 {
-    private static string IS_CLOSED = "IsClosed";
+    private static readonly string IS_CLOSED = "IsClosed";
 
     [SerializeField] private Animator animator;
 
