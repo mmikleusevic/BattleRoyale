@@ -44,7 +44,9 @@ public class PlayerCardUI : MonoBehaviour
     {
         if (button == null) return;
 
-        if (Player.LocalInstance.UnequippedCards.Count > 0 && Player.LocalInstance.EquippedCards.Count < Player.LocalInstance.MaxEquippableCards)
+        Player player = Player.LocalInstance;
+
+        if (player.UnequippedCards.Count > 0 && player.EquippedCards.Count < player.MaxEquippableCards)
         {
             button.interactable = true;
         }
@@ -70,8 +72,10 @@ public class PlayerCardUI : MonoBehaviour
 
     private void GetImageColor()
     {
-        if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is IDisarm && equippedCardState == EquippedCardState.Disarm
-            || equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is ICurse && (equippedCardState == EquippedCardState.Equip || equippedCardState == EquippedCardState.Swap))
+        bool isDisarm = equippedCard?.Ability is IDisarm && equippedCardState == EquippedCardState.Disarm;
+        bool isCurse = equippedCard?.Ability is ICurse && (equippedCardState == EquippedCardState.Equip || equippedCardState == EquippedCardState.Swap);
+
+        if (isDisarm || isCurse)
         {
             cardImage.color = greyedOutColor;
         }
@@ -95,40 +99,20 @@ public class PlayerCardUI : MonoBehaviour
     {
         button = GetComponent<Button>();
 
+        bool isDisarm = equippedCard?.Ability is IDisarm;
+        bool isCurse = equippedCard?.Ability is ICurse;
+
         switch (equippedCardState)
         {
             case EquippedCardState.None:
                 button.interactable = false;
                 break;
             case EquippedCardState.Disarm:
-                if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is IDisarm || equippedCard == null)
-                {
-                    button.interactable = false;
-                }
-                else
-                {
-                    button.interactable = true;
-                }
+                button.interactable = !(isDisarm || equippedCard == null);
                 break;
             case EquippedCardState.Swap:
-                if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is ICurse)
-                {
-                    button.interactable = false;
-                }
-                else
-                {
-                    button.interactable = true;
-                }
-                break;
             case EquippedCardState.Equip:
-                if (equippedCard != null && equippedCard.Ability != null && equippedCard.Ability is ICurse)
-                {
-                    button.interactable = false;
-                }
-                else
-                {
-                    button.interactable = true;
-                }
+                button.interactable = !(isCurse && equippedCard != null);
                 break;
         }
     }

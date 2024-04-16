@@ -23,6 +23,6 @@ public static class StaticDataManager
         Player.ResetStaticData();
         PlayerBattleResults.ResetStaticData();
         Tile.ResetStaticData();
-        RollType.ResetStaticData()
+        RollType.ResetStaticData();
     }
 }
