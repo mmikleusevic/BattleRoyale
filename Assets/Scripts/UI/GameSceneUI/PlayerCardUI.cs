@@ -208,6 +208,7 @@ public class PlayerCardUI : MonoBehaviour
 
     public static void ResetStaticData()
     {
+        equippedCardState = EquippedCardState.None;
         OnEquippedCardSwap = null;
         OnUnquippedCardSwap = null;
         OnCurseEquipped = null;
