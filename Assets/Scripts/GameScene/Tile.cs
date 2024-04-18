@@ -230,12 +230,22 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     {
         SetCardClosedClientRpc();
 
-        CloseCard();
+        CloseTile();
     }
 
-    private void CloseCard()
+    private void CloseTile()
     {
         tileAnimator.CloseTileAnimation();
+    }
+
+    public void SwapTile()
+    {
+        tileAnimator.SwapTileAnimation();
+    }
+
+    public void SwapBackTile()
+    {
+        tileAnimator.SwapBackTileAnimation();
     }
 
     public void ShowHighlight()
@@ -274,5 +284,20 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     public static void ResetStaticData()
     {
         OnTilePressed = null;
+    }
+
+    public void ChangeGridPosition(Vector2 gridPosition)
+    {
+        GridPosition = gridPosition;
+    }
+
+    public List<CardPosition> GetCardPositions()
+    {
+        return cardPositions;
+    }
+
+    public void SetCardPositions(List<CardPosition> cardPositions)
+    {
+        this.cardPositions = cardPositions;
     }
 }

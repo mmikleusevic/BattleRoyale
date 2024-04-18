@@ -144,6 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e59d50174c0b3664cb6ab13f5f9d7413, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactUIGameObject: {fileID: 0}
+  swapTilesGameObject: {fileID: 0}
 --- !u!23 &8733875715698863553 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5847162429607113106, guid: ba81c138302199546a32dc2366d7b3f4,

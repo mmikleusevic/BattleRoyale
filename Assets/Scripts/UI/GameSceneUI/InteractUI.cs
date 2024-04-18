@@ -8,6 +8,7 @@ public class InteractUI : MonoBehaviour
     [SerializeField] private Transform actionsContainer;
 
     private bool interactable = true;
+    private Tile tile;
 
     private void Awake()
     {
@@ -34,6 +35,8 @@ public class InteractUI : MonoBehaviour
 
     private void Tile_OnTilePressed(Tile tile)
     {
+        this.tile = tile;
+
         ShowWithAnimation();
     }
 
@@ -85,7 +88,14 @@ public class InteractUI : MonoBehaviour
 
     private void Hide()
     {
+        tile = null;
+
         actionsContainer.gameObject.SetActive(false);
         gameObject.SetActive(false);
+    }
+
+    public Tile GetTile()
+    {
+        return tile;
     }
 }

@@ -3,6 +3,8 @@ using UnityEngine;
 public class TileAnimator : MonoBehaviour
 {
     private static readonly string IS_CLOSED = "IsClosed";
+    private static readonly string SWAP = "Swap";
+    private static readonly string SWAP_BACK = "SwapBack";
 
     [SerializeField] private Animator animator;
 
@@ -13,11 +15,21 @@ public class TileAnimator : MonoBehaviour
 
     public void CloseTileAnimation()
     {
-        Animate(IS_CLOSED, true);
+        Animate(IS_CLOSED);
     }
 
-    private void Animate(string name, bool value)
+    public void SwapTileAnimation()
     {
-        animator.SetBool(name, value);
+        Animate(SWAP);
+    }
+
+    public void SwapBackTileAnimation()
+    {
+        Animate(SWAP_BACK);
+    }
+
+    private void Animate(string name)
+    {
+        animator.SetTrigger(name);
     }
 }

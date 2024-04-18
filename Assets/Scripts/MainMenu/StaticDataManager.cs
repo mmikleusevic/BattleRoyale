@@ -24,5 +24,6 @@ public static class StaticDataManager
         PlayerBattleResults.ResetStaticData();
         Tile.ResetStaticData();
         RollType.ResetStaticData();
+        SwapTilesUI.ResetStaticData();
     }
 }

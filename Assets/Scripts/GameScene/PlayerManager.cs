@@ -49,7 +49,7 @@ public class PlayerManager : NetworkBehaviour
 
     private void NetworkManager_ServerOnClientDisconnectCallback(ulong clientId)
     {
-        if (NetworkManager.Singleton == null || NetworkManager.ServerClientId == clientId || NetworkManager.Singleton.ShutdownInProgress) return;
+        if (NetworkManager.Singleton == null || NetworkManager.ServerClientId == clientId || NetworkManager.Singleton.ShutdownInProgress || !IsServer) return;
 
         Player player = Players.FirstOrDefault(a => a.ClientId.Value == clientId);
 
@@ -57,7 +57,7 @@ public class PlayerManager : NetworkBehaviour
 
         player.NetworkObject.DontDestroyWithOwner = true;
 
-        if (ActivePlayer == player)
+        if (ActivePlayer == player && ActivePlayers.Count > 2)
         {
             StateManager.Instance.GiveCurrentStateToSetNext(player.currentState);
         }

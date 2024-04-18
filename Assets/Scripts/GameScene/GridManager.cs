@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -420,5 +422,63 @@ public class GridManager : NetworkBehaviour
     public Dictionary<Vector2, Tile> GetTiles()
     {
         return gridTiles;
+    }
+
+    public void SwapTiles(Tile tileToSwap, Tile tileToSwapWith)
+    {
+        SwapTilesServerRpc(tileToSwap.NetworkObject, tileToSwapWith.NetworkObject);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SwapTilesServerRpc(NetworkObjectReference tileToSwapNetworkReference, NetworkObjectReference tileToSwapWithNetworkReference)
+    {
+        SwapTilesClientRpc(tileToSwapNetworkReference, tileToSwapWithNetworkReference);
+    }
+
+    [ClientRpc]
+    private void SwapTilesClientRpc(NetworkObjectReference tileToSwapNetworkReference, NetworkObjectReference tileToSwapWithNetworkReference)
+    {
+        Tile tileToSwap = Tile.GetTileFromNetworkReference(tileToSwapNetworkReference);
+        Tile tileToSwapWith = Tile.GetTileFromNetworkReference(tileToSwapWithNetworkReference);
+
+        gridTiles[tileToSwap.GridPosition] = tileToSwapWith;
+        gridTiles[tileToSwapWith.GridPosition] = tileToSwap;
+
+        StartCoroutine(MoveTilesToTheirGridPositions(tileToSwap, tileToSwapWith));
+
+        Vector2 tempTileToSwapGridPosition = tileToSwap.GridPosition;
+
+        tileToSwap.ChangeGridPosition(tileToSwapWith.GridPosition);
+        tileToSwapWith.ChangeGridPosition(tempTileToSwapGridPosition);
+
+        List<CardPosition> tempTileToSwapCardPositions = tileToSwap.GetCardPositions();
+        List<CardPosition> tileToSwapWithCardPositions = tileToSwap.GetCardPositions();
+
+        tileToSwap.SetCardPositions(tileToSwapWithCardPositions);
+        tileToSwapWith.SetCardPositions(tempTileToSwapCardPositions);
+    }
+
+    private IEnumerator MoveTilesToTheirGridPositions(Tile tileToSwap, Tile tileToSwapWith)
+    {
+        Vector3 tileToSwapPosition = tileToSwap.transform.position;
+        Vector3 tileToSwapPositionWithoutZ = new Vector3(tileToSwapPosition.x, tileToSwapPosition.y, 0);
+
+        Vector3 tileToSwapWithPosition = tileToSwapWith.transform.position;
+        Vector3 tileToSwapWithPositionWithoutZ = new Vector3(tileToSwapWithPosition.x, tileToSwapWithPosition.y, 0);
+
+        tileToSwap.SwapTile();
+        tileToSwapWith.SwapTile();
+
+        float  moveSpeed = 5f;
+        while (tileToSwap.transform.position != tileToSwapWithPositionWithoutZ && tileToSwapWith.transform.position != tileToSwapPositionWithoutZ)
+        {
+            tileToSwap.transform.position = Vector3.MoveTowards(tileToSwap.transform.position, tileToSwapWithPositionWithoutZ, moveSpeed * Time.deltaTime);
+            tileToSwapWith.transform.position = Vector3.MoveTowards(tileToSwapWith.transform.position, tileToSwapPositionWithoutZ, moveSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        tileToSwap.SwapBackTile();
+        tileToSwapWith.SwapBackTile();
     }
 }
