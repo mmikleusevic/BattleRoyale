@@ -34,6 +34,8 @@ public class AbilityUI : MonoBehaviour
 
         foreach (Card card in player.EquippedCards)
         {
+            if (card.Ability == null) continue;
+
             Type abilityType = card.Ability.GetType();
             Type[] implementedInterfaces = abilityType.GetInterfaces();
 
@@ -50,8 +52,6 @@ public class AbilityUI : MonoBehaviour
 
                 button.onClick.AddListener(() =>
                 {
-                    Player.LocalInstance.SubtractActionPoints();
-
                     card.Ability.Use();
 
                     Hide();

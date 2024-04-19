@@ -12,7 +12,7 @@ public class SpaceShiftAbility : MonoBehaviour, IAbility
 
     private void Awake()
     {
-        SwapTilesUI.OnCancel += Cancel;
+        SwapTilesUI.OnCancel += ResetTiles;
     }
 
     private void Start()
@@ -28,7 +28,7 @@ public class SpaceShiftAbility : MonoBehaviour, IAbility
 
     private void OnDestroy()
     {
-        SwapTilesUI.OnCancel -= Cancel;
+        SwapTilesUI.OnCancel -= ResetTiles;
     }
 
     public void Use()
@@ -39,13 +39,16 @@ public class SpaceShiftAbility : MonoBehaviour, IAbility
         if (tileToSwap == null || tileToSwapWith == null) return;
 
         spaceShift.AbilityUsed = true;
+        swapTilesUI.Hide();
 
+        Player.LocalInstance.SubtractActionPoints();
         GridManager.Instance.SwapTiles(tileToSwap, tileToSwapWith);
-
         MessageUI.Instance.SendMessageToEveryoneExceptMe(CreateOnTileSwappedMessage());
+
+        ResetTiles();
     }
 
-    private void Cancel()
+    private void ResetTiles()
     {
         tileToSwap = null;
         tileToSwapWith = null;

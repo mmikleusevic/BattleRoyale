@@ -136,11 +136,11 @@ public class Player : NetworkBehaviour
 
     public IEnumerator MovePlayerPosition(Tile tile)
     {
-        CardPosition cardPosition = tile.GetCardPosition(this);
+        PlayerCardPosition playerCardPosition = tile.GetPlayerCardPosition(this);
 
-        if (cardPosition == null) yield break;
+        if (playerCardPosition == null) yield break;
 
-        Vector3 targetPosition = tile.transform.position + cardPosition.Position;
+        Vector3 targetPosition = tile.transform.position + playerCardPosition.Position;
 
         yield return StartCoroutine(PlayWalkingAnimation(targetPosition));
 
@@ -481,7 +481,7 @@ public class Player : NetworkBehaviour
             CurrentTile.OnMoveResetPlayerPosition(NetworkObject);
         }
 
-        tile.SetEmptyCardPosition(this);
+        tile.SetEmptyPlayerCardPosition(this);
     }
 
     private string[] CreateOnPlayerNeedsToPickAPlaceToDieMessage()

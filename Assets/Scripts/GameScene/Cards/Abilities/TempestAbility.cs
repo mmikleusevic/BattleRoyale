@@ -23,6 +23,7 @@ public class TempestAbility : MonoBehaviour, IAbility
         if (!tempest.AbilityUsed)
         {
             tempest.AbilityUsed = true;
+            Player.LocalInstance.SubtractActionPoints();
 
             Vector2[][] movementVectors = GridManager.Instance.FullMovementVectors();
             Dictionary<Vector2, Tile> gridTiles = GridManager.Instance.GetTiles();

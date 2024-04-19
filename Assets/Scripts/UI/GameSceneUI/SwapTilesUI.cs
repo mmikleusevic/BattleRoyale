@@ -30,14 +30,9 @@ public class SwapTilesUI : MonoBehaviour
     public void SetUI(Sprite sprite, string tileName)
     {
         tileToSwapImage.sprite = sprite;
-        swapText.text = "SWAPPING" + tileName;
+        swapText.text = "SWAPPING " + tileName;
 
         Show();
-    }
-
-    public static void ResetStaticData()
-    {
-        OnCancel = null;
     }
 
     private void Show()
@@ -45,8 +40,16 @@ public class SwapTilesUI : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    private void Hide()
+    public void Hide()
     {
+        tileToSwapImage.sprite = null;
+        swapText.text = string.Empty;
+
         gameObject.SetActive(false);
+    }
+
+    public static void ResetStaticData()
+    {
+        OnCancel = null;
     }
 }

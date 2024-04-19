@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -11,7 +10,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     public static event Action<Tile> OnTilePressed;
     public event Action OnTileValueChanged;
 
-    [SerializeField] private List<CardPosition> cardPositions;
+    [SerializeField] private List<PlayerCardPosition> playerCardPositions;
     [SerializeField] private GameObject highlight;
     [SerializeField] private Sprite defaultSprite;
 
@@ -58,30 +57,30 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         GridPosition = gridPosition;
     }
 
-    public CardPosition GetCardPosition(Player player)
+    public PlayerCardPosition GetPlayerCardPosition(Player player)
     {
-        return cardPositions.Where(a => a.Player == player).FirstOrDefault();
+        return playerCardPositions.Where(a => a.Player == player).FirstOrDefault();
     }
 
-    public void SetEmptyCardPosition(Player player)
+    public void SetEmptyPlayerCardPosition(Player player)
     {
-        SetEmptyCardPositionServerRpc(player.NetworkObject);
+        SetEmptyPlayerCardPositionServerRpc(player.NetworkObject);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SetEmptyCardPositionServerRpc(NetworkObjectReference networkObjectReferencePlayer, ServerRpcParams serverRpcParams = default)
+    private void SetEmptyPlayerCardPositionServerRpc(NetworkObjectReference networkObjectReferencePlayer, ServerRpcParams serverRpcParams = default)
     {
-        SetEmptyCardPositionClientRpc(networkObjectReferencePlayer);
+        SetEmptyPlayerCardPositionClientRpc(networkObjectReferencePlayer);
     }
 
     [ClientRpc]
-    private void SetEmptyCardPositionClientRpc(NetworkObjectReference networkObjectReferencePlayer, ClientRpcParams clientRpcParams = default)
+    private void SetEmptyPlayerCardPositionClientRpc(NetworkObjectReference networkObjectReferencePlayer, ClientRpcParams clientRpcParams = default)
     {
         Player player = Player.GetPlayerFromNetworkReference(networkObjectReferencePlayer);
 
         if (player == null) return;
 
-        foreach (CardPosition cardPosition in cardPositions)
+        foreach (PlayerCardPosition cardPosition in playerCardPositions)
         {
             if (cardPosition.IsOccupied == false)
             {
@@ -101,7 +100,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     public bool AreMultipleAlivePlayersOnTheCard()
     {
         int count = 0;
-        foreach (CardPosition cardPosition in cardPositions)
+        foreach (PlayerCardPosition cardPosition in playerCardPositions)
         {
             if (cardPosition.IsOccupied == true && !cardPosition.Player.IsDead.Value && !cardPosition.Player.Disabled)
             {
@@ -118,7 +117,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     {
         List<Player> players = new List<Player>();
 
-        foreach (CardPosition cardPosition in cardPositions)
+        foreach (PlayerCardPosition cardPosition in playerCardPositions)
         {
             if (cardPosition.Player != null && !cardPosition.Player.IsDead.Value && !cardPosition.Player.Disabled)
             {
@@ -171,7 +170,7 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
         if (player == null) return;
 
-        CardPosition cardPosition = cardPositions.Where(a => a.Player == player).FirstOrDefault();
+        PlayerCardPosition cardPosition = playerCardPositions.Where(a => a.Player == player).FirstOrDefault();
 
         if (cardPosition == null) return;
 
@@ -239,16 +238,6 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         tileAnimator.CloseTileAnimation();
     }
 
-    public IEnumerator SwapTile()
-    {
-        yield return StartCoroutine(tileAnimator.SwapTileAnimation());
-    }
-
-    public IEnumerator SwapBackTile()
-    {
-        yield return StartCoroutine(tileAnimator.SwapBackTileAnimation());
-    }
-
     public void ShowHighlight()
     {
         highlight.SetActive(true);
@@ -292,13 +281,13 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         GridPosition = gridPosition;
     }
 
-    public List<CardPosition> GetCardPositions()
+    public List<PlayerCardPosition> GetPlayerCardPositions()
     {
-        return cardPositions;
+        return playerCardPositions;
     }
 
-    public void SetCardPositions(List<CardPosition> cardPositions)
+    public void SetPlayerCardPositions(List<PlayerCardPosition> cardPositions)
     {
-        this.cardPositions = cardPositions;
+        this.playerCardPositions = cardPositions;
     }
 }

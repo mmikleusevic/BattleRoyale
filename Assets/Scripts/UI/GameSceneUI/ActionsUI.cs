@@ -122,7 +122,7 @@ public class ActionsUI : MonoBehaviour
             HideAll();
         }
 
-        if (player == PlayerManager.Instance.ActivePlayer)
+        if (player == PlayerManager.Instance.ActivePlayer && !player.IsDead.Value)
         {
             foreach (Card card in player.EquippedCards)
             {
