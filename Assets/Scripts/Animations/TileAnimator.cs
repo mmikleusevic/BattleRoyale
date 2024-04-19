@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class TileAnimator : MonoBehaviour
@@ -18,18 +19,28 @@ public class TileAnimator : MonoBehaviour
         Animate(IS_CLOSED);
     }
 
-    public void SwapTileAnimation()
+    public IEnumerator SwapTileAnimation()
     {
-        Animate(SWAP);
+        yield return StartCoroutine(WaitUntilFinishedAnimation(SWAP));
     }
 
-    public void SwapBackTileAnimation()
+    public IEnumerator SwapBackTileAnimation()
     {
-        Animate(SWAP_BACK);
+        yield return StartCoroutine(WaitUntilFinishedAnimation(SWAP_BACK));
     }
 
     private void Animate(string name)
     {
         animator.SetTrigger(name);
+    }
+
+    private IEnumerator WaitUntilFinishedAnimation(string name)
+    {
+        animator.SetTrigger(name);
+
+        while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+        {
+            yield return null;
+        }
     }
 }

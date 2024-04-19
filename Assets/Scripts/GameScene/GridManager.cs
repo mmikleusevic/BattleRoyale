@@ -460,14 +460,14 @@ public class GridManager : NetworkBehaviour
 
     private IEnumerator MoveTilesToTheirGridPositions(Tile tileToSwap, Tile tileToSwapWith)
     {
+        yield return StartCoroutine(tileToSwap.SwapTile());
+        yield return StartCoroutine(tileToSwapWith.SwapTile());
+
         Vector3 tileToSwapPosition = tileToSwap.transform.position;
         Vector3 tileToSwapPositionWithoutZ = new Vector3(tileToSwapPosition.x, tileToSwapPosition.y, 0);
 
         Vector3 tileToSwapWithPosition = tileToSwapWith.transform.position;
         Vector3 tileToSwapWithPositionWithoutZ = new Vector3(tileToSwapWithPosition.x, tileToSwapWithPosition.y, 0);
-
-        tileToSwap.SwapTile();
-        tileToSwapWith.SwapTile();
 
         float  moveSpeed = 5f;
         while (tileToSwap.transform.position != tileToSwapWithPositionWithoutZ && tileToSwapWith.transform.position != tileToSwapPositionWithoutZ)
@@ -478,7 +478,7 @@ public class GridManager : NetworkBehaviour
             yield return null;
         }
 
-        tileToSwap.SwapBackTile();
-        tileToSwapWith.SwapBackTile();
+        yield return StartCoroutine(tileToSwap.SwapBackTile());
+        yield return StartCoroutine(tileToSwapWith.SwapBackTile());
     }
 }

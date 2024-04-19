@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -238,14 +239,14 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         tileAnimator.CloseTileAnimation();
     }
 
-    public void SwapTile()
+    public IEnumerator SwapTile()
     {
-        tileAnimator.SwapTileAnimation();
+        yield return StartCoroutine(tileAnimator.SwapTileAnimation());
     }
 
-    public void SwapBackTile()
+    public IEnumerator SwapBackTile()
     {
-        tileAnimator.SwapBackTileAnimation();
+        yield return StartCoroutine(tileAnimator.SwapBackTileAnimation());
     }
 
     public void ShowHighlight()
