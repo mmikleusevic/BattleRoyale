@@ -5,6 +5,7 @@ Download link: https://www.dropbox.com/scl/fo/p04i1lqw55bn4m020n6x2/h?rlkey=qk7a
 <h1 align="center">Game Instructions  </h1>
 
 <h3> Multiplayer - Netcode for game objects </h3>
+<h3> Android game </h3>
 <h3> 2-6 Players </h3>
 
 <h1>1. Setting up the grid </h1>
@@ -83,6 +84,14 @@ While on preturn player can swap out cards, if the player has all cards equipped
 While being played game has information about the player stats in top left corner, under it is info button where player can go and see other players and his stats, and equipped cards. In the bottom left corner there is a „MessageUI“ where player can see al the messages that the game is sending, about the things that are going on. Top left corner next to player stats if a player is battling another player you can see the current score. 
 
 Also sometimes when a certain important action occurs player can see a big message that fades away after 5 seconds. 
+
+<h2>3.8 Abilities </h2>
+
+Certain cards have abilities that you can use, some you can use by pressing any card of the grid and then pressing the abilities button when the window pops up, and then clicking on the card with the ability you want to use (see Image 6), or some cards have abilities that you cannot use yourself but are used when you are battling against an opponent or attacking a card.
+
+![alt text](https://github.com/mmikleusevic/BattleRoyale/blob/main/Assets/BattleRoyaleInstructions/Images/Image6.png)
+
+<p align="center">Image 6: How it looks like using card abilities </p>
 
 <h1>4. End of the game </h1>
 
