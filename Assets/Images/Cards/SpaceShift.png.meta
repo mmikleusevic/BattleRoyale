@@ -134,10 +134,10 @@ TextureImporter:
       name: SpaceShift_0
       rect:
         serializedVersion: 2
-        x: 34
-        y: 33
-        width: 704
-        height: 983
+        x: 33
+        y: 32
+        width: 702
+        height: 984
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,8 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5b391c573823722408e1c90d19e4707b
-      internalID: 1305536787
+      spriteID: 932ece2de40353e428eeea50ef815b72
+      internalID: -438864073
       vertices: []
       indices: 
       edges: []
@@ -154,7 +154,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5adf95bf3db2317479b2d84e1f77d023
+    spriteID: 72ad124465afb0a4ebc12358114a05aa
     internalID: 0
     vertices: []
     indices: 
@@ -162,7 +162,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      SpaceShift_0: 1305536787
+      SpaceShift_0: -438864073
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

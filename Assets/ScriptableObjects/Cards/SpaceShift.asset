@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SpaceShift
   m_EditorClassIdentifier: 
   prefab: {fileID: 2805949139058133299, guid: 70a5709f07000c54c84acd15ff6972fa, type: 3}
-  cardSprite: {fileID: 1305536787, guid: 2eaeb157dbb755944b2b2629c3d6bf03, type: 3}
+  cardSprite: {fileID: -438864073, guid: 2eaeb157dbb755944b2b2629c3d6bf03, type: 3}
   name: Space Shift
   cost: 13
   cardType: 1
