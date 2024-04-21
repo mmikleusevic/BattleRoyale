@@ -480,7 +480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 117521a4c6236404c97dd122adba4b36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardPositions:
+  playerCardPositions:
   - position: {x: 1.07, y: 2.15, z: 0}
   - position: {x: -1.07, y: 2.15, z: 0}
   - position: {x: 1.07, y: 0, z: 0}

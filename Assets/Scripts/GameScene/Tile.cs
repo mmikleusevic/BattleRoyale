@@ -80,12 +80,12 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
         if (player == null) return;
 
-        foreach (PlayerCardPosition cardPosition in playerCardPositions)
+        foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
-            if (cardPosition.IsOccupied == false)
+            if (playerCardPosition.IsOccupied == false)
             {
-                cardPosition.Player = player;
-                cardPosition.IsOccupied = true;
+                playerCardPosition.Player = player;
+                playerCardPosition.IsOccupied = true;
 
                 if (player == Player.LocalInstance)
                 {
@@ -100,9 +100,9 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     public bool AreMultipleAlivePlayersOnTheCard()
     {
         int count = 0;
-        foreach (PlayerCardPosition cardPosition in playerCardPositions)
+        foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
-            if (cardPosition.IsOccupied == true && !cardPosition.Player.IsDead.Value && !cardPosition.Player.Disabled)
+            if (playerCardPosition.IsOccupied == true && !playerCardPosition.Player.IsDead.Value && !playerCardPosition.Player.Disabled)
             {
                 count++;
             }
@@ -117,11 +117,11 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
     {
         List<Player> players = new List<Player>();
 
-        foreach (PlayerCardPosition cardPosition in playerCardPositions)
+        foreach (PlayerCardPosition playerCardPosition in playerCardPositions)
         {
-            if (cardPosition.Player != null && !cardPosition.Player.IsDead.Value && !cardPosition.Player.Disabled)
+            if (playerCardPosition.Player != null && !playerCardPosition.Player.IsDead.Value && !playerCardPosition.Player.Disabled)
             {
-                players.Add(cardPosition.Player);
+                players.Add(playerCardPosition.Player);
             }
         }
 
@@ -170,12 +170,12 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
 
         if (player == null) return;
 
-        PlayerCardPosition cardPosition = playerCardPositions.Where(a => a.Player == player).FirstOrDefault();
+        PlayerCardPosition playerCardPosition = playerCardPositions.Where(a => a.Player == player).FirstOrDefault();
 
-        if (cardPosition == null) return;
+        if (playerCardPosition == null) return;
 
-        cardPosition.IsOccupied = false;
-        cardPosition.Player = null;
+        playerCardPosition.IsOccupied = false;
+        playerCardPosition.Player = null;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -286,8 +286,8 @@ public class Tile : NetworkBehaviour, IPointerDownHandler
         return playerCardPositions;
     }
 
-    public void SetPlayerCardPositions(List<PlayerCardPosition> cardPositions)
+    public void SetPlayerCardPositions(List<PlayerCardPosition> playerCardPositions)
     {
-        this.playerCardPositions = cardPositions;
+        this.playerCardPositions = playerCardPositions;
     }
 }
