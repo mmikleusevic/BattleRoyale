@@ -5,7 +5,7 @@ Download link: https://www.dropbox.com/scl/fo/p04i1lqw55bn4m020n6x2/h?rlkey=qk7a
 <h1 align="center">Game Instructions  </h1>
 
 <h3> Multiplayer - Netcode for game objects </h3>
-<h3> Turn-based android game </h3>
+<h3> Turn-based drinking android game </h3>
 <h3> 2-6 Players </h3>
 
 <h1>1. Setting up the grid </h1>
