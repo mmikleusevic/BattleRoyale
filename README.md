@@ -101,4 +101,7 @@ The game can end in one of the two ways:
 1) If there is only one card on the map, and the player with the most cards has 4 more cards than the player with the second-highest number of cards (e.g., one player has 9 cards, and no other player has more than 5 cards). In that case, the game continues until the last card is won. Additional rules: 
 - When only cards with values 13 and 14 remain on the map, the values for all cards on the map are reduced to 12. 
 - When there is only one card on the map, all players must move towards it by the fastest route and attempt to attack it every turn, including attacking other players on that card. 
-- When only one card is on the map and multiple players are alive on that card, it is sufficient to defeat just one player to attack the card, assuming the player has actions remaining for that turn. 
+- When only one card is on the map and multiple players are alive on that card, it is sufficient to defeat just one player to attack the card, assuming the player has actions remaining for that turn.
+
+
+This work is licensed under CC BY-NC-ND 4.0 
