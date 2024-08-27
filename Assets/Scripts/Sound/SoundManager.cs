@@ -21,6 +21,7 @@ public class SoundManager : MonoBehaviour
 
         bool.TryParse(PlayerPrefs.GetString(PLAYER_PREFS_SOUND), out bool result);
         musicSource.mute = result;
+        musicSource.volume = 0.05f;
     }
 
     public bool GetIsMusicEnabled()
